@@ -12,7 +12,7 @@
 extern UI::IMGUI ui;
 extern glm::vec2 mousePosition;
 extern std::list<Plot*> plotList;
-Graph mousePositionGraphX("mousePosX", Graph::LastX, 0xFFFF00FF, 50);
+Graph mousePositionGraphX("mousePosX", Graph::LastX, 0xFFFF00FF, 250);
 Graph mousePositionGraphY("mousePosY", Graph::LastX, 0x00FFFFFF, 250);
 Plot mainPlot("Main plot", {1000,5,395,250}, 0x10141280);
 
