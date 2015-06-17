@@ -1,0 +1,115 @@
+
+Styles:
+  Basic:
+   background: 0x6D8292F0
+   button: 0x364958FF
+   hover: 0x6F7579FF
+   editBox: 0x1D1D1DFF
+   fontColor: 0xFAF9F7FF
+   imageColor: 0xFAF9F7FF
+   font: ui_12
+   fancy:
+    - 0xFAF9F7FF
+    - 0x24230EFF
+    - 0x24230EFF
+    - 0x24230EFF
+  Light:
+   background: 0xDACAC0F0
+   button: 0xD578409FF
+   hover: 0x673416FF
+   editBox: 0x24230EFF
+   fontColor: 0x000102FF
+   imageColor: 0xFAF9F7FF
+   font: ui_12
+   fancy:
+    - 0xFAF9F7FF
+    - 0x24230EFF
+    - 0x24230EFF
+    - 0x24230EFF
+  Dark:
+   background: 0x454B4FF0
+   button: 0x6F7376FF
+   hover: 0x7B7A74FF
+   editBox: 0x24230EFF
+   fontColor: 0xFAF9F7FF
+   imageColor: 0xFAF9F7FF
+   font: ui_12
+   fancy:
+    - 0xFAF9F7FF
+    - 0x24230EFF
+    - 0x24230EFF
+    - 0x24230EFF
+  Label:
+   background: 0x895E44FF
+   button: 0x895E44FF
+   hover: 0x895E44FF
+   editBox: 0x895E44FF
+   fontColor: 0xFAF9F7FF
+   imageColor: 0xFAF9F7FF
+   font: ui_12
+   fancy:
+    - 0xFAF9F7FF
+    - 0x24230EFF
+    - 0x24230EFF
+    - 0x24230EFF
+Controls:
+  backward: p
+  fire: LMB
+  forward: Hgdrgssgrs esrges egres
+  lockAim: RMB
+  next_weapon: e
+  prev_weapon: q
+  turnLeft: a
+  turnRight: aerg
+  zoom: +,-
+Graphic:
+  AssimpCacheData:
+    @default: yes
+    options:
+      -  yes
+      -  no
+  GUIbackground:
+    -  0x607D8BF0
+    -  0x35383CF0
+    -  0x3D3F4CF0
+    -  0x3D3F4CF0
+  GUIeditBox:
+    -  0x2B4563F0
+    -  0x434950F0
+    -  0x3D3F4CF0
+    -  0x3D3F4CF0
+    -  0x3D3F4CF0
+  GUIhover:
+    -  0x455A64F0
+    -  0x162434F0
+    -  0x3D3F4CF0
+    -  0x3D3F4CF0
+    -  0x3D3F4CF0
+  GUIfontColor:
+    -  0xFFFFFFFF
+    -  0x212121FF
+    -  0x3D3F4CF0
+    -  0x3D3F4CF0
+  clearColor: 0xC2AF8FFF
+  deferred:
+    @default: yes
+    options:
+      -  yes
+      -  no
+  step: 0.025
+  wireframe:
+    @default: no
+    options:
+      -  yes
+      -  no
+Window:
+  angle: 100
+  fullscreen:
+    @default: no
+    options:
+      -  yes
+      -  no
+  height: 720
+  posX: 100
+  posY: 100
+  width: 1400

@@ -1,0 +1,183 @@
+dirname: D:\Work\Code\Manipulator3D\modelsRobot:
+ - Name: Podstawa
+   ParentJoint: Robot-Base
+     Name: Robot-Base
+     Vec: [0.0000, 0.0000, -1.3000]0]
+     Axis: [0.0000, 0.0000, 1.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P1
+     Vec: [0.0000, 0.0000, -0.4365]
+ - Name: Czlon-1
+   ParentJoint: P1
+     Name: P1
+     Vec: [0.0000, -0.2205, -0.0000]
+     Axis: [0.0000, 1.0000, -0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P2
+     Vec: [0.0413, -0.4140, -2.9426]
+ - Name: Czlon-2
+   ParentJoint: P2
+     Name: P2
+     Vec: [0.0000, -0.0000, 0.0000]
+     Axis: [0.0000, 1.0000, -0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P3
+     Vec: [1.0162, 0.0000, 0.0000]
+ - Name: Czlon-3
+   ParentJoint: P3
+     Name: P3
+     Vec: [0.0000, -0.0000, 0.0000]
+     Axis: [-1.0000, -0.0000, 0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P4
+     Vec: [3.5418, -0.0000, -0.0000]
+ - Name: Czlon-Wysuwny
+   ParentJoint: P4
+     Name: P4
+     Vec: [0.0000, 0.0000, -0.0000]
+     Axis: [-1.0000, -0.0000, 0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P5
+     Vec: [0.0000, 0.3114, 0.0000]
+ - Name: Clon-5
+   ParentJoint: P5
+     Name: P5
+     Vec: [0.0000, 0.0000, 0.0000]
+     Axis: [0.0000, 1.0000, -0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P6
+     Vec: [0.8227, 0.0000, 0.0000]
+ - Name: Czlon-6
+   ParentJoint: P6
+     Name: P6
+     Vec: [0.0000, 0.0000, -0.0000]
+     Axis: [-1.0000, -0.0000, 0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P7
+     Vec: [0.7246, 0.0000, -0.0000]
+ - Name: Czlon-7
+   ParentJoint: P7
+     Name: P7
+     Vec: [-0.0000, 0.0000, 0.0000]
+     Axis: [-0.0000, 1.0000, -0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: P8
+     Vec: [0.1755, 0.0000, 0.0000]
+ - Name: Efektor
+   ParentJoint: P8
+     Name: P8
+     Vec: [-0.0000, 0.0000, 0.0000]
+     Axis: [-1.0000, 0.0000, -0.0000]
+     Min: -1.0
+     Max: 1.0
+   ChildJoint: EndEffector
+     Vec: [0.2672, 0.0000, 0.0000]
+Meshes:
+ - Name: Circle.001
+   Position: [0.0000, 0.0000, 0.0000]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Circle.005
+   Position: [-6.5022, -2.6928, 0.4712]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Clon-5
+   Position: [-4.5993, 0.3231, 4.6790]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.8000, 0.0000, 0.0008]
+ - Name: Cube
+   Position: [1.1931, -5.9454, 1.3551]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Cube.001
+   Position: [1.1931, -3.0442, 1.3551]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Cube.002
+   Position: [1.0000, 4.9230, 1.0000]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Cylinder
+   Position: [1.2393, -2.5303, 2.7587]
+   Quaternion: [0.7071, 0.7071, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Czlon-1
+   Position: [0.0000, 0.2205, 1.7365]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1027, 0.4020, 0.0428]
+ - Name: Czlon-2
+   Position: [-0.0413, 0.6345, 4.6790]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1027, 0.4020, 0.0428]
+ - Name: Czlon-3
+   Position: [-1.0575, 0.6345, 4.6790]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.8000, 0.0000, 0.0008]
+ - Name: Czlon-6
+   Position: [-5.4220, 0.3231, 4.6790]
+   Quaternion: [1.0000, -0.0000, 0.0000, 0.0000]
+   Color: [0.8000, 0.0000, 0.0008]
+ - Name: Czlon-7
+   Position: [-6.1466, 0.3231, 4.6790]
+   Quaternion: [1.0000, -0.0000, 0.0000, 0.0000]
+   Color: [0.0413, 0.0078, 0.8000]
+ - Name: Czlon-Wysuwny
+   Position: [-4.5993, 0.6345, 4.6790]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.8000, 0.0000, 0.0008]
+ - Name: Efektor
+   Position: [-6.3221, 0.3231, 4.6790]
+   Quaternion: [1.0000, -0.0000, -0.0000, 0.0000]
+   Color: [0.0397, 0.0397, 0.0397]
+ - Name: Plane
+   Position: [0.0000, -2.6740, 1.0000]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Plane.001
+   Position: [-5.4349, 0.0000, 0.0000]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Podloga
+   Position: [0.0000, 0.0000, 0.0000]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.3250, 0.3588, 0.2417]
+ - Name: Podstawa
+   Position: [0.0000, 0.0000, 1.3000]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1027, 0.4020, 0.0428]
+Lamps:
+ - Name: Spot
+   Position: [0.0000, -8.0000, 10.0000]
+   Quaternion: [0.9577, 0.2566, -0.0338, -0.1261]
+   Color: [1.0000, 1.0000, 1.0000]
+   Falloff_distance: 25.0300
+   Energy: 1.0400
+   Type: SPOT
+   falloff_type: CONSTANT
+   spot_size: 1.6057
+ - Name: Spot.001
+   Position: [0.0000, 8.0000, 10.0000]
+   Quaternion: [-0.0000, -0.0000, 0.2588, 0.9659]
+   Color: [1.0000, 1.0000, 1.0000]
+   Falloff_distance: 25.0300
+   Energy: 1.0000
+   Type: SPOT
+   falloff_type: CONSTANT
+   spot_size: 1.2566
+ - Name: Spot.002
+   Position: [-9.7561, 0.0000, 10.0000]
+   Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
+   Color: [1.0000, 1.0000, 1.0000]
+   Falloff_distance: 25.0300
+   Energy: 1.0000
+   Type: SPOT
+   falloff_type: CONSTANT
+   spot_size: 1.2566

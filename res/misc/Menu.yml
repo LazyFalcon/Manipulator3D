@@ -1,0 +1,45 @@
+root:
+ - name: File
+   rect: [0, 64, 32, 32 ]
+ - name: Settings
+   rect: [32, 64, 32, 32 ]
+ - name: Play
+   rect: [64, 64, 32, 32 ]
+ - name: Stop
+   rect: [96, 64, 32, 32 ]
+ - name: Pause
+   rect: [128, 64, 32, 32 ]
+ - name: Record
+   rect: [160, 64, 32, 32 ]
+ - name: Save
+   rect: [192, 64, 32, 32 ]
+ - name: Load
+   rect: [224, 64, 32, 32 ]
+ - name: Undo
+   rect: [256, 64, 32, 32 ]
+ - name: Redo
+   rect: [286, 64, 32, 32 ]
+ - name: Scene
+   rect: [320, 64, 32, 32 ]
+ - name: Exit
+   rect: [0, 96, 32, 32 ]
+ - name: Minimize
+   rect: [0, 1020, 10, 10 ]
+ - name: Maximize
+   rect: [10, 1020, 10, 10 ]
+ - name: 10pxDownArrow
+   rect: [20, 1020, 10, 10 ]
+ - name: AddPoint
+   rect: [40, 1024, 16, 16 ]
+ - name: RemovePoint
+   rect: [56, 1024, 16, 16 ]
+ - name: UsePoint
+   rect: [72, 1024, 16, 16 ]
+ - name: Control
+   rect: [0, 112, 16, 16 ]
+ - name: Knot
+   rect: [16, 112, 16, 16 ]
+ - name: Point
+   rect: [13, 146, 5, 5 ]
+ - name: Circle30
+   rect: [0, 159, 31, 31 ]

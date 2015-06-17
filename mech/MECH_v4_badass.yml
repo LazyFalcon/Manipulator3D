@@ -1,0 +1,123 @@
+dirname: D:\Work\Code\Manipulator3D\mech
+Mech:
+ - Name: LLeg-0.001
+   Chain:
+    - Name: JL1
+      ParentJoint: LLeg-0.001
+        Name: LLeg-0.001
+        Vec: [0.0006, 0.2995, 0.0001]
+        Axis: [-0.0000, 1.0000, 0.0000]
+        Min: -180
+        Max: 180
+      ChildJoint: LLeg-0.007
+        Vec: [-0.0006, -0.2995, -0.0001]
+    - Name: JL2
+      ParentJoint: LLeg-0.007
+        Name: LLeg-0.007
+        Vec: [-0.7736, -0.8187, 0.6685]
+        Axis: [-0.1379, 0.0000, -0.9905]
+        Min: -180
+        Max: 180
+      ChildJoint: LLeg-0.008
+        Vec: [-1.5945, -0.0035, 1.3167]
+    - Name: JL3
+      ParentJoint: LLeg-0.008
+        Name: LLeg-0.008
+        Vec: [2.0101, -0.0423, -0.1695]
+        Axis: [-0.0000, 1.0000, 0.0000]
+        Min: -180
+        Max: 180
+      ChildJoint: LLeg-0.009
+        Vec: [0.0484, 0.0423, 0.0762]
+    - Name: JL4
+      ParentJoint: LLeg-0.009
+        Name: LLeg-0.009
+        Vec: [0.3574, 0.0049, 2.1409]
+        Axis: [-0.0000, 1.0000, 0.0000]
+        Min: -180
+        Max: 180
+      ChildJoint: LLeg-0.010
+        Vec: [-0.9872, -0.0049, 1.1761]
+ - Name: RLeg-0
+   Chain:
+    - Name: JR1
+      ParentJoint: RLeg-0
+        Name: RLeg-0
+        Vec: [0.0006, -0.2995, 0.0001]
+        Axis: [0.0000, -1.0000, -0.0000]
+        Min: -180
+        Max: 180
+      ChildJoint: RLeg-0.002
+        Vec: [-0.0006, 0.2995, -0.0001]
+    - Name: JR2
+      ParentJoint: RLeg-0.002
+        Name: RLeg-0.002
+        Vec: [-0.7736, 0.8187, 0.6685]
+        Axis: [0.1379, 0.0000, 0.9905]
+        Min: -180
+        Max: 180
+      ChildJoint: RLeg-0.003
+        Vec: [-1.5916, 0.0198, 1.3205]
+    - Name: JR3
+      ParentJoint: RLeg-0.003
+        Name: RLeg-0.003
+        Vec: [2.0072, 0.0260, -0.1733]
+        Axis: [0.0000, -1.0000, -0.0000]
+        Min: -180
+        Max: 180
+      ChildJoint: RLeg-0.004
+        Vec: [0.0462, -0.0260, 0.0765]
+Meshes:
+ - Name: Base
+   Position: [2.0415, -0.0002, -1.6707]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.2462, 0.1735, 0.0689]
+ - Name: Circle.003
+   Position: [1.9005, -1.7298, -1.7268]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.8000, 0.0000, 0.0014]
+ - Name: Circle.011
+   Position: [1.9005, 1.7298, -1.7268]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.8000, 0.0000, 0.0014]
+ - Name: JL1
+   Position: [1.8999, 1.4303, -1.7269]
+   Quaternion: [0.0691, -0.0000, 0.9976, 0.0000]
+   Color: [0.2079, 0.1455, 0.1143]
+ - Name: JL2
+   Position: [2.6741, 2.5485, -2.3953]
+   Quaternion: [0.3155, 0.0000, -0.9489, -0.0000]
+   Color: [0.2462, 0.1735, 0.0689]
+ - Name: JL3
+   Position: [2.2585, 2.5943, -3.5425]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: JL4
+   Position: [1.8526, 2.5472, -5.7595]
+   Quaternion: [0.8984, -0.0000, 0.4391, -0.0000]
+   Color: [0.2462, 0.1735, 0.0689]
+ - Name: JR1
+   Position: [1.8999, -1.4303, -1.7269]
+   Quaternion: [0.9976, 0.0000, -0.0691, 0.0000]
+   Color: [0.2079, 0.1455, 0.1143]
+ - Name: JR2
+   Position: [2.6741, -2.5485, -2.3953]
+   Quaternion: [0.9489, 0.0000, 0.3155, 0.0000]
+   Color: [0.2462, 0.1735, 0.0689]
+ - Name: JR3
+   Position: [2.2585, -2.5943, -3.5425]
+   Quaternion: [1.0000, -0.0000, -0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: JR4
+   Position: [1.8526, -2.5472, -5.7595]
+   Quaternion: [0.8984, -0.0000, 0.4391, 0.0000]
+   Color: [0.2462, 0.1735, 0.0689]
+Lamps:
+ - Name: Point
+   Position: [8.9793, -0.4558, 13.5746]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [1.0000, 1.0000, 1.0000]
+   Falloff_distance: 50.0000
+   Energy: 1.0000
+   Type: POINT
+   falloff_type: INVERSE_SQUARE
