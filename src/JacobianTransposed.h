@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Robot.h"
 
 // szerokość jest drugim parametrem
 class Matrix {

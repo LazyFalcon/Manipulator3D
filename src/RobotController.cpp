@@ -118,19 +118,14 @@ bool RobotController::update(float dt){
 	return false;
 }
 
-
-
-
-MoveCommand& MoveCommand::time(float time){}
-MoveCommand& MoveCommand::interpolator(IInterpolator *interpolator){}
-MoveCommand& MoveCommand::points(){}
 bool MoveCommand::update(RobotController &rc, float dt){
-	bool pointReached = m_solver->solve(Point{ m_interpolator->nextPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
-	if (m_interpolator->finished && pointReached){
-		m_interpolator->reset();
+	bool pointReached = solver->solve(Point{ interpolator->nextPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
+	if (interpolator->finished && pointReached){
+		interpolator->reset();
 		return true;
 	}
 	return false;
 }
+
 
 

@@ -87,6 +87,8 @@ RobotController g_RC;
 #include "SomeTests.h"
 #include "BigSplineTest.h"
 #include "Menu.h"
+#include "Menu-PropertyEditor.h"
+unique_ptr<MenuPropertyEditor> menuPropertyEditor;
 CFG::Node cfg_settings;
 
 void loadResources();
@@ -195,6 +197,14 @@ void renderLoop(){
 	Engine::renderShapes();
 	glfwSwapBuffers(window);
 }
+void prerequisites(){
+	menuPropertyEditor = make_unique<MenuPropertyEditor>();
+
+}
+void updates(float dt){
+	menuPropertyEditor->run();
+	BigSplineTest::update(dt);
+}
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
 	Timer<int32_t, std::ratio<1,1000>,1> msectimer;
@@ -210,6 +220,9 @@ void mainLoop(){
 	// alert("Welcome\nbhaf haf aj");
 
 	//PathCreator pcr((BSpline*)(((MoveCommand*)g_RC.commands.front().get())->m_interpolator));
+
+	prerequisites();
+
 	_DebugLine_
 	while(!quit){
 		dt = timer();
@@ -256,7 +269,7 @@ void mainLoop(){
 
 		UI::GetInput = ui.textEditor.state();
 		//SomeTests();
-		BigSplineTest::update(dt);
+		updates(dt);
 		MainMenu();
 		// ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
 			//ui.rect().text(msectimer.getString()+"ms").font("ui_12"s)();

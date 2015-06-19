@@ -139,6 +139,16 @@ public:
 
 };
 
+template<typename EnumType>
+class DropDownEnumList
+{
+public:
+	int run();
+
+
+};
+
+
 // :P
 class Minimizable {
 public:

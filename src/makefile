@@ -1,7 +1,7 @@
 CXXFLAGS			=  -I c:\MinGW\include  -std=c++1y   -msse2 -mfpmath=sse
 CXX						= C:\MinGw\bin\g++.exe
 
-OBJS					= ../bin/Utils.o  ../bin/FontRenderer.o  ../bin/IMGUI.o ../bin/Camera.o ../bin/CFGparser.o ../bin/ResourceLoader.o ../bin/Engine.o ../bin/JacobianTransposed.o ../bin/Robot.o ../bin/Mech.o ../bin/IInterpolator.o ../bin/RobotController.o ../bin/Widgets.o   ../bin/SomeTests.o  ../bin/BigSplineTest.o ../bin/Editor.o ../bin/Logger.o  ../bin/Graph.o ../bin/MAIN.o
+OBJS					= ../bin/Utils.o  ../bin/FontRenderer.o  ../bin/IMGUI.o ../bin/Camera.o ../bin/CFGparser.o ../bin/ResourceLoader.o ../bin/Engine.o ../bin/JacobianTransposed.o ../bin/Robot.o ../bin/Mech.o ../bin/IInterpolator.o ../bin/RobotController.o ../bin/Widgets.o   ../bin/SomeTests.o  ../bin/BigSplineTest.o ../bin/Editor.o ../bin/CommandBuilder.o ../bin/Logger.o  ../bin/Graph.o  ../bin/Menu-PropertyEditor.o ../bin/MAIN.o
 
 LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath  -lglew32  -lglfw3 -lgdi32 -lDevIL -lILU -lILUT -lglu32  -lopengl32
 
@@ -17,6 +17,12 @@ UTIL					= C:/MinGW/include/Utils
 
 ../bin/Graph.o: Graph.cpp Graph.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Graph.cpp -o ../bin/Graph.o
+
+../bin/Menu-PropertyEditor.o: Menu-PropertyEditor.cpp Menu-PathEditor.h  Menu-CommandBuilder.h  Menu-ITab.h Menu-PropertyEditor.h Widgets.h $(UTIL)/IMGUI_V4.h
+	$(CXX) -c $(CXXFLAGS) -o2  Menu-PropertyEditor.cpp -o ../bin/Menu-PropertyEditor.o
+
+../bin/CommandBuilder.o: CommandBuilder.cpp CommandBuilder.h Widgets.h $(UTIL)/IMGUI_V4.h
+	$(CXX) -c $(CXXFLAGS) -o2  CommandBuilder.cpp -o ../bin/CommandBuilder.o
 
 ../bin/Editor.o: Editor.cpp Editor.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Editor.cpp -o ../bin/Editor.o

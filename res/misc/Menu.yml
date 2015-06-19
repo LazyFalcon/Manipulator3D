@@ -43,3 +43,5 @@ root:
    rect: [13, 146, 5, 5 ]
  - name: Circle30
    rect: [0, 159, 31, 31 ]
+ - name: Menu-Property-Tab
+   rect: [975, 25, 25, 25]
