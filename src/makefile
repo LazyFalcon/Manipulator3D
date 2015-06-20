@@ -1,7 +1,11 @@
 CXXFLAGS			=  -I c:\MinGW\include  -std=c++1y   -msse2 -mfpmath=sse
 CXX						= C:\MinGw\bin\g++.exe
 
-OBJS					= ../bin/Utils.o  ../bin/FontRenderer.o  ../bin/IMGUI.o ../bin/Camera.o ../bin/CFGparser.o ../bin/ResourceLoader.o ../bin/Engine.o ../bin/JacobianTransposed.o ../bin/Robot.o ../bin/Mech.o ../bin/IInterpolator.o ../bin/RobotController.o ../bin/Widgets.o   ../bin/SomeTests.o  ../bin/BigSplineTest.o ../bin/Editor.o ../bin/CommandBuilder.o ../bin/Logger.o  ../bin/Graph.o  ../bin/Menu-PropertyEditor.o ../bin/MAIN.o
+OBJS					= ../bin/Utils.o  ../bin/FontRenderer.o  ../bin/IMGUI.o ../bin/Camera.o ../bin/CFGparser.o ../bin/ResourceLoader.o ../bin/Engine.o ../bin/JacobianTransposed.o ../bin/Robot.o ../bin/Mech.o ../bin/IInterpolator.o ../bin/RobotController.o ../bin/Widgets.o   ../bin/SomeTests.o  ../bin/BigSplineTest.o ../bin/Editor.o  ../bin/Logger.o ../bin/Graph.o \
+ ../bin/Robot-Commands.o \
+ ../bin/Robot-CommandBuilders.o \
+ ../bin/Menu-SideBar.o \
+../bin/MAIN.o
 
 LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath  -lglew32  -lglfw3 -lgdi32 -lDevIL -lILU -lILUT -lglu32  -lopengl32
 
@@ -12,17 +16,11 @@ UTIL					= C:/MinGW/include/Utils
 ../bin/Manipulatork3D: $(OBJS)
 	$(CXX) $(OBJS) -D _GLIBCXX_USE_CXX11_ABI=0 -o ../bin/Manipulatork3D $(LIBS)
 
-../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h
+../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Menu-SideBar.h Robot-Commands.h Robot-CommandBuilders.h Widgets.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
 
 ../bin/Graph.o: Graph.cpp Graph.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Graph.cpp -o ../bin/Graph.o
-
-../bin/Menu-PropertyEditor.o: Menu-PropertyEditor.cpp Menu-PathEditor.h  Menu-CommandBuilder.h  Menu-ITab.h Menu-PropertyEditor.h Widgets.h $(UTIL)/IMGUI_V4.h
-	$(CXX) -c $(CXXFLAGS) -o2  Menu-PropertyEditor.cpp -o ../bin/Menu-PropertyEditor.o
-
-../bin/CommandBuilder.o: CommandBuilder.cpp CommandBuilder.h Widgets.h $(UTIL)/IMGUI_V4.h
-	$(CXX) -c $(CXXFLAGS) -o2  CommandBuilder.cpp -o ../bin/CommandBuilder.o
 
 ../bin/Editor.o: Editor.cpp Editor.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Editor.cpp -o ../bin/Editor.o
@@ -36,6 +34,19 @@ UTIL					= C:/MinGW/include/Utils
 ../bin/Widgets.o: Widgets.cpp Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Widgets.cpp -o ../bin/Widgets.o
 
+#-----------------------------------------------------
+
+../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h
+	$(CXX) -c $(CXXFLAGS) -o2  Robot-Commands.cpp -o ../bin/Robot-Commands.o
+
+../bin/Robot-CommandBuilders.o: $(UTIL)/IMGUI_V4.h Robot-CommandBuilders.cpp Robot-CommandBuilders.h
+	$(CXX) -c $(CXXFLAGS) -o2  Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
+
+../bin/Menu-SideBar.o: $(UTIL)/IMGUI_V4.h Menu-SideBar.cpp Menu-SideBar.h Menu-Tabs.cpp
+	$(CXX) -c $(CXXFLAGS) -o2  Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
+
+#-----------------------------------------------------
+
 ../bin/JacobianTransposed.o: JacobianTransposed.cpp JacobianTransposed.h Robot.h
 	$(CXX) -c $(CXXFLAGS) -o2  JacobianTransposed.cpp -o ../bin/JacobianTransposed.o
 
@@ -44,6 +55,8 @@ UTIL					= C:/MinGW/include/Utils
 
 ../bin/IInterpolator.o: IInterpolator.cpp IInterpolator.h Robot.h
 	$(CXX) -c $(CXXFLAGS) -o2  IInterpolator.cpp -o ../bin/IInterpolator.o
+
+#-----------------------------------------------------
 
 ../bin/Mech.o: Mech.cpp Mech.h Robot.h
 	$(CXX) -c $(CXXFLAGS) -o2  Mech.cpp -o ../bin/Mech.o

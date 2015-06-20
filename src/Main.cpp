@@ -87,8 +87,8 @@ RobotController g_RC;
 #include "SomeTests.h"
 #include "BigSplineTest.h"
 #include "Menu.h"
-#include "Menu-PropertyEditor.h"
-unique_ptr<MenuPropertyEditor> menuPropertyEditor;
+#include "Menu-SideBar.h"
+unique_ptr<ManuSideBar> manuSideBar;
 CFG::Node cfg_settings;
 
 void loadResources();
@@ -198,21 +198,22 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
-	menuPropertyEditor = make_unique<MenuPropertyEditor>();
+	manuSideBar = make_unique<ManuSideBar>();
 
 }
 void updates(float dt){
-	menuPropertyEditor->run();
+	manuSideBar->run();
 	BigSplineTest::update(dt);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
-	Timer<int32_t, std::ratio<1,1000>,1> msectimer;
+	Timer<uint32_t, std::ratio<1,1000>,1> msectimer;
 	Timer<double, std::ratio<1,1000>,60> precisetimer;
 	float timeAccumulator = 0.f;
 	// float step = 1.f/120.f;
 	float step = g_timeStep;
 	float dt = 0.f;
+	uint32_t msdt = 0;
 	float accu10ms = 0.f;
 	glm::vec3 tmpAxis(0);
 	float tmpAngle(0);
@@ -226,7 +227,7 @@ void mainLoop(){
 	_DebugLine_
 	while(!quit){
 		dt = timer();
-		msectimer();
+		msdt = msectimer();
 		timeAccumulator += dt;
 		accu10ms += dt;
 		signal10ms = false;
@@ -244,6 +245,7 @@ void mainLoop(){
 		}
 		ui.setMouse(mouse_x, mouse_y);
 		ui.updateCounter(dt);
+		ui.updateCounter(msdt);
 
 		double m_x, m_y;
 		glfwGetCursorPos(window, &m_x, &m_y);
@@ -271,8 +273,8 @@ void mainLoop(){
 		//SomeTests();
 		updates(dt);
 		MainMenu();
-		// ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			//ui.rect().text(msectimer.getString()+"ms").font("ui_12"s)();
+		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
+			ui.rect().text(msectimer.getString()+"ms").font("ui_12"s)();
 			// ui.rect().text(timer.getString()+"ms").font("ui_12"s)();
 			// ui.rect().text("IK: "+precisetimer.getString()+"ms").font("ui_12"s)();
 			// ui.rect().text("commands: "s + std::to_string(g_RC.commands.size()))();
@@ -280,7 +282,7 @@ void mainLoop(){
 				// ui.rect().text("executing: "s + (*g_RC.commandIter)->name)();
 			// else
 				// ui.rect().text("current: "s + (*g_RC.commandIter)->name)();
-		// ui.endTable();
+		ui.endTable();
 
 		ui.end();
 		renderLoop();
@@ -299,6 +301,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	if(mods == GLFW_MOD_ALT && key == GLFW_KEY_F4)
 		quit = true;
 
+	ui.keyInput(key, action, mods);
+	if(UI::GetInput) return;
 	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){
 		reloadWhatIsPossible();
 	}
@@ -498,3 +502,4 @@ void initContext(CFG::Node &cfg){
 	ui.frequency= 5.f;
 	ui.m_UIContainer = new UIContainer();
 }
+

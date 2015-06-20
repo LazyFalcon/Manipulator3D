@@ -1,7 +1,12 @@
-﻿#include <Utils/includes.h>
+﻿#pragma once
+#include <Utils/includes.h>
 #include "IInterpolator.h"
 #include "JacobianTransposed.h"
-#include "RobotCommands.h"
+#include "Robot-Commands.h"
+
+double parseVelocity(const std::string &word);
+double parseAcceleration(const std::string &word);
+float    parseTime(const std::string &word);
 
 class ICommandBuilder
 {
@@ -25,18 +30,28 @@ public:
 		// moveCommand->process();
 		// return moveCommand;
 	}
-	MoveBuilder(): moveCommand(make_unique<MoveCommand>()){}
+	MoveBuilder(): moveCommand(make_unique<MoveCommand>()){
+		init();
+	}
 
 	MoveBuilder& velocity(double value){
 		moveCommand->velocity = value;
 		return *this;
 	}
 	MoveBuilder& velocity(std::string value){
-		// moveCommand->velocity = parse<double>(value);
+		moveCommand->velocity = parseVelocity(value);
+		return *this;
+	}
+	MoveBuilder& acceleration(std::string value){
+		moveCommand->acceleration = parseAcceleration(value);
 		return *this;
 	}
 	MoveBuilder& acceleration(double value){
 		moveCommand->acceleration = value;
+		return *this;
+	}
+	MoveBuilder& time(std::string value){
+		moveCommand->time = parseTime(value);
 		return *this;
 	}
 	MoveBuilder& time(float value){
@@ -56,11 +71,14 @@ public:
 		return *this;
 	}
 	void widget();
+	void reset(){moveCommand = make_unique<MoveCommand>();}
+	void init();
 private:
 	unique_ptr<MoveCommand> moveCommand;
 };
 
-
+class WaitBuilder
+{};
 
 extern CommandType CommandTypeArray[];
 extern std::string CommandTypeName[];

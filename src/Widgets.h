@@ -140,12 +140,76 @@ public:
 };
 
 template<typename EnumType>
-class DropDownEnumList
+class DropdownEnumList
 {
 public:
 	int run();
 
 
+};
+
+template<typename Type>
+class DropdownWithCallback
+{
+public:
+	void run(){
+		ui.box(UI::LayoutHorizontal | UI::AlignLeft );
+		ui.rect(20, 22)
+			// .text(value)
+			.text(dropped ? u"\ue08d":u"\ue00d","sym_12", UI::TextToRight)
+			.getRect(dropPosition)
+			(UI::Hoverable)
+			.button(dropped);
+		ui.endBox();
+
+		if(dropped) list();
+
+	}
+	void list(){
+			ui.beginLayer();
+			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
+
+			float direction = -1.f;
+			if(widgetAlign == UI::AlignTop){
+				dropPosition.y -= dropPosition.w;
+				direction = -1.f;
+			}
+
+			for(int i=0; i<options.size(); i++){
+				auto &option = options[i];
+				ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
+					.text(option)
+					(UI::Hoverable)
+					.switcher(value, option)
+					.button(dropped)
+					.onlClick([this, &option]{
+						callback(option);
+					});
+
+				dropPosition.y -= 20.f;
+			}
+			if(ui.outOfTable())
+				dropped = false;
+
+			ui.endBox();
+			ui.endLayer();
+	}
+
+	DropdownWithCallback(int alignDirection, float l, const vector<Type> &o):
+		widgetAlign(alignDirection),
+		options(o),
+		value(o[0]),
+		lenght(l),
+		dropped(false)
+		{}
+
+	int widgetAlign;
+	Type value;
+	std::vector<Type> options;
+	std::function<void(Type)> callback;
+	glm::vec4 dropPosition;
+	float lenght;
+	bool dropped;
 };
 
 

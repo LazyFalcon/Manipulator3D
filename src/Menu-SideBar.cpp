@@ -1,27 +1,25 @@
-#include <Utils/includes.h>
+﻿#include <Utils/includes.h>
 #include <Utils/Utils.h>
 #include <Utils/IMGUI_V4.h>
-#include "RobotCommands.h"
-#include "Menu-PropertyEditor.h"
-#include "Menu-CommandBuilder.h"
-#include "Menu-PathEditor.h"
+#include "Robot-Commands.h"
+#include "Menu-SideBar.h"
+#include "Menu-Tabs.cpp"
+#include "Robot-CommandBuilders.h"
 
 extern UI::IMGUI ui;
 extern glm::vec2 screenSize;
 extern unique_ptr<ICommandBuilder> CommandBuilders[];
 
-void MenuPropertyEditor::initTabs(){
+void ManuSideBar::initTabs(){
 	menuTabs.push_back(make_unique<CommandBuilderTab>("empty"));
 	menuTabs.push_back(make_unique<CommanListTab>("empty"));
-	menuTabs.push_back(make_unique<PathListTab>("empty"));
-	menuTabs.push_back(make_unique<PathEditorTab>("empty"));
-	menuTabs.push_back(make_unique<PlotTab>("empty"));
+	menuTabs.push_back(make_unique<PolylineBuilderTab>("empty"));
+	menuTabs.push_back(make_unique<PolylineListTab>("empty"));
+	menuTabs.push_back(make_unique<PlotPropertyListTab>("empty"));
 
-
-	CommandBuilders[0] = make_unique<MoveBuilder>();
 }
 
-void MenuPropertyEditor::run(){
+void ManuSideBar::run(){
 	// if(minimized) return;
 	ui.table(UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::Draw)
 		.position(screenSize.x-size, screenSize.y-50)
@@ -33,7 +31,7 @@ void MenuPropertyEditor::run(){
 	ui.endTable();
 }
 
-void MenuPropertyEditor::drawTabs(){
+void ManuSideBar::drawTabs(){
 	ui.box(UI::LayoutHorizontal);
 
 	for(int i=0; i<menuTabs.size(); i++){
@@ -46,9 +44,15 @@ void MenuPropertyEditor::drawTabs(){
 
 		// ui.image(rect.x, rect.y, menuTabs[i]->icon)();
 	}
-	CommandBuilders[0]->widget();
 
 	ui.endBox();
 }
 
+
+void CommandBuilderTab::run(){
+	/// okienko z wyborem komendy
+	moveBuilder.widget();
+
+
+}
 

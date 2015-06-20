@@ -173,6 +173,10 @@ void PolylineEditor::mainBody(){
 	polyline->drawParams();
 	ui.image("Refresh").onlClick([this]{polyline->generatePath();})();
 	snapModeDropDown();
+	ui.rect(120, 20).text("2342")();
+	ui.rect(120, 20).text("2342")();
+	ui.rect(120, 20).text("2342")();
+	ui.rect(120, 20).text("2342")();
 }
 void PolylineEditor::snapModeDropDown(){
 	glm::vec4 listStart;
