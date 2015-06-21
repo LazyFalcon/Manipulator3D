@@ -212,6 +212,70 @@ public:
 	bool dropped;
 };
 
+template<typename Type>
+class DropdownPairWithCallback
+{
+public:
+	void run(){
+		ui.box(UI::LayoutHorizontal | UI::AlignLeft );
+		ui.rect(20, 22)
+			// .text(value)
+			.text(dropped ? u"\ue08d":u"\ue00d","sym_12", UI::TextToRight)
+			.getRect(dropPosition)
+			(UI::Hoverable)
+			.button(dropped);
+		ui.endBox();
+
+		if(dropped) list();
+
+	}
+	void list(){
+			ui.beginLayer();
+			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
+
+			float direction = -1.f;
+			if(widgetAlign == UI::AlignTop){
+				dropPosition.y -= dropPosition.w;
+				direction = -1.f;
+			}
+
+			for(int i=0; i<options.size(); i++){
+				auto &option = options[i];
+				ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
+					.text(option.first)
+					(UI::Hoverable)
+					.switcher(value, option.second)
+					.button(dropped)
+					.onlClick([this, &option]{
+						callback(option.second);
+					});
+
+				dropPosition.y -= 20.f;
+			}
+			if(ui.outOfTable())
+				dropped = false;
+
+			ui.endBox();
+			ui.endLayer();
+	}
+
+	DropdownPairWithCallback(int alignDirection, float l, const vector<pair<std::string,Type>> &o):
+		widgetAlign(alignDirection),
+		options(o),
+		value(o[0].second),
+		lenght(l),
+		dropped(false)
+		{}
+
+	int widgetAlign;
+	Type value;
+	std::vector<pair<std::string,Type>> options;
+	std::function<void(Type)> callback;
+	glm::vec4 dropPosition;
+	float lenght;
+	bool dropped;
+};
+
 
 // :P
 class Minimizable {

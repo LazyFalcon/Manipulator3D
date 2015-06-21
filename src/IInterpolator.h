@@ -26,6 +26,8 @@ enum class Interpolator : uint32_t
 
 const std::string& InterpolatorTranslate(Interpolator type);
 
+extern const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumWithName;
+
 class IInterpolator
 {
 public:

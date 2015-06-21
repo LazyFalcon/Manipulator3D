@@ -380,13 +380,25 @@ shared_ptr<IInterpolator> InterpolatorFactory::build(Interpolator type, vector<g
 }
 
 
-std::string sLinear = "Linear";
-std::string sBezierCurve = "Bezier Curve";
-std::string sBSpline = "B-Spline";
-std::string sNURBS = "NURBS";
-std::string sHermiteCardinal = "Hermite Cardinal";
-std::string sHermiteFiniteDifference = "Hermite Finite Difference";
-std::string sHermiteFiniteDifferenceClosed = "Hermite Finite Difference - Closed";
+const std::string sLinear = "Linear";
+const std::string sBezierCurve = "Bezier Curve";
+const std::string sBSpline = "B-Spline";
+const std::string sNURBS = "NURBS";
+const std::string sHermiteCardinal = "Hermite Cardinal";
+const std::string sHermiteFiniteDifference = "Hermite Finite Difference";
+const std::string sHermiteFiniteDifferenceClosed = "Hermite Finite Difference - Closed";
+
+const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumWithName {
+	{{sLinear                       }, {Interpolator::Linear}       }          ,
+	{{sBezierCurve                  }, {Interpolator::BezierCurve} }           ,
+	{{sBSpline                      }, {Interpolator::BSpline}    }            ,
+	{{sNURBS                        }, {Interpolator::NURBS}     }             ,
+	{{sHermiteCardinal              }, {Interpolator::HermiteCardinal}}        ,
+	{{sHermiteFiniteDifference      }, {Interpolator::HermiteFiniteDifference}},
+	{{sHermiteFiniteDifferenceClosed}, {Interpolator::HermiteFiniteDifferenceClosed}}
+};
+
+
 
 const std::string& InterpolatorTranslate(Interpolator type){
 	if(type == Interpolator::Linear)

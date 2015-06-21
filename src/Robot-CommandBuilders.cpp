@@ -2,7 +2,9 @@
 #include <Utils/IMGUI_V4.h>
 #include "Robot-CommandBuilders.h"
 #include "Widgets.h"
+#include "IInterpolator.h"
 extern UI::IMGUI ui;
+extern const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumWithName;
 
 void incr(double &value){value += 0.01;}
 void decr(double &value){value -= 0.01;}
@@ -12,6 +14,7 @@ void decr(float &value){value -= 0.01f;}
 wxg::DropdownWithCallback <std::string>velocityDropdowns(UI::AlignTop, 100, {"0.25m/s", "0.5m/s", "1m/s", "100mm/s"});
 wxg::DropdownWithCallback <std::string>accelerationDropdowns(UI::AlignTop, 100, {"0.25m/s", "0.5m/s", "1m/s", "100mm/s"});
 wxg::DropdownWithCallback <std::string>timeDropdowns(UI::AlignTop, 100, {"1s", "2s", "3s", "4s", "5s", "6s"});
+wxg::DropdownPairWithCallback <Interpolator> interpolatorDropdowns(UI::AlignTop, 120,{{{"empty"}, Interpolator::Open}});
 
 double parseVelocity(const std::string &word){
 	std::smatch match;
@@ -80,10 +83,12 @@ void MoveBuilder::init(){
 	velocityDropdowns.callback = [this](std::string val){velocity(val);};
 	accelerationDropdowns.callback = [this](std::string val){acceleration(val);};
 	timeDropdowns.callback = [this](std::string val){time(val);};
+	interpolatorDropdowns.options = interpolatorEnumWithName;
+	interpolatorDropdowns.callback = [this](Interpolator val){};
 }
 void MoveBuilder::widget(){
 	vertical(
-		ui.rect(120, 20).text("velocity")();
+		ui.rect(120, 20).text("   velocity")();
 		horizontal(
 			ui.rect(15, 22).text("-", UI::CenterText)
 				.onRepeat([this]{decr(moveCommand->velocity);}, 25u)
@@ -98,7 +103,7 @@ void MoveBuilder::widget(){
 		)
 	)
 	vertical(
-		ui.rect(120, 20).text("acceleration")();
+		ui.rect(120, 20).text("   acceleration")();
 		horizontal(
 			ui.rect(15, 22).text("-", UI::CenterText)
 				.onRepeat([this]{decr(moveCommand->acceleration);}, 25u)
@@ -113,7 +118,7 @@ void MoveBuilder::widget(){
 		)
 	)
 	vertical(
-		ui.rect(120, 20).text("time")();
+		ui.rect(120, 20).text("   time")();
 		horizontal(
 			ui.rect(15, 22).text("-", UI::CenterText)
 				.onRepeat([this]{decr(moveCommand->time);}, 25u)
@@ -127,6 +132,21 @@ void MoveBuilder::widget(){
 				(UI::Button);
 		)
 	)
+	vertical(
+		ui.rect(120, 20).text("   interpolator")();
+		horizontal(
+			interpolatorDropdowns.run();
+			ui.rect(120,22).text(InterpolatorTranslate(interpolatorDropdowns.value))();
+		)
+	)
+	// vertical(
+		// ui.rect(120, 20).text("solver")();
+		// horizontal(
+			// solverDropdowns.run();
+			// ui.rect(120,22).text(SolverTranslate(solverDropdowns.value))();
+			// ui.rect(120,22).text("Jacobian transpose")();
+		// )
+	// )
 }
 
 CommandType CommandTypeArray[] = {Empty, Move, Wait, Conditional, ConditionalCall,};

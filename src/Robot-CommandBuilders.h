@@ -6,7 +6,7 @@
 
 double parseVelocity(const std::string &word);
 double parseAcceleration(const std::string &word);
-float    parseTime(const std::string &word);
+float  parseTime(const std::string &word);
 
 class ICommandBuilder
 {
