@@ -490,12 +490,6 @@ void initContext(CFG::Node &cfg){
 	if(Engine::initGlew())
 		Shut_Down(1);
 
-	//init devil
-	ilInit();
-	iluInit();
-	ilutInit();
-	ilutRenderer(ILUT_OPENGL);
-
 	ui.m_maxHorizontal = window_width;
 	ui.m_maxVertical = window_height;
 	ui.accu = 0.f;

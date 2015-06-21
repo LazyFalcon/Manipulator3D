@@ -49,6 +49,7 @@ Main:
   - SurfaceAlignedParticle SurfaceAlignedParticle SurfaceAlignedParticle
  Images:
   - kursor.png
+  - 0blue.jpg
  ImageSets:
   - Menu
  Meshes:
