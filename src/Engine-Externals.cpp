@@ -1,4 +1,8 @@
 
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
+
 void UIContainer::draw(UI::IMGUI &gui){
 	auto shader = shaders[m_boxes.second];
 	glUseProgram(shader);
@@ -58,8 +62,10 @@ bool ResourceLoader::loadImage(const string &name){
 	if (success){
 		ILinfo ImageInfo;
 		iluGetImageInfo(&ImageInfo);
+		logger::log<<"name "<<fileName<<std::endl;
 		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT){
 			iluFlipImage();
+			logger::log<<"\tflipped"<<endl;
 		}
 		success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 		if (!success){

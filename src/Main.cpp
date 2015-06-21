@@ -2,6 +2,10 @@
 #include <Utils/Includes.h>
 #include "common.h"
 
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
+
 #include <Utils/Utils.h>
 #include <Utils/glUtils.h>
 #include <Utils/IMGUI_V4.h>
