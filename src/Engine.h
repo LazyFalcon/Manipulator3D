@@ -5,6 +5,7 @@
 #include <Utils/MeshInfo.h>
 #include <Utils/Camera.h>
 #include <Utils/IMGUI_V4.h>
+#include <Utils/glUtils.h>
 #include "Common.h"
 #include "Robot.h"
 #include "CFGParser.h"

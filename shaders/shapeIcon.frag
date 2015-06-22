@@ -8,6 +8,5 @@ out vec4 out_Color;
 
 void main(void){
 	vec4 color = texture(mainTex, texCoords);
-
 	out_Color = vec4(uColor.rgb, color.a*uColor.a);
 }

@@ -1,3 +1,4 @@
+#include <FreeImage.h>
 
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -37,11 +38,11 @@ void UIContainer::draw(UI::IMGUI &gui){
 	m_boxes.first.m_box.clear();
 	m_boxes.first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 
 
 bool ResourceLoader::loadImage(const string &name){
-	cout<<"image: "+name<<endl;
 	auto &images = resources->images;
 	auto &textures = resources->textures;
 
@@ -52,83 +53,83 @@ bool ResourceLoader::loadImage(const string &name){
 		return true;
 
 	string fileName = imagePath+name;
-	ILuint imageID;
 	GLuint textureID;
-	ILboolean success;
-	ILenum error;
-	ilGenImages(1, &imageID);
-	ilBindImage(imageID);
-	success = ilLoadImage(fileName.c_str());
-	if (success){
-		ILinfo ImageInfo;
-		iluGetImageInfo(&ImageInfo);
-		logger::log<<"name "<<fileName<<std::endl;
-		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT){
-			iluFlipImage();
-			logger::log<<"\tflipped"<<endl;
-		}
-		success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-		if (!success){
-			error = ilGetError();
-			cout << "Image conversion failed  " << name << " - " << iluErrorString(error) << std::endl;
 
-		}
-		glGenTextures(1, &textureID);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D,
-					 0,
-					 ilGetInteger(IL_IMAGE_BPP),
-					 ilGetInteger(IL_IMAGE_WIDTH),
-					 ilGetInteger(IL_IMAGE_HEIGHT),
-					 0,
-					 ilGetInteger(IL_IMAGE_FORMAT),
-					 GL_UNSIGNED_BYTE,
-					 ilGetData());
+	//image format
+	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,5);
+	//check the file signature and deduce its format
+	fif = FreeImage_GetFileType(fileName.c_str(), 0);
+	if(fif == FIF_UNKNOWN){
+		logger::log<<"duupa\n";
+		return false;
 	}
-	else{
-		error = ilGetError();
-		cerr<<"error loading image( "<<error<<" )"<<name<<endl;
 
-		unsigned char tmp[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+	FIBITMAP *image = FreeImage_Load(fif, fileName.c_str());
 
-		glGenTextures(1, &textureID);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D,
-					 0,
-					 GL_RGBA,
-					 2,
-					 2,
-					 0,
-					 GL_RGBA,
-					 GL_UNSIGNED_BYTE,
-					 (void*)tmp);
+	BYTE *imageData = FreeImage_GetBits(image);
+	//get the image width and height
+	auto width = FreeImage_GetWidth(image);
+	auto height = FreeImage_GetHeight(image);
 
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	auto imageType = FreeImage_GetImageType(image);
 
+	// How many bits-per-pixel is the source image?
+	int bitsPerPixel =  FreeImage_GetBPP(image);
+	int colorsUsed =  FreeImage_GetColorsUsed(image);
 
+	logger::log<<"name "<<fileName<<std::endl;
 
-		// dorzuæ ³adowanie pustej, ró¿owej tekstury
+	GLuint internalFormat;
+	GLuint imageFormat;
+	GLuint imageMagFilter;
+	GLuint imageMinFilter;
+
+	if(bitsPerPixel == 8){
+		imageMagFilter = GL_NEAREST;
+		imageMinFilter = GL_NEAREST;
+		internalFormat = GL_RED;
+		imageFormat = GL_RED;
 	}
+	else if(bitsPerPixel == 24){
+		imageMagFilter = GL_LINEAR;
+		imageMinFilter = GL_LINEAR;
+		imageFormat = GL_BGR;
+		internalFormat = GL_RGBA8;
+	}
+	else if(bitsPerPixel == 32){
+		imageMagFilter = GL_LINEAR;
+		imageMinFilter = GL_LINEAR;
+		imageFormat = GL_BGRA;
+		internalFormat = GL_RGBA8;
+	}
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D,
+				 0,
+				 internalFormat,
+				 width,
+				 height,
+				 0,
+				 imageFormat,
+				 GL_UNSIGNED_BYTE,
+				 imageData);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, imageMagFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, imageMinFilter);
+
+
+	FreeImage_Unload(image);
 
 	textures[onlyName] = textureID;
-	images[onlyName] = Image { textureID, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT)};
+	images[onlyName] = Image { textureID, int(width), int(height)};
 
-	ilDeleteImages(1, &imageID);
 
-	return success;
+	return true;
 }
 GLuint ResourceLoader::compileShader(string vertex, string fragment){
 	GLuint f, v;

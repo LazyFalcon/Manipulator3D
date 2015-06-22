@@ -132,13 +132,13 @@ void MoveBuilder::widget(){
 				(UI::Button);
 		)
 	)
-	vertical(
-		ui.rect(120, 20).text("   interpolator")();
-		horizontal(
-			interpolatorDropdowns.run();
-			ui.rect(120,22).text(InterpolatorTranslate(interpolatorDropdowns.value))();
-		)
-	)
+	// vertical(
+		// ui.rect(120, 20).text("   interpolator")();
+		// horizontal(
+			// interpolatorDropdowns.run();
+			// ui.rect(120,22).text(InterpolatorTranslate(interpolatorDropdowns.value))();
+		// )
+	// )
 	// vertical(
 		// ui.rect(120, 20).text("solver")();
 		// horizontal(

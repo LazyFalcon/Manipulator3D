@@ -7,7 +7,7 @@ OBJS					= ../bin/Utils.o  ../bin/FontRenderer.o  ../bin/IMGUI.o ../bin/Camera.o
  ../bin/Menu-SideBar.o \
 ../bin/MAIN.o
 
-LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath  -lglew32  -lglfw3 -lgdi32 -lDevIL -lILU -lILUT -lglu32  -lopengl32
+LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath  -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
 
 BUILDDIR			= bin
 SRC						= src
