@@ -35,7 +35,6 @@ void UIContainer::draw(UI::IMGUI &gui){
 	m_boxes.first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	Engine::drawTexturedBox(globalResources->textures["Menu"], {100,100,512,512});
 }
 
 
@@ -77,9 +76,6 @@ bool ResourceLoader::loadImage(const string &name){
 	int colorsUsed =  FreeImage_GetColorsUsed(image);
 
 	logger::log<<"name "<<fileName<<std::endl;
-	logger::log<<"\tbitsPerPixel "<<bitsPerPixel<<std::endl;
-	logger::log<<"\tcolorsUsed "<<colorsUsed<<std::endl;
-	logger::log<<"\timageType "<<imageType<<std::endl;
 
 	GLuint internalFormat;
 	GLuint imageFormat;
@@ -97,7 +93,6 @@ bool ResourceLoader::loadImage(const string &name){
 		imageMinFilter = GL_LINEAR;
 		imageFormat = GL_BGR;
 		internalFormat = GL_RGBA8;
-		// i = FreeImage_ConvertTo32Bits(image);
 	}
 	else if(bitsPerPixel == 32){
 		imageMagFilter = GL_LINEAR;
@@ -106,14 +101,11 @@ bool ResourceLoader::loadImage(const string &name){
 		internalFormat = GL_RGBA8;
 	}
 
-	// FreeImage_FlipVertical(image);
-
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexImage2D(GL_TEXTURE_2D,
 				 0,
 				 internalFormat,
-				 // GL_RGBA8,
 				 width,
 				 height,
 				 0,

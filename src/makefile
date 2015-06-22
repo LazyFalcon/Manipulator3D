@@ -1,4 +1,4 @@
-CXXFLAGS			=  -I c:\MinGW\include  -std=c++14   -msse2 -mfpmath=sse
+CXXFLAGS			=  -I c:\MinGW\include  -std=c++1y   -msse2 -mfpmath=sse
 CXX						= C:\MinGw\bin\g++.exe
 
 OBJS					= ../bin/Utils.o  ../bin/FontRenderer.o  ../bin/IMGUI.o ../bin/Camera.o ../bin/CFGparser.o ../bin/ResourceLoader.o ../bin/Engine.o ../bin/JacobianTransposed.o ../bin/Robot.o ../bin/Mech.o ../bin/IInterpolator.o ../bin/RobotController.o ../bin/Widgets.o   ../bin/SomeTests.o  ../bin/BigSplineTest.o ../bin/Editor.o  ../bin/Logger.o ../bin/Graph.o \
