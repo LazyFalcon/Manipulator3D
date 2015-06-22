@@ -48,6 +48,7 @@ Main:
   - deferredSpotLight_2 deferredSpotLight deferredSpotLight_2
   - SurfaceAlignedParticle SurfaceAlignedParticle SurfaceAlignedParticle
  Images:
+  - metal.png
   - kursor.png
   - 0blue.jpg
  ImageSets:

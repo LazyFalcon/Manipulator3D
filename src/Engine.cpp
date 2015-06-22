@@ -454,6 +454,9 @@ void renderScene(Scene &scene){
 
 	glUniform(shader, camera.ProjectionMatrix, "projection");
 	glUniform(shader, camera.ViewMatrix, "view");
+	glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader,"metalTex"),0);
+	glBindTexture(GL_TEXTURE_2D, globalResources->textures["metal"]);
 
 	glBindVertexArray(scene.resources->VAO);
 	for(auto &entity : scene.units){
