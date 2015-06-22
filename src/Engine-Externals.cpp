@@ -34,11 +34,12 @@ void UIContainer::draw(UI::IMGUI &gui){
 	m_boxes.first.m_box.clear();
 	m_boxes.first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	Engine::drawTexturedBox(globalResources->textures["Menu"], {100,100,512,512});
 }
 
 
 bool ResourceLoader::loadImage(const string &name){
-	cout<<"image: "+name<<endl;
 	auto &images = resources->images;
 	auto &textures = resources->textures;
 
@@ -94,16 +95,15 @@ bool ResourceLoader::loadImage(const string &name){
 	else if(bitsPerPixel == 24){
 		imageMagFilter = GL_LINEAR;
 		imageMinFilter = GL_LINEAR;
-		internalFormat = GL_BGR;
-		imageFormat = GL_RGBA8;
-
+		imageFormat = GL_BGR;
+		internalFormat = GL_RGBA8;
+		// i = FreeImage_ConvertTo32Bits(image);
 	}
 	else if(bitsPerPixel == 32){
 		imageMagFilter = GL_LINEAR;
 		imageMinFilter = GL_LINEAR;
-		internalFormat = GL_BGRA;
-		imageFormat = GL_RGBA8;
-
+		imageFormat = GL_BGRA;
+		internalFormat = GL_RGBA8;
 	}
 
 	// FreeImage_FlipVertical(image);
@@ -113,6 +113,7 @@ bool ResourceLoader::loadImage(const string &name){
 	glTexImage2D(GL_TEXTURE_2D,
 				 0,
 				 internalFormat,
+				 // GL_RGBA8,
 				 width,
 				 height,
 				 0,
@@ -129,80 +130,9 @@ bool ResourceLoader::loadImage(const string &name){
 
 	FreeImage_Unload(image);
 
-/*
-
-	ILuint imageID;
-	ILboolean success;
-	ILenum error;
-	ilGenImages(1, &imageID);
-	ilBindImage(imageID);
-	success = ilLoadImage(fileName.c_str());
-	if (success){
-		ILinfo ImageInfo;
-		iluGetImageInfo(&ImageInfo);
-		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT){
-			iluFlipImage();
-		}
-		success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-		if (!success){
-			error = ilGetError();
-			cout << "Image conversion failed  " << name << " - " << iluErrorString(error) << std::endl;
-
-		}
-		glGenTextures(1, &textureID);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D,
-					 0,
-					 ilGetInteger(IL_IMAGE_BPP),
-					 ilGetInteger(IL_IMAGE_WIDTH),
-					 ilGetInteger(IL_IMAGE_HEIGHT),
-					 0,
-					 ilGetInteger(IL_IMAGE_FORMAT),
-					 GL_UNSIGNED_BYTE,
-					 ilGetData());
-
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,5);
-	}
-	else{
-		error = ilGetError();
-		cerr<<"error loading image( "<<error<<" )"<<name<<endl;
-
-		unsigned char tmp[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
-
-		glGenTextures(1, &textureID);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D,
-					 0,
-					 GL_RGBA,
-					 2,
-					 2,
-					 0,
-					 GL_RGBA,
-					 GL_UNSIGNED_BYTE,
-					 (void*)tmp);
-
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
- */
-
-		// dorzuæ ³adowanie pustej, ró¿owej tekstury
-	// }
-
 	textures[onlyName] = textureID;
-	// images[onlyName] = Image { textureID, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT)};
+	images[onlyName] = Image { textureID, int(width), int(height)};
 
-	// ilDeleteImages(1, &imageID);
 
 	return true;
 }
