@@ -1,13 +1,33 @@
-CXXFLAGS			=  -I c:\MinGW\include  -std=c++1y   -msse2 -mfpmath=sse
+# http://stackoverflow.com/questions/154630/recommended-gcc-warning-options-for-c
+CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror 
 CXX						= C:\MinGw\bin\g++.exe
 
-OBJS					= ../bin/Utils.o  ../bin/FontRenderer.o  ../bin/IMGUI.o ../bin/Camera.o ../bin/CFGparser.o ../bin/ResourceLoader.o ../bin/Engine.o ../bin/JacobianTransposed.o ../bin/Robot.o ../bin/Mech.o ../bin/IInterpolator.o ../bin/RobotController.o ../bin/Widgets.o   ../bin/SomeTests.o  ../bin/BigSplineTest.o ../bin/Editor.o  ../bin/Logger.o ../bin/Graph.o \
- ../bin/Robot-Commands.o \
- ../bin/Robot-CommandBuilders.o \
- ../bin/Menu-SideBar.o \
+OBJS					= \
+$(UTIL)/bin/Utils.o \
+$(UTIL)/bin/FontRenderer.o \
+$(UTIL)/bin/IMGUI.o \
+$(UTIL)/bin/Camera.o \
+$(UTIL)/bin/Logger.o \
+../bin/CFGparser.o \
+../bin/ResourceLoader.o \
+../bin/Engine.o \
+../bin/JacobianTransposed.o \
+../bin/Robot.o \
+../bin/Mech.o \
+../bin/IInterpolator.o \
+../bin/RobotController.o \
+../bin/Widgets.o   \
+../bin/SomeTests.o  \
+../bin/BigSplineTest.o \
+../bin/Editor.o  \
+../bin/Graph.o \
+../bin/Robot-Commands.o \
+../bin/Robot-CommandBuilders.o \
+../bin/Menu-SideBar.o \
 ../bin/MAIN.o
 
-LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath  -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
+LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
+-lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
 
 BUILDDIR			= bin
 SRC						= src
@@ -73,17 +93,19 @@ UTIL					= C:/MinGW/include/Utils
 ../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) ResourceLoader.cpp -o ../bin/ResourceLoader.o
 
-../bin/Camera.o: $(UTIL)/Camera.cpp $(UTIL)/Camera.h $(UTIL)/Utils.h
+# --------- UTILS -------------------------
+
+$(UTIL)/bin/Camera.o: $(UTIL)/Camera.cpp $(UTIL)/Camera.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/Camera.cpp -o ../bin/Camera.o
 
-../bin/IMGUI.o: $(UTIL)/IMGUI_V4.cpp $(UTIL)/IMGUI_V4.h $(UTIL)/Utils.h $(UTIL)/FontRenderer.h
+$(UTIL)/bin/IMGUI.o: $(UTIL)/IMGUI_V4.cpp $(UTIL)/IMGUI_V4.h $(UTIL)/Utils.h $(UTIL)/FontRenderer.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/IMGUI_V4.cpp -o ../bin/IMGUI.o
 
-../bin/FontRenderer.o: $(UTIL)/FontRenderer.cpp $(UTIL)/FontRenderer.h $(UTIL)/Utils.h
+$(UTIL)/bin/FontRenderer.o: $(UTIL)/FontRenderer.cpp $(UTIL)/FontRenderer.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/FontRenderer.cpp -o ../bin/FontRenderer.o
 
-../bin/Logger.o: $(UTIL)/Logger.cpp $(UTIL)/Logger.h
+$(UTIL)/bin/Logger.o: $(UTIL)/Logger.cpp $(UTIL)/Logger.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/Logger.cpp -o ../bin/Logger.o
 
-../bin/Utils.o: $(UTIL)/Utils.cpp $(UTIL)/Utils.h
+$(UTIL)/bin/Utils.o: $(UTIL)/Utils.cpp $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/Utils.cpp -o ../bin/Utils.o
