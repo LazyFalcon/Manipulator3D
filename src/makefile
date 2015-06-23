@@ -1,5 +1,5 @@
 # http://stackoverflow.com/questions/154630/recommended-gcc-warning-options-for-c
-CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror 
+CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror -D_GLIBCXX_USE_CXX11_ABI=0 
 CXX						= C:\MinGw\bin\g++.exe
 
 OBJS					= \
@@ -34,7 +34,7 @@ SRC						= src
 UTIL					= C:/MinGW/include/Utils
 
 ../bin/Manipulatork3D: $(OBJS)
-	$(CXX) $(OBJS) -D _GLIBCXX_USE_CXX11_ABI=0 -o ../bin/Manipulatork3D $(LIBS)
+	$(CXX) $(OBJS) -D_GLIBCXX_USE_CXX11_ABI=0 -o ../bin/Manipulatork3D $(LIBS)
 
 ../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Menu-SideBar.h Robot-Commands.h Robot-CommandBuilders.h Widgets.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
