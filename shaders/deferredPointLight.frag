@@ -33,7 +33,8 @@ void main(void){
 
 	vec4 lightVec = worldPos-lightPos;
 	float l = length( lightVec );
-	float attenuation = 1.0-pow((clamp (l ,0.0,size-0.5)/size),0.2);
+	// float attenuation = 1.0-pow((clamp (l ,0.0,size-0.5)/size),0.2);
+	float attenuation = 1.1-(clamp(l ,0.0,size)/size);
 	// float attenuation = 1.0;
 	// float NdotL = clamp( dot(normalize(lightVec), -normal )*metal,0.02,1.0);
 	// float NdotL = clamp( dot(normalize(lightVec), -normal )*metal,0.0,1.0);
@@ -56,35 +57,6 @@ void main(void){
 	float shadeIntensity = energy*attenuation*NdotL;
 	// outColor = color*(shadeIntensity + spectacular*color.r);
 	outColor = vec4(1)*(shadeIntensity + spectacular*color.r);
-	// outColor = color*0.7;
-	// outColor = worldPos;
-
-
-
-
-
-
-
-
-	// ----
-
-	// outColor = color*NdotL*attenuation*energy;
-	// outColor = color*NdotL;
-	// outColor = vec4(1);
-	// outColor = color;
 
 }
 
-
-	// float r = size/2;
-	// vec4 L = worldPos-lightPos;
-	// float distance = length(L);
-	// float d = max(distance-r, 0);
-	// L /= distance;
-
-	// float denom = d/r + 1;
-	// float attenuation = 1 / (denom*denom);
-	// attenuation = (attenuation - size/2) / (1 - size/2);
-	// attenuation = max(attenuation, 0);
-
-		// float dot = max(dot(L, -normal), 0);
