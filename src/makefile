@@ -1,5 +1,5 @@
 # http://stackoverflow.com/questions/154630/recommended-gcc-warning-options-for-c
-CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror -D_GLIBCXX_USE_CXX11_ABI=0 
+CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -W -Wall -Wextra -Werror -D_GLIBCXX_USE_CXX11_ABI=0 
 CXX						= C:\MinGw\bin\g++.exe
 
 OBJS					= \
