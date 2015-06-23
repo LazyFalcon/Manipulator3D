@@ -23,8 +23,7 @@
 	interpolatorów?
 	
 ==== sledzenie trasy ====
-	w kazdym frame wyliczamy o ile trzeba sie przemiecić, nastpnie zdejmujemy z interpolatora punkty aż przemieszczenie 
-	nie bedzie wieksze niz zakadane, potem można zinterpolować pomidzy punktami, ale po chuj?
+	w kazdym frame wyliczamy o ile trzeba sie przemiecić, nastpnie zdejmujemy z interpolatora punkty aż przemieszczenie nie bedzie wieksze niz zakadane, potem można zinterpolować pomidzy punktami, ale po chuj?
 	
 ==== ogólne ====
 	graf ma defaultowy tryb LastX, trzeba mu zrobić opcje exportu danych dla matlaba
@@ -33,14 +32,25 @@
 ==== punkty ====
 	mozliwosc zapisania pozycji robota {vec4, quat, vector<float>} do mapy/vectora, z menu, komendy savePoint()
 	punkty te maja generyczne nazwy Px, 
-	vector bdzie lepszy
+	vector bedzie lepszy
+	zrobic tak by dalo sie punkty wywietlic na 3D, jakos korzystac w interpolatorach, np goTo(point("P123")+glm::vec4(0,0,13));
 	
 ==== zrobić w końcu klase Label bedaca const charem[] o staym rozmiarze, np. 30 znaków, 
-	InfoLabel {
-		const char size;
-		const char[31];
+	struct InfoLabel {
+		char word[31];
+		char size;
+		InfoLabel(const char* _word){
+			std::copy(_word, strlen(_word), word);
+		}
+		InfoLabel(const string _word){
+			std::copy(_word.begin(), _word.end(), word);
+		}
+		InfoLabel(const InfoLabel&) = delete;
+		InfoLabel(const InfoLabel&&) = delete;
+		InfoLabel& operator = (const InfoLabel&) = delete;  
 	};
 	powinno sie ladnie alignować.
 
+==== 
 	
 
