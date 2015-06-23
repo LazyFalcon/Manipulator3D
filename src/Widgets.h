@@ -70,12 +70,12 @@ public:
 	std::vector<std::string> values;
 	int widgetWidth;
 	glm::vec4 scrollBar;
-	int scrollPos;
+	u32 scrollPos;
 	int draw(){
 		ui.box(UI::LayoutHorizontal | UI::AlignTop );
 		ui.box(UI::LayoutVertical | UI::AlignLeft);
 				ui.rect(widgetWidth-buttonS+1, 1)();
-				for(int i=scrollPos; i<values.size() && i<maxItems+scrollPos; ++i){
+				for(u32 i=scrollPos; i<values.size() && i<maxItems+scrollPos; ++i){
 					ui.rect(widgetWidth-buttonS, 22).text(values[i])(UI::Hoverable);
 				}
 			ui.endBox();
@@ -103,6 +103,7 @@ public:
 						});
 				});
 		ui.endBox();
+		return 0;
 	};
 
 };
@@ -135,8 +136,8 @@ public:
 			ui.endBox();
 			ui.endLayer();
 		} */
+		return 0;
 	}
-
 };
 
 template<typename EnumType>
@@ -169,13 +170,13 @@ public:
 			ui.beginLayer();
 			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
 
-			float direction = -1.f;
+			// float direction = -1.f;
 			if(widgetAlign == UI::AlignTop){
 				dropPosition.y -= dropPosition.w;
-				direction = -1.f;
+				// direction = -1.f;
 			}
 
-			for(int i=0; i<options.size(); i++){
+			for(u32 i=0; i<options.size(); i++){
 				auto &option = options[i];
 				ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
 					.text(option)
@@ -268,12 +269,12 @@ public:
 		{}
 
 	int widgetAlign;
-	Type value;
 	std::vector<pair<std::string,Type>> options;
-	std::function<void(Type)> callback;
-	glm::vec4 dropPosition;
+	Type value;
 	float lenght;
 	bool dropped;
+	std::function<void(Type)> callback;
+	glm::vec4 dropPosition;
 };
 
 
@@ -379,11 +380,11 @@ public:
 		{}
 
 private:
+	glm::vec4 position;
 	Minimizable minimizable;
 	Movable movable;
-	glm::vec4 position;
-	float size;
 	std::string title;
+	float size;
 	UI::StyleID style;
 };
 

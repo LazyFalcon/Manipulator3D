@@ -101,6 +101,7 @@ float BezierCurve::factorial(int k){
 		case 6 : return 720;
 		case 7 : return 5040;
 		case 8 : return 40320;
+		default : return 0;
 	}
 }
 void BezierCurve::calculateLength(){}
@@ -203,13 +204,14 @@ float BSpline::factorial(int k){
 		case 6 : return 720;
 		case 7 : return 5040;
 		case 8 : return 40320;
+		default : return 0;
 	}
 }
 void BSpline::reset(){
 	position = 0;
 }
 
-std::vector<BezierCurve> BSpline::split(){}
+std::vector<BezierCurve> BSpline::split(){return std::vector<BezierCurve>{};}
 void BSpline::drawParams(){
 	wxg::editBox("weight: ", weight, 160); /// a może slider?
 }
@@ -349,7 +351,7 @@ void HermiteFiniteDifferenceClosed::drawParams(){
 	}
 
 /// -------------------------------- FACTORY --------------------------------
-shared_ptr<IInterpolator> build(const std::string type, vector<glm::vec4> &points){}
+// shared_ptr<IInterpolator> build(const std::string type, vector<glm::vec4> &points){}
 shared_ptr<IInterpolator> InterpolatorFactory::build(Interpolator type, vector<glm::vec4> &points){
 	shared_ptr<IInterpolator> out;
 	if(type == Interpolator::Linear){
@@ -380,6 +382,7 @@ shared_ptr<IInterpolator> InterpolatorFactory::build(Interpolator type, vector<g
 }
 
 
+const std::string sEmpty= "Linear";
 const std::string sLinear = "Linear";
 const std::string sBezierCurve = "Bezier Curve";
 const std::string sBSpline = "B-Spline";
@@ -415,6 +418,7 @@ const std::string& InterpolatorTranslate(Interpolator type){
 		return sHermiteFiniteDifference;
 	if(type == Interpolator::HermiteFiniteDifferenceClosed)
 		return sHermiteFiniteDifferenceClosed;
+	return sEmpty;
 }
 
 

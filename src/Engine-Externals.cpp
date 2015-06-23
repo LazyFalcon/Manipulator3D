@@ -72,11 +72,11 @@ bool ResourceLoader::loadImage(const string &name){
 	auto width = FreeImage_GetWidth(image);
 	auto height = FreeImage_GetHeight(image);
 
-	auto imageType = FreeImage_GetImageType(image);
+	// auto imageType = FreeImage_GetImageType(image);
 
 	// How many bits-per-pixel is the source image?
 	int bitsPerPixel =  FreeImage_GetBPP(image);
-	int colorsUsed =  FreeImage_GetColorsUsed(image);
+	// int colorsUsed =  FreeImage_GetColorsUsed(image);
 
 	logger::log<<"name "<<fileName<<std::endl;
 

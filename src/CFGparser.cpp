@@ -1,4 +1,5 @@
 #include "CFGparser.h"
+#include <Utils/Includes.h>
 #include <regex>
 #include <boost/algorithm/string/trim.hpp>
 using namespace std;
@@ -32,16 +33,16 @@ namespace CFG {
 	btVector3 Node::asbtVec3(){
 		return btVector3(cacheFloat[0],cacheFloat[1],cacheFloat[2]);
 	}
-	
+
 	Bezier<float> Node::asBezier(){
 		vector<float>p(cacheFloat.begin(),cacheFloat.begin()+cacheFloat.size()/2);
 		vector<float>w(cacheFloat.begin()+cacheFloat.size()/2+1, cacheFloat.end());
 		Bezier<float> bezier(p,w);
 		return bezier;
-		
+
 	}
-	
-	
+
+
 	int numOfSpaces(const string &s){
 		int len = s.size();
 		for(int i=0; i<len; i++){
@@ -50,6 +51,7 @@ namespace CFG {
 			if(s[i] == '-')
 				incomingSequence = true;
 		}
+		return 0;
 	}
 
 	void recursivelyOut(Node &node, const string &offset, bool seq = true){
@@ -84,7 +86,7 @@ namespace CFG {
 		if(node.Map.size()>0){
 			// if(node.value != "")
 				// node.prop("@default", node.value);
-			
+
 			if(seq)
 				file<<endl;
 			for(auto &it : node.Map){
@@ -113,7 +115,7 @@ namespace CFG {
 				file<<" "<<node.value<<endl;
 
 	}
-	
+
 	void Node::split(){
 		regex rf("(-?[0-9]+\\.?[0-9]*)");
 		regex_iterator<string::iterator> rit ( value.begin(), value.end(), rf );
@@ -129,9 +131,9 @@ namespace CFG {
 				// cout<<it<<" ";
 			// cout<<endl;
 		// }
-		
+
 	}
-	
+
 	Node recursivelyIn(int spaces, bool seq = false){
 		regex	param1("\\s*-?\\s*(@?#?\\w+):");
 		regex	param2("\\s*-?\\s*(@?#?\\w+):\\s+([\\S+\\s]*)");
@@ -143,7 +145,7 @@ namespace CFG {
 		int depth;
 		string tmp = "";
 		bool incSeq = false;
-		while(bufferPos < fileBuff.size()){
+		while(u32(bufferPos) < fileBuff.size()){
 			depth = numOfSpaces(fileBuff[bufferPos]);
 			if(depth > spaces){
 				if(incomingSequence){
@@ -195,7 +197,7 @@ namespace CFG {
 			else if(regex_search (buff, s, param3)){
 				node.prop(s[1]);
 			}
-			
+
 			bufferPos++;
 		}
 		return node;
@@ -218,9 +220,9 @@ namespace CFG {
 		file.close();
 
 		node = recursivelyIn(numOfSpaces(fileBuff[0]));
-		
+
 		splitAll(node);
-		
+
 		return node;
 	}
 
@@ -230,24 +232,24 @@ namespace CFG {
 			if (file.is_open()){
 				recursivelySave(file, node, "");
 			}
-			else 
+			else
 				cout<<filename<<" error\n";
 		file.close();
 	}
-	
+
 	void splitAll(Node &node){
 		node.split();
 			for(auto &it : node.Vector)
 				splitAll(it);
-			
+
 			for(auto &it : node.Map)
 				splitAll(it.second);
-		
+
 	}
-	
+
 	void goThroughAllChildrenRecurs(Node &node, function<bool(Node&)> fun){
 		// cout<<node.value<<endl;
-		
+
 		if(fun(node))
 			return;
 		if(node.Vector.size()>0)
@@ -260,6 +262,6 @@ namespace CFG {
 				goThroughAllChildrenRecurs(it.second, fun);
 			}
 		}
-		
+
 	}
 }

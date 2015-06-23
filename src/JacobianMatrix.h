@@ -9,7 +9,7 @@ extern vector<glm::vec4> robotPositions;
 extern PositionSaver g_mousePositions;
 extern PositionSaver g_robotPositions;
 extern PositionSaver g_robotDebugPositions;
-Matrix::Matrix(int h, int w): width(w), height(h), array(w*h, 0){
+Matrix::Matrix(u32 h, u32 w): width(w), height(h), array(w*h, 0){
 	// array = new float[w*h];
 }
 Matrix& Matrix::operator =(const Matrix &matrix){
@@ -27,18 +27,18 @@ Matrix::Matrix(const Matrix &matrix){
 	height= matrix.height;
 	// std::copy(matrix.array, matrix.array+width*height, array);
 }
-double& Matrix::operator()(int h, int w){
+double& Matrix::operator()(u32 h, u32 w){
 	return array[h*width + w];
 }
-float Matrix::operator()(int h, int w) const {
+float Matrix::operator()(u32 h, u32 w) const {
 	return array[h*width + w];
 }
 
 Matrix Matrix::operator+(Matrix &matrix){
 	Matrix out(height, width);
 	out = *this;
-	for(int h=0; h<height; h++)
-		for(int w=0; w<width; w++)
+	for(u32 h=0; h<height; h++)
+		for(u32 w=0; w<width; w++)
 			out(h,w) += matrix(h,w);
 	return out;
 }
@@ -49,40 +49,40 @@ Matrix Matrix::operator*(Matrix &matrix){
 	Matrix out(height, matrix.width);
 
 	// iterujemy po out
-	for(int w=0; w<matrix.width; w++) // kolumny z m2
-	for(int h=0; h<height; h++){ // wiersze z m1
+	for(u32 w=0; w<matrix.width; w++) // kolumny z m2
+	for(u32 h=0; h<height; h++){ // wiersze z m1
 		out(h,w) = mulRowColumn(h,w,matrix);
 	}
 	return out;
 }
 Matrix Matrix::operator*(float val){
 	Matrix out(height, width);
-	for(int w=0; w<width; w++)
-	for(int h=0; h<height; h++)
+	for(u32 w=0; w<width; w++)
+	for(u32 h=0; h<height; h++)
 		out(h,w) = (*this)(h,w)*val;
 
 	return out;
 }
-float Matrix::mulRowColumn(int row, int column, Matrix &second){
+float Matrix::mulRowColumn(u32 row, u32 column, Matrix &second){
 	float out(0);
-	for(int w=0; w<width; w++)
-	// for(int h=0; h<second.height; h++)
+	for(u32 w=0; w<width; w++)
+	// for(u32 h=0; h<second.height; h++)
 		out += array[row*width + w] * second(w, column);
 	return out;
 }
-void Matrix::insertRow(int row, std::vector<float> &&vec){
-	for(int i=0; i<width && i<vec.size(); i++)
+void Matrix::insertRow(u32 row, std::vector<float> &&vec){
+	for(u32 i=0; i<width && i<vec.size(); i++)
 		array[row*width + i] = vec[i];
 }
-void Matrix::insertColumn(int column, std::vector<float> &&vec){
-	for(int i=0; i<height && i<vec.size(); i++)
+void Matrix::insertColumn(u32 column, std::vector<float> &&vec){
+	for(u32 i=0; i<height && i<vec.size(); i++)
 		array[width*i + column] = vec[i];
 }
 
 Matrix& Matrix::transpose(){
 	std::vector<double>newArray(width*height);
-	for(int h=0; h<height; h++)
-		for(int w=0; w<width; w++)
+	for(u32 h=0; h<height; h++)
+		for(u32 w=0; w<width; w++)
 			newArray[h + w*height] = array[h*width + w];
 	std::swap(width, height);
 	array.swap(newArray);
@@ -92,8 +92,8 @@ Matrix& Matrix::transpose(){
 }
 Matrix Matrix::transposed(){
 	Matrix out(width, height);
-	for(int h=0; h<height; h++)
-		for(int w=0; w<width; w++)
+	for(u32 h=0; h<height; h++)
+		for(u32 w=0; w<width; w++)
 			out(w,h) = (*this)(h,w);
 	return out;
 }
@@ -104,14 +104,14 @@ std::vector<double>& Matrix::getVector(){
 
 float dot(const Matrix &a, const Matrix &b){
 	float out(0);
-	for(int i=0; i<a.height; i++)
+	for(u32 i=0; i<a.height; i++)
 		out += a(i)*b(i);
 	return out;
 }
 Matrix mul(const Matrix &a, const Matrix &b){
 	Matrix out(a.height, a.width);
-	for(int h=0; h<a.height; h++)
-	for(int w=0; w<a.width; w++)
+	for(u32 h=0; h<a.height; h++)
+	for(u32 w=0; w<a.width; w++)
 		out(h,w) = a(h,w)*b(h,w);
 	return out;
 }
@@ -124,7 +124,7 @@ Matrix buildJacobian(Robot &robot){
 	glm::vec3 currentEndPosition = robot.endEffector.position.xyz();
 
 
-	for(int i=0; i<robot.chain.size(); i++){
+	for(u32 i=0; i<robot.chain.size(); i++){
 		auto &module = robot.chain[i];
 		{ // forward kinematics
 			if(module->type == HINGE){
@@ -157,7 +157,7 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoin
 	glm::vec3 currentEndPosition = endPoint.position.xyz();
 
 
-	for(int i=0; i<robot.chain.size(); i++){
+	for(u32 i=0; i<robot.chain.size(); i++){
 		auto &module = robot.chain[i];
 		{ // forward kinematics
 			if(module->type == HINGE){
@@ -192,7 +192,7 @@ Matrix buildJacobianReversed(Robot &robot, std::vector<double> &variables){
 	glm::vec3 currentEndPosition = robot.endEffector.position.xyz();
 
 
-	for(int i=0; i<robot.chain.size(); i++){
+	for(u32 i=0; i<robot.chain.size(); i++){
 		auto &module = robot.chain[i];
 		{ // forward kinematics
 			if(module->type == HINGE){

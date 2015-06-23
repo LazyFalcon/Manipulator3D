@@ -28,7 +28,7 @@ class MoveBuilder : public ICommandBuilder
 public:
 	unique_ptr<ICommand> operator()(){
 		// moveCommand->process();
-		// return moveCommand;
+		return unique_ptr<ICommand> (moveCommand);
 	}
 	MoveBuilder(): moveCommand(make_unique<MoveCommand>()){
 		init();

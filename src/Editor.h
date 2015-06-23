@@ -11,7 +11,7 @@ extern glm::vec4 CameraUp;
 extern glm::vec4 CameraRight;
 extern glm::vec4 CameraNormal;
 extern float window_width, window_height;
-static float pointSize = 16.f;
+// static float pointSize = 16.f;
 #define NAM_START {
 #define NAM_END }
 
@@ -77,6 +77,7 @@ public:
 		if(snapFlags == EditorFlags::SnapToGlobal) moveAlongGlobalAxes();
 		else if(snapFlags == EditorFlags::SnapToNormal) moveAlongNormalAxes();
 		else if(snapFlags == EditorFlags::SnapToCamera) moveAlongCameraAxes();
+		return glm::vec4(0);
 	}
 	glm::vec4 move();
 	glm::vec4 slide();
@@ -117,10 +118,10 @@ class MainEditorWidget
 public:
 	glm::vec4 boxPosition;
 	UI::StyleID style;
+	std::string title;
+	float lenght = 130;
 	wxg::Movable movable;
 	wxg::MinimizableRight minimizable;
-	float lenght = 130;
-	std::string title;
 	virtual ~MainEditorWidget(){}
 	MainEditorWidget(glm::vec4 _boxPosition, float lenght, float height, std::string title):
 		boxPosition(_boxPosition),

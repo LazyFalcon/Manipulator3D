@@ -37,8 +37,8 @@ vector<shared_ptr<IInterpolator>>::iterator itToEdit;
 
 class BigSplineWidget
 {
-	glm::vec4 boxPosition;
 	UI::StyleID style;
+	glm::vec4 boxPosition;
 	wxg::Movable movable;
 	wxg::MinimizableRight minimizable;
 	float lenght = 130;
@@ -111,8 +111,8 @@ void BigSplineWidget::doEditBox(){
  */
 class InterpolatorEditBoxWidget
 {
-	glm::vec4 boxPosition;
 	UI::StyleID style;
+	glm::vec4 boxPosition;
 	wxg::Movable movable;
 	wxg::MinimizableRight minimizable;
 	float lenght = 130;
@@ -120,8 +120,8 @@ public:
 
 	InterpolatorEditBoxWidget():
 		style(UI::StyleID::Basic),
-		movable(boxPosition),
 		boxPosition(0, 500, 0, 0),
+		movable(boxPosition),
 		minimizable(&boxPosition, glm::vec4(window_width-25, window_height-lenght+30,0,0), "InterpolatorEditBoxWidget"s, lenght)
 		{}
 

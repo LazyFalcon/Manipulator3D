@@ -774,7 +774,7 @@ void initGrids(){
 
 	// auto add = [&steps, spacing, &points](glm::vec4 startA, glm::vec4 startB, glm::vec4 increment){
 	auto add = [&steps, spacing, &points](glm::vec4 startA, glm::vec4 startB, glm::vec4 increment, float len){
-		float steps = len/spacing;
+		// float steps = len/spacing;
 		for(float i=0; i<len+spacing; i+=spacing){
 			points.push_back(startA + i*increment);
 			points.push_back(startB + i*increment);

@@ -15,7 +15,7 @@ Robot:
    ParentJoint: 
      Name: Robot-Base.001
      Vec: [0.6707, -0.2649, 1.4961]
-     Axis: [-1.0000, -0.0000, 0.0000]
+     Axis: [-1.0000, -0.0000, -0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
@@ -25,17 +25,17 @@ Robot:
    ParentJoint: 
      Name: Robot-Base.002
      Vec: [-1.1341, 0.4478, 0.0973]
-     Axis: [-1.0000, 0.0000, 0.0000]
+     Axis: [-1.0000, -0.0000, 0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
-     Vec: [-1.9197, 0.7583, 0.0344]
+     Vec: [-1.9197, 0.7582, 0.0344]
  - Name: Plane.005
    Type: hinge
    ParentJoint: 
      Name: Robot-Base.003
      Vec: [2.2912, -0.9050, -0.0337]
-     Axis: [0.0000, 1.0000, 0.0000]
+     Axis: [-0.0000, 1.0000, -0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
@@ -55,7 +55,7 @@ Robot:
    ParentJoint: 
      Name: Robot-Base.005
      Vec: [0.2966, -0.1167, 0.0019]
-     Axis: [0.0000, 1.0000, 0.0000]
+     Axis: [-0.0000, 1.0000, 0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
@@ -83,6 +83,22 @@ Meshes:
    Color: [0.1473, 0.1473, 0.1473]
  - Name: Cylinder
    Position: [1.2393, -2.5303, 2.7587]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Cylinder.001
+   Position: [13.9379, -14.4556, 4.4281]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Cylinder.002
+   Position: [13.9379, -6.3609, 4.4281]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Cylinder.003
+   Position: [13.9379, 6.3721, 4.4281]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
+ - Name: Cylinder.004
+   Position: [13.9379, 14.4147, 4.4281]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
  - Name: DuzaPodloga
@@ -130,35 +146,58 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
  - Name: Sphere
-   Position: [-2.0501, 5.0000, 2.4071]
+   Position: [-6.4850, -2.6139, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
  - Name: Sphere.001
-   Position: [4.3660, 0.3498, 0.9878]
+   Position: [-6.4475, 2.6342, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
  - Name: Sphere.002
-   Position: [-5.2581, -0.8863, 2.1469]
+   Position: [-2.5864, 6.3453, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
  - Name: Sphere.003
-   Position: [-0.2253, -6.1545, 2.4071]
+   Position: [-2.6989, -6.4750, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
+ - Name: Sphere.004
+   Position: [14.7598, 14.8547, 5.4957]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [1.0000, 1.0000, 1.0000]
+ - Name: Sphere.005
+   Position: [-3.1825, -6.2861, 5.4957]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [1.0000, 1.0000, 1.0000]
+ - Name: Sphere.006
+   Position: [-15.0326, 14.8547, 5.4957]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [1.0000, 1.0000, 1.0000]
+ - Name: Sphere.007
+   Position: [15.3535, -15.3694, 5.4957]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [1.0000, 1.0000, 1.0000]
  - Name: Stol
    Position: [-5.4349, 0.0000, 0.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
 Lamps:
  - Name: Point.000
-   Position: [-2.4702, -6.2861, 5.4957]
+   Position: [-3.1825, -6.2861, 5.4957]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
    Color: [1.0000, 0.7043, 0.1810]
    Falloff_distance: 10.0000
    Energy: 1.0000
    Type: POINT
+ - Name: Point.001
+   Position: [-15.0326, 14.8547, 5.4957]
+   Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
+   Color: [1.0000, 0.8775, 0.1183]
+   Falloff_distance: 12.0000
+   Energy: 1.0000
+   Type: POINT
  - Name: Point.002
-   Position: [4.3433, 8.6480, 5.4957]
+   Position: [14.7598, 14.8547, 5.4957]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
    Color: [1.0000, 0.8775, 0.1183]
    Falloff_distance: 12.0000
@@ -191,4 +230,11 @@ Lamps:
    Color: [1.0000, 0.0000, 0.0069]
    Falloff_distance: 1.0000
    Energy: 3.0000
+   Type: POINT
+ - Name: Point.007
+   Position: [15.3535, -15.3694, 5.4957]
+   Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
+   Color: [1.0000, 0.8775, 0.1183]
+   Falloff_distance: 12.0000
+   Energy: 1.0000
    Type: POINT

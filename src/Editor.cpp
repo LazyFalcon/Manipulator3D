@@ -77,7 +77,7 @@ glm::vec4 MultiPointController::moveAlongGlobalAxes(){
 	float deltaLen = glm::length(delta);
 	delta /= deltaLen;
 
-	glm::vec4 *o = *(points.begin());
+
 	if(preferedDirection == 0){
 		float d1 = abs(glm::dot(delta, globalAxes[0]));
 		float d2 = abs(glm::dot(delta, globalAxes[1]));
@@ -140,7 +140,7 @@ glm::vec4 MultiPointController::moveAlongCameraAxes(){
 	float deltaLen = glm::length(delta);
 	delta /= deltaLen;
 
-	glm::vec4 *o = *(points.begin());
+
 	if(preferedDirection == 0){
 		float d1 = abs(glm::dot(delta, *cameraAxes[0]));
 		float d2 = abs(glm::dot(delta, *cameraAxes[1]));
@@ -280,7 +280,7 @@ void PolylineEditor::processControls(){
 
 void PolylineEditor::extrude(){
 	if(markedNodes.points.empty()) return;
-	for(int i=0; i<polyline->points.size(); ++i){
+	for(u32 i=0; i<polyline->points.size(); ++i){
 		if(&polyline->points[i] == *markedNodes.points.begin()){
 			markedNodes.clear();
 			auto inserted = polyline->points.insert(polyline->points.begin()+i, polyline->points[i]);
@@ -311,7 +311,7 @@ void PolylineEditor::subdivide(){
 	markedNodes.clear();
 
 	auto &vec = polyline->points;
-	for(int i=1; i<vec.size(); i++){
+	for(u32 i=1; i<vec.size(); i++){
 		if(vec[i].w == -1 && vec[i-1].w == -1){
 			auto inserted = vec.insert(vec.begin() + i, (vec[i] + vec[i-1])/2.f);
 			i++;
@@ -346,7 +346,7 @@ void PolylineEditor::mergePoints(){
 	markedNodes.prepareToDelete();
 	glm::vec4 newPoint;
 	int firstIdx = -1;
-	for(int i=0; i<polyline->points.size(); i++){
+	for(u32 i=0; i<polyline->points.size(); i++){
 		if(polyline->points[i].w == -1){
 			newPoint += polyline->points[i];
 

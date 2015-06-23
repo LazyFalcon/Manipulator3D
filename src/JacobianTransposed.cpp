@@ -22,6 +22,7 @@ extern PositionSaver g_robotDebugPositions;
 bool JT0::solve(Point aim, Robot &robot){
 	if(performIK(aim, robot))
 		robot.insertVariables(result);
+	return true;
 }
 bool JT0::performIK(Point aim, Robot &robot){
 	int iterationLimit = 2000;
@@ -100,7 +101,7 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 
 		auto positionDelta  = (aim.position - endEffector.position);
-		auto axisDelta  = glm::cross(glm::axis(endEffector.quat), glm::axis(aim.quat));
+		// auto axisDelta  = glm::cross(glm::axis(endEffector.quat), glm::axis(aim.quat));
 
 		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z,0, 0, 0});
 
@@ -138,11 +139,11 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 bool JTReversed::performIK(Point aim, Robot &robot){
 
-
+	return true;
 }
 bool CCD::performIK(Point aim, Robot &robot){
 
-
+	return true;
 }
 
 extern glm::vec4 robotTarget;
@@ -164,7 +165,7 @@ void BADBADBADRobotIKRealtimeTest(Robot &robot){
 
 	JT1 ik;
 	// auto res = ik.performIK({ newPoint, gripperQuat }, robot);
-	auto res = ik.performIK({ robotTarget, gripperQuat }, robot);
+	// auto res = ik.performIK({ robotTarget, gripperQuat }, robot);
 
 	if(ui.rRepeat() && ik.succes){
 		robotTarget = camera.eyePlaneIntersection(surfaceOfMotion);

@@ -53,9 +53,9 @@ public:
 
 		}
 
-	HexColor dataColor;
-	uint32_t flags;
 	std::string name;
+	uint32_t flags;
+	HexColor dataColor;
 
 private:
 	std::vector<glm::vec2> data;

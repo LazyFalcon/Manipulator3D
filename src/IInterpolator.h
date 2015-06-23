@@ -35,7 +35,7 @@ public:
 	Interpolator type;
 	std::vector<glm::vec4> points;
 	std::vector<glm::vec4> visualisation; // for draving
-	IInterpolator(std::vector<glm::vec4> &points, Interpolator type) : points(points), type(type){}
+	IInterpolator(std::vector<glm::vec4> &points, Interpolator type) : type(type), points(points) {}
 	virtual glm::vec4 nextPoint() = 0;
 	virtual void generatePath() = 0;
 	virtual void reset() = 0;

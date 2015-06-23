@@ -48,8 +48,8 @@ std::vector<std::pair<std::u16string, uint8_t>> checkValues {
 class FloatingWindow {
 public:
 	UI::StyleID style;
-	glm::vec4 boxPosition;
 	wxg::Movable movable;
+	glm::vec4 boxPosition;
 	wxg::MinimizableRight minimizable;
 	wxg::DropDownList list;
 	wxg::ScrollList scrollList;

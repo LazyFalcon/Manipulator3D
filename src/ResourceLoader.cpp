@@ -69,7 +69,7 @@ char* ResourceLoader::loadFile(string fname, GLint &fSize){
 
 bool ResourceLoader::loadImage(CFG::Node &cfg){
 	string name = cfg.value;
-	loadImage(name);
+	return loadImage(name);
 }
 
 bool ResourceLoader::loadMesh(string meshName){
@@ -107,7 +107,7 @@ bool ResourceLoader::loadObj(fstream &file){
 	// fstream file;
 	// file.open(name.c_str(), ios::in);
 		string tmp, mpt;
-		char ctmp;
+
 		char nop;
 		// pozbywamy się poczatkowych śmieci
 		while(tmp != "v" && !file.eof())
@@ -204,7 +204,7 @@ bool ResourceLoader::loadObj(fstream &file){
 		}
 
 	// file.close();
-
+	return true;
 }
 
 bool ResourceLoader::loadFonts(CFG::Node &_cfg){
@@ -290,7 +290,7 @@ bool ResourceLoader::loadImageSet(CFG::Node &cfg){
 	}
 
 	resources->imageSets[name] = set;
-
+	return true;
 }
 
 bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
@@ -318,8 +318,8 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	}
 
 	Engine::genVao(model_vertices, model_coords, model_normals, model_indices, scene.resources);
-
 	loadRobot(scene, scene.robot, cfg["Robot"]);
+	return true;
 }
 bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 	for(auto &it : cfg.Vector){
@@ -344,7 +344,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		robot.chain.push_back(module);
 
 	}
-
+	return true;
 }
 
 

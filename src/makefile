@@ -1,14 +1,18 @@
 # http://stackoverflow.com/questions/154630/recommended-gcc-warning-options-for-c
 # -D_GLIBCXX_USE_CXX11_ABI=0
-CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror
+# CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror
+CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 CXX						= C:\MinGw\bin\g++.exe
+BUILDDIR			= bin
+SRC						= src
+UTIL					= C:/MinGW/include/Utils
 
 OBJS					= \
-$(UTIL)/bin/Utils.o \
-$(UTIL)/bin/FontRenderer.o \
-$(UTIL)/bin/IMGUI.o \
-$(UTIL)/bin/Camera.o \
-$(UTIL)/bin/Logger.o \
+../bin/Utils.o \
+../bin/FontRenderer.o \
+../bin/IMGUI.o \
+../bin/Camera.o \
+../bin/Logger.o \
 ../bin/CFGparser.o \
 ../bin/ResourceLoader.o \
 ../bin/Engine.o \
@@ -30,9 +34,6 @@ $(UTIL)/bin/Logger.o \
 LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
 
-BUILDDIR			= bin
-SRC						= src
-UTIL					= C:/MinGW/include/Utils
 
 ../bin/Manipulatork3D: $(OBJS)
 	$(CXX) $(OBJS) -D_GLIBCXX_USE_CXX11_ABI=0 -o ../bin/Manipulatork3D $(LIBS)
@@ -96,17 +97,17 @@ UTIL					= C:/MinGW/include/Utils
 
 # --------- UTILS -------------------------
 
-$(UTIL)/bin/Camera.o: $(UTIL)/Camera.cpp $(UTIL)/Camera.h $(UTIL)/Utils.h
+../bin/Camera.o: $(UTIL)/Camera.cpp $(UTIL)/Camera.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/Camera.cpp -o ../bin/Camera.o
 
-$(UTIL)/bin/IMGUI.o: $(UTIL)/IMGUI_V4.cpp $(UTIL)/IMGUI_V4.h $(UTIL)/Utils.h $(UTIL)/FontRenderer.h
+../bin/IMGUI.o: $(UTIL)/IMGUI_V4.cpp $(UTIL)/IMGUI_V4.h $(UTIL)/Utils.h $(UTIL)/FontRenderer.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/IMGUI_V4.cpp -o ../bin/IMGUI.o
 
-$(UTIL)/bin/FontRenderer.o: $(UTIL)/FontRenderer.cpp $(UTIL)/FontRenderer.h $(UTIL)/Utils.h
+../bin/FontRenderer.o: $(UTIL)/FontRenderer.cpp $(UTIL)/FontRenderer.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/FontRenderer.cpp -o ../bin/FontRenderer.o
 
-$(UTIL)/bin/Logger.o: $(UTIL)/Logger.cpp $(UTIL)/Logger.h
+../bin/Logger.o: $(UTIL)/Logger.cpp $(UTIL)/Logger.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/Logger.cpp -o ../bin/Logger.o
 
-$(UTIL)/bin/Utils.o: $(UTIL)/Utils.cpp $(UTIL)/Utils.h
+../bin/Utils.o: $(UTIL)/Utils.cpp $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(UTIL)/Utils.cpp -o ../bin/Utils.o
