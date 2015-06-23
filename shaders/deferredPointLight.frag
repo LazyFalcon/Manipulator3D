@@ -33,7 +33,7 @@ void main(void){
 
 	vec4 lightVec = worldPos-lightPos;
 	float l = length( lightVec );
-	float attenuation = 1.0-pow((clamp (l ,0.0,size)/size),0.3);
+	float attenuation = 1.0-pow((clamp (l ,0.0,size)/size),0.2);
 	// float attenuation = 1.0;
 	float NdotL = clamp( dot(normalize(lightVec), -normal )*metal,0.1,1.0);
 
@@ -41,7 +41,7 @@ void main(void){
 	vec4 eyeVec = normalize(worldPos - eyePos);
 	vec4 reflection = normalize(reflect(lightVec, normal));
 	float NdotH = dot(reflection, eyeVec);
-	float spectacular = clamp(pow(NdotH, 16),0,0.5)*metal;
+	float spectacular = clamp(pow(NdotH, 8),0,0.99)*metal;
 
 	// ----
 	float d = length(lightVec);

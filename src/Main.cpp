@@ -175,7 +175,7 @@ void fastLoop(float step){
 }
 void renderLoop(){
 	Engine::setup(scene);
-	Engine::renderScene(scene);
+	// Engine::renderScene(scene);
 	Engine::copyDepth(scene);
 	Engine::renderLights(scene);
 	Engine::applyLights(scene);
