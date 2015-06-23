@@ -24,7 +24,38 @@
 	
 ==== sledzenie trasy ====
 	w kazdym frame wyliczamy o ile trzeba sie przemiecić, nastpnie zdejmujemy z interpolatora punkty aż przemieszczenie nie bedzie wieksze niz zakadane, potem można zinterpolować pomidzy punktami, ale po chuj?
+
+==== commands ====
+	wydzielic:
+	- move<glm::vec4> interpolacja jedynie trasy kartezjańskiej, to co teraz jest
+	- move<Point> interpolacja trasy 3D i kontrolowanie orientacji efektora
+	- move<Joints> interpolacja zlaczowa
+		Każdy z inna implementacja, tryzmajacy inny interpolator
+	- goTo<vec4>
+	- goTo<Point>
+	- goTo<Joints>
+	- wait - przerywa dziaanie na okrelony czas
+	- waitOnSignal - przerywa czekajc na sygnal
+	- waitIfSignal - czeka na czas lub sygnal
+	- executeOnSignal - wykonuje rozkaz po dostaniu sygnalu, sygnaly sa w globalnym obiekcie Signals, sygnal może istniec do odebrania, badz jedna klatke
+	- executeOnValue - definiujemu wasny operator porównania executeOn([&value]()bool->{return value > 20}, []{...})
+	- 
 	
+	commands sa tworzone przez builder na podstawie enuma/stringa, nastpnie parametryzowane, można je też jako do lua  wepchać()
+==== Signals ====
+	pierwsze 32 bity sa resetowane co klatke, pozostae sa czyszczone po odczycie
+	{
+		uint64_t data;
+		void update(){
+			data &= 0xffffffff00000000;
+		}
+		bool operator [] (uint64_t i){
+			bool out = data & i;
+			if(i > 0xFFFFFFFF)
+				data &= ~i;
+			return out;
+		}
+	}
 ==== ogólne ====
 	graf ma defaultowy tryb LastX, trzeba mu zrobić opcje exportu danych dla matlaba
 	dać możliwoć logowania wiekszej iloci danych
