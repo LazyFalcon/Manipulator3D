@@ -124,6 +124,7 @@ bool RobotController::update(float dt){
  * i usunac lerpa w solverze
  * 
  * No wic w kazdej klatce robot przesuwa sie o jakas zadana odleglosc: wynika ona z zadanej predkosci  przyspieszenia
+ * obsuga przyspieszen
  */
 bool MoveCommand::update(RobotController &rc, float dt){
 	double expectedDistance = dt*velocity; // = getExpectedDistanceInFrame(dt);
