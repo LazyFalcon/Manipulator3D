@@ -56,6 +56,16 @@
 			return out;
 		}
 	}
+	
+==== Ksztaty ====
+	w sumie to po co?
+	Przydalyby sie jakies predefiniowane ksztalty typu circle, arc, 
+	- circle - (punkt, normalna, promień), (trzy punkty), (dwa punkty, normalna, promień)
+	- arc (dwa punkty, normalna, promień, która czesc), (trzy punkty), (punkt, normalna, uk w katach)
+
+==== Edytor ====
+	zrobic obracanie grup punktów
+
 ==== ogólne ====
 	graf ma defaultowy tryb LastX, trzeba mu zrobić opcje exportu danych dla matlaba
 	dać możliwoć logowania wiekszej iloci danych
