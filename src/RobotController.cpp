@@ -118,8 +118,25 @@ bool RobotController::update(float dt){
 	return false;
 }
 
+/**
+ * Zakadamy że step w nextPoint jest na tyle rzadki że nie bdzie to poroblem, dlugosć 
+ * kroku interpolatora bdzie trzeba dostosować
+ * i usunac lerpa w solverze
+ * 
+ * No wic w kazdej klatce robot przesuwa sie o jakas zadana odleglosc: wynika ona z zadanej predkosci  przyspieszenia
+ */
 bool MoveCommand::update(RobotController &rc, float dt){
-	bool pointReached = solver->solve(Point{ interpolator->nextPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
+	double expectedDistance = dt*velocity; // = getExpectedDistanceInFrame(dt);
+	double currentDistance = 0.0;
+	golm::vec4 m_prevPoint(0); // class member
+	while(currentDistance < expectedDistance){
+		newPoint = interpolator->nextPoint();
+		currentDistance += glm::distance(m_prevPoint, newPoint);
+		solver->solve(Point{ newPoint, glm::quat(0, 0, 0, 1) }, *rc.robot);
+	}
+	
+	
+	// bool pointReached = solver->solve(Point{ interpolator->nextPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
 	if (interpolator->finished && pointReached){
 		interpolator->reset();
 		return true;
