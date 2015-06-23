@@ -118,7 +118,10 @@ glm::vec3 camPosition(0,0,0);
 
 int main(){
 	logger::init();
-	globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
+	// globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
+	// globalSettings |= DRAW_XY_GRID;
+	globalSettings |= LIGHTS;
+	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);
 	{ // load res
@@ -175,7 +178,7 @@ void fastLoop(float step){
 }
 void renderLoop(){
 	Engine::setup(scene);
-	// Engine::renderScene(scene);
+	Engine::renderScene(scene);
 	Engine::copyDepth(scene);
 	Engine::renderLights(scene);
 	Engine::applyLights(scene);

@@ -648,7 +648,7 @@ void renderLights(Scene &scene){
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, lightBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
 		glDrawBuffers(1,&DrawBuffers[0]);
-		glClearColor(0.1,0.1,0.1,0.5);
+		glClearColor(0.01,0.02,0.01,0.5);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glEnable(GL_BLEND);
@@ -714,7 +714,8 @@ void applyLights(Scene &scene){
 		glEnable(GL_BLEND);
 		// glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 		// glBlendFunc(GL_ONE, GL_SRC_ALPHA);
-		glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
+		glBlendFunc(GL_ONE, GL_SRC_COLOR);
+		// glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
 	setupBuffer(screenQuad);
 	auto shader = shaders["frameBufferGarageLights"];
 	glUseProgram(shader);
