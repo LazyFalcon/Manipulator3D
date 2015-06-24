@@ -11,22 +11,15 @@ uniform mat4 model;
 uniform mat4 NM;
 
 out vec2 uv;
-out vec4 normal;
-out vec4 vertex;
-out float depth;
-out vec4 wv;
+out vec4 in_normal;
+out vec4 in_vertex;
 
 void main(){
-	normal = NM*(vec4(Normal,0));	
-	// normal = model*(vec4(Normal,0));	 
-	vertex = view*model*(vec4(Vertex,1));
-	wv = model*(vec4(Vertex,1));
-	
+	in_normal = NM*(vec4(Normal,0));
+	in_vertex = model*(vec4(Vertex,1));
+
 	uv = UV;
-	vec4 aa = projection*vertex;
-	depth = aa.z;
-	// wv = aa;
-	// depth = vertex.z;
+	vec4 aa = projection*view*in_vertex;
 	gl_Position = aa;
 }
 

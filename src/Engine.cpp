@@ -104,6 +104,7 @@ vector<shapeInfo> pattern2D;
 vector<lineInfo> 	lines2D;
 vector<std::pair<GLuint, glm::vec4>> texturedBoxes;
 
+const u32 g_lightsToForward = 2;
 
 
 void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, Resources *res){
@@ -458,6 +459,16 @@ void renderScene(Scene &scene){
 		glUniform1i(glGetUniformLocation(shader,"metalTex"),0);
 	glBindTexture(GL_TEXTURE_2D, globalResources->textures["metal"]);
 
+	glUniform(shader, camera.eyePosition, "u_eyePos");
+	glUniform(shader, scene.pointLamps[0].position, "u_lightPos");
+	glUniform(shader, scene.pointLamps[0].color, "u_color");
+	glUniform(shader, scene.pointLamps[0].falloffDistance, "u_size");
+	glUniform(shader, scene.pointLamps[0].energy, "u_energy");
+	glUniform(shader, scene.pointLamps[1].position, "u_lightPos2");
+	glUniform(shader, scene.pointLamps[1].color, "u_color2");
+	glUniform(shader, scene.pointLamps[1].falloffDistance, "u_size2");
+	glUniform(shader, scene.pointLamps[1].energy, "u_energy2");
+
 	glBindVertexArray(scene.resources->VAO);
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
@@ -635,7 +646,9 @@ void renderLights(Scene &scene){
 		glBindVertexArray(globalResources->VAO);
 		Mesh &mesh = globalResources->meshes["sphere"];
 		int id = 0x1;
-		for(auto &lamp : scene.pointLamps){
+		// for(auto &lamp : scene.pointLamps){
+		for(u32 i=g_lightsToForward; i<scene.pointLamps.size(); i++){
+			auto &lamp = scene.pointLamps[i];
 			glStencilMask(id); // wszystko co zapisywane do stencila, jest ANDowane przez maskê
 			glStencilFunc(GL_ALWAYS,id,id); // punkt jest zawsze rysowany
 			glUniform(shader, lamp.position, "lightPos");
@@ -648,7 +661,9 @@ void renderLights(Scene &scene){
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, lightBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
 		glDrawBuffers(1,&DrawBuffers[0]);
-		glClearColor(0.04,0.06,0.04,0.5);
+		glClearColor(0.04,0.04,0.04,0.5);
+		// glClearColor(0,0,0,0);
+		// glClearColor(1,1,1,0.5);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glEnable(GL_BLEND);
@@ -676,7 +691,9 @@ void renderLights(Scene &scene){
 		glBindVertexArray(globalResources->VAO);
 		Mesh &mesh = globalResources->meshes["sphere"];
 		int id = 0x1;
-		for(auto &lamp : scene.pointLamps){
+		// for(auto &lamp : scene.pointLamps){
+		for(u32 i=g_lightsToForward; i<scene.pointLamps.size(); i++){
+			auto &lamp = scene.pointLamps[i];
 
 			glStencilFunc(GL_EQUAL, id, id); // ref < stencil
 			id = id<<1;
@@ -714,7 +731,7 @@ void applyLights(Scene &scene){
 		glEnable(GL_BLEND);
 		// glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 		// glBlendFunc(GL_ONE, GL_SRC_ALPHA);
-		glBlendFunc(GL_ONE, GL_SRC_COLOR);
+		glBlendFunc(GL_ONE, GL_ONE);
 		// glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
 	setupBuffer(screenQuad);
 	auto shader = shaders["frameBufferGarageLights"];

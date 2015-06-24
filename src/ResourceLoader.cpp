@@ -317,6 +317,11 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 		}
 	}
 
+	std::function<bool(const PointLamp &a, const PointLamp &b)> sortLampsBySize = [](const PointLamp &a, const PointLamp &b)->bool{
+		return a.falloffDistance > b.falloffDistance;
+	};
+	std::sort(scene.pointLamps.begin(), scene.pointLamps.end(), sortLampsBySize);
+
 	Engine::genVao(model_vertices, model_coords, model_normals, model_indices, scene.resources);
 	loadRobot(scene, scene.robot, cfg["Robot"]);
 	return true;

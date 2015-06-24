@@ -104,7 +104,7 @@ Meshes:
  - Name: DuzaPodloga
    Position: [0.0000, 0.0000, -0.2907]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.1473, 0.1473, 0.1473]
+   Color: [0.0397, 0.0397, 0.0397]
  - Name: Plane
    Position: [0.0000, -2.6740, 1.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -162,7 +162,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
  - Name: Sphere.004
-   Position: [14.7598, 14.8547, 5.4957]
+   Position: [4.3433, 8.6480, 5.4957]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [1.0000, 1.0000, 1.0000]
  - Name: Sphere.005
@@ -170,11 +170,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [1.0000, 1.0000, 1.0000]
  - Name: Sphere.006
-   Position: [-15.0326, 14.8547, 5.4957]
-   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [1.0000, 1.0000, 1.0000]
- - Name: Sphere.007
-   Position: [15.3535, -15.3694, 5.4957]
+   Position: [4.3199, 12.4015, 5.4957]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [1.0000, 1.0000, 1.0000]
  - Name: Stol
@@ -190,51 +186,44 @@ Lamps:
    Energy: 1.0000
    Type: POINT
  - Name: Point.001
-   Position: [-15.0326, 14.8547, 5.4957]
+   Position: [4.3199, 12.4015, 5.4957]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
    Color: [1.0000, 0.8775, 0.1183]
-   Falloff_distance: 12.0000
+   Falloff_distance: 20.0000
    Energy: 1.0000
    Type: POINT
  - Name: Point.002
-   Position: [14.7598, 14.8547, 5.4957]
+   Position: [-6.4789, 2.6357, -0.0102]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.8775, 0.1183]
-   Falloff_distance: 12.0000
-   Energy: 1.0000
+   Color: [1.0000, 0.6777, 0.0000]
+   Falloff_distance: 2.0000
+   Energy: 3.0000
    Type: POINT
  - Name: Point.003
    Position: [-2.6575, 6.4393, -0.0102]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.0000, 0.0069]
-   Falloff_distance: 1.0000
+   Color: [1.0000, 0.6777, 0.0000]
+   Falloff_distance: 2.0000
    Energy: 3.0000
    Type: POINT
  - Name: Point.004
-   Position: [-6.4875, 2.6897, -0.0102]
+   Position: [-6.5216, -2.6964, -0.0102]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.0000, 0.0069]
-   Falloff_distance: 1.0000
+   Color: [1.0000, 0.6777, 0.0000]
+   Falloff_distance: 2.0000
    Energy: 3.0000
    Type: POINT
  - Name: Point.005
-   Position: [-6.4875, -2.5775, -0.0102]
+   Position: [-2.6825, -6.4289, -0.0102]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.0000, 0.0069]
-   Falloff_distance: 1.0000
+   Color: [1.0000, 0.6777, 0.0000]
+   Falloff_distance: 2.0000
    Energy: 3.0000
    Type: POINT
  - Name: Point.006
-   Position: [-2.7380, -6.4833, -0.0102]
+   Position: [-8.9314, -2.7658, -1.9085]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.0000, 0.0069]
-   Falloff_distance: 1.0000
+   Color: [1.0000, 0.6777, 0.0000]
+   Falloff_distance: 2.0000
    Energy: 3.0000
-   Type: POINT
- - Name: Point.007
-   Position: [15.3535, -15.3694, 5.4957]
-   Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.8775, 0.1183]
-   Falloff_distance: 12.0000
-   Energy: 1.0000
    Type: POINT
