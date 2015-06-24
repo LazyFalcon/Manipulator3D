@@ -92,6 +92,20 @@
 	};
 	powinno sie ladnie alignować.
 
-==== 
+==== Oswietlenie ====
+	Dotyczy wszystkich projektów:
+	deferred rendering jest i tak potrzebny, nie ma uja, potrzebuje glebokoci i difusse, normalek już nie tak bardzo
+	oswietlenie można zrobić kombinowane, dla kilku dużych swiata ze sceny można zrobić forward rendering, dobierajac odpowiedni shader(dla ilosci swiatel), dzieki temu mamy możliwosc odrysowania zaawansowanych materialów,
+	mamy też możliwoć zrobić ladny spectacular, i może nie bdzie też takiego impaktu na odrysowanie tego
+	
+	dla maych swiatel rysujemy deferred, uproszczony spectacular, wszystko uproszczone, ale za to tanie i ladne
+	
+	tu cos ciekawego: http://www.gamedev.net/topic/669443-pbr-g-buffer-parameters-metalness/#entry5236508
+	* w przypdaku TnS forward bdzie sloneczko 
+	* w m-game wybierzemy dwa-trzy najwieksze swiatla
+	
+	Oprócz tego do TnS trzeba dodać noramal i spectacular testures, albo chociarz specta, tak by ten czog przestal wygldac jak zabawka.
+	
+	I cienie! to priorytet, przynajmniej jakie fejkowe globalne, albo od tych najwikszych swiatel.
 	
 
