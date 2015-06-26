@@ -40,7 +40,7 @@ void main(void){
 	float d = length(lightVec);
 	// float shadeIntensity = floor(energy*attenuation*NdotL*numShades)/numShades;
 	float shadeIntensity = energy*attenuation*NdotL*0.5;
-	outColor = color*shadeIntensity;
+	outColor = color*shadeIntensity*0.5;
 
 }
 

@@ -661,8 +661,8 @@ void renderLights(Scene &scene){
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, lightBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
 		glDrawBuffers(1,&DrawBuffers[0]);
-		glClearColor(0.04,0.04,0.04,0.5);
-		// glClearColor(0,0,0,0);
+		// glClearColor(0.04,0.04,0.04,0.5);
+		glClearColor(0,0,0,0);
 		// glClearColor(1,1,1,0.5);
 		glClear(GL_COLOR_BUFFER_BIT);
 

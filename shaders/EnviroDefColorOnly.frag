@@ -22,14 +22,13 @@ struct PointLamp {
 	float energy;
 };
 
-
-
 in vec2 uv;
 in vec4 in_normal;
 in vec4 in_vertex;
 
 float shade(vec4 n, vec4 l, float e){
-	return clamp( dot(l, -n), 0.0, 1.0 ) * e;
+	// return clamp( dot(l, -n), 0.0, 1.0 ) * e;
+	return clamp( dot(l, -n), 0.5, 1.0 ) * e;
 }
 float spectacular(vec4 n, vec4 l, vec4 e){
 	vec4 reflection = normalize(reflect(-l, n));
@@ -46,7 +45,7 @@ float attenuation(float d, float s){
 void main(void){
 	float metal = texture(metalTex, uv*2).r;
 	vec4 N = normalize(in_normal);
-
+	N *= metal;
 	vec4 E = in_vertex - u_eyePos;
 	float e = length(E);
 	E /= e;

@@ -15,7 +15,7 @@ Robot:
    ParentJoint: 
      Name: Robot-Base.001
      Vec: [0.6707, -0.2649, 1.4961]
-     Axis: [-1.0000, -0.0000, -0.0000]
+     Axis: [-1.0000, -0.0000, 0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
@@ -25,17 +25,17 @@ Robot:
    ParentJoint: 
      Name: Robot-Base.002
      Vec: [-1.1341, 0.4478, 0.0973]
-     Axis: [-1.0000, -0.0000, 0.0000]
+     Axis: [-1.0000, 0.0000, 0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
-     Vec: [-1.9197, 0.7582, 0.0344]
+     Vec: [-1.9197, 0.7583, 0.0344]
  - Name: Plane.005
    Type: hinge
    ParentJoint: 
      Name: Robot-Base.003
      Vec: [2.2912, -0.9050, -0.0337]
-     Axis: [-0.0000, 1.0000, -0.0000]
+     Axis: [0.0000, 1.0000, 0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
@@ -55,7 +55,7 @@ Robot:
    ParentJoint: 
      Name: Robot-Base.005
      Vec: [0.2966, -0.1167, 0.0019]
-     Axis: [-0.0000, 1.0000, 0.0000]
+     Axis: [0.0000, 1.0000, 0.0000]
      Min: -1.0
      Max: 370
    ChildJoint: 
@@ -64,7 +64,7 @@ Meshes:
  - Name: Circle.001
    Position: [0.0000, 0.0000, 0.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.1902, 0.0082, 0.0110]
+   Color: [0.1902, 0.0082, 0.0110]0110]
  - Name: Circle.005
    Position: [-6.5022, -2.6928, 0.4712]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -104,7 +104,7 @@ Meshes:
  - Name: DuzaPodloga
    Position: [0.0000, 0.0000, -0.2907]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.0397, 0.0397, 0.0397]
+   Color: [0.1776, 0.2579, 0.2810]
  - Name: Plane
    Position: [0.0000, -2.6740, 1.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -132,7 +132,7 @@ Meshes:
  - Name: Plane.006
    Position: [-2.9069, 1.1486, 4.8454]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.0397, 0.0397, 0.0397]
+   Color: [0.1776, 0.2579, 0.2810]
  - Name: Podloga
    Position: [0.0000, 0.0000, 0.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -148,11 +148,11 @@ Meshes:
  - Name: Sphere
    Position: [-6.4850, -2.6139, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.1473, 0.1473, 0.1473]
+   Color: [0.1776, 0.2579, 0.2810]
  - Name: Sphere.001
    Position: [-6.4475, 2.6342, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.1473, 0.1473, 0.1473]
+   Color: [0.8000, 0.0000, 0.0008]
  - Name: Sphere.002
    Position: [-2.5864, 6.3453, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -160,7 +160,7 @@ Meshes:
  - Name: Sphere.003
    Position: [-2.6989, -6.4750, 2.5803]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.1473, 0.1473, 0.1473]
+   Color: [0.1131, 0.0000, 0.8000]
  - Name: Sphere.004
    Position: [4.3433, 8.6480, 5.4957]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -181,16 +181,16 @@ Lamps:
  - Name: Point.000
    Position: [-3.1825, -6.2861, 5.4957]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.7043, 0.1810]
+   Color: [1.0000, 0.8722, 0.8188]
    Falloff_distance: 10.0000
-   Energy: 1.0000
+   Energy: 2.0000
    Type: POINT
  - Name: Point.001
    Position: [4.3199, 12.4015, 5.4957]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
-   Color: [1.0000, 0.8775, 0.1183]
+   Color: [1.0000, 0.9472, 0.7988]
    Falloff_distance: 20.0000
-   Energy: 1.0000
+   Energy: 3.0000
    Type: POINT
  - Name: Point.002
    Position: [-6.4789, 2.6357, -0.0102]
