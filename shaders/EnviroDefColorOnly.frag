@@ -43,9 +43,9 @@ float attenuation(float d, float s){
 // vec4 fullLightComputation(){}
 
 void main(void){
-	float metal = texture(metalTex, uv*2).r;
+	float metal = texture(metalTex, uv*3).r;
 	vec4 N = normalize(in_normal);
-	N *= metal;
+	// N *= metal;
 	vec4 E = in_vertex - u_eyePos;
 	float e = length(E);
 	E /= e;
