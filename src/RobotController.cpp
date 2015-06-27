@@ -38,11 +38,11 @@ void RCTest(RobotController &rc){
 	std::cout<<"Start test"<<std::endl;
 	// rc.path(new BezierCurveNonUniform({p1, p2, p3, p4, p5, p1}, {0.5f, 0.5f, 1.5f, 2.f, 1.f, 0.5f}))();
 	// rc.path(new BSpline({p0, p1, p2, p3, p4, p5, p6, p0}))();
-	// rc.move(new Linear({ c1, c2, c3, c4, c5 }), "move 1").solver(new JT1);
-	// rc.wait(5000);
-	// rc.move(new BSpline({ c5, c4, c2, c1 }), "move 2").solver(new JT1);
-	// rc.move(new BSpline({ c5, c4, c3, c2, c1 }), "move 3").solver(new JT1);
-	// rc.move(new BSpline({ c4, c3, c1, c2, c1 }), "move 4").solver(new JT1);
+	rc.move(new Linear({ c1, c2, c3, c4, c5 }), "move 1");
+	rc.wait(5000);
+	rc.move(new BSpline({ c5, c4, c2, c1 }), "move 2");
+	rc.move(new BSpline({ c5, c4, c3, c2, c1 }), "move 3");
+	rc.move(new BSpline({ c4, c3, c1, c2, c1 }), "move 4");
 
 }
 
@@ -80,6 +80,8 @@ MoveCommand& RobotController::move(IInterpolator *interpolator, const std::strin
 
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
+
+	newCommand->solver = new  JT1();
 
 	return *newCommand;
 }
@@ -129,16 +131,16 @@ bool RobotController::update(float dt){
 bool MoveCommand::update(RobotController &rc, float dt){
 	double expectedDistance = dt*velocity; // = getExpectedDistanceInFrame(dt);
 	double currentDistance = 0.0;
-	bool pointReached = false;
+	// bool pointReached = false;
 	glm::vec4 m_prevPoint(0); // class member
-	while(currentDistance < expectedDistance){
-		auto newPoint = interpolator->nextPoint();
-		currentDistance += glm::distance(m_prevPoint, newPoint);
-		pointReached = solver->solve(Point{ newPoint, glm::quat(0, 0, 0, 1) }, *rc.robot);
-	}
+	// while(currentDistance < expectedDistance){
+		// auto newPoint = interpolator->nextPoint();
+		// currentDistance += glm::distance(m_prevPoint, newPoint);
+		// pointReached = solver->solve(Point{ newPoint, glm::quat(0, 0, 0, 1) }, *rc.robot);
+	// }
 
 
-	// bool pointReached = solver->solve(Point{ interpolator->nextPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
+	bool pointReached = solver->solve(Point{ interpolator->nextPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
 	if (interpolator->finished && pointReached){
 		interpolator->reset();
 		return true;

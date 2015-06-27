@@ -336,11 +336,12 @@ void init(CFG::Node &cfg){
 	glBindTexture(GL_TEXTURE_2D, shadowMapBuffer);
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 		glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, shadowMapSize, shadowMapSize, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+		// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, shadowMapSize, shadowMapSize, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, shadowMapSize, shadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//----------------
@@ -449,6 +450,12 @@ void generateShadowMap(Scene &scene){
 			logger::log<<__LINE__<<""<<error<<endl;
 	}
 
+
+	// glUniform(shader, scene.pointLamps[0].position, "u_lightPos");
+	// glUniform(shader, scene.pointLamps[0].color, "u_color");
+	// glUniform(shader, scene.pointLamps[0].falloffDistance, "u_size");
+	// glUniform(shader, scene.pointLamps[0].energy, "u_energy");
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFbo);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
@@ -467,12 +474,18 @@ void generateShadowMap(Scene &scene){
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
+	auto &lamp = scene.pointLamps[0];
+	glm::vec4 lightVector = glm::vec4(0,0,0,1) - lamp.position; /// w stronę środka
+	lightVector.w = 0;
 
-	glm::mat4 projection = glm::perspective(1.1f, 1.f, 1.f, 50.f);
+	glm::vec4 lv = glm::normalize(lightVector);
+	glm::vec4 lvHorizon = glm::normalize(cross(glm::vec4(0,0,1,0), lv));
+	glm::vec4 lvVert = glm::normalize(cross(lv, lvHorizon));
+
+
+	glm::mat4 projection = glm::perspective(1.9f, 1.f, 1.f, 50.f);
 	glm::mat4 view = identity;
-	view *= glm::translate(glm::vec3(0,0,-20));
-	view *= glm::rotate(-0.5206f, glm::vec3(1,0,0))*glm::rotate(3.609f, glm::vec3(0,0,1));
-	// view *= glm::translate(glm::vec3(0,9,15));
+	view = glm::lookAt(lamp.position.xyz(), lv.xyz(), glm::vec3(0,0,1));
 
 	shadowProjection = projection*view;
 
@@ -545,7 +558,7 @@ void renderScene(Scene &scene){
 	// drawTexturedBox(depthBuffer, {0, 12,screenSize.x/7.0, screenSize.y/7.0});
 	// drawTexturedBox(shadowMapBuffer, {0, 22,screenSize.x/7.0, screenSize.x/7.0});
 	// drawTexturedBox(depthBuffer, {screenSize.x/7.0, 22,screenSize.x/7.0, screenSize.y/7.0});
-	drawTexturedBox(shadowMapBuffer, {screenSize.x/7.0, 22,screenSize.x/7.0, screenSize.x/7.0});
+	drawTexturedBox(shadowMapBuffer, {0, 100, screenSize.x/7.0, screenSize.x/7.0});
 
 	glStencilFunc(GL_ALWAYS,1,0xFF);
 	auto shader = shaders["EnviroDefColorOnly"];

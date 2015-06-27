@@ -35,7 +35,7 @@ public:
 	Interpolator type;
 	std::vector<glm::vec4> points;
 	std::vector<glm::vec4> visualisation; // for draving
-	IInterpolator(std::vector<glm::vec4> &points, Interpolator type) : type(type), points(points) {}
+	IInterpolator(const std::vector<glm::vec4> &points, Interpolator type) : type(type), points(points) {}
 	virtual glm::vec4 nextPoint() = 0;
 	virtual void generatePath() = 0;
 	virtual void reset() = 0;
@@ -64,7 +64,7 @@ public:
 	glm::vec4 sectionStep;
 	glm::vec4 vec;
 
-	Linear(std::vector<glm::vec4> &p) : IInterpolator(p, Interpolator::Linear){
+	Linear(const std::vector<glm::vec4> &p) : IInterpolator(p, Interpolator::Linear){
 		maxSections = points.size()-1;
 		section = -1;
 		nextSection();
@@ -152,7 +152,7 @@ public:
 	double length {0};
 	float weight {1};
 	int numOfBeziers;
-	BSpline(std::vector<glm::vec4> &points) : IInterpolator(points, Interpolator::BSpline) {
+	BSpline(const std::vector<glm::vec4> &points) : IInterpolator(points, Interpolator::BSpline) {
 		generatePath();
 	}
 

@@ -87,7 +87,7 @@ Scene scene;
 #include "IInterpolator.h"
 #include "RobotController.h"
 RobotController g_RC;
-// #include "PathCreator.h"
+#include "PathCreator.h"
 #include "SomeTests.h"
 #include "BigSplineTest.h"
 #include "Menu.h"
@@ -154,16 +154,16 @@ int main(){
 	ui.m_imageSet = &(globalResources->imageSets["Menu"]);
 	ui.setDefaultFont("ui_12", 12);
 
-	// scene.robot.chain[0]->value = 45*toRad;
-	// scene.robot.chain[3]->value = 30*toRad;
+	scene.robot.chain[0]->value = 45*toRad;
+	scene.robot.chain[3]->value = 30*toRad;
 
 
-	// for(auto &it : scene.robot.chain)
-	// steeringConsole.buttons.push_back(PlusMinusWidget(it));
+	for(auto &it : scene.robot.chain)
+	steeringConsole.buttons.push_back(PlusMinusWidget(it));
 
-	 // g_RC.robot = &(scene.robot);
-	 // g_RC.solver = new JT1;
-	 // RCTest(g_RC);
+	 g_RC.robot = &(scene.robot);
+	 g_RC.solver = new JT1;
+	 RCTest(g_RC);
 	glfwShowWindow(window);
 	mainLoop();
 	Engine::clear();
@@ -173,8 +173,8 @@ int main(){
 }
 
 void fastLoop(float step){
-	// scene.robot.update(step);
-	// g_RC.update(step);
+	scene.robot.update(step);
+	g_RC.update(step);
 }
 void renderLoop(){
 	// Engine::plotGraphs();
@@ -213,6 +213,7 @@ void prerequisites(){
 void updates(float dt){
 	// manuSideBar->run();
 	// BigSplineTest::update(dt);
+	//SomeTests();
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -230,7 +231,7 @@ void mainLoop(){
 	float tmpAngle2(0);
 	// alert("Welcome\nbhaf haf aj");
 
-	//PathCreator pcr((BSpline*)(((MoveCommand*)g_RC.commands.front().get())->m_interpolator));
+	// PathCreator pcr((BSpline*)(((MoveCommand*)g_RC.commands.front().get())->interpolator));
 
 	prerequisites();
 
@@ -276,11 +277,11 @@ void mainLoop(){
 		camera.setMatrices();
 		camera.updateCamera(dt);
 
-		//if (g_RC.state != RCStates::Pause)
-		//	pcr.update();
+
+		// if (g_RC.state != RCStates::Pause)
+			// pcr.update();
 
 		UI::GetInput = ui.textEditor.state();
-		//SomeTests();
 		updates(dt);
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
@@ -288,13 +289,6 @@ void mainLoop(){
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
-			// ui.rect().text(timer.getString()+"ms").font("ui_12"s)();
-			// ui.rect().text("IK: "+precisetimer.getString()+"ms").font("ui_12"s)();
-			// ui.rect().text("commands: "s + std::to_string(g_RC.commands.size()))();
-			// if (g_RC.state == RCStates::Run)
-				// ui.rect().text("executing: "s + (*g_RC.commandIter)->name)();
-			// else
-				// ui.rect().text("current: "s + (*g_RC.commandIter)->name)();
 		ui.endTable();
 
 		ui.end();
