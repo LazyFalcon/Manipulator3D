@@ -158,6 +158,12 @@ GLuint ResourceLoader::compileShader(string vertex, string fragment){
 	if (!compiled){
 		cout << "Vertex shader " <<vertex<<" not compiled." << endl;
 		printShaderInfoLog(v);
+		int x;
+		cin>>x;
+		delete [] vs; // dont forget to free allocated memory
+		delete [] fs; // we allocated this in the loadFile function...
+
+		return compileShader(vertex, fragment);
 	}
 
 	glCompileShader(f);
@@ -165,6 +171,12 @@ GLuint ResourceLoader::compileShader(string vertex, string fragment){
 	if (!compiled){
 		cout << "Fragment shader "<<fragment<<" not compiled." << endl;
 		printShaderInfoLog(f);
+		int x;
+		cin>>x;
+		delete [] vs; // dont forget to free allocated memory
+		delete [] fs; // we allocated this in the loadFile function...
+
+		return compileShader(vertex, fragment);
 	}
 
 	shader=glCreateProgram();

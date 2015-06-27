@@ -3,6 +3,7 @@
 uniform vec4 color;
 
 uniform sampler2D metalTex;
+uniform sampler2D shadowTex;
 uniform vec4 u_eyePos;
 
 uniform vec4 u_lightPos;
@@ -25,6 +26,7 @@ struct PointLamp {
 in vec2 uv;
 in vec4 in_normal;
 in vec4 in_vertex;
+in vec4 in_vertexInShadow;
 
 float shade(vec4 n, vec4 l, float e){
 	// return clamp( dot(l, -n), 0.0, 1.0 ) * e;
@@ -42,30 +44,47 @@ float attenuation(float d, float s){
 
 // vec4 fullLightComputation(){}
 
+const float bias = 0.001;
+
 void main(void){
 	// float metal = 1;
 	float metal = texture(metalTex, uv*3).r;
+
+	vec2 shadowTexCoords = in_vertexInShadow.xy/in_vertexInShadow.w * 0.5 + 0.5;
+	// shadowTexCoords.y *= -1;
+	float depthFromTex = texture(shadowTex, shadowTexCoords).r;
+	depthFromTex = depthFromTex*2 - 1;
+	float lightDepth = in_vertexInShadow.z/in_vertexInShadow.w;
+	lightDepth -= bias;
+
 	vec4 N = normalize(in_normal);
-	// N *= metal;
-	vec4 E = in_vertex - u_eyePos;
-	float e = length(E);
-	E /= e;
-	vec4 L = in_vertex - u_lightPos;
-	float d = length(L);
-	L /= d;
+	vec4 l_shade = vec4(0.2);
+	vec4 l_spect = vec4(0);
 
-	// vec4 l_shade = vec4(1);
-	// vec4 l_spect = vec4(0);
-	vec4 l_shade = shade(N,L, u_energy)*attenuation(d, u_size)*u_color;
-	vec4 l_spect = spectacular(N, L, E)*metal*u_color*attenuation(e, 20.0);
+	float shadowIntensity = 1.0;
+	if(lightDepth < depthFromTex){
+		shadowIntensity = 0.0;
 
-	L = in_vertex - u_lightPos2;
-	d = length(L);
-	L /= d;
+		// N *= metal;
+		vec4 E = in_vertex - u_eyePos;
+		float e = length(E);
+		E /= e;
+		vec4 L = in_vertex - u_lightPos;
+		float d = length(L);
+		L /= d;
 
-	l_shade += shade(N,L, u_energy2)*attenuation(d, u_size2)*u_color2;
-	l_spect += spectacular(N, L, E)*metal*u_color2*attenuation(e, 20.0);
+		// vec4 l_shade = vec4(1);
+		// vec4 l_spect = vec4(0);
+		l_shade = shade(N,L, u_energy)*attenuation(d, u_size)*u_color;
+		l_spect = spectacular(N, L, E)*metal*u_color*attenuation(e, 20.0);
 
+		L = in_vertex - u_lightPos2;
+		d = length(L);
+		L /= d;
+
+		l_shade += shade(N,L, u_energy2)*attenuation(d, u_size2)*u_color2;
+		l_spect += spectacular(N, L, E)*metal*u_color2*attenuation(e, 20.0);
+	}
 	gl_FragData[0] = color*l_shade + l_spect;
 	gl_FragData[1] = vec4(N.xyz, 1.0);
 }
