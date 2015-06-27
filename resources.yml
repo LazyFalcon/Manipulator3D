@@ -47,6 +47,7 @@ Main:
   - deferredSpotLight deferredSpotLight deferredSpotLight
   - deferredSpotLight_2 deferredSpotLight deferredSpotLight_2
   - SurfaceAlignedParticle SurfaceAlignedParticle SurfaceAlignedParticle
+  - EnviroShade EnviroShade EnviroShade
  Images:
   - metal.png
   - kursor.png

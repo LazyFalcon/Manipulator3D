@@ -177,6 +177,8 @@ void init(CFG::Node &cfg);
 void clear();
 
 /// Drawing things
+void plotGraphs();
+void generateShadowMap(Scene &scene);
 void setup(Scene &scene);
 void renderScene(Scene &scene);
 void drawOutline(Scene &scene);

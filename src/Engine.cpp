@@ -15,6 +15,7 @@ extern Camera camera;
 extern Graph mousePositionGraphX;
 extern Graph mousePositionGraphY;
 extern Plot mainPlot;
+extern glm::vec2 screenSize;
 
 HexColor colorTransparent	= 0xff0000ff;
 HexColor colorWhite				= 0xf0f0f0ff;
@@ -82,6 +83,7 @@ GLuint tankUBO;
 int g_pointsSize;
 
 GLuint FBO[3];
+GLuint shadowMapFbo;
 GLuint PlotFBO;
 GLuint frameBuffer[2];
 GLuint colorBuffer;
@@ -91,8 +93,10 @@ GLuint depthBuffer;
 GLuint depthBuffer2;
 GLuint stencilBuffer;
 GLuint lightBuffer;
+GLuint shadowMapBuffer;
 GLenum DrawBuffers[2];
 
+const u32 shadowMapSize = 1024;
 
 vector <menuParticleInfo> surfaceAlignedParticles;
 vector<shapeInfo> point2D;
@@ -291,6 +295,7 @@ void init(CFG::Node &cfg){
 	glGenTextures(1, &colorBuffer);
 	glGenTextures(1, &normalBuffer);
 	glGenTextures(1, &depthBuffer);
+	glGenTextures(1, &shadowMapBuffer);
 	glGenTextures(1, &depthBuffer2);
 	glGenTextures(1, &lightBuffer);
 	glBindTexture(GL_TEXTURE_2D, lightBuffer);
@@ -310,7 +315,7 @@ void init(CFG::Node &cfg){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F , window_width, window_height, 0,GL_RGBA, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F , window_width, window_height, 0,GL_RGBA, GL_HALF_FLOAT, NULL);
 
 	glBindTexture(GL_TEXTURE_2D, depthBuffer);
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
@@ -321,11 +326,20 @@ void init(CFG::Node &cfg){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, window_width, window_height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 	glBindTexture(GL_TEXTURE_2D, depthBuffer2);
+		glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, window_width, window_height, 0, GL_RED, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, shadowMapBuffer);
+		// glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
+		glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapSize, shadowMapSize, 0, GL_RED, GL_FLOAT, NULL);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//----------------
@@ -367,15 +381,29 @@ void init(CFG::Node &cfg){
 
 	glGenFramebuffers(1, FBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO[0]);
+		glViewport(0, 0, screenSize.x, screenSize.y);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
+		glDrawBuffers(2, DrawBuffers);
 		FBstatus();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glGenFramebuffers(1, &shadowMapFbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFbo);
+		glViewport(0, 0, shadowMapSize, shadowMapSize);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glEnable(GL_DEPTH_TEST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
+		// glDrawBuffers(0, DrawBuffers);
+		FBstatus();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 	initPlotList();
-	FBstatus();
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	// glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -407,8 +435,53 @@ void clear(){
 		glDeleteShader(it.second);
 }
 
-void setup(Scene &scene){
+void plotGraphs(){
 	drawPlotList();
+}
+void generateShadowMap(Scene &scene){
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
+
+	glClearDepth(1);
+	glClearStencil(0);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glDepthFunc(GL_LEQUAL);
+	glDepthRange(0.0f, 1.0f);
+	glDisable(GL_BLEND);
+
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+
+	glViewport(0, 0, shadowMapSize, shadowMapSize);
+
+	glm::mat4 projection = glm::perspective(60.f, 1.f, 1.f, 100.f);
+	// glm::vec4 view = glm::translate(glm::vec3(0,9,15))*glm::rotate(-rot_x, glm::vec3(1,0,0))*glm::rotate(rot_z, glm::vec3(0,0,1))
+	glm::mat4 view = glm::translate(glm::vec3(0,9,15))*glm::rotate(-0.5206f, glm::vec3(1,0,0))*glm::rotate(3.1509f, glm::vec3(0,0,1));
+
+	auto PV = projection*view;
+
+	auto shader = shaders["EnviroShade"];
+	glUseProgram(shader);
+	// glUniform(shader, PV, "u_PV");
+	glBindVertexArray(scene.resources->VAO);
+	glUniform(shader, camera.VP, "u_PV");
+
+	for(auto &entity : scene.units){
+		auto &mesh = *(entity.second.mesh);
+
+	glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+
+		glUniform(shader, transform, "u_model");
+		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+	}
+	glBindVertexArray(0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+void setup(Scene &scene){
 	auto ctmp = colorHex(clearColor);
 	{
 		glViewport(0, 0, window_width, window_height);
@@ -432,7 +505,8 @@ void setup(Scene &scene){
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
-		glDrawBuffers(3,&DrawBuffers[0]);
+		glDrawBuffers(2,&DrawBuffers[0]);
+		// glDrawBuffers(1,&DrawBuffers[0]);
 	glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
 	glClearDepth(1);
 	glClearStencil(0);
@@ -449,6 +523,10 @@ void setup(Scene &scene){
 	glFrontFace(GL_CCW);
 }
 void renderScene(Scene &scene){
+	// drawTexturedBox(depthBuffer, {0, 12,screenSize.x/7.0, screenSize.y/7.0});
+	drawTexturedBox(shadowMapBuffer, {0, 12,screenSize.x/7.0, screenSize.y/7.0});
+	// drawTexturedBox(depthBuffer, {screenSize.x/7.0, 12,screenSize.x/7.0, screenSize.y/7.0});
+	drawTexturedBox(depthBuffer2, {screenSize.x/7.0, 12,screenSize.x/7.0, screenSize.y/7.0});
 	glStencilFunc(GL_ALWAYS,1,0xFF);
 	auto shader = shaders["EnviroDefColorOnly"];
 	glUseProgram(shader);
@@ -470,6 +548,7 @@ void renderScene(Scene &scene){
 	glUniform(shader, scene.pointLamps[1].energy, "u_energy2");
 
 	glBindVertexArray(scene.resources->VAO);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
 
@@ -483,10 +562,10 @@ void renderScene(Scene &scene){
 			glUniform(shader, transform, "NM");
 		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 
+		// break;
 
 	}
 
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	if(false){ // sphere

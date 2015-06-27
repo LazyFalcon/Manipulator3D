@@ -177,6 +177,8 @@ void fastLoop(float step){
 	// g_RC.update(step);
 }
 void renderLoop(){
+	// Engine::plotGraphs();
+	Engine::generateShadowMap(scene);
 	Engine::setup(scene);
 	Engine::renderScene(scene);
 	Engine::copyDepth(scene);
@@ -196,7 +198,7 @@ void renderLoop(){
 	// if (g_RC.state != RCStates::Pause)
 		// Engine::drawLineStrip((*g_RC.commandIter)->getPath(), 0xf0b000ff);
 
-	BigSplineTest::draw();
+	// BigSplineTest::draw();
 	Engine::drawGrids();
 	// Engine::drawASDFASDF(scene.robot.endEffector.position);
 	Engine::finalize(scene);
@@ -209,12 +211,13 @@ void prerequisites(){
 
 }
 void updates(float dt){
-	manuSideBar->run();
-	BigSplineTest::update(dt);
+	// manuSideBar->run();
+	// BigSplineTest::update(dt);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
-	Timer<uint32_t, std::ratio<1,1000>,1> msectimer;
+	Timer<uint32_t, std::ratio<1,1000>,100> msecTimer;
+	Timer<uint32_t, std::ratio<1,1000>,1> msecCounter;
 	Timer<double, std::ratio<1,1000>,60> precisetimer;
 	float timeAccumulator = 0.f;
 	// float step = 1.f/120.f;
@@ -234,7 +237,7 @@ void mainLoop(){
 	_DebugLine_
 	while(!quit){
 		dt = timer();
-		msdt = msectimer();
+		msdt = msecTimer();
 		timeAccumulator += dt;
 		accu10ms += dt;
 		signal10ms = false;
@@ -281,7 +284,10 @@ void mainLoop(){
 		updates(dt);
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			ui.rect().text(msectimer.getString()+"ms").font("ui_12"s)();
+			ui.rect().text(msecTimer.getString()+"ms").font("ui_12"s)();
+			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
+			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
+			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			// ui.rect().text(timer.getString()+"ms").font("ui_12"s)();
 			// ui.rect().text("IK: "+precisetimer.getString()+"ms").font("ui_12"s)();
 			// ui.rect().text("commands: "s + std::to_string(g_RC.commands.size()))();
@@ -482,7 +488,8 @@ void initContext(CFG::Node &cfg){
 	camera.m_angle = cfg["angle"].asFloat();
 	camera.m_width = window_width;
 	camera.m_height = window_height;
-	camera.m_far = 200.f;
+	// camera.m_far = 200.f;
+	camera.m_far = 50.f;
 	camera.m_near = 0.1f;
 	camera.setProjection();
 

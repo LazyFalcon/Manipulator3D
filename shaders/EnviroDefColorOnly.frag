@@ -43,6 +43,7 @@ float attenuation(float d, float s){
 // vec4 fullLightComputation(){}
 
 void main(void){
+	// float metal = 1;
 	float metal = texture(metalTex, uv*3).r;
 	vec4 N = normalize(in_normal);
 	// N *= metal;
@@ -53,6 +54,8 @@ void main(void){
 	float d = length(L);
 	L /= d;
 
+	// vec4 l_shade = vec4(1);
+	// vec4 l_spect = vec4(0);
 	vec4 l_shade = shade(N,L, u_energy)*attenuation(d, u_size)*u_color;
 	vec4 l_spect = spectacular(N, L, E)*metal*u_color*attenuation(e, 20.0);
 
@@ -64,5 +67,5 @@ void main(void){
 	l_spect += spectacular(N, L, E)*metal*u_color2*attenuation(e, 20.0);
 
 	gl_FragData[0] = color*l_shade + l_spect;
-	gl_FragData[1] = vec4(N.xyz, metal);
+	gl_FragData[1] = vec4(N.xyz, 1.0);
 }
