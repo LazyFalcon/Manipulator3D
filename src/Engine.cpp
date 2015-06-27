@@ -94,6 +94,7 @@ GLuint depthBuffer2;
 GLuint stencilBuffer;
 GLuint lightBuffer;
 GLuint shadowMapBuffer;
+GLuint shadowMapDummyColorBuffer;
 GLenum DrawBuffers[2];
 
 const u32 shadowMapSize = 1024;
@@ -296,6 +297,7 @@ void init(CFG::Node &cfg){
 	glGenTextures(1, &normalBuffer);
 	glGenTextures(1, &depthBuffer);
 	glGenTextures(1, &shadowMapBuffer);
+	glGenTextures(1, &shadowMapDummyColorBuffer);
 	glGenTextures(1, &depthBuffer2);
 	glGenTextures(1, &lightBuffer);
 	glBindTexture(GL_TEXTURE_2D, lightBuffer);
@@ -310,6 +312,12 @@ void init(CFG::Node &cfg){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width, window_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, shadowMapDummyColorBuffer);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , shadowMapSize, shadowMapSize, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, normalBuffer);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -334,12 +342,16 @@ void init(CFG::Node &cfg){
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, window_width, window_height, 0, GL_RED, GL_FLOAT, NULL);
 	glBindTexture(GL_TEXTURE_2D, shadowMapBuffer);
 		// glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
-		glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+		glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapSize, shadowMapSize, 0, GL_RED, GL_FLOAT, NULL);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapSize, shadowMapSize, 0, GL_RED, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, shadowMapSize, shadowMapSize, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+		// glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, shadowMapSize, shadowMapSize, 0, GL_RED, GL_FLOAT, NULL);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	//----------------
@@ -392,11 +404,13 @@ void init(CFG::Node &cfg){
 	glGenFramebuffers(1, &shadowMapFbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFbo);
 		glViewport(0, 0, shadowMapSize, shadowMapSize);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
+		glDrawBuffers(1, DrawBuffers);
+		// glDrawBuffer(GL_NONE);
+		// glReadBuffer(GL_NONE);
 		glEnable(GL_DEPTH_TEST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowMapDummyColorBuffer, 0);
+		// glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
 		// glDrawBuffers(0, DrawBuffers);
 		FBstatus();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -407,6 +421,9 @@ void init(CFG::Node &cfg){
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	int error = glGetError();
+	if(error != GL_NO_ERROR)
+		logger::log<<__LINE__<<""<<error<<endl;
 }
 
 
@@ -440,12 +457,22 @@ void plotGraphs(){
 }
 void generateShadowMap(Scene &scene){
 
+	{
+		int error = glGetError();
+		if(error != GL_NO_ERROR)
+			logger::log<<__LINE__<<""<<error<<endl;
+	}
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowMapDummyColorBuffer, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
+	glViewport(0, 0, shadowMapSize, shadowMapSize);
 
+	glStencilFunc(GL_ALWAYS,1,0xFF);
 	glClearDepth(1);
-	glClearStencil(0);
+		glClearStencil(0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glDepthFunc(GL_LEQUAL);
@@ -456,7 +483,6 @@ void generateShadowMap(Scene &scene){
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
-	glViewport(0, 0, shadowMapSize, shadowMapSize);
 
 	glm::mat4 projection = glm::perspective(60.f, 1.f, 1.f, 100.f);
 	// glm::vec4 view = glm::translate(glm::vec3(0,9,15))*glm::rotate(-rot_x, glm::vec3(1,0,0))*glm::rotate(rot_z, glm::vec3(0,0,1))
@@ -468,15 +494,22 @@ void generateShadowMap(Scene &scene){
 	glUseProgram(shader);
 	// glUniform(shader, PV, "u_PV");
 	glBindVertexArray(scene.resources->VAO);
-	glUniform(shader, camera.VP, "u_PV");
+	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "u_PV");
 
+	auto u_modelPosition = glGetUniformLocation(shader,"u_model");
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
 
-	glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+		glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
 
-		glUniform(shader, transform, "u_model");
+		glUniform(shader, transform, u_modelPosition);
 		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+	}
+
+	{
+		int error = glGetError();
+		if(error != GL_NO_ERROR)
+			logger::log<<__LINE__<<""<<error<<endl;
 	}
 	glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -524,9 +557,10 @@ void setup(Scene &scene){
 }
 void renderScene(Scene &scene){
 	// drawTexturedBox(depthBuffer, {0, 12,screenSize.x/7.0, screenSize.y/7.0});
-	drawTexturedBox(shadowMapBuffer, {0, 12,screenSize.x/7.0, screenSize.y/7.0});
-	// drawTexturedBox(depthBuffer, {screenSize.x/7.0, 12,screenSize.x/7.0, screenSize.y/7.0});
-	drawTexturedBox(depthBuffer2, {screenSize.x/7.0, 12,screenSize.x/7.0, screenSize.y/7.0});
+	drawTexturedBox(shadowMapBuffer, {0, 22,screenSize.x/7.0, screenSize.y/7.0});
+	// drawTexturedBox(depthBuffer, {screenSize.x/7.0, 22,screenSize.x/7.0, screenSize.y/7.0});
+	drawTexturedBox(depthBuffer2, {screenSize.x/7.0, 22,screenSize.x/7.0, screenSize.y/7.0});
+
 	glStencilFunc(GL_ALWAYS,1,0xFF);
 	auto shader = shaders["EnviroDefColorOnly"];
 	glUseProgram(shader);
@@ -549,21 +583,21 @@ void renderScene(Scene &scene){
 
 	glBindVertexArray(scene.resources->VAO);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	auto u_colorPosition = glGetUniformLocation(shader,"color");
+	auto u_modelPosition = glGetUniformLocation(shader,"model");
+	auto u_NMPosition = glGetUniformLocation(shader,"NM");
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
 
 		glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
 
-		glUniform(shader, entity.second.material.color, "color");
-		glUniform(shader, transform, "model");
+		glUniform(shader, entity.second.material.color, u_colorPosition);
+		glUniform(shader, transform, u_modelPosition);
 		if(globalSettings & MSAA)
-			glUniform(shader, glm::transpose(glm::inverse(transform)), "NM");
+			glUniform(shader, glm::transpose(glm::inverse(transform)), u_NMPosition);
 		else
-			glUniform(shader, transform, "NM");
+			glUniform(shader, transform, u_NMPosition);
 		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
-
-		// break;
-
 	}
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -687,7 +721,8 @@ void copyDepth(Scene &scene){
 	setupBuffer(screenQuad);
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(glGetUniformLocation(shader,"texFramebuffer"),0);
-	glBindTexture(GL_TEXTURE_2D, depthBuffer);
+	// glBindTexture(GL_TEXTURE_2D, depthBuffer);
+	glBindTexture(GL_TEXTURE_2D, shadowMapBuffer);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

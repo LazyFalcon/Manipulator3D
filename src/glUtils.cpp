@@ -87,6 +87,28 @@ void setupBuffer(uint32_t buffer, int numBuffer, int dataSize, int divisor, GLen
 	glVertexAttribDivisor(numBuffer, divisor);
 }
 
+void glUniform(uint32_t shader, const glm::mat4 &m, const GLint name){
+	glUniformMatrix4fv(name, 1, GL_FALSE,glm::value_ptr(m));
+}
+void glUniform(uint32_t shader, const glm::vec4 &v, const GLint name){
+	glUniform4fv(name, 1, glm::value_ptr(v));
+}
+void glUniform(uint32_t shader, const glm::vec3 &v, const GLint name){
+	glUniform3fv(name, 1, glm::value_ptr(v));
+}
+void glUniform(uint32_t shader, const glm::vec2 &v, const GLint name){
+	glUniform2fv(name, 1, glm::value_ptr(v));
+}
+void glUniform(uint32_t shader, float v, const GLint name){
+	glUniform1f(name, v);
+}
+void glUniform(uint32_t shader, int v, const GLint name){
+	glUniform1i(name, v);
+}
+void glUniform(uint32_t shader, uint32_t v, const GLint name){
+	glUniform1i(name, v);
+}
+
 void glUniform(uint32_t shader, const glm::mat4 &m, const char *name){
 	glUniformMatrix4fv(glGetUniformLocation(shader,name), 1, GL_FALSE,glm::value_ptr(m));
 }

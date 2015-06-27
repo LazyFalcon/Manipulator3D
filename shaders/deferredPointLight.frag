@@ -33,8 +33,9 @@ void main(void){
 
 	vec4 lightVec = worldPos-lightPos;
 	float l = length( lightVec );
-	float attenuation = clamp(1.0 - l/size, 0.0, 1.0);
+	float attenuation = clamp(1.0 - l/(size), 0.0, 1.0);
 	attenuation *= attenuation;
+
 	float NdotL = clamp( dot(normalize(lightVec), -normal ),0.0,1.0);
 
 	float d = length(lightVec);
