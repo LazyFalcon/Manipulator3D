@@ -53,6 +53,11 @@ void RobotController::run(){
 	if (!commands.empty()){
 		state = RCStates::Run;
 		//commandIter = commands.begin();
+		if(!(*commandIter)->isRuning){
+			(*commandIter)->init(*this);
+			logger::log<<"Wielka czarna dupa!"<<std::endl;
+
+		}
 	}
 }
 void RobotController::pause(){
@@ -76,11 +81,13 @@ void RobotController::prev(){
 MoveCommand& RobotController::move(IInterpolator *interpolator, const std::string &name){
 	MoveCommand *newCommand = new MoveCommand(interpolator);
 	newCommand->name = name;
+	newCommand->isRuning = false;
 	commands.push_back(std::unique_ptr<ICommand>(newCommand));
 
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
 
+	newCommand->velocity = 0.1;
 	newCommand->solver = new  JT1();
 
 	return *newCommand;
@@ -88,6 +95,7 @@ MoveCommand& RobotController::move(IInterpolator *interpolator, const std::strin
 WaitCommand& RobotController::wait(float time){
 	WaitCommand *newCommand = new WaitCommand(time);
 	newCommand->name = "wait: " + std::to_string((int)time/1000)+"s";
+	newCommand->isRuning = false;
 	commands.push_back(std::unique_ptr<ICommand>(newCommand));
 
 	if (commandIter == commands.end())
@@ -123,45 +131,49 @@ bool RobotController::update(float dt){
 
 
 void MoveCommand::init(RobotController &rc){
+	isRuning = true;
 	solver->solve(Point{ interpolator->firstPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
 	rc.robot->isReady = false;
+	logger::log<<"command "+name+" start"<<std::endl;
+	std::cout<<targetJointPosition.size()<<std::endl;
+	for(auto &it : targetJointPosition){
+		std::cout<<"* "<<it<<" * "<<std::endl;
+	}
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
 }
-bool MoveCommand::calculateNextPoint(float dt){
-	auto distance = calculateRequiredDistance(dt);
-	while(distance > 0.0){
-
+glm::vec4 MoveCommand::calculateNextPoint(float dt){
+	requiredDistance += calculateRequiredDistance(dt);
+	glm::vec4 newTarget;
+	std::cout<<requiredDistance<<std::endl;
+	while(requiredDistance > 0.0 && (not interpolator->finished)){
+		newTarget = interpolator->nextPoint();
+		requiredDistance -= glm::distance(previousPoint, newTarget);
 	}
 
+	logger::log<<"Calculating new point"+glm::to_string(newTarget)<<std::endl;
+	return newTarget;
 }
 bool MoveCommand::update(RobotController &rc, float dt){
-	if(rc.robot->isReady){
-		rc.robot->goTo(targetJointPosition, dt/1000);
+	if(not rc.robot->isReady){
+		rc.robot->goTo(targetJointPosition, dt);
 		previousPoint = rc.robot->endEffector.position;
 		return false;
 	}
-
-
-
-	double expectedDistance = dt*velocity; // = getExpectedDistanceInFrame(dt);
-	double currentDistance = 0.0;
-	// bool pointReached = false;
-	glm::vec4 m_prevPoint(0); // class member
-	// while(currentDistance < expectedDistance){
-		// auto newPoint = interpolator->nextPoint();
-		// currentDistance += glm::distance(m_prevPoint, newPoint);
-		// pointReached = solver->solve(Point{ newPoint, glm::quat(0, 0, 0, 1) }, *rc.robot);
-	// }
-
-
-	bool pointReached = solver->solve(Point{ interpolator->nextPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
-	if (interpolator->finished && pointReached){
+	if(rc.robot->isReady && interpolator->finished){
 		interpolator->reset();
 		return true;
 	}
+
+	glm::vec4 newTarget = calculateNextPoint(dt);
+
+	solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
+
+	targetJointPosition = solver->result;
+	rc.robot->isReady = false;
+
 	return false;
 }
 

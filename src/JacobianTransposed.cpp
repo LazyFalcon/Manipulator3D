@@ -92,8 +92,8 @@ bool JT1::performIK(Point aim, Robot &robot){
 	float positionError = glm::distance(aim.position, robot.endEffector.position);
 
 	g_mousePositions(aim.position);
-	if(positionError > minError*5.f)
-		aim.position = robot.endEffector.position + (aim.position - robot.endEffector.position)*0.1f;
+	// if(positionError > minError*5.f)
+		// aim.position = robot.endEffector.position + (aim.position - robot.endEffector.position)*0.1f;
 
 		auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
