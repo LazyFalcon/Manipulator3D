@@ -562,7 +562,7 @@ void renderScene(Scene &scene){
 	// drawTexturedBox(depthBuffer, {0, 12,screenSize.x/7.0, screenSize.y/7.0});
 	// drawTexturedBox(shadowMapBuffer, {0, 22,screenSize.x/7.0, screenSize.x/7.0});
 	// drawTexturedBox(depthBuffer, {screenSize.x/7.0, 22,screenSize.x/7.0, screenSize.y/7.0});
-	drawTexturedBox(shadowMapBuffer, {0, 100, screenSize.x/7.0, screenSize.x/7.0});
+	// drawTexturedBox(shadowMapBuffer, {0, 100, screenSize.x/7.0, screenSize.x/7.0});
 
 	glStencilFunc(GL_ALWAYS,1,0xFF);
 	auto shader = shaders["EnviroDefColorOnly"];

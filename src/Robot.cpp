@@ -49,8 +49,8 @@ void Robot::update(float dt){
 	g_robotPositions(position);
 }
 
-std::vector<float> Robot::getVariables(){
-	std::vector<float> out(getSize());
+std::vector<double> Robot::getVariables(){
+	std::vector<double> out(getSize());
 	for(int i=0; i<getSize(); i++)
 		out[i] = chain[i]->value;
 	return out;
@@ -139,3 +139,17 @@ bool Module::goTo(double target, float dt){
 	return false;
 }
 
+std::vector<double> targetVariables;
+void robotTestInit(Robot &robot){
+	targetVariables = robot.getVariables();
+	for(auto &it : targetVariables)
+		it += 0.5;
+	// robot.isReady = false;
+}
+void robotTest(float dt, Robot &robot){
+	if(robot.isReady) return;
+
+	robot.goTo(targetVariables, dt/1000);
+
+
+}

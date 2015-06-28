@@ -107,9 +107,12 @@ float BezierCurve::factorial(int k){
 void BezierCurve::calculateLength(){}
 void BezierCurve::generatePath(){
 	visualisation.clear();
+	auto singleStepLengthTmp = singleStepLength;
+	singleStepLength = 0.01;
 	for(float k=0.f; k<=1; k+=0.01f){
 		visualisation.push_back(eval(k));
 	}
+	singleStepLength = singleStepLengthTmp;
 }
 void BezierCurve::reset(){
 	position = 0;
@@ -120,7 +123,7 @@ void BezierCurve::drawParams(){
 
 /// -------------------------------- BSPLINE --------------------------------
 glm::vec4 BSpline::nextPoint(){
-	position = glm::clamp(position + 0.003, 0.0, (double)numOfBeziers);
+	position = glm::clamp(position + singleStepLength, 0.0, (double)numOfBeziers);
 	finished = position == (double)numOfBeziers;
 	return eval(position);
 }
@@ -129,9 +132,12 @@ void BSpline::calculateLength(){}
 void BSpline::generatePath(){
 	makeNurbs();
 	visualisation.clear();
+	auto singleStepLengthTmp = singleStepLength;
+	singleStepLength = 0.01;
 	for(float k=0.f; k<=numOfBeziers; k+=0.01f){
 		visualisation.push_back(eval(k));
 	}
+	singleStepLength = singleStepLengthTmp;
 }
 void BSpline::makeNurbs(){
 	beziers.clear();
@@ -220,7 +226,7 @@ void BSpline::drawParams(){
 
 /// -------------------------------- HERMITECARDINAL --------------------------------
 glm::vec4 HermiteCardinal::nextPoint(){
-	position = glm::clamp(position + 0.003, 1.0, (double)(numOfSegments));
+	position = glm::clamp(position + singleStepLength, 1.0, (double)(numOfSegments));
 	finished = position == (double)(numOfSegments);
 	return eval(position);
 }
@@ -230,9 +236,15 @@ void HermiteCardinal::generatePath(){
 
 	visualisation.clear();
 	visualisation.reserve(numOfSegments*100);
+
+	auto singleStepLengthTmp = singleStepLength;
+	singleStepLength = 0.01;
+
 	for(float k=1.f; k<=numOfSegments; k+=0.01f){
 		visualisation.push_back(eval(k));
 	}
+
+	singleStepLength = singleStepLengthTmp;
 
 }
 void HermiteCardinal::calculateLength(){}
@@ -260,7 +272,7 @@ void HermiteCardinal::drawParams(){
 
 /// -------------------------------- HERMITEFINITEDIFFERENCE --------------------------------
 glm::vec4 HermiteFiniteDifference::nextPoint(){
-	position = glm::clamp(position + 0.003, 0.0, (double)(numOfSegments));
+	position = glm::clamp(position + singleStepLength, 0.0, (double)(numOfSegments));
 	finished = position == (double)(numOfSegments);
 	return eval(position);
 }
@@ -270,9 +282,15 @@ void HermiteFiniteDifference::generatePath(){
 
 	visualisation.clear();
 	visualisation.reserve(numOfSegments*100);
+
+	auto singleStepLengthTmp = singleStepLength;
+	singleStepLength = 0.01;
+
 	for(float k=0.f; k<=numOfSegments; k+=0.01f){
 		visualisation.push_back(eval(k));
 	}
+
+	singleStepLength = singleStepLengthTmp;
 
 }
 void HermiteFiniteDifference::calculateLength(){}
@@ -310,7 +328,7 @@ void HermiteFiniteDifference::drawParams(){
 
 /// -------------------------------- HERMITEFINITEDIFFERENCECLOSED --------------------------------
 glm::vec4 HermiteFiniteDifferenceClosed::nextPoint(){
-	position = glm::clamp(position + 0.003, 0.0, (double)(numOfSegments));
+	position = glm::clamp(position + singleStepLength, 0.0, (double)(numOfSegments));
 	finished = position == (double)(numOfSegments);
 	return eval(position);
 }
@@ -320,9 +338,16 @@ void HermiteFiniteDifferenceClosed::generatePath(){
 
 	visualisation.clear();
 	visualisation.reserve(numOfSegments*100);
+
+	auto singleStepLengthTmp = singleStepLength;
+	singleStepLength = 0.01;
+
+
 	for(float k=0.f; k<=numOfSegments; k+=0.01f){
 		visualisation.push_back(eval(k));
 	}
+
+	singleStepLength = singleStepLengthTmp;
 
 }
 void HermiteFiniteDifferenceClosed::calculateLength(){}

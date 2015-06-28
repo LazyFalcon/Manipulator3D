@@ -36,6 +36,7 @@ public:
 	std::vector<glm::vec4> points;
 	std::vector<glm::vec4> visualisation; // for draving
 	IInterpolator(const std::vector<glm::vec4> &points, Interpolator type) : type(type), points(points) {}
+	virtual glm::vec4 firstPoint(){return points[0];};
 	virtual glm::vec4 nextPoint() = 0;
 	virtual void generatePath() = 0;
 	virtual void reset() = 0;
@@ -91,7 +92,7 @@ class BezierCurve : public IInterpolator
 {
 public:
 	/// editable params
-	float singleStepLength {0.001f};
+	float singleStepLength {0.0001f};
 
 	///
 
@@ -152,6 +153,10 @@ public:
 	double length {0};
 	float weight {1};
 	int numOfBeziers;
+
+	/// editable params
+	float singleStepLength {0.0001f};
+
 	BSpline(const std::vector<glm::vec4> &points) : IInterpolator(points, Interpolator::BSpline) {
 		generatePath();
 	}
@@ -182,6 +187,10 @@ public:
 	std::vector<BezierCurve> beziers;
 	double position {0};
 	double length {0};
+
+	/// editable params
+	float singleStepLength {0.0001f};
+
 	NURBS(std::vector<glm::vec4> &points, std::vector<float> &weights) : IInterpolator(points, Interpolator::NURBS), weights(weights){
 		generatePath();
 	}
@@ -216,6 +225,9 @@ public:
 	glm::vec4 eval(double);
 	void drawParams();
 
+	/// editable params
+	float singleStepLength {0.0001f};
+
 	HermiteCardinal(std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteCardinal),
 		numOfSegments(_points.size()-2)
@@ -247,6 +259,9 @@ public:
 	glm::vec4 eval(double);
 	void drawParams();
 
+	/// editable params
+	float singleStepLength {0.0001f};
+
 	HermiteFiniteDifference(std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteFiniteDifference),
 		numOfSegments(_points.size()-1)
@@ -277,6 +292,9 @@ public:
 	void calculateLength();
 	glm::vec4 eval(double);
 	void drawParams();
+
+	/// editable params
+	float singleStepLength {0.0001f};
 
 	HermiteFiniteDifferenceClosed(std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteFiniteDifferenceClosed),

@@ -103,15 +103,16 @@ bool WaitCommand::update(RobotController &rc, float dt){
 
 bool RobotController::update(float dt){
 
-	if (commandIter == commands.end()){
+	if(commandIter == commands.end()){
 		stop();
 	}
 
-	if (state == RCStates::Pause)
+	if(state == RCStates::Pause)
 		return false;
 
-	if ((*commandIter)->update(*this, dt)){
+	if((*commandIter)->update(*this, dt)){
 		++commandIter;
+		(*commandIter)->init(*this);
 		if (commandIter == commands.end()){
 			stop();
 		}
@@ -120,15 +121,31 @@ bool RobotController::update(float dt){
 	return false;
 }
 
-/**
- * Zakadamy że step w nextPoint jest na tyle rzadki że nie bdzie to poroblem, dlugosć
- * kroku interpolatora bdzie trzeba dostosować
- * i usunac lerpa w solverze
- *
- * No wic w kazdej klatce robot przesuwa sie o jakas zadana odleglosc: wynika ona z zadanej predkosci  przyspieszenia
- * obsuga przyspieszen
- */
+
+void MoveCommand::init(RobotController &rc){
+	solver->solve(Point{ interpolator->firstPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
+	targetJointPosition = solver->result;
+	rc.robot->isReady = false;
+}
+double MoveCommand::calculateRequiredDistance(float dt){
+	return dt*velocity;
+}
+bool MoveCommand::calculateNextPoint(float dt){
+	auto distance = calculateRequiredDistance(dt);
+	while(distance > 0.0){
+
+	}
+
+}
 bool MoveCommand::update(RobotController &rc, float dt){
+	if(rc.robot->isReady){
+		rc.robot->goTo(targetJointPosition, dt/1000);
+		previousPoint = rc.robot->endEffector.position;
+		return false;
+	}
+
+
+
 	double expectedDistance = dt*velocity; // = getExpectedDistanceInFrame(dt);
 	double currentDistance = 0.0;
 	// bool pointReached = false;

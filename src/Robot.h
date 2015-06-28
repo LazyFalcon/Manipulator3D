@@ -60,12 +60,12 @@ class Robot {
 public:
 	std::vector<std::unique_ptr<Module>> chain;
 	Point endEffector;
-	bool isReady;
+	bool isReady { true };
 
 	std::vector<glm::vec4> forward(); // punkt ze wspó³¿êdnych
 	void inverse(); // wspó³¿êdne z punktu
 	void update(float dt);
-	std::vector<float> getVariables();
+	std::vector<double> getVariables();
 	bool goTo(const std::vector<double> &jointPositions, float dt);
 	Point simulate(std::vector<double> &vec);
 	std::vector<Point> simulateFullData(std::vector<double> &variables);
@@ -99,6 +99,7 @@ public:
 	bool performIK(Point aim, Robot &robot);
 };
 
-
+void robotTestInit(Robot &robot);
+void robotTest(float dt, Robot &robot);
 
 

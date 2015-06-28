@@ -14,15 +14,15 @@ public:
 		// delete [] array;
 	}
 	double& operator()(u32 h, u32 w=0);
-	float operator()(u32 h, u32 w=0) const ;
+	double operator()(u32 h, u32 w=0) const ;
 
 	Matrix operator+(Matrix &matrix);
 	Matrix operator*(Matrix &matrix);
-	Matrix operator*(float val);
-	float mulRowColumn(u32 row, u32 column, Matrix &second);
+	Matrix operator*(double val);
+	double mulRowColumn(u32 row, u32 column, Matrix &second);
 
-	void insertRow(u32 row, std::vector<float> &&vec);
-	void insertColumn(u32 column, std::vector<float> &&vec);
+	void insertRow(u32 row, const std::vector<double> &vec);
+	void insertColumn(u32 column, const std::vector<double> &vec);
 	friend std::ostream & operator <<(std::ostream& output, const Matrix &mat){
 
 		for(u32 h=0; h<mat.height; h++){
@@ -37,7 +37,7 @@ public:
 	std::vector<double>& getVector();
 };
 
-float dot(const Matrix &a, const Matrix &b);
+double dot(const Matrix &a, const Matrix &b);
 Matrix mul(const Matrix &a, const Matrix &b);
 
 

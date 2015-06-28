@@ -209,15 +209,18 @@ void renderLoop(){
 }
 void prerequisites(){
 	manuSideBar = make_unique<ManuSideBar>();
+	// robotTestInit(*g_RC.robot);
 
 }
 void updates(float dt){
 	// manuSideBar->run();
 	// BigSplineTest::update(dt);
 	//SomeTests();
+	// robotTest(dt, *g_RC.robot);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
+	Timer<double, std::ratio<1,1000>,30> dtimer;
 	Timer<uint32_t, std::ratio<1,1000>,100> msecTimer;
 	Timer<uint32_t, std::ratio<1,1000>,1> msecCounter;
 	Timer<double, std::ratio<1,1000>,60> precisetimer;
@@ -225,6 +228,7 @@ void mainLoop(){
 	// float step = 1.f/120.f;
 	float step = g_timeStep;
 	float dt = 0.f;
+	double ddt = 0.0;
 	uint32_t msdt = 0;
 	float accu10ms = 0.f;
 	glm::vec3 tmpAxis(0);
@@ -239,6 +243,7 @@ void mainLoop(){
 	_DebugLine_
 	while(!quit){
 		dt = timer();
+		ddt = dtimer();
 		msdt = msecTimer();
 		timeAccumulator += dt;
 		accu10ms += dt;
@@ -290,6 +295,7 @@ void mainLoop(){
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
+			// ui.rect().text("[][][][]").font("ui_12"s).button(g_RC.robot->isReady)();
 		ui.endTable();
 
 		ui.end();

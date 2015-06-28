@@ -30,7 +30,7 @@ Matrix::Matrix(const Matrix &matrix){
 double& Matrix::operator()(u32 h, u32 w){
 	return array[h*width + w];
 }
-float Matrix::operator()(u32 h, u32 w) const {
+double Matrix::operator()(u32 h, u32 w) const {
 	return array[h*width + w];
 }
 
@@ -55,7 +55,7 @@ Matrix Matrix::operator*(Matrix &matrix){
 	}
 	return out;
 }
-Matrix Matrix::operator*(float val){
+Matrix Matrix::operator*(double val){
 	Matrix out(height, width);
 	for(u32 w=0; w<width; w++)
 	for(u32 h=0; h<height; h++)
@@ -63,18 +63,18 @@ Matrix Matrix::operator*(float val){
 
 	return out;
 }
-float Matrix::mulRowColumn(u32 row, u32 column, Matrix &second){
+double Matrix::mulRowColumn(u32 row, u32 column, Matrix &second){
 	float out(0);
 	for(u32 w=0; w<width; w++)
 	// for(u32 h=0; h<second.height; h++)
 		out += array[row*width + w] * second(w, column);
 	return out;
 }
-void Matrix::insertRow(u32 row, std::vector<float> &&vec){
+void Matrix::insertRow(u32 row, const std::vector<double> &vec){
 	for(u32 i=0; i<width && i<vec.size(); i++)
 		array[row*width + i] = vec[i];
 }
-void Matrix::insertColumn(u32 column, std::vector<float> &&vec){
+void Matrix::insertColumn(u32 column, const std::vector<double> &vec){
 	for(u32 i=0; i<height && i<vec.size(); i++)
 		array[width*i + column] = vec[i];
 }
@@ -102,7 +102,7 @@ std::vector<double>& Matrix::getVector(){
 }
 
 
-float dot(const Matrix &a, const Matrix &b){
+double dot(const Matrix &a, const Matrix &b){
 	float out(0);
 	for(u32 i=0; i<a.height; i++)
 		out += a(i)*b(i);
