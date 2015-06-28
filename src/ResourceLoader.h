@@ -53,6 +53,7 @@ public:
 	int count {0};
 
 	void loadResources(CFG::Node &cfg);
+	void reloadShader(const string &name, const string &vert, const string &frag);
 	bool loadShader(CFG::Node &cfg);
 	bool loadMesh(string meshName);
 	bool loadMesh(CFG::Node &cfg);

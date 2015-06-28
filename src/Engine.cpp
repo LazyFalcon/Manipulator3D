@@ -334,7 +334,9 @@ void init(CFG::Node &cfg){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, window_width, window_height, 0, GL_RED, GL_FLOAT, NULL);
 	glBindTexture(GL_TEXTURE_2D, shadowMapBuffer);
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+		// glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 		glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -472,6 +474,7 @@ void generateShadowMap(Scene &scene){
 
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
+	// glCullFace(GL_FRONT);
 	glEnable(GL_DEPTH_TEST);
 
 	auto &lamp = scene.pointLamps[0];
@@ -512,6 +515,7 @@ void generateShadowMap(Scene &scene){
 	}
 	glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// glCullFace(GL_BACK);
 }
 void setup(Scene &scene){
 	auto ctmp = colorHex(clearColor);

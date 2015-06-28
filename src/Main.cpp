@@ -308,6 +308,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	if(mods == GLFW_MOD_ALT && key == GLFW_KEY_F4)
 		quit = true;
 
+	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
+		ResourceLoader loader(scene.resources);
+		loader.reloadShader("EnviroShade", "EnviroShade", "EnviroShade");
+		loader.reloadShader("EnviroDefColorOnly", "EnviroDef", "EnviroDefColorOnly");
+	}
+
 	ui.keyInput(key, action, mods);
 	if(UI::GetInput) return;
 	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){

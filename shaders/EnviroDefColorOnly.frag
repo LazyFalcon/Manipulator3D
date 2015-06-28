@@ -3,7 +3,7 @@
 uniform vec4 color;
 
 uniform sampler2D metalTex;
-uniform sampler2D shadowTex;
+uniform sampler2DShadow shadowTex;
 uniform vec4 u_eyePos;
 
 uniform vec4 u_lightPos;
@@ -42,65 +42,64 @@ float attenuation(float d, float s){
 	return 1.1-(clamp(d, 0.0, s)/s);
 }
 
-// vec4 fullLightComputation(){}
 vec2 kernel[5] = vec2[]
 (
-	vec2(0.0, 0.0), vec2(1.0, 1.0), vec2(-1.0, 1.0), vec2(-1.0, -1.0), vec2(1.0, -1.0)
+	vec2(0.0, 0.0),// vec2(1.0, 1.0), vec2(-1.0, 1.0), vec2(-1.0, -1.0), vec2(1.0, -1.0)
+	vec2( -0.94201624, -0.39906216 ),
+  vec2( 0.94558609, -0.76890725 ),
+  vec2( -0.094184101, -0.92938870 ),
+  vec2( 0.34495938, 0.29387760 )
 );
 
-const float bias = 0.0003;
-void shadowSample(in vec3 coords, in vec2 offset, inout float factor){
-	factor += float( texture(shadowTex, vec2(coords.xy + offset)).r*2 - 1 > coords.z-bias);
-}
+const float DepthBias = -0.0007;
 
 
 void main(void){
-	// float metal = 1;
 	float metal = texture(metalTex, uv*3).r;
 	vec4 vertexInShadow = in_vertexInShadow;
 	vertexInShadow.xyz /= vertexInShadow.w;
-	vertexInShadow.xy = vertexInShadow.xy * 0.5 + vec2(0.5);// + vec2(0.5/512);
-	// vec2 shadowTexCoords = in_vertexInShadow.xy/in_vertexInShadow.w * 0.5 + vec2(0.5);// + vec2(0.5/512);
-	// float depthFromTex = texture(shadowTex, shadowTexCoords).r;
-	// depthFromTex = depthFromTex*2 - 1;
-	float lightDepth = in_vertexInShadow.z/in_vertexInShadow.w;
-	lightDepth -= bias;
+	vertexInShadow.xy = vertexInShadow.xy * 0.5 + vec2(0.5);
+	vertexInShadow.z = vertexInShadow.z * 0.5 + 0.5;
 
 	vec4 N = normalize(in_normal);
-	vec4 l_shade = vec4(0.2);
-	vec4 l_spect = vec4(0);
 	vec4 L = in_vertex - u_lightPos;
 	float d = length(L);
 	L /= d;
+	// vec4 l_shade = vec4(0.4 + clamp(dot(-N, L), -0.1,0.0));
+	vec4 l_shade = vec4(0.1);
+	vec4 l_spect = vec4(0);
 
 	float shadowFactor = 0.0;
-	float PCFRadius = 1;
-	float shadowMapStep = 0.5/1024;
+
+	float m = max( abs(N.z / N.x), abs(N.z / N.y) );
+	// float m = max( abs(N.z), max(abs(N.x), abs(N.y) ));
+	float lightAngle = dot(-N,L);
+	float bias = (lightAngle * DepthBias) + DepthBias;
+
 
 	for(int i=0; i<5; i++){
-		shadowSample(
-			vertexInShadow.xyz,
-			kernel[i] * shadowMapStep * PCFRadius,
-			shadowFactor
-		);
+		vec3 uvz = vec3(vertexInShadow.xy+kernel[i]/2048, vertexInShadow.z + bias);
+		shadowFactor += texture(shadowTex, uvz);
 	}
-	shadowFactor /= 5;
+	// shadowFactor = 0.25 + shadowFactor/5;
+	shadowFactor = shadowFactor/5;
+	// shadowFactor = 0.3 + clamp(shadowFactor,0,1)-1;
+	// shadowFactor = shadowFactor/5;
 
 
-	float shadowIntensity = 1.0;
+	// float shadowIntensity = 1.0;
+	float shadowIntensity = shadowFactor;
 	// if(lightDepth < depthFromTex && dot(-N,L) > 0){
-	// if(shadowFactor > 0.0 && dot(-N,L) > 0){
-	if(shadowFactor > 0.0){
+	// if(shadowFactor > 0.1 && dot(-N,L) > 0){
+	if(shadowFactor > 0.2 && lightAngle > -0.1){
 		// shadowIntensity = shadowFactor;
-		shadowIntensity = 1.0;
+		// shadowIntensity = 1.0;
 
 		// N *= metal;
 		vec4 E = in_vertex - u_eyePos;
 		float e = length(E);
 		E /= e;
 
-		// vec4 l_shade = vec4(1);
-		// vec4 l_spect = vec4(0);
 		l_shade = shade(N,L, u_energy)*attenuation(d, u_size)*u_color*shadowIntensity;
 		l_spect = spectacular(N, L, E)*metal*u_color*attenuation(e, 20.0);
 
@@ -113,5 +112,6 @@ void main(void){
 	}
 	gl_FragData[0] = color*l_shade + l_spect;
 	// gl_FragData[0] = shadowFactor;
+	// gl_FragData[0] = m*0.5 + 0.5;
 	gl_FragData[1] = vec4(N.xyz, 1.0);
 }

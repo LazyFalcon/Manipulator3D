@@ -131,6 +131,12 @@ bool ResourceLoader::loadImage(const string &name){
 
 	return true;
 }
+void ResourceLoader::reloadShader(const string &name, const string &vert, const string &frag){
+	glDeleteProgram(shaders[name]);
+	shaders[name] = compileShader(vert+".vert", frag+".frag");
+	auto err = glGetError();
+	if(err)logger::log<<"\t>> "<<err<<endl;
+}
 GLuint ResourceLoader::compileShader(string vertex, string fragment){
 	GLuint f, v;
 	GLuint shader;
