@@ -125,15 +125,15 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 		// }
 		variables = gradient + variables;
-		robot.clamp(variables.getVector());
+		// robot.clamp(variables.getVector());
 		endEffector = robot.simulate(variables.getVector());
 
 		positionError = glm::distance(endEffector.position, aim.position);
 	}
 	endPosition = endEffector.position;
 	result = variables.getVector();
-	// succes = positionError < minError*5;
-	succes = true;
+	succes = positionError < minError;
+	// succes = true;
 	return succes;
 }
 

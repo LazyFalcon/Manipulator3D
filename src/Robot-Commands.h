@@ -18,7 +18,6 @@ public:
 	virtual vector<glm::vec4>& getPath() = 0;
 	virtual ~ICommand(){
 	}
-
 	std::string name = "--empty--";
 };
 

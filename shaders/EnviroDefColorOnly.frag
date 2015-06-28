@@ -66,7 +66,7 @@ void main(void){
 	float d = length(L);
 	L /= d;
 	// vec4 l_shade = vec4(0.4 + clamp(dot(-N, L), -0.1,0.0));
-	vec4 l_shade = vec4(0.1);
+	vec4 l_shade = vec4(0.4);
 	vec4 l_spect = vec4(0);
 
 	float shadowFactor = 0.0;
@@ -82,7 +82,7 @@ void main(void){
 		shadowFactor += texture(shadowTex, uvz);
 	}
 	// shadowFactor = 0.25 + shadowFactor/5;
-	shadowFactor = shadowFactor/5;
+	shadowFactor = 0.4 + shadowFactor/5;
 	// shadowFactor = 0.3 + clamp(shadowFactor,0,1)-1;
 	// shadowFactor = shadowFactor/5;
 

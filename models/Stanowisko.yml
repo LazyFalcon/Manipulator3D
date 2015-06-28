@@ -6,7 +6,7 @@ Robot:
      Name: Robot-Base
      Vec: [0.0000, 0.0000, 0.2915]
      Axis: [0.0000, 0.0000, 1.0000]
-     Min: -1.0
+     Min: -370
      Max: 370
    ChildJoint: 
      Vec: [0.0000, 0.0000, 1.3012]
@@ -16,8 +16,8 @@ Robot:
      Name: Robot-Base.001
      Vec: [0.0000, -0.7211, 1.4961]
      Axis: [-1.0000, -0.0000, -0.0000]
-     Min: -1.0
-     Max: 370
+     Min: -45
+     Max: 90
    ChildJoint: 
      Vec: [-0.0000, -0.1964, 1.6182]
  - Name: Plane.003
@@ -26,8 +26,8 @@ Robot:
      Name: Robot-Base.002
      Vec: [-0.0001, 1.2193, 0.0973]
      Axis: [-1.0000, -0.0000, 0.0000]
-     Min: -1.0
-     Max: 370
+     Min: 120
+     Max: 90
    ChildJoint: 
      Vec: [0.0001, 2.0640, 0.0344]
  - Name: Plane.005
@@ -36,7 +36,7 @@ Robot:
      Name: Robot-Base.003
      Vec: [0.0005, -2.4634, -0.0337]
      Axis: [-0.0002, 1.0000, -0.0000]
-     Min: -1.0
+     Min: -370
      Max: 370
    ChildJoint: 
      Vec: [0.0005, 3.2169, 0.0575]
@@ -46,8 +46,8 @@ Robot:
      Name: Robot-Base.004
      Vec: [-0.0007, 0.0063, -0.0170]
      Axis: [-1.0000, 0.0000, -0.0000]
-     Min: -1.0
-     Max: 370
+     Min: -120
+     Max: 120
    ChildJoint: 
      Vec: [-0.0005, 0.3187, -0.0019]
  - Name: Plane.006
@@ -56,10 +56,10 @@ Robot:
      Name: Robot-Base.005
      Vec: [0.0005, -0.3187, 0.0019]
      Axis: [-0.0001, 1.0000, -0.0000]
-     Min: -1.0
+     Min: -370
      Max: 370
    ChildJoint: 
-     Vec: [-0.0003, 0.9222, -0.0029]
+     Vec: [-0.0005, 0.9222, -0.0029]
 Meshes:
  - Name: Circle.001
    Position: [0.0000, 0.0000, 0.0000]
@@ -137,6 +137,10 @@ Meshes:
    Position: [-5.5557, -1.4896, 1.4326]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1776, 0.2579, 0.2810]
+ - Name: Plane.008
+   Position: [0.0000, 0.0000, -1.4430]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1781, 0.8000, 0.7771]
  - Name: Podloga
    Position: [0.0000, 0.0000, 0.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -174,7 +178,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [1.0000, 1.0000, 1.0000]
  - Name: Sphere.006
-   Position: [8.2872, 9.0290, 5.4957]
+   Position: [8.2872, 9.0290, 14.0512]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [1.0000, 1.0000, 1.0000]
  - Name: Stol
@@ -190,7 +194,7 @@ Lamps:
    Energy: 2.0000
    Type: POINT
  - Name: Point.001
-   Position: [8.2872, 9.0290, 5.4957]
+   Position: [8.2872, 9.0290, 14.0512]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
    Color: [1.0000, 0.9472, 0.7988]
    Falloff_distance: 20.0000

@@ -187,7 +187,7 @@ void renderLoop(){
 	Engine::postprocess(scene);
 	Engine::drawOutline(scene);
 
-	//Engine::drawLineStrip(g_RC.commands.front()->m_interpolator->visualisation, 0x0000b0a0);
+	Engine::drawLineStrip(g_RC.getCommand()->getPath(), 0x0000b0a0);
 	//Engine::drawLineStrip(g_RC.commands.front()->m_interpolator->points, 0x00b000a0);
 
 	//if (g_RC.state != RCStates::Pause)
