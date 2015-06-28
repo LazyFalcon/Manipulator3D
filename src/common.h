@@ -14,6 +14,7 @@ extern glm::vec4 		CameraNormal;
 extern const float 	PI;
 extern const float 	pi;
 extern const float 	toRad;
+extern const double dpi;
 extern bool 				GUI;
 extern glm::mat4 		identity;
 extern bool 				rClick;

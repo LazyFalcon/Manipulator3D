@@ -28,6 +28,7 @@ glm::vec4 		CameraRight;
 glm::vec4 		CameraNormal;
 const float 	PI = 3.141592f;
 const float 	pi = 3.141592f;
+const double  dpi = 3.141592653589793;
 const float 	toRad = pi/180;
 const float 	toDeg = 180/pi;
 bool 					GUI = true;
@@ -158,8 +159,8 @@ int main(){
 	scene.robot.chain[3]->value = 30*toRad;
 
 
-	for(auto &it : scene.robot.chain)
-	steeringConsole.buttons.push_back(PlusMinusWidget(it));
+	// for(auto &it : scene.robot.chain)
+	// steeringConsole.buttons.push_back(PlusMinusWidget(it));
 
 	 g_RC.robot = &(scene.robot);
 	 g_RC.solver = new JT1;

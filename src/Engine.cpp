@@ -486,7 +486,7 @@ void generateShadowMap(Scene &scene){
 	glm::vec4 lvVert = glm::normalize(cross(lv, lvHorizon));
 
 
-	glm::mat4 projection = glm::perspective(1.9f, 1.f, 1.f, 50.f);
+	glm::mat4 projection = glm::perspective(1.5f, 1.f, 1.f, 50.f);
 	glm::mat4 view = identity;
 	view = glm::lookAt(lamp.position.xyz(), lv.xyz(), glm::vec3(0,0,1));
 

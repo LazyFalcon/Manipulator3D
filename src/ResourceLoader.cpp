@@ -334,7 +334,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		else if(it["Type"].value == "hinge")
 			type = HINGE;
 
-		auto module = std::make_shared<Module>();
+		auto module = std::make_unique<Module>();
 		cout<<"-- "+it["Name"].value<<endl;
 		module->type = type;
 		module->vecToA = it["ParentJoint"]["Vec"].asVec30();
@@ -348,7 +348,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->maxAcceleration = 0.2; /// rad/s^2
 
 
-		robot.chain.push_back(module);
+		robot.chain.push_back(std::move(module));
 
 	}
 	return true;

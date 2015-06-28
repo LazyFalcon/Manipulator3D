@@ -128,11 +128,11 @@ Matrix buildJacobian(Robot &robot){
 		auto &module = robot.chain[i];
 		{ // forward kinematics
 			if(module->type == HINGE){
-				transform = transform*glm::angleAxis(module->value, module->axis.xyz());
+				transform = transform*glm::angleAxis(float(module->value), module->axis.xyz());
 				position += transform*module->vecToA;
 			}
 			else if(module->type == PRISMATIC){
-				position += transform*(module->vecToA + module->axis*module->value);
+				position += transform*(module->vecToA + module->axis*float(module->value));
 			}
 			axis = module->entity->quat*axis;
 			position += transform*module->vecToB;

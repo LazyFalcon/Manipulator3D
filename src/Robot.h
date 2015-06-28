@@ -13,6 +13,13 @@ struct Point {
 
 class Module {
 public:
+	virtual ~Module(){}
+	Module(){
+		lastVelocity = 0.0;
+		lastAcceleration = 0.0;
+		value = 0.0;
+	}
+
 	int type;
 	glm::vec4 axis;
 	glm::vec4 vecToA;
@@ -23,7 +30,11 @@ public:
 	double value;
 	double maxVelocty;
 	double maxAcceleration;
+	double lastVelocity;
+	double lastAcceleration;
 
+	bool goTo(double target, float dt);
+	double computeMaxStep(float dt);
 	glm::vec4 getMainAxis(){
 		return glm::normalize(vecToA + vecToB);
 	}
@@ -49,12 +60,13 @@ class Robot {
 public:
 	std::vector<std::unique_ptr<Module>> chain;
 	Point endEffector;
+	bool isReady;
 
 	std::vector<glm::vec4> forward(); // punkt ze wspó³¿êdnych
 	void inverse(); // wspó³¿êdne z punktu
 	void update(float dt);
 	std::vector<float> getVariables();
-	bool goTo(const std::vector<double> &jointPositions);
+	bool goTo(const std::vector<double> &jointPositions, float dt);
 	Point simulate(std::vector<double> &vec);
 	std::vector<Point> simulateFullData(std::vector<double> &variables);
 	glm::vec4 clamp(std::vector<double> &vec);
