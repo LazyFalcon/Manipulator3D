@@ -87,7 +87,7 @@ MoveCommand& RobotController::move(IInterpolator *interpolator, const std::strin
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
 
-	newCommand->velocity = 0.1;
+	newCommand->velocity = 0.8;
 	newCommand->solver = new  JT1();
 
 	return *newCommand;
@@ -135,11 +135,6 @@ void MoveCommand::init(RobotController &rc){
 	solver->solve(Point{ interpolator->firstPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
 	rc.robot->isReady = false;
-	logger::log<<"command "+name+" start"<<std::endl;
-	std::cout<<targetJointPosition.size()<<std::endl;
-	for(auto &it : targetJointPosition){
-		std::cout<<"* "<<it<<" * "<<std::endl;
-	}
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
@@ -153,17 +148,18 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 		requiredDistance -= glm::distance(previousPoint, newTarget);
 	}
 
-	logger::log<<"Calculating new point"+glm::to_string(newTarget)<<std::endl;
 	return newTarget;
 }
 bool MoveCommand::update(RobotController &rc, float dt){
 	if(not rc.robot->isReady){
 		rc.robot->goTo(targetJointPosition, dt);
 		previousPoint = rc.robot->endEffector.position;
+		// rc.robot->insertVariables(targetJointPosition);
 		return false;
 	}
 	if(rc.robot->isReady && interpolator->finished){
 		interpolator->reset();
+		logger::log<<"job done"<<endl;
 		return true;
 	}
 

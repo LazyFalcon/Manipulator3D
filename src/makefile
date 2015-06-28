@@ -36,8 +36,8 @@ LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
 
 
-../bin/Manipulatork3D-v0_3: $(OBJS)
-	$(CXX) $(OBJS) -D_GLIBCXX_USE_CXX11_ABI=0 -o ../bin/Manipulatork3D-v0_3 $(LIBS)
+../bin/Manipulatork3D-v0_4: $(OBJS)
+	$(CXX) $(OBJS) -D_GLIBCXX_USE_CXX11_ABI=0 -o ../bin/Manipulatork3D-v0_4 $(LIBS)
 
 ../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Menu-SideBar.h Robot-Commands.h Robot-CommandBuilders.h Widgets.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
@@ -60,13 +60,13 @@ LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 #-----------------------------------------------------
 
 ../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h
-	$(CXX) -c $(CXXFLAGS) -o2  Robot-Commands.cpp -o ../bin/Robot-Commands.o
+	$(CXX) -c $(CXXFLAGS) -o2 -g Robot-Commands.cpp -o ../bin/Robot-Commands.o
 
 ../bin/Robot-CommandBuilders.o: $(UTIL)/IMGUI_V4.h Robot-CommandBuilders.cpp Robot-CommandBuilders.h
-	$(CXX) -c $(CXXFLAGS) -o2  Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
+	$(CXX) -c $(CXXFLAGS) -o2 -g Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
 
 ../bin/Menu-SideBar.o: $(UTIL)/IMGUI_V4.h Menu-SideBar.cpp Menu-SideBar.h Menu-Tabs.cpp
-	$(CXX) -c $(CXXFLAGS) -o2  Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
+	$(CXX) -c $(CXXFLAGS) -o2 -g Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
 
 #-----------------------------------------------------
 

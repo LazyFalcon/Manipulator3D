@@ -135,7 +135,7 @@ bool Module::goTo(double target, float dt){
 	auto maxStep = computeMaxStep(dt);
 	value += std::min(delta, maxStep);
 	lastVelocity = std::min(delta, maxStep) / dt;
-	std::cout<<delta<<std::endl;
+	// std::cout<<delta<<std::endl;
 	return false;
 }
 

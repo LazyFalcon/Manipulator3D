@@ -175,7 +175,7 @@ int main(){
 
 void fastLoop(float step){
 	scene.robot.update(step);
-	g_RC.update(step);
+	g_RC.update(step/1000.0f);
 }
 void renderLoop(){
 	// Engine::plotGraphs();

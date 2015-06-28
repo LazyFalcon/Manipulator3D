@@ -64,12 +64,12 @@ bool JT0::performIK(Point aim, Robot &robot){
 
 //TODO: dodać sprawdzanie orientacji jeszcze
 bool JT1::solve(Point aim, Robot &robot){
-	// if(performIK(aim, robot))
+	performIK(aim, robot);
 		// robot.insertVariables(result);
 	return glm::distance(endPosition, aim.position) < 0.005;
 }
 bool JT1::performIK(Point aim, Robot &robot){
-	int iterationLimit = 200;
+	int iterationLimit = 2000;
 	float minError = 0.001f;
 
 	auto endEffector = robot.endEffector;
