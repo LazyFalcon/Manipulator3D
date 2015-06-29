@@ -262,7 +262,7 @@ public:
 	/// editable params
 	float singleStepLength {0.0001f};
 
-	HermiteFiniteDifference(std::vector<glm::vec4> &_points) :
+	HermiteFiniteDifference(const std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteFiniteDifference),
 		numOfSegments(_points.size()-1)
 		{

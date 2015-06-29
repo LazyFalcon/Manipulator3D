@@ -36,14 +36,21 @@ void Linear::nextSection(){
 void Linear::generatePath(){
 	visualisation.clear();
 	visualisation.reserve(100);
+	auto singleStepLengthTmp = singleStepLength;
+	singleStepLength = 0.01;
 	maxSections = points.size()-1;
 	section = -1;
 	step = 0;
 	nextSection();
 	finished = false;
+
+
+
 	while(!finished){
 		visualisation.push_back(nextPoint());
 	}
+
+	singleStepLength = singleStepLengthTmp;
 }
 void Linear::reset(){
 	finished = false;
@@ -51,7 +58,7 @@ void Linear::reset(){
 	nextSection();
 }
 void Linear::genNextStep(){
-	float velocity = 0.0005; // m/s
+	float velocity = 0.005; // m/s
 	float stepLen = velocity/g_timeStep;
 
 	int next = (currentPoint+1)%points.size();

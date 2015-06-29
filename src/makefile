@@ -36,8 +36,8 @@ LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
 
 
-../bin/Manipulatork3D-v0_4: $(OBJS)
-	$(CXX) $(OBJS) -D_GLIBCXX_USE_CXX11_ABI=0 -o ../bin/Manipulatork3D-v0_4 $(LIBS)
+../bin/asfdasgfaerf: $(OBJS)
+	$(CXX) $(OBJS) -D_GLIBCXX_USE_CXX11_ABI=0 -o ../bin/asfdasgfaerf $(LIBS)
 
 ../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Menu-SideBar.h Robot-Commands.h Robot-CommandBuilders.h Widgets.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o

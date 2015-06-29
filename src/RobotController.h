@@ -31,6 +31,9 @@ public:
 	std::list<std::unique_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
 
+	~RobotController(){
+
+	}
 	RobotController(){
 		commandIter = commands.end();
 	}

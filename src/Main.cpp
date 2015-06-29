@@ -167,9 +167,9 @@ int main(){
 	 RCTest(g_RC);
 	glfwShowWindow(window);
 	mainLoop();
-	Engine::clear();
+	// Engine::clear();
 	// logger::close();
-	delete globalResources;
+	// delete globalResources;
 	return 0;
 }
 
@@ -188,7 +188,8 @@ void renderLoop(){
 	Engine::postprocess(scene);
 	Engine::drawOutline(scene);
 
-	Engine::drawLineStrip(g_RC.getCommand()->getPath(), 0x0000b0a0);
+	Engine::drawLineStrip(g_RC.getCommand()->getPath(), 0x0000b0f0);
+	Engine::drawLineStrip(g_RC.getCommand()->getPolyline(), 0xff00b0f0);
 	//Engine::drawLineStrip(g_RC.commands.front()->m_interpolator->points, 0x00b000a0);
 
 	//if (g_RC.state != RCStates::Pause)
@@ -295,6 +296,7 @@ void mainLoop(){
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
+			ui.rect().text(std::string(g_RC.robot->isReady ? "":"not ") + "ready").font("ui_12"s)();
 			// ui.rect().text("[][][][]").font("ui_12"s).button(g_RC.robot->isReady)();
 		ui.endTable();
 

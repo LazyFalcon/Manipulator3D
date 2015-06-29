@@ -117,6 +117,7 @@ glm::vec4 Robot::insertVariables(std::vector<double> &vec){
 
 bool Robot::goTo(const std::vector<double> &jointPositions, float dt){
 	u32 loopSize = std::min(chain.size(), jointPositions.size());
+	isReady = true;
 	for(u32 i=0; i<loopSize; i++){
 		isReady &= chain[i]->goTo(jointPositions[i], dt);
 	}

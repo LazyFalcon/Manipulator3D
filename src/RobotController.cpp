@@ -17,32 +17,15 @@ extern UI::IMGUI ui;
 extern float g_timeStep;
 
 void RCTest(RobotController &rc){
-	glm::vec4 p0(0, 4, 2, 1);
-	glm::vec4 p1(0.5, 4, 4, 1);
-	glm::vec4 p2(1.5, 4, 2, 1);
-	glm::vec4 p3(3, 3, 4, 1);
-	glm::vec4 p4(3, 4, 2, 1);
-	glm::vec4 p5(4, 2, 4, 1);
-	glm::vec4 p6(5, 3, 2, 1);
-	glm::vec4 p7(6, 1, 4, 1);
-
-	glm::vec4 c1(6, 1, 5, 1);
-	glm::vec4 c2(1, -6, 6, 1);
-	glm::vec4 c3(-6, -1, 6, 1);
-	glm::vec4 c4(-1, 6, 6, 1);
-	glm::vec4 c5(6, 1, 6, 1);
-	glm::vec4 c6(1, -6, 6, 1);
-	glm::vec4 c7(-6, -1, 6, 1);
-	glm::vec4 c8(-1, 6, 6, 1);
+	glm::vec4 p0(1, 6, 3, 1);
+	glm::vec4 p1(4, 0, 5, 1);
+	glm::vec4 p2(1, -6, 2, 1);
+	glm::vec4 p3(0, -6, 3, 1);
+	glm::vec4 p4(-1, -6, 2, 1);
+	glm::vec4 p5(-1, -6, 1.9, 1);
 
 	std::cout<<"Start test"<<std::endl;
-	// rc.path(new BezierCurveNonUniform({p1, p2, p3, p4, p5, p1}, {0.5f, 0.5f, 1.5f, 2.f, 1.f, 0.5f}))();
-	// rc.path(new BSpline({p0, p1, p2, p3, p4, p5, p6, p0}))();
-	rc.move(new Linear({ c1, c2, c3, c4, c5 }), "move 1");
-	rc.wait(5000);
-	rc.move(new BSpline({ c5, c4, c2, c1 }), "move 2");
-	rc.move(new BSpline({ c5, c4, c3, c2, c1 }), "move 3");
-	rc.move(new BSpline({ c4, c3, c1, c2, c1 }), "move 4");
+	rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5}), "move 4");
 
 }
 
@@ -82,12 +65,12 @@ MoveCommand& RobotController::move(IInterpolator *interpolator, const std::strin
 	MoveCommand *newCommand = new MoveCommand(interpolator);
 	newCommand->name = name;
 	newCommand->isRuning = false;
-	commands.push_back(std::unique_ptr<ICommand>(newCommand));
+	commands.emplace_back(newCommand);
 
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
 
-	newCommand->velocity = 0.8;
+	newCommand->velocity = 35.8;
 	newCommand->solver = new  JT1();
 
 	return *newCommand;
@@ -135,14 +118,20 @@ void MoveCommand::init(RobotController &rc){
 	solver->solve(Point{ interpolator->firstPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
 	rc.robot->isReady = false;
+	std::cout<<"Init command"<<std::endl;
+
+
+	previousPoint = rc.robot->endEffector.position;
+	rc.robot->insertVariables(targetJointPosition);
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
-	requiredDistance += calculateRequiredDistance(dt);
+	// requiredDistance += calculateRequiredDistance(dt);
+	requiredDistance = calculateRequiredDistance(dt);
 	glm::vec4 newTarget;
-	std::cout<<requiredDistance<<std::endl;
+
 	while(requiredDistance > 0.0 && (not interpolator->finished)){
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);
@@ -151,23 +140,26 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 	return newTarget;
 }
 bool MoveCommand::update(RobotController &rc, float dt){
+
+	// previousPoint = rc.robot->endEffector.position;
+
 	if(not rc.robot->isReady){
 		rc.robot->goTo(targetJointPosition, dt);
 		previousPoint = rc.robot->endEffector.position;
-		// rc.robot->insertVariables(targetJointPosition);
+		rc.robot->insertVariables(targetJointPosition);
 		return false;
 	}
-	if(rc.robot->isReady && interpolator->finished){
-		interpolator->reset();
-		logger::log<<"job done"<<endl;
-		return true;
-	}
-
+	// if(rc.robot->isReady && interpolator->finished){
+		// interpolator->reset();
+		// logger::log<<"job done"<<endl;
+		// return true;
+	// }
 	glm::vec4 newTarget = calculateNextPoint(dt);
+	// std::cout<<glm::to_string(newTarget)<<std::endl;
 
 	solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
-
 	targetJointPosition = solver->result;
+
 	rc.robot->isReady = false;
 
 	return false;

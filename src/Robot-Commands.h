@@ -17,6 +17,7 @@ public:
 	virtual void init(RobotController &rc) = 0;
 	virtual bool update(RobotController &rc, float dt) = 0;
 	virtual vector<glm::vec4>& getPath() = 0;
+	virtual vector<glm::vec4>& getPolyline() = 0;
 	virtual ~ICommand(){}
 	std::string name = "--empty--";
 	bool isRuning;
@@ -29,11 +30,16 @@ public:
 	MoveCommand(){}
 	MoveCommand(IInterpolator *interpolator) : interpolator(interpolator){}
 	~MoveCommand(){
-		std::cerr << "delete move command\n";
+		// std::cerr << "delete move command\n";
+		delete interpolator;
+		delete solver;
 	}
 
 	vector<glm::vec4>& getPath(){
 		return interpolator->visualisation;
+	}
+	vector<glm::vec4>& getPolyline(){
+		return interpolator->points;
 	}
 	void init(RobotController &rc);
 	bool update(RobotController &rc, float dt);
@@ -59,16 +65,21 @@ class WaitCommand : public ICommand
 	float timeLeft = 0.f;
 public:
 	~WaitCommand(){
-		std::cerr << "delete wait command\n";
+		// std::cerr << "delete wait command\n";
 	}
 	WaitCommand(float time) : timeLeft(time){}
 	void init(RobotController &rc){
 		isRuning = true;
 	};
 	bool update(RobotController &rc, float dt);
-	vector<glm::vec4>& getPath() {
+	vector<glm::vec4>& getPath(){
 		return fakePath;
 	}
+	vector<glm::vec4>& getPolyline(){
+		return fakePath;
+	}
+
+
 };
 class UseEffectorCommand : public ICommand {};
 class ConditionalCommand : public ICommand {};
