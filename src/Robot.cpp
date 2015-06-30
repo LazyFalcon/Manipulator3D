@@ -30,7 +30,7 @@ void Robot::update(float dt){
 	glm::quat transform{0,0,0,1};
 	for(auto &module : chain){
 		if(module->type == HINGE){
-			module->value = period(float(module->value), -2*pi, 2*pi);
+			module->value = period(module->value);
 			// module->value = glm::clamp(module->value, module->min, module->max);
 			transform = transform*glm::angleAxis(float(module->value), glm::normalize(module->axis.xyz()));
 			position += transform*module->vecToA;
@@ -63,7 +63,7 @@ Point Robot::simulate(std::vector<double> &variables){
 	for(int i=0; i<getSize(); i++){
 		auto &module = chain[i];
 		if(module->type == HINGE){
-			variables[i] = period(variables[i], -2*pi, 2*pi);
+			variables[i] = period(variables[i]);
 			transform = transform*glm::angleAxis((float)variables[i], glm::normalize(module->axis.xyz()));
 			position += transform*module->vecToA;
 		}
@@ -85,7 +85,7 @@ std::vector<Point> Robot::simulateFullData(std::vector<double> &variables){
 	for(int i=0; i<getSize(); i++){
 		auto &module = chain[i];
 		if(module->type == HINGE){
-			module->value = period(module->value, 0.f, 2*pi);
+			module->value = period(module->value);
 			transform = transform*glm::angleAxis((float)variables[i], glm::normalize(module->axis.xyz()));
 			position += transform*module->vecToA;
 		}
@@ -128,13 +128,14 @@ double Module::computeMaxStep(float dt){
 	return step;
 }
 bool Module::goTo(double target, float dt){
-	if(glm::epsilonEqual(target, value, jointEpsilon)){
+	auto delta = circleDistance(target, value);
+	if(glm::epsilonEqual(delta, 0.0, jointEpsilon)){
 		return true;
 	}
 
-	auto delta = target - value;
-	auto maxStep = computeMaxStep(dt);
-	value += std::min(delta, maxStep);
+	// auto delta = target - value;
+	auto maxStep = computeMaxStep(dt*5);
+	value + period(value + std::min(abs(delta), maxStep)*sign(delta));
 	lastVelocity = std::min(delta, maxStep) / dt;
 	// std::cout<<delta<<std::endl;
 	return false;

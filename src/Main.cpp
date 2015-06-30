@@ -190,20 +190,8 @@ void renderLoop(){
 
 	Engine::drawLineStrip(g_RC.getCommand()->getPath(), 0x0000b0f0);
 	Engine::drawLineStrip(g_RC.getCommand()->getPolyline(), 0xff00b0f0);
-	//Engine::drawLineStrip(g_RC.commands.front()->m_interpolator->points, 0x00b000a0);
-
-	//if (g_RC.state != RCStates::Pause)
-	//	Engine::drawLines(g_lines.points, 0x00b0b0ff);
-	// g_lines.counter = 0;
-	// Engine::drawPoints(g_robotPositions.positions, 0xFFE10060);
-	// Engine::drawPoints(g_mousePositions.positions, 0xFF3000ff, 8);
-	// if (g_RC.state != RCStates::Pause)
-		// Engine::drawLineStrip((*g_RC.commandIter)->getPath(), 0xf0b000ff);
-
-	// BigSplineTest::draw();
 	Engine::drawGrids();
-	// Engine::drawASDFASDF(scene.robot.endEffector.position);
-	Engine::finalize(scene);
+ 	Engine::finalize(scene);
 	Engine::renderGUI(ui);
 	Engine::renderShapes();
 	glfwSwapBuffers(window);

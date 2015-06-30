@@ -70,7 +70,7 @@ MoveCommand& RobotController::move(IInterpolator *interpolator, const std::strin
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
 
-	newCommand->velocity = 35.8;
+	newCommand->velocity = 135.8;
 	newCommand->solver = new  JT1();
 
 	return *newCommand;
@@ -146,7 +146,7 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	if(not rc.robot->isReady){
 		rc.robot->goTo(targetJointPosition, dt);
 		previousPoint = rc.robot->endEffector.position;
-		rc.robot->insertVariables(targetJointPosition);
+		// rc.robot->insertVariables(targetJointPosition);
 		return false;
 	}
 	// if(rc.robot->isReady && interpolator->finished){
