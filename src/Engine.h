@@ -186,6 +186,7 @@ void drawOutline(Scene &scene);
 void copyDepth(Scene &scene);
 void renderLights(Scene &scene);
 void applyLights(Scene &scene);
+void SSAO();
 void postprocess(Scene &scene);
 void finalize(Scene &scene);
 

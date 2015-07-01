@@ -866,6 +866,20 @@ void applyLights(Scene &scene){
 
 	glDisableVertexAttribArray(0);
 }
+void SSAO(){
+	auto shader = shaders["SSAO"];
+	glUseProgram(shader);
+	glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader,"normalTex"),0);
+	glBindTexture(GL_TEXTURE_2D, normalBuffer);
+
+	glActiveTexture(GL_TEXTURE1);
+		glUniform1i(glGetUniformLocation(shader,"depthTex"),1);
+	glBindTexture(GL_TEXTURE_2D, depthBuffer2);
+
+	setupBuffer(screenQuad);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
 void postprocess(Scene &scene){
 
 

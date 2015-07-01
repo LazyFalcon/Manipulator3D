@@ -185,6 +185,7 @@ void renderLoop(){
 	Engine::copyDepth(scene);
 	Engine::renderLights(scene);
 	Engine::applyLights(scene);
+	Engine::SSAO();
 	Engine::postprocess(scene);
 	Engine::drawOutline(scene);
 
@@ -309,6 +310,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		ResourceLoader loader(scene.resources);
 		loader.reloadShader("EnviroShade", "EnviroShade", "EnviroShade");
 		loader.reloadShader("EnviroDefColorOnly", "EnviroDef", "EnviroDefColorOnly");
+		loader.reloadShader("SSAO", "frameBuffer", "SSAO");
 	}
 
 	ui.keyInput(key, action, mods);
