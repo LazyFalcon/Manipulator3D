@@ -185,7 +185,7 @@ void renderLoop(){
 	Engine::copyDepth(scene);
 	Engine::renderLights(scene);
 	Engine::applyLights(scene);
-	Engine::SSAO();
+	// Engine::SSAO();
 	Engine::postprocess(scene);
 	Engine::drawOutline(scene);
 

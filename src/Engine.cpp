@@ -867,6 +867,9 @@ void applyLights(Scene &scene){
 	glDisableVertexAttribArray(0);
 }
 void SSAO(){
+	// glEnable(GL_BLEND);
+	glDisable(GL_BLEND);
+
 	auto shader = shaders["SSAO"];
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
@@ -876,6 +879,13 @@ void SSAO(){
 	glActiveTexture(GL_TEXTURE1);
 		glUniform1i(glGetUniformLocation(shader,"depthTex"),1);
 	glBindTexture(GL_TEXTURE_2D, depthBuffer2);
+
+	glActiveTexture(GL_TEXTURE2);
+		glUniform1i(glGetUniformLocation(shader,"SSAORandom"),2);
+	glBindTexture(GL_TEXTURE_2D, globalResources->textures["SSAORandom"]);
+
+	glUniform(shader, glm::inverse(camera.ProjectionMatrix), "invPV");
+	glUniform(shader, glm::inverse(camera.ViewMatrix), "View");
 
 	setupBuffer(screenQuad);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
