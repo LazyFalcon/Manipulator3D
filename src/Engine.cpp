@@ -869,8 +869,8 @@ void applyLights(Scene &scene){
 void SSAO(){
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer, 0);
-	// glEnable(GL_BLEND);
-	// glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 	// glDisable(GL_BLEND);
 
 	auto shader = shaders["SSAO"];

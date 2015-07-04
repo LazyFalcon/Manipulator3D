@@ -12,12 +12,15 @@ uniform mat4 View;
 
 in vec2 texCoords;
 
-const float bias = 0.49;
-const float scale = 1000.1;
+const float bias = 0.569;
+// const float scale = 1.1;
+const float scale = 145.01;
 // const float scale = 0.1;
-const float intensity = 2000.1;
-const float sampleRadius = 0.01;
-const float randomSize = 600.4;
+// const float intensity = 2000.1;
+const float intensity = 5.1;
+// const float sampleRadius = 0.01;
+const vec2 sampleRadius = 55/vec2(1400, 720);
+const float randomSize = 644;
 
 
 vec4 getNormal(vec2 uv){
@@ -37,11 +40,10 @@ vec4 getPosition(vec2 uv){
 	return worldPos;
 } */
 vec4 getPosition(vec2 uv, out float depth){
-	vec3 viewSpace = vec3(uv*2-vec2(1), 0);
 	depth = texture(depthTex, uv).r;
-	viewSpace.z = depth*2 - 1;
-	// viewSpace.z = depth;
-	vec4 worldPos = invPV*vec4(viewSpace, 1);
+	// vec3 viewSpace = vec3(uv*2-vec2(1), 0);
+	vec4 viewSpace = vec4(uv*2-1, depth*2 - 1, 1);
+	vec4 worldPos = invPV*viewSpace;
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1;
 	// vec4 worldPos = vec4(viewSpace, 1);
@@ -50,8 +52,8 @@ vec4 getPosition(vec2 uv, out float depth){
 }
 
 vec2 getRandom(vec2 uv){
-	// return normalize(texture(SSAORandom, 1400*uv/randomSize)).yx;
-	return normalize(texture(SSAORandom, 1400*uv/randomSize)).xy*2 - vec2(1);
+	// return normalize(texture(SSAORandom, uv*randomSize)).xy;
+	return normalize(texture(SSAORandom, uv*randomSize)).xy*2 - vec2(1);
 }
 
 float computeAmbientOcclusion(vec2 uv, vec2 dCoord, vec4 position, vec4 normal){
@@ -65,10 +67,14 @@ float computeAmbientOcclusion(vec2 uv, vec2 dCoord, vec4 position, vec4 normal){
 
 vec2 kernel[4] = vec2[]
 (
-	vec2(1,0),
-	vec2(-1,0),
-	vec2(0,1),
-	vec2(0,-1)
+	// vec2(1,0),
+	// vec2(-1,0),
+	// vec2(0,1),
+	// vec2(0,-1)
+	vec2(1,1),
+	vec2(-1,1),
+	vec2(-1,-1),
+	vec2(1,-1)
 );
 
 
@@ -76,11 +82,13 @@ void main(void){
 	float depth;
 	vec4 position = getPosition(texCoords, depth);
 	vec4 normal = getNormal(texCoords);
-	vec2 rand = getRandom(texCoords);
+	// vec2 rand = getRandom(texCoords);
+	vec2 rand = getRandom(position.xz*texCoords);
+	// vec2 rand = getRandom(normal.xz);
 
 	float ao = 0.0;
 	// float radius = sampleRadius/(1 - depth*1.9);
-	float radius = sampleRadius*depth*2.0;
+	float radius = sampleRadius*depth*1.0;
 	// float radius = sampleRadius;
 
 	const int iterations = 4;
@@ -94,7 +102,9 @@ void main(void){
 		ao += computeAmbientOcclusion(texCoords, coord, position, normal);
 	}
 
-	out_ao = vec4(1.0-ao/4.0/float(iterations)*0.3);
+	// out_ao = clamp(vec4(1.0-ao/4.0/float(iterations)*28*depth), 0.5, 2);
+	// out_ao = vec4(1.0-ao/4.0/float(iterations)*28*depth);
+	out_ao = vec4(1.1-ao/4.0/float(iterations)*28);
 	// out_ao = vec4(ao/4.0/float(iterations));
 	// out_ao = vec4(1-position.z/20);
 

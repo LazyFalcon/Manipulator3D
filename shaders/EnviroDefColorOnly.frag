@@ -115,5 +115,5 @@ void main(void){
 	gl_FragData[0] = color*l_shade + l_spect;
 	// gl_FragData[0] = shadowFactor;
 	// gl_FragData[0] = m*0.5 + 0.5;
-	gl_FragData[1] = vec4(N.xyz, 1.0);
+	gl_FragData[1] = vec4(N.xyz, 0.0);
 }

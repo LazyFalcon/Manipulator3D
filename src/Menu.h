@@ -90,7 +90,7 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 			Button {"Lights","",  colorWhite, []{globalSettings ^= LIGHTS;}},
 			Button {"Wireframe","",  colorWhite, []{}},
 			Button {"Shadows","",  colorWhite, []{}},
-			Button {"SSAO","",  colorWhite, []{}},
+			Button {"SSAO","",  colorWhite, []{globalSettings ^=  SSAO;}},
 			Button {"DOF","",  colorWhite, []{}},
 			Button {"HDR","",  colorWhite, []{}},
 			Button {"MSAA","",  colorWhite, []{globalSettings ^= MSAA;}},
