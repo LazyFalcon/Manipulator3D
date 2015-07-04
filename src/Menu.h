@@ -91,6 +91,7 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 			Button {"Wireframe","",  colorWhite, []{}},
 			Button {"Shadows","",  colorWhite, []{}},
 			Button {"SSAO","",  colorWhite, []{globalSettings ^=  SSAO;}},
+			Button {"Sobel","",  colorWhite, []{globalSettings ^=  SOBEL;}},
 			Button {"DOF","",  colorWhite, []{}},
 			Button {"HDR","",  colorWhite, []{}},
 			Button {"MSAA","",  colorWhite, []{globalSettings ^= MSAA;}},

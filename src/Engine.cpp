@@ -895,6 +895,31 @@ void SSAO(){
 	setupBuffer(screenQuad);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
+void Sobel(){
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer, 0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+	// glDisable(GL_BLEND);
+
+	auto shader = shaders["Sobel"];
+	glUseProgram(shader);
+	glActiveTexture(GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(shader,"normalTex"),0);
+	glBindTexture(GL_TEXTURE_2D, normalBuffer);
+
+	glActiveTexture(GL_TEXTURE1);
+		glUniform1i(glGetUniformLocation(shader,"depthTex"),1);
+	glBindTexture(GL_TEXTURE_2D, depthBuffer2);
+
+	glUniform(shader, glm::inverse(camera.ProjectionMatrix*camera.ViewMatrix), "invPV");
+	glUniform(shader, glm::inverse(camera.ViewMatrix), "View");
+	glUniform(shader, camera.m_near, "u_near");
+	glUniform(shader, camera.m_far, "u_far");
+
+	setupBuffer(screenQuad);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
 void postprocess(Scene &scene){
 
 

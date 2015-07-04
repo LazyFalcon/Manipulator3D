@@ -18,6 +18,7 @@ out vec4 in_vertexInShadow;
 
 void main(){
 	in_normal = NM*(vec4(Normal,0));
+	// in_normal = model*(vec4(Normal,0));
 	in_vertex = model*(vec4(Vertex,1));
 
 	in_vertexInShadow = u_shadowProjection*in_vertex;

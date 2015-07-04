@@ -23,6 +23,9 @@ extern HexColor GUIhover[4];
 extern HexColor GUIfontColor[4];
 extern HexColor GUIspecColor[4];
 
+
+
+
 enum {
 	LIGHTS =            0b1,
 	SHADOWS =           0b10,
@@ -32,15 +35,15 @@ enum {
 	HDR =               0b100000,
 	DOF =               0b1000000,
 	SSAO =              0b10000000,
-	PREVENT_COLLISIONS =0b100000000,
-	DRAW_COLORS =       0b1000000000,
-	DRAW_NORMALS =      0b10000000000,
-	DRAW_DEPTH =        0b100000000000,
-	DRAW_LIGHTS =       0b1000000000000,
-	DRAW_XY_GRID =      0b10000000000000,
-	DRAW_XZ_GRID =      0b100000000000000,
-	DRAW_YZ_GRID =      0b1000000000000000,
-
+	SOBEL =             0b100000000,
+	PREVENT_COLLISIONS =0b1000000000,
+	DRAW_COLORS =       0b10000000000,
+	DRAW_NORMALS =      0b100000000000,
+	DRAW_DEPTH =        0b1000000000000,
+	DRAW_LIGHTS =       0b10000000000000,
+	DRAW_XY_GRID =      0b100000000000000,
+	DRAW_XZ_GRID =      0b1000000000000000,
+	DRAW_YZ_GRID =      0b10000000000000000,
 };
 
 
@@ -188,6 +191,7 @@ void copyDepth(Scene &scene);
 void renderLights(Scene &scene);
 void applyLights(Scene &scene);
 void SSAO();
+void Sobel();
 void postprocess(Scene &scene);
 void finalize(Scene &scene);
 

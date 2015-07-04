@@ -49,6 +49,7 @@ Main:
   - SurfaceAlignedParticle SurfaceAlignedParticle SurfaceAlignedParticle
   - EnviroShade EnviroShade EnviroShade
   - SSAO frameBuffer SSAO
+  - Sobel frameBuffer Sobel
  Images:
   - metal.png
   - kursor.png

@@ -1,4 +1,3 @@
-
 #include <Utils/Includes.h>
 #include "common.h"
 
@@ -121,6 +120,7 @@ int main(){
 	logger::init();
 	// globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
 	// globalSettings |= DRAW_XY_GRID;
+	globalSettings |= SOBEL;
 	globalSettings |= LIGHTS;
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
@@ -179,13 +179,14 @@ void fastLoop(float step){
 }
 void renderLoop(){
 	// Engine::plotGraphs();
-	// Engine::generateShadowMap(scene);
+	Engine::generateShadowMap(scene);
 	Engine::setup(scene);
 	Engine::renderScene(scene);
 	Engine::copyDepth(scene);
 	if(globalSettings & LIGHTS)Engine::renderLights(scene);
 	if(globalSettings & LIGHTS)Engine::applyLights(scene);
 	if(globalSettings & SSAO)Engine::SSAO();
+	if(globalSettings & SOBEL)Engine::Sobel();
 	Engine::postprocess(scene);
 	Engine::drawOutline(scene);
 
@@ -311,6 +312,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		loader.reloadShader("EnviroShade", "EnviroShade", "EnviroShade");
 		loader.reloadShader("EnviroDefColorOnly", "EnviroDef", "EnviroDefColorOnly");
 		loader.reloadShader("SSAO", "frameBuffer", "SSAO");
+		loader.reloadShader("Sobel", "frameBuffer", "Sobel");
 	}
 
 	ui.keyInput(key, action, mods);

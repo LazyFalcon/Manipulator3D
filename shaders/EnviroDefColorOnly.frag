@@ -77,8 +77,8 @@ void main(void){
 	float bias = (lightAngle * DepthBias) + DepthBias;
 
 
-	// for(int i=0; i<5; i++){
-	for(int i=0; i<0; i++){
+	for(int i=0; i<5; i++){
+	// for(int i=0; i<0; i++){
 		vec3 uvz = vec3(vertexInShadow.xy+kernel[i]/2048, vertexInShadow.z + bias);
 		shadowFactor += texture(shadowTex, uvz);
 	}
@@ -92,8 +92,8 @@ void main(void){
 	float shadowIntensity = shadowFactor;
 	// if(lightDepth < depthFromTex && dot(-N,L) > 0){
 	// if(shadowFactor > 0.1 && dot(-N,L) > 0){
-	// if(shadowFactor > 0.2 && lightAngle > -0.1){
-	if(false){
+	if(shadowFactor > 0.2 && lightAngle > -0.1){
+	// if(false){
 		// shadowIntensity = shadowFactor;
 		// shadowIntensity = 1.0;
 
@@ -112,7 +112,7 @@ void main(void){
 		l_shade += shade(N,L, u_energy2)*attenuation(d, u_size2)*u_color2*shadowIntensity;
 		l_spect += spectacular(N, L, E)*metal*u_color2*attenuation(e, 20.0);
 	}
-	gl_FragData[0] = color*l_shade + l_spect;
+	gl_FragData[0] = color*l_shade*3 + l_spect;
 	// gl_FragData[0] = shadowFactor;
 	// gl_FragData[0] = m*0.5 + 0.5;
 	gl_FragData[1] = vec4(N.xyz, 0.0);

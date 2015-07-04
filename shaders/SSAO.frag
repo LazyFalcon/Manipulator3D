@@ -12,14 +12,14 @@ uniform mat4 View;
 
 in vec2 texCoords;
 
-const float bias = 0.569;
+const float bias = 0.169;
 // const float scale = 1.1;
-const float scale = 145.01;
+const float scale = 95.01;
 // const float scale = 0.1;
 // const float intensity = 2000.1;
 const float intensity = 5.1;
 // const float sampleRadius = 0.01;
-const vec2 sampleRadius = 55/vec2(1400, 720);
+const vec2 sampleRadius = 95/vec2(1400, 720);
 const float randomSize = 644;
 
 
@@ -88,8 +88,8 @@ void main(void){
 
 	float ao = 0.0;
 	// float radius = sampleRadius/(1 - depth*1.9);
-	float radius = sampleRadius*depth*1.0;
-	// float radius = sampleRadius;
+	// float radius = sampleRadius*depth*1.0;
+	float radius = sampleRadius;
 
 	const int iterations = 4;
 	for(int i=0; i<iterations; ++i){
