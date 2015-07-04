@@ -14,9 +14,10 @@ in vec2 texCoords;
 
 const float bias = 0.49;
 const float scale = 1000.1;
+// const float scale = 0.1;
 const float intensity = 2000.1;
 const float sampleRadius = 0.01;
-const float randomSize = 60.4;
+const float randomSize = 600.4;
 
 
 vec4 getNormal(vec2 uv){
@@ -49,8 +50,8 @@ vec4 getPosition(vec2 uv, out float depth){
 }
 
 vec2 getRandom(vec2 uv){
-	return normalize(texture(SSAORandom, 1400*uv/randomSize)).zx;
-	// return normalize(texture(SSAORandom, 1400*uv/randomSize)).xy*2 - vec2(1);
+	// return normalize(texture(SSAORandom, 1400*uv/randomSize)).yx;
+	return normalize(texture(SSAORandom, 1400*uv/randomSize)).xy*2 - vec2(1);
 }
 
 float computeAmbientOcclusion(vec2 uv, vec2 dCoord, vec4 position, vec4 normal){
@@ -58,6 +59,7 @@ float computeAmbientOcclusion(vec2 uv, vec2 dCoord, vec4 position, vec4 normal){
 	vec4 diff = getPosition(uv + dCoord, depth) - position;
 	float d = length(diff);
 	vec4 v = diff / d;
+	// return clamp(max(0.0, dot(normal,v)-bias) * (1.0/(1.0 + d*scale)) * intensity, 0, 1);
 	return max(0.0, dot(normal,v)-bias) * (1.0/(1.0 + d*scale)) * intensity;
 }
 
