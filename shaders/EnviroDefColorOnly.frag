@@ -66,7 +66,7 @@ void main(void){
 	float d = length(L);
 	L /= d;
 	// vec4 l_shade = vec4(0.4 + clamp(dot(-N, L), -0.1,0.0));
-	vec4 l_shade = vec4(0.4);
+	vec4 l_shade = vec4(0.8);
 	vec4 l_spect = vec4(0);
 
 	float shadowFactor = 0.0;
@@ -77,7 +77,8 @@ void main(void){
 	float bias = (lightAngle * DepthBias) + DepthBias;
 
 
-	for(int i=0; i<5; i++){
+	// for(int i=0; i<5; i++){
+	for(int i=0; i<0; i++){
 		vec3 uvz = vec3(vertexInShadow.xy+kernel[i]/2048, vertexInShadow.z + bias);
 		shadowFactor += texture(shadowTex, uvz);
 	}
@@ -91,7 +92,8 @@ void main(void){
 	float shadowIntensity = shadowFactor;
 	// if(lightDepth < depthFromTex && dot(-N,L) > 0){
 	// if(shadowFactor > 0.1 && dot(-N,L) > 0){
-	if(shadowFactor > 0.2 && lightAngle > -0.1){
+	// if(shadowFactor > 0.2 && lightAngle > -0.1){
+	if(false){
 		// shadowIntensity = shadowFactor;
 		// shadowIntensity = 1.0;
 

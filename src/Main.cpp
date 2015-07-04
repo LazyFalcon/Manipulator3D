@@ -179,13 +179,13 @@ void fastLoop(float step){
 }
 void renderLoop(){
 	// Engine::plotGraphs();
-	Engine::generateShadowMap(scene);
+	// Engine::generateShadowMap(scene);
 	Engine::setup(scene);
 	Engine::renderScene(scene);
 	Engine::copyDepth(scene);
-	Engine::renderLights(scene);
-	Engine::applyLights(scene);
-	// Engine::SSAO();
+	// Engine::renderLights(scene);
+	// Engine::applyLights(scene);
+	Engine::SSAO();
 	Engine::postprocess(scene);
 	Engine::drawOutline(scene);
 
@@ -281,7 +281,7 @@ void mainLoop(){
 		updates(dt);
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			ui.rect().text(msecTimer.getString()+"ms").font("ui_12"s)();
+			ui.rect().color(0xA0A0A0FF).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
