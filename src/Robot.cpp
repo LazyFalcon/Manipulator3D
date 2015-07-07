@@ -115,11 +115,20 @@ glm::vec4 Robot::insertVariables(std::vector<double> &vec){
 }
 
 
-bool Robot::goTo(const std::vector<double> &jointPositions, float dt){
+bool Robot::goTo(const std::vector<double> &jointPositions){
 	u32 loopSize = std::min(chain.size(), jointPositions.size());
-	isReady = true;
+	isReady = false;
 	for(u32 i=0; i<loopSize; i++){
-		isReady &= chain[i]->goTo(jointPositions[i], dt);
+		// auto delta = jointPositions[i] - chain[i]->value;
+		auto delta = circleDistance(jointPositions[i], chain[i]->value);
+		chain[i]->targetValue = delta;
+	}
+}
+
+bool Robot::goTo(float dt){
+	isReady = true;
+	for(auto &module : chain){
+		isReady &= module->goTo(dt);
 	}
 }
 
@@ -127,17 +136,20 @@ double Module::computeMaxStep(float dt){
 	double step = dt * maxVelocty;
 	return step;
 }
-bool Module::goTo(double target, float dt){
-	auto delta = circleDistance(target, value);
-	if(glm::epsilonEqual(delta, 0.0, jointEpsilon)){
+bool Module::goTo(float dt){
+	if(glm::epsilonEqual(targetValue, 0.0, jointEpsilon)){
 		return true;
 	}
 
-	// auto delta = target - value;
 	auto maxStep = computeMaxStep(dt*5);
-	value + period(value + std::min(abs(delta), maxStep)*sign(delta));
-	lastVelocity = std::min(delta, maxStep) / dt;
-	// std::cout<<delta<<std::endl;
+	auto delta = std::min(abs(targetValue), maxStep)*sign(targetValue);
+	value += targetValue*0.1;
+	targetValue *= 0.1;
+	// targetValue -= delta;
+	// value = period(value + std::min(abs(delta), maxStep)*sign(delta));
+	// value = value + std::min(abs(targetValue), maxStep)*sign(targetValue);
+	// value = value + abs(delta)*sign(delta);
+	lastVelocity = std::min(targetValue , maxStep) / dt;
 	return false;
 }
 
@@ -151,7 +163,7 @@ void robotTestInit(Robot &robot){
 void robotTest(float dt, Robot &robot){
 	if(robot.isReady) return;
 
-	robot.goTo(targetVariables, dt/1000);
+	// robot.goTo(targetVariables, dt/1000);
 
 
 }

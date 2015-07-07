@@ -8,6 +8,9 @@
 #include "JacobianTransposed.h"
 #include "Timer.h"
 #include "JacobianMatrix.h"
+
+#include "Graph.h"
+
 extern UI::IMGUI ui;
 extern Camera camera;
 extern float	 mouse_x, mouse_y;
@@ -18,6 +21,28 @@ extern vector<glm::vec4> robotPositions;
 extern PositionSaver g_mousePositions;
 extern PositionSaver g_robotPositions;
 extern PositionSaver g_robotDebugPositions;
+extern std::list<Plot*> plotList;
+
+// static const float pi = 3.141592f;
+static const float hpi = 0.5f * 3.141592f;
+static const float pi2 = 2.f * 3.141592f;
+// static const double dpi = 3.141592653589793;
+static const double hdpi = 0.5 * 3.141592653589793;
+static const double sqdpi = 3.141592653589793 * 3.141592653589793;
+static const double dpi2 = 2.0 * 3.141592653589793;
+
+Graph var0("var1", Graph::LastX, 0xFF0000FF, 250);
+Graph var1("var1", Graph::LastX, 0x00FF00FF, 250);
+Graph var2("var1", Graph::LastX, 0x0000FFFF, 250);
+Graph var3("var1", Graph::LastX, 0xFFFF00FF, 250);
+Graph var4("var1", Graph::LastX, 0xFF00FFFF, 250);
+Graph var5("var1", Graph::LastX, 0xFFFFFFFF, 250);
+Graph boundUp("var1", Graph::LastX, 0x202020FF, 250);
+Graph boundDown("var1", Graph::LastX, 0x202020FF, 250);
+Graph zero("var1", Graph::LastX, 0x202020FF, 250);
+Graph jacobianIterations("jacobianIterations", Graph::LastX, 0xFFFF00FF, 250);
+Graph jacobianPrecision("jacobianPrecision", Graph::LastX, 0xFF4000FF, 250);
+extern Plot mainPlot;
 
 bool JT0::solve(Point aim, Robot &robot){
 	if(performIK(aim, robot))
@@ -97,7 +122,8 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 		auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
-	for(int i=0; positionError > minError && i<iterationLimit; i++){
+	u32 iteration = 0;
+	for(; positionError > minError && iteration<iterationLimit; iteration++){
 
 
 		auto positionDelta  = (aim.position - endEffector.position);
@@ -107,23 +133,9 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 		auto a = dot(jjp*force, force);
 		a = a/dot(jjp*force, jjp*force);
-		// a = 0.001;
 		auto gradient = jacobian*force*a;
-		// clamp(gradient, -0.01, 0.01);
 		gradient = mul(gradient, enhancement);
 
-		// for(int i=0; i<robot.chain.size(); i++){
-			// float val = robot.chain[i]->value;
-			// float max = robot.chain[i]->max;
-			// float min = robot.chain[i]->min;
-
-			// if(val > max/2)
-				// gradient(i) *=  (0.1 + max - val)/max/2 + 0.5;
-			// else if(val < min/2)
-				// gradient(i) *=  (0.1 + min - val)/min/2 + 0.5;
-
-
-		// }
 		variables = gradient + variables;
 		// robot.clamp(variables.getVector());
 		endEffector = robot.simulate(variables.getVector());
@@ -133,6 +145,19 @@ bool JT1::performIK(Point aim, Robot &robot){
 	endPosition = endEffector.position;
 	result = variables.getVector();
 	succes = positionError < minError;
+
+	auto l_v = robot.getVariables();
+	boundUp.push(pi);
+	boundDown.push(-pi);
+	zero.push(0);
+	var0.push(circleDistance(result[0], l_v[0]));
+	var1.push(circleDistance(result[1], l_v[1]));
+	var2.push(circleDistance(result[2], l_v[2]));
+	var3.push(circleDistance(result[3], l_v[3]));
+	var4.push(circleDistance(result[4], l_v[4]));
+	var5.push(circleDistance(result[5], l_v[5]));
+	// jacobianIterations.push(std::min(100u, iteration));
+	// jacobianPrecision.push();
 	// succes = true;
 	return succes;
 }
@@ -176,6 +201,31 @@ void BADBADBADRobotIKRealtimeTest(Robot &robot){
 }
 
 
+void jacobianTransposeInit(){
+	var0.setBouds({0, 250, -pi2, pi2});
+	var1.setBouds({0, 250, -pi2, pi2});
+	var2.setBouds({0, 250, -pi2, pi2});
+	var3.setBouds({0, 250, -pi2, pi2});
+	var4.setBouds({0, 250, -pi2, pi2});
+	var5.setBouds({0, 250, -pi2, pi2});
+	boundUp.setBouds({0, 250, -pi2, pi2});
+	boundDown.setBouds({0, 250, -pi2, pi2});
+	zero.setBouds({0, 250, -pi2, pi2});
+	jacobianIterations.setBouds({0,250,0,500});
+	jacobianPrecision.setBouds({0,250,0,1});
+	mainPlot.push(&var0);
+	mainPlot.push(&var1);
+	mainPlot.push(&var2);
+	mainPlot.push(&var3);
+	mainPlot.push(&var4);
+	mainPlot.push(&var5);
+	mainPlot.push(&boundUp);
+	mainPlot.push(&boundDown);
+	mainPlot.push(&zero);
+	// mainPlot.push(&jacobianPrecision);
+	plotList.push_front(&mainPlot);
 
+
+}
 void test(Robot &robot){
 }

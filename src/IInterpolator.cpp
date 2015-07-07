@@ -73,7 +73,7 @@ void Linear::drawParams(){
 
 /// -------------------------------- BEZIERCURVE --------------------------------
 glm::vec4 BezierCurve::nextPoint(){
-	position = period(position + singleStepLength, 0.f, 1.f);
+	position = period(position + singleStepLength, 0, 1);
 
 	return eval(position);
 }

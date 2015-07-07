@@ -144,7 +144,7 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	// previousPoint = rc.robot->endEffector.position;
 
 	if(not rc.robot->isReady){
-		rc.robot->goTo(targetJointPosition, dt);
+		rc.robot->goTo(dt);
 		previousPoint = rc.robot->endEffector.position;
 		// rc.robot->insertVariables(targetJointPosition);
 		return false;
@@ -155,12 +155,12 @@ bool MoveCommand::update(RobotController &rc, float dt){
 		// return true;
 	// }
 	glm::vec4 newTarget = calculateNextPoint(dt);
+
 	// std::cout<<glm::to_string(newTarget)<<std::endl;
 
 	solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
-
-	rc.robot->isReady = false;
+	rc.robot->goTo(targetJointPosition);
 
 	return false;
 }

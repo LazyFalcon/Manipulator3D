@@ -28,12 +28,13 @@ public:
 	Entity *entity;
 	double min, max;
 	double value;
+	double targetValue;
 	double maxVelocty;
 	double maxAcceleration;
 	double lastVelocity;
 	double lastAcceleration;
 
-	bool goTo(double target, float dt);
+	bool goTo(float dt);
 	double computeMaxStep(float dt);
 	glm::vec4 getMainAxis(){
 		return glm::normalize(vecToA + vecToB);
@@ -66,7 +67,8 @@ public:
 	void inverse(); // wspó³¿êdne z punktu
 	void update(float dt);
 	std::vector<double> getVariables();
-	bool goTo(const std::vector<double> &jointPositions, float dt);
+	bool goTo(float dt);
+	bool goTo(const std::vector<double> &jointPositions);
 	Point simulate(std::vector<double> &vec);
 	std::vector<Point> simulateFullData(std::vector<double> &variables);
 	glm::vec4 clamp(std::vector<double> &vec);

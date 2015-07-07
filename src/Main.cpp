@@ -178,7 +178,7 @@ void fastLoop(float step){
 	g_RC.update(step/1000.0f);
 }
 void renderLoop(){
-	// Engine::plotGraphs();
+	Engine::plotGraphs();
 	Engine::generateShadowMap(scene);
 	Engine::setup(scene);
 	Engine::renderScene(scene);
@@ -199,6 +199,7 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
+	jacobianTransposeInit();
 	manuSideBar = make_unique<ManuSideBar>();
 	// robotTestInit(*g_RC.robot);
 
