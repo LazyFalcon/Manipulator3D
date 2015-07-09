@@ -104,9 +104,12 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 	double i = 0.2;
 	// double i = 1.5;
+	for(auto &it : variables.getVector()){
+		it = 0.0;
+	}
 	for(auto &it : enhancement.getVector()){
-		it = i;
-		// it = 1;
+		// it = i;
+		it = 1;
 		// i -= 0.2;
 		i += 0.9;
 	}
@@ -135,6 +138,19 @@ bool JT1::performIK(Point aim, Robot &robot){
 		a = a/dot(jjp*force, jjp*force);
 		auto gradient = jacobian*force*a;
 		gradient = mul(gradient, enhancement);
+
+		// for(int i=0; i<robot.chain.size(); i++){
+			// float val = robot.chain[i]->value;
+			// float max = robot.chain[i]->max;
+			// float min = robot.chain[i]->min;
+
+			// if(val > max/2)
+				// gradient(i) *=  (0.1 + max - val)/max/2 + 0.5;
+			// else if(val < min/2)
+				// gradient(i) *=  (0.1 + min - val)/min/2 + 0.5;
+
+
+		// }
 
 		variables = gradient + variables;
 		// robot.clamp(variables.getVector());
@@ -224,6 +240,8 @@ void jacobianTransposeInit(){
 	mainPlot.push(&zero);
 	// mainPlot.push(&jacobianPrecision);
 	plotList.push_front(&mainPlot);
+}
+void jacobianTransposeUpdate(){
 
 
 }

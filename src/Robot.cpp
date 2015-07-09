@@ -141,10 +141,13 @@ bool Module::goTo(float dt){
 		return true;
 	}
 
-	auto maxStep = computeMaxStep(dt*5);
+	auto maxStep = computeMaxStep(dt);
 	auto delta = std::min(abs(targetValue), maxStep)*sign(targetValue);
-	value += targetValue*0.1;
-	targetValue *= 0.1;
+	// value += targetValue*0.2;
+	value += std::min(abs(targetValue*0.2), maxStep)*sign(targetValue);
+	// value += targetValue;
+	// targetValue = 0.0;
+	targetValue -= targetValue*0.2;
 	// targetValue -= delta;
 	// value = period(value + std::min(abs(delta), maxStep)*sign(delta));
 	// value = value + std::min(abs(targetValue), maxStep)*sign(targetValue);

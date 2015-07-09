@@ -22,10 +22,11 @@ void RCTest(RobotController &rc){
 	glm::vec4 p2(1, -6, 2, 1);
 	glm::vec4 p3(0, -6, 3, 1);
 	glm::vec4 p4(-1, -6, 2, 1);
-	glm::vec4 p5(-1, -6, 1.9, 1);
+	glm::vec4 p5(-1, -6.3, 1.9, 1);
+	glm::vec4 p6(-4, -4, 1.9, 1);
 
 	std::cout<<"Start test"<<std::endl;
-	rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5}), "move 4");
+	rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
 
 }
 

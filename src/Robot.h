@@ -54,6 +54,7 @@ public:
 
 	virtual bool solve(Point aim, Robot &robot) = 0;
 	virtual bool performIK(Point aim, Robot &robot)=0;
+	virtual ~IIK(){}
 };
 
 
@@ -78,7 +79,6 @@ public:
 
 class JT0 : public IIK {
 public:
-
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point aim, Robot &robot);
 };
