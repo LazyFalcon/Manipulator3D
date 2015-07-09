@@ -112,7 +112,7 @@ vector<std::pair<GLuint, glm::vec4>> texturedBoxes;
 const u32 g_lightsToForward = 2;
 
 
-void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, Resources *res){
+void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, unique_ptr<Resources> &res){
 
 	glGenVertexArrays(1, &(res->VAO));
 	glBindVertexArray(res->VAO);
@@ -351,30 +351,30 @@ void init(CFG::Node &cfg){
 		GLenum framebufferStatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 			switch (framebufferStatus) {
 					case GL_FRAMEBUFFER_COMPLETE_EXT:
-							logger::log<<"Framebuffer Object  OK"<<endl; break;
+							std::cout<<"Framebuffer Object  OK"<<endl; break;
 					case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-							logger::log<<"Framebuffer Object %d Error: Attachment Point Unconnected"<<endl;
+							std::cout<<"Framebuffer Object %d Error: Attachment Point Unconnected"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-							logger::log<<"Framebuffer Object %d Error: Missing Attachment"<<endl;
+							std::cout<<"Framebuffer Object %d Error: Missing Attachment"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-							logger::log<<"Framebuffer Object  Error: Dimensions do not match"<<endl;
+							std::cout<<"Framebuffer Object  Error: Dimensions do not match"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-							logger::log<<"Framebuffer Object  Error: Formats"<<endl;
+							std::cout<<"Framebuffer Object  Error: Formats"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-							logger::log<<"Framebuffer Object  Error: Draw Buffer"<<endl;
+							std::cout<<"Framebuffer Object  Error: Draw Buffer"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-							logger::log<<"Framebuffer Object  Error: Read Buffer"<<endl;
+							std::cout<<"Framebuffer Object  Error: Read Buffer"<<endl;
 							break;
 					case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-							logger::log<<"Framebuffer Object  Error: Unsupported Framebuffer Configuration"<<endl;
+							std::cout<<"Framebuffer Object  Error: Unsupported Framebuffer Configuration"<<endl;
 							break;
 					default:
-							logger::log<<"Framebuffer Object  Error: Unkown Framebuffer Object Failure"<<endl;
+							std::cout<<"Framebuffer Object  Error: Unkown Framebuffer Object Failure"<<endl;
 							break;
 			}
 		};
@@ -410,7 +410,7 @@ void init(CFG::Node &cfg){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	int error = glGetError();
 	if(error != GL_NO_ERROR)
-		logger::log<<__LINE__<<""<<error<<endl;
+		std::cout<<__LINE__<<""<<error<<endl;
 }
 
 
@@ -449,7 +449,7 @@ void generateShadowMap(Scene &scene){
 	{
 		int error = glGetError();
 		if(error != GL_NO_ERROR)
-			logger::log<<__LINE__<<""<<error<<endl;
+			std::cout<<__LINE__<<""<<error<<endl;
 	}
 
 
@@ -512,7 +512,7 @@ void generateShadowMap(Scene &scene){
 	{
 		int error = glGetError();
 		if(error != GL_NO_ERROR)
-			logger::log<<__LINE__<<""<<error<<endl;
+			std::cout<<__LINE__<<""<<error<<endl;
 	}
 	glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1518,8 +1518,8 @@ bool initGlew(){
 	if(glewInit() != GLEW_OK)
 		return true;
 
-	// logger::log << "Status: Using GLEW " << glewGetString(GLEW_VERSION) << endl;
-	// logger::log << "OpenGL version " << glGetString(GL_VERSION) << " supported" << endl;
+	// std::cout << "Status: Using GLEW " << glewGetString(GLEW_VERSION) << endl;
+	// std::cout << "OpenGL version " << glGetString(GL_VERSION) << " supported" << endl;
 	return false;
 }
 

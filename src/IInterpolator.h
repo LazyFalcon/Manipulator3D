@@ -41,7 +41,9 @@ public:
 	virtual void generatePath() = 0;
 	virtual void reset() = 0;
 	virtual void drawParams() = 0;
-	virtual ~IInterpolator(){}
+	virtual ~IInterpolator(){
+		std::cerr<<"delete IInterpolator"<<std::endl;
+	}
 };
 
 /**

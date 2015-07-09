@@ -78,18 +78,18 @@ int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "ResourceLoader.h"
-Resources *globalResources;
 #include "Scene.h"
-Scene scene;
 #include "Widgets.h"
 #include "Engine.h"
 #include "JacobianTransposed.h"
 #include "IInterpolator.h"
 #include "RobotController.h"
-RobotController g_RC;
 #include "PathCreator.h"
 #include "SomeTests.h"
 #include "BigSplineTest.h"
+unique_ptr<RobotController> RC;
+unique_ptr<Scene> scene;
+unique_ptr<Resources> globalResources;
 #include "Menu.h"
 #include "Menu-SideBar.h"
 unique_ptr<ManuSideBar> manuSideBar;
@@ -117,7 +117,7 @@ void Shut_Down(int return_code){
 glm::vec3 camPosition(0,0,0);
 
 int main(){
-	logger::init();
+	// logger::init();
 	// globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
 	// globalSettings |= DRAW_XY_GRID;
 	globalSettings |= SOBEL;
@@ -125,19 +125,21 @@ int main(){
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);
+
+	scene = make_unique<Scene>();
+	RC = make_unique<RobotController>();
+	globalResources = make_unique<Resources>();
+
 	{ // load res
-		globalResources = new Resources();
 		auto &&resources = CFG::Load("../resources.yml");
 		ResourceLoader loader(globalResources);
 		loader.loadResources(resources["Main"]);
 		loader.loadFonts(resources["Fonts"]);
 	}
 	if(true){ // load def scene
-		scene.resources = new Resources();
-		ResourceLoader loader(scene.resources);
+		ResourceLoader loader(scene->resources);
 		auto &&resources = CFG::Load("../models/stanowisko.yml");
-		loader.loadScene(scene, resources);
-		cout<<"__"<<scene.units.size()<<endl;
+		loader.loadScene(*scene, resources);
 	}
 	{ // setup callbacks
 		glfwSetScrollCallback(window, scrollCallback);
@@ -155,45 +157,51 @@ int main(){
 	ui.m_imageSet = &(globalResources->imageSets["Menu"]);
 	ui.setDefaultFont("ui_12", 12);
 
-	scene.robot.chain[0]->value = 45*toRad;
-	scene.robot.chain[3]->value = 30*toRad;
+	scene->robot->chain[0]->value = 45*toRad;
+	scene->robot->chain[3]->value = 30*toRad;
 
 
-	// for(auto &it : scene.robot.chain)
+	// for(auto &it : scene->robot.chain)
 	// steeringConsole.buttons.push_back(PlusMinusWidget(it));
 
-	 g_RC.robot = &(scene.robot);
-	 g_RC.solver = new JT1;
-	 RCTest(g_RC);
+	 RC->robot = scene->robot;
+	 // RC->solver = new JT1;
+	 RCTest(*RC);
 	glfwShowWindow(window);
 	mainLoop();
-	// Engine::clear();
-	// logger::close();
-	// delete globalResources;
+	cerr<<"----"<<endl;
+	Engine::clear();
+	cerr<<"----"<<endl;
+	globalResources.reset();
+	cerr<<"----"<<endl;
+	RC.reset();
+	cerr<<"----"<<endl;
+	scene.reset();
+	cerr<<"Bye!"<<endl;
 	return 0;
 }
 
 void fastLoop(float step){
-	scene.robot.update(step);
-	g_RC.update(step/1000.0f);
+	scene->robot->update(step);
+	RC->update(step/1000.0f);
 }
 void renderLoop(){
 	Engine::plotGraphs();
-	Engine::generateShadowMap(scene);
-	Engine::setup(scene);
-	Engine::renderScene(scene);
-	Engine::copyDepth(scene);
-	if(globalSettings & LIGHTS)Engine::renderLights(scene);
-	if(globalSettings & LIGHTS)Engine::applyLights(scene);
+	Engine::generateShadowMap(*scene);
+	Engine::setup(*scene);
+	Engine::renderScene(*scene);
+	Engine::copyDepth(*scene);
+	if(globalSettings & LIGHTS)Engine::renderLights(*scene);
+	if(globalSettings & LIGHTS)Engine::applyLights(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
 	if(globalSettings & SOBEL)Engine::Sobel();
-	Engine::postprocess(scene);
-	Engine::drawOutline(scene);
+	Engine::postprocess(*scene);
+	Engine::drawOutline(*scene);
 
-	Engine::drawLineStrip(g_RC.getCommand()->getPath(), 0x0000b0f0);
-	Engine::drawLineStrip(g_RC.getCommand()->getPolyline(), 0xff00b0f0);
+	Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
+	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0xff00b0f0);
 	Engine::drawGrids();
- 	Engine::finalize(scene);
+ 	Engine::finalize(*scene);
 	Engine::renderGUI(ui);
 	Engine::renderShapes();
 	glfwSwapBuffers(window);
@@ -201,14 +209,12 @@ void renderLoop(){
 void prerequisites(){
 	jacobianTransposeInit();
 	manuSideBar = make_unique<ManuSideBar>();
-	// robotTestInit(*g_RC.robot);
-
 }
 void updates(float dt){
 	// manuSideBar->run();
 	// BigSplineTest::update(dt);
 	//SomeTests();
-	// robotTest(dt, *g_RC.robot);
+	// robotTest(dt, *RC->robot);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -228,7 +234,7 @@ void mainLoop(){
 	float tmpAngle2(0);
 	// alert("Welcome\nbhaf haf aj");
 
-	// PathCreator pcr((BSpline*)(((MoveCommand*)g_RC.commands.front().get())->interpolator));
+	// PathCreator pcr((BSpline*)(((MoveCommand*)RC->commands.front().get())->interpolator));
 
 	prerequisites();
 
@@ -276,7 +282,7 @@ void mainLoop(){
 		camera.updateCamera(dt);
 
 
-		// if (g_RC.state != RCStates::Pause)
+		// if (RC->state != RCStates::Pause)
 			// pcr.update();
 
 		UI::GetInput = ui.textEditor.state();
@@ -287,8 +293,8 @@ void mainLoop(){
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
-			ui.rect().text(std::string(g_RC.robot->isReady ? "":"not ") + "ready").font("ui_12"s)();
-			// ui.rect().text("[][][][]").font("ui_12"s).button(g_RC.robot->isReady)();
+			ui.rect().text(std::string(RC->robot->isReady ? "":"not ") + "ready").font("ui_12"s)();
+			// ui.rect().text("[][][][]").font("ui_12"s).button(RC->robot->isReady)();
 		ui.endTable();
 
 		ui.end();
@@ -309,7 +315,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		quit = true;
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
-		ResourceLoader loader(scene.resources);
+		ResourceLoader loader(scene->resources);
 		loader.reloadShader("EnviroShade", "EnviroShade", "EnviroShade");
 		loader.reloadShader("EnviroDefColorOnly", "EnviroDef", "EnviroDefColorOnly");
 		loader.reloadShader("SSAO", "frameBuffer", "SSAO");
@@ -322,7 +328,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		reloadWhatIsPossible();
 	}
 	if(key == 'P' && action == GLFW_PRESS){
-		g_RC.run();
+		RC->run();
 	}
 
 	ui.keyInput(key, action, mods);

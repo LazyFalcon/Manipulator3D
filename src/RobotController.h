@@ -25,14 +25,13 @@ enum class RCStates {
 
 class RobotController {
 public:
-	Robot *robot;
-	IIK *solver;
+	shared_ptr<Robot> robot;
 	std::list<std::unique_ptr<ICommand>> commands;
 	std::list<std::unique_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
 
 	~RobotController(){
-
+		std::cerr<<"delete RobotController"<<std::endl;
 	}
 	RobotController(){
 		commandIter = commands.end();

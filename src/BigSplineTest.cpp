@@ -162,12 +162,12 @@ void init(){
 			{9.6544 ,  -9.7368, 0, 1}
 	};
 	InterpolatorFactory iFactory;
-	interpolators.push_back(iFactory.build(Interpolator::Linear, set_1));
-	interpolators.push_back(iFactory.build(Interpolator::BezierCurve, set_1));
-	interpolators.push_back(iFactory.build(Interpolator::BSpline, set_1));
-	interpolators.push_back(iFactory.build(Interpolator::HermiteCardinal, set_1));
-	interpolators.push_back(iFactory.build(Interpolator::HermiteFiniteDifference, set_1));
-	interpolators.push_back(iFactory.build(Interpolator::HermiteFiniteDifferenceClosed, set_1));
+	// interpolators.push_back(iFactory.build(Interpolator::Linear, set_1));
+	// interpolators.push_back(iFactory.build(Interpolator::BezierCurve, set_1));
+	// interpolators.push_back(iFactory.build(Interpolator::BSpline, set_1));
+	// interpolators.push_back(iFactory.build(Interpolator::HermiteCardinal, set_1));
+	// interpolators.push_back(iFactory.build(Interpolator::HermiteFiniteDifference, set_1));
+	// interpolators.push_back(iFactory.build(Interpolator::HermiteFiniteDifferenceClosed, set_1));
 
 	// interpolators.push_back(iFactory.build(Interpolator::Linear, set_2));
 	// interpolators.push_back(iFactory.build(Interpolator::BSpline, set_2));
@@ -180,9 +180,9 @@ void init(){
 	Editor::init();
 	mousePositionGraphX.setBouds({0,250,0,1400});
 	mousePositionGraphY.setBouds({0,250,0,700});
-	mainPlot.push(&mousePositionGraphX);
-	mainPlot.push(&mousePositionGraphY);
-	plotList.push_front(&mainPlot);
+	// mainPlot.push(&mousePositionGraphX);
+	// mainPlot.push(&mousePositionGraphY);
+	// plotList.push_front(&mainPlot);
 }
 
 /**

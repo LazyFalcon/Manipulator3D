@@ -30,9 +30,7 @@ public:
 	MoveCommand(){}
 	MoveCommand(IInterpolator *interpolator) : interpolator(interpolator){}
 	~MoveCommand(){
-		// std::cerr << "delete move command\n";
-		delete interpolator;
-		delete solver;
+		std::cerr<<"delete MoveCommand: "+name<<std::endl;
 	}
 
 	vector<glm::vec4>& getPath(){
@@ -50,8 +48,8 @@ public:
 	double acceleration;
 	double requiredDistance {0.0};
 	float time;
-	IInterpolator *interpolator;
-	IIK *solver;
+	unique_ptr<IInterpolator> interpolator;
+	unique_ptr<IIK> solver;
 
 private:
 	glm::vec4 previousPoint;
@@ -65,7 +63,7 @@ class WaitCommand : public ICommand
 	float timeLeft = 0.f;
 public:
 	~WaitCommand(){
-		// std::cerr << "delete wait command\n";
+		std::cerr << "delete Wait command\n";
 	}
 	WaitCommand(float time) : timeLeft(time){}
 	void init(RobotController &rc){

@@ -166,7 +166,7 @@ extern std::vector<shapeInfo> text2D;
 extern std::vector<shapeInfo> pattern2D;
 extern std::vector<lineInfo> 	lines2D;
 
-void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, Resources *res);
+void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, unique_ptr<Resources> &res);
 
 /// Debug drawing, push to namespace
 void drawArrow(glm::vec4 vec, HexColor color, std::function<void(float)> callback);

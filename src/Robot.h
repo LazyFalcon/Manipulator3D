@@ -60,9 +60,9 @@ public:
 
 class Robot {
 public:
-	std::vector<std::unique_ptr<Module>> chain;
-	Point endEffector;
-	bool isReady { true };
+	~Robot(){
+		std::cerr<<"delete Robot"<<std::endl;
+	}
 
 	std::vector<glm::vec4> forward(); // punkt ze wspó³¿êdnych
 	void inverse(); // wspó³¿êdne z punktu
@@ -75,6 +75,10 @@ public:
 	glm::vec4 clamp(std::vector<double> &vec);
 	glm::vec4 insertVariables(std::vector<double> &vec);
 	int getSize(){return chain.size();}
+
+	bool isReady { true };
+	Point endEffector;
+	std::vector<std::unique_ptr<Module>> chain;
 };
 
 class JT0 : public IIK {
@@ -84,7 +88,9 @@ public:
 };
 class JT1 : public IIK {
 public:
-
+	~JT1(){
+		std::cerr<<"delete JT1"<<std::endl;
+	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point aim, Robot &robot);
 };

@@ -126,11 +126,11 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 			Button {"Pause","",  colorWhite, []{}},
 			Button {"Stop","",  colorWhite, []{}},
 		}},
-		Button {"Play", "Play", colorWhite, []{g_RC.run();}},
-		Button {"Pause", "Pause", colorWhite, []{g_RC.pause();}},
-		Button {"Stop", "Stop", colorWhite, []{g_RC.stop();}},
-		Button{ "Undo", "Undo", colorWhite, []{g_RC.prev(); } },
-		Button{ "Redo", "Redo", colorWhite, []{g_RC.next(); } },
+		Button {"Play", "Play", colorWhite, []{RC->run();}},
+		Button {"Pause", "Pause", colorWhite, []{RC->pause();}},
+		Button {"Stop", "Stop", colorWhite, []{RC->stop();}},
+		Button{ "Undo", "Undo", colorWhite, []{RC->prev(); } },
+		Button{ "Redo", "Redo", colorWhite, []{RC->next(); } },
 
 		// Button {"Play", "Play", colorWhite, []{BigSplineTest::run();}},
 		// Button {"Pause", "Pause", colorWhite, []{BigSplineTest::pause();}},
@@ -217,11 +217,11 @@ public:
 		ui.box(UI::LayoutVertical | UI::AlignTop | UI::AlignLeft);
 		ui.image("Minimize")
 			.onHover([this]{ module->entity->isOutlined = true; })
-			.onlClick([this]{ module->value -=	incrementValue; cout<<"AAAA\n";})
+			.onlClick([this]{ module->value -=	incrementValue; })
 			.onRepeat([this]{ if(signal10ms)module->value -=	incrementValue; })();
 		ui.image("Maximize")
 			.onHover([this]{ module->entity->isOutlined = true; })
-			.onlClick([this]{ module->value +=	incrementValue; cout<<"AAAA\n";})
+			.onlClick([this]{ module->value +=	incrementValue; })
 			.onRepeat([this]{ if(signal10ms)module->value +=	incrementValue; })();
 		ui.rect(20,20)
 			.text(std::to_string((int)(module->value*toDeg)))();

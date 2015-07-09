@@ -61,7 +61,7 @@ bool ResourceLoader::loadImage(const string &name){
 	//check the file signature and deduce its format
 	fif = FreeImage_GetFileType(fileName.c_str(), 0);
 	if(fif == FIF_UNKNOWN){
-		logger::log<<"duupa\n";
+		std::cout<<"duupa\n";
 		return false;
 	}
 
@@ -78,7 +78,7 @@ bool ResourceLoader::loadImage(const string &name){
 	int bitsPerPixel =  FreeImage_GetBPP(image);
 	// int colorsUsed =  FreeImage_GetColorsUsed(image);
 
-	logger::log<<"name "<<fileName<<std::endl;
+	std::cout<<"name "<<fileName<<std::endl;
 
 	GLuint internalFormat;
 	GLuint imageFormat;
@@ -135,7 +135,7 @@ void ResourceLoader::reloadShader(const string &name, const string &vert, const 
 	glDeleteProgram(shaders[name]);
 	shaders[name] = compileShader(vert+".vert", frag+".frag");
 	auto err = glGetError();
-	if(err)logger::log<<"\t>> "<<err<<endl;
+	if(err)std::cout<<"\t>> "<<err<<endl;
 }
 GLuint ResourceLoader::compileShader(string vertex, string fragment){
 	GLuint f, v;
@@ -218,19 +218,18 @@ void ResourceLoader::printShaderInfoLog(GLint shader){
 // should additionally check for OpenGL errors here
 }
 Resources::~Resources(){
-	glDeleteBuffers(3, VBO);
-	glDeleteBuffers(1, &IBO);
-	glDeleteVertexArrays(1, &VAO);
-	for(auto &it : textures)
-		glDeleteTextures(1, &it.second);
-	for(auto &it : textures)
-		glDeleteTextures(1, &it.second);
+	// glDeleteBuffers(3, VBO);
+	// glDeleteBuffers(1, &IBO);
+	// glDeleteVertexArrays(1, &VAO);
+	// for(auto &it : textures)
+		// glDeleteTextures(1, &it.second);
+	// for(auto &it : textures)
+		// glDeleteTextures(1, &it.second);
 
 	cerr<<"~Resources"<<endl;
 }
 Scene::~Scene(){
-	cerr<<"~Scene"<<endl;
-	delete resources;
+		std::cerr<<"delete Scene"<<std::endl;
 }
 
 void Graph::draw(){
@@ -272,7 +271,7 @@ void Plot::init(){
 		glViewport(0, 0, box.z, box.w);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	logger::log<<"tex & FBO "<<texID<<" "<<fbo<<endl;
+	std::cout<<"tex & FBO "<<texID<<" "<<fbo<<endl;
 }
 void Plot::resize(glm::vec2 newDimensions){
 	box.z = newDimensions.x;

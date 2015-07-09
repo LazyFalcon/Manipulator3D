@@ -63,11 +63,11 @@ public:
 		return *this;
 	}
 	MoveBuilder& interpolator(IInterpolator *value){
-		moveCommand->interpolator = value;
+		// moveCommand->interpolator = value;
 		return *this;
 	}
 	MoveBuilder& solver(IIK *value){
-		moveCommand->solver = value;
+		// moveCommand->solver = value;
 		return *this;
 	}
 	void widget();

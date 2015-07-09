@@ -22,19 +22,20 @@ class Scene
 public:
 	std::unordered_map<std::string, Entity> units;
 	std::vector<PointLamp> pointLamps;
-	Resources *resources;
-	Robot robot;
+	unique_ptr<Resources> resources;
+	shared_ptr<Robot> robot;
 
 	~Scene();
+	Scene() : robot(make_shared<Robot>()), resources(make_unique<Resources>()) {}
 };
 
 class ResourceLoader
 {
 public:
 
-	Resources *resources;
+	unique_ptr<Resources> &resources;
 
-	ResourceLoader(Resources *_resources):resources(_resources){}
+	ResourceLoader(unique_ptr<Resources> &_resources):resources(_resources){}
 	~ResourceLoader(){
 		cerr<<"~ResourceLoader"<<endl;
 	}

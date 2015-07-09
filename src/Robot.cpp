@@ -7,7 +7,7 @@
 extern const float pi;
 extern const double dpi;
 extern PositionSaver g_robotPositions;
-const double jointEpsilon = 1.0*dpi/60.0/180.0; /// one minute in radians
+const double jointEpsilon = 1.0*dpi/60.0/180.0*0.1; /// one/10 minute in radians
 
 std::vector<glm::vec4> Robot::forward(){
 	for(auto &module : chain){
@@ -114,7 +114,6 @@ glm::vec4 Robot::insertVariables(std::vector<double> &vec){
 	}
 }
 
-
 bool Robot::goTo(const std::vector<double> &jointPositions){
 	u32 loopSize = std::min(chain.size(), jointPositions.size());
 	isReady = false;
@@ -142,16 +141,13 @@ bool Module::goTo(float dt){
 	}
 
 	auto maxStep = computeMaxStep(dt);
-	auto delta = std::min(abs(targetValue), maxStep)*sign(targetValue);
-	// value += targetValue*0.2;
-	value += std::min(abs(targetValue*0.2), maxStep)*sign(targetValue);
+
+	auto step = std::min(abs(targetValue), abs(targetValue*dt))*sign(targetValue);
+	value += step;
+	targetValue -= step;
 	// value += targetValue;
-	// targetValue = 0.0;
-	targetValue -= targetValue*0.2;
-	// targetValue -= delta;
-	// value = period(value + std::min(abs(delta), maxStep)*sign(delta));
-	// value = value + std::min(abs(targetValue), maxStep)*sign(targetValue);
-	// value = value + abs(delta)*sign(delta);
+	// targetValue -= targetValue;
+
 	lastVelocity = std::min(targetValue , maxStep) / dt;
 	return false;
 }

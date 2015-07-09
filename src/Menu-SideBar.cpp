@@ -11,7 +11,7 @@ extern glm::vec2 screenSize;
 extern unique_ptr<ICommandBuilder> CommandBuilders[];
 
 void ManuSideBar::initTabs(){
-	menuTabs.push_back(make_unique<CommandBuilderTab>("empty"));
+	// menuTabs.push_back(make_unique<CommandBuilderTab>("empty"));
 	menuTabs.push_back(make_unique<CommanListTab>("empty"));
 	menuTabs.push_back(make_unique<PolylineBuilderTab>("empty"));
 	menuTabs.push_back(make_unique<PolylineListTab>("empty"));
