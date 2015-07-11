@@ -189,12 +189,12 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	boundUp.push(pi);
 	boundDown.push(-pi);
 	zero.push(0);
-	var0.push(rc.robot->chain[0]->targetValue);
-	var1.push(rc.robot->chain[1]->targetValue);
-	var2.push(rc.robot->chain[2]->targetValue);
-	var3.push(rc.robot->chain[3]->targetValue);
-	var4.push(rc.robot->chain[4]->targetValue);
-	var5.push(rc.robot->chain[5]->targetValue);
+	var0.push(sqrt(rc.robot->chain[0]->targetValue/dpi)*dpi);
+	var1.push(sqrt(rc.robot->chain[1]->targetValue/dpi)*dpi);
+	var2.push(sqrt(rc.robot->chain[2]->targetValue/dpi)*dpi);
+	var3.push(sqrt(rc.robot->chain[3]->targetValue/dpi)*dpi);
+	var4.push(sqrt(rc.robot->chain[4]->targetValue/dpi)*dpi);
+	var5.push(sqrt(rc.robot->chain[5]->targetValue/dpi)*dpi);
 
 	if(not rc.robot->isReady){
 		rc.robot->goTo(dt);

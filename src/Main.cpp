@@ -334,9 +334,18 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	ui.keyInput(key, action, mods);
 	Editor::polylineEditor.processKeys(key, action, mods);
 
+
+	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
+		RC->run();
+	}
+	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
+		RC->pause();
+	}
+
+
 	float targetStep = 0.1;
 	float targetStepPerSec = targetStep/1;
-
+	{
 	if(key == GLFW_KEY_UP && action == GLFW_PRESS)
 		robotTarget += glm::vec4(targetStep,0,0,0);
 	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS)
@@ -386,6 +395,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			else
 				camera.cameraProjection = PERSPECTIVE_PROJECTION;
 		camera.setProjection();
+	}
 	}
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){

@@ -7,7 +7,7 @@
 extern const float pi;
 extern const double dpi;
 extern PositionSaver g_robotPositions;
-const double jointEpsilon = 1.0*dpi/60.0/180.0*0.1; /// one/10 minute in radians
+const double jointEpsilon = 1.0*dpi/60.0/180.0; /// one/10 minute in radians
 
 std::vector<glm::vec4> Robot::forward(){
 	for(auto &module : chain){
@@ -132,17 +132,21 @@ bool Robot::goTo(float dt){
 }
 
 double Module::computeMaxStep(float dt){
-	double step = dt * maxVelocty;
+	// double step = dt * maxVelocty;
+	// double step = dt * 0.5;
+	double step = dt * std::max(abs(targetValue), 0.1);
 	return step;
 }
 bool Module::goTo(float dt){
 	if(glm::epsilonEqual(targetValue, 0.0, jointEpsilon)){
+		targetValue = 0.0;
 		return true;
 	}
 
 	auto maxStep = computeMaxStep(dt);
 
-	auto step = std::min(abs(targetValue), abs(targetValue*dt))*sign(targetValue);
+	// auto step = std::min(abs(targetValue), abs(targetValue*dt*10))*sign(targetValue);
+	auto step = std::min(abs(targetValue), abs(maxStep))*sign(targetValue);
 	value += step;
 	targetValue -= step;
 	// value += targetValue;

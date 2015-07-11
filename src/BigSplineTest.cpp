@@ -182,7 +182,7 @@ void init(){
 	mousePositionGraphY.setBouds({0,250,0,700});
 	// mainPlot.push(&mousePositionGraphX);
 	// mainPlot.push(&mousePositionGraphY);
-	// plotList.push_front(&mainPlot);
+	plotList.push_front(&mainPlot);
 }
 
 /**
