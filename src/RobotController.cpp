@@ -177,9 +177,11 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 	requiredDistance = calculateRequiredDistance(dt);
 	glm::vec4 newTarget;
 
-	while(requiredDistance > 0.0 && (not interpolator->finished)){
+	// while(requiredDistance > 0.0 && (not interpolator->finished)){
+	for(int i=0; i<250; i++){
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);
+		// break;
 	}
 
 	return newTarget;
@@ -189,12 +191,12 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	boundUp.push(pi);
 	boundDown.push(-pi);
 	zero.push(0);
-	var0.push(sqrt(rc.robot->chain[0]->targetValue/dpi)*dpi);
-	var1.push(sqrt(rc.robot->chain[1]->targetValue/dpi)*dpi);
-	var2.push(sqrt(rc.robot->chain[2]->targetValue/dpi)*dpi);
-	var3.push(sqrt(rc.robot->chain[3]->targetValue/dpi)*dpi);
-	var4.push(sqrt(rc.robot->chain[4]->targetValue/dpi)*dpi);
-	var5.push(sqrt(rc.robot->chain[5]->targetValue/dpi)*dpi);
+	var0.push(sqrt(sqrt(rc.robot->chain[0]->targetValue/dpi))*sign(rc.robot->chain[0]->targetValue)*dpi);
+	var1.push(sqrt(sqrt(rc.robot->chain[1]->targetValue/dpi))*sign(rc.robot->chain[1]->targetValue)*dpi);
+	var2.push(sqrt(sqrt(rc.robot->chain[2]->targetValue/dpi))*sign(rc.robot->chain[2]->targetValue)*dpi);
+	var3.push(sqrt(sqrt(rc.robot->chain[3]->targetValue/dpi))*sign(rc.robot->chain[3]->targetValue)*dpi);
+	var4.push(sqrt(sqrt(rc.robot->chain[4]->targetValue/dpi))*sign(rc.robot->chain[4]->targetValue)*dpi);
+	var5.push(sqrt(sqrt(rc.robot->chain[5]->targetValue/dpi))*sign(rc.robot->chain[5]->targetValue)*dpi);
 
 	if(not rc.robot->isReady){
 		rc.robot->goTo(dt);
@@ -202,11 +204,11 @@ bool MoveCommand::update(RobotController &rc, float dt){
 		// rc.robot->insertVariables(targetJointPosition);
 		return false;
 	}
-	// if(rc.robot->isReady && interpolator->finished){
-		// interpolator->reset();
+	if(rc.robot->isReady && interpolator->finished){
+		interpolator->reset();
 		// std::cout<<"job done"<<endl;
-		// return true;
-	// }
+		return false;
+	}
 	glm::vec4 newTarget = calculateNextPoint(dt);
 
 	// std::cout<<glm::to_string(newTarget)<<std::endl;

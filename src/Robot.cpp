@@ -134,7 +134,7 @@ bool Robot::goTo(float dt){
 double Module::computeMaxStep(float dt){
 	// double step = dt * maxVelocty;
 	// double step = dt * 0.5;
-	double step = dt * std::max(abs(targetValue), 0.1);
+	double step = dt * std::max(abs(targetValue), jointEpsilon)*5;
 	return step;
 }
 bool Module::goTo(float dt){
