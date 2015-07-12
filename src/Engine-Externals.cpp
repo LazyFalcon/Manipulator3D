@@ -1,4 +1,5 @@
 #include <FreeImage.h>
+#define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -23,15 +24,15 @@ void UIContainer::draw(UI::IMGUI &gui){
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gui.m_imageSet->ID);
-	glUniform1i(glGetUniformLocation(shader,"mainTex"),0);
+	glUniform1i(glGetUniformLocation(shader,"u_texture"),0);
 	setupBuffer(Engine::quadCorner,0,4,0);
 	glUniform(shader, window_width,   "uWidth");
 	glUniform(shader, window_height,  "uHeight");
 
 	for(auto &it : m_images.first){
 		glUniform(shader, colorHex(it.color),"uColor");
-		glUniform(shader, it.rect, "rect");
-		glUniform(shader, it.uvs, "uvs");
+		glUniform(shader, it.rect, "u_rect");
+		glUniform(shader, it.uvs, "u_uvs");
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 	m_images.first.clear();
@@ -131,73 +132,83 @@ bool ResourceLoader::loadImage(const string &name){
 
 	return true;
 }
-void ResourceLoader::reloadShader(const string &name, const string &vert, const string &frag){
-	glDeleteProgram(shaders[name]);
-	shaders[name] = compileShader(vert+".vert", frag+".frag");
+void ResourceLoader::reloadShader(const string &shaderName){
+	glDeleteProgram(shaders[shaderName]);
+	shaders[shaderName] = compileShader(shaderName+".glsl");
 	auto err = glGetError();
 	if(err)std::cout<<"\t>> "<<err<<endl;
 }
-GLuint ResourceLoader::compileShader(string vertex, string fragment){
-	GLuint f, v;
+GLuint ResourceLoader::compileShader(const string &shaderName){
+	GLuint fragmentS, vertexS;
 	GLuint shader;
-	char *vs,*fs;
 
-	v=glCreateShader(GL_VERTEX_SHADER);
-	f=glCreateShader(GL_FRAGMENT_SHADER);
+	string shaderSource = loadFile(shaderPath+shaderName);
 
-	// load shaders & get length of each
-	GLint vlen;
-	GLint flen;
-	vs = loadFile(shaderPath+vertex,vlen);
-	fs = loadFile(shaderPath+fragment,flen);
+	string vertexSource = "#version 330\n"s + "#define COMPILING_VERTEX_SHADER\n"s + shaderSource;
+	string fragmentSource = "#version 330\n"s + "#define COMPILING_FRAGMENT_SHADER\n"s + shaderSource;
 
-	const char * vv = vs;
-	const char * ff = fs;
+	vertexS = glCreateShader(GL_VERTEX_SHADER);
+	fragmentS = glCreateShader(GL_FRAGMENT_SHADER);
 
-	glShaderSource(v, 1, &vv,&vlen);
-	glShaderSource(f, 1, &ff,&flen);
+	const char *vs_str = vertexSource.c_str();
+	const char *fs_str = fragmentSource.c_str();
+	glShaderSource(vertexS, 1, &vs_str, NULL);
+	glShaderSource(fragmentS, 1, &fs_str, NULL);
+
+
+	glCompileShader(vertexS);
 
 	GLint compiled;
+	glGetShaderiv(vertexS, GL_COMPILE_STATUS, &compiled);
 
-	glCompileShader(v);
-	glGetShaderiv(v, GL_COMPILE_STATUS, &compiled);
 	if (!compiled){
-		cout << "Vertex shader " <<vertex<<" not compiled." << endl;
-		printShaderInfoLog(v);
+		cout << "Vertex shader in " <<shaderName<<" not compiled." << endl;
+		printShaderInfoLog(vertexS);
 		int x;
 		cin>>x;
-		delete [] vs; // dont forget to free allocated memory
-		delete [] fs; // we allocated this in the loadFile function...
 
-		return compileShader(vertex, fragment);
+		return compileShader(shaderName);
 	}
 
-	glCompileShader(f);
-	glGetShaderiv(f, GL_COMPILE_STATUS, &compiled);
+	glCompileShader(fragmentS);
+	glGetShaderiv(fragmentS, GL_COMPILE_STATUS, &compiled);
+
 	if (!compiled){
-		cout << "Fragment shader "<<fragment<<" not compiled." << endl;
-		printShaderInfoLog(f);
+		cout << "Fragment shader in "<<shaderName<<" not compiled." << endl;
+		printShaderInfoLog(fragmentS);
 		int x;
 		cin>>x;
-		delete [] vs; // dont forget to free allocated memory
-		delete [] fs; // we allocated this in the loadFile function...
 
-		return compileShader(vertex, fragment);
+		return compileShader(shaderName);
 	}
 
-	shader=glCreateProgram();
-	glBindAttribLocation(shader,0, "in_Position");
-	glBindAttribLocation(shader,1, "in_Color");
+	shader = glCreateProgram();
 
-	glAttachShader(shader,v);
-	glAttachShader(shader,f);
+	glAttachShader(shader,vertexS);
+	glAttachShader(shader,fragmentS);
 
 	glLinkProgram(shader);
 
-	delete [] vs; // dont forget to free allocated memory
-	delete [] fs; // we allocated this in the loadFile function...
 	return shader;
 }
+std::string ResourceLoader::loadFile(string fname){
+	std::ifstream in(fname, std::ios::in | std::ios::binary);
+  if(in)
+  {
+    std::string contents;
+    in.seekg(0, std::ios::end);
+    contents.resize(in.tellg());
+    in.seekg(0, std::ios::beg);
+    in.read(&contents[0], contents.size());
+    in.close();
+    return(contents);
+  }
+	else {
+		cout << "Unable to open file " << fname << endl;
+		exit(1);
+	}
+}
+
 void ResourceLoader::printShaderInfoLog(GLint shader){
 	int infoLogLen = 0;
 	int charsWritten = 0;
@@ -238,11 +249,11 @@ void Graph::draw(){
 	// else
 		Engine::b_vec2_16k.update(data);
 
-	auto shader = shaders["lines2D"];
+	auto shader = shaders["Lines2D"];
 	glUseProgram(shader);
 
-	glUniform(shader, getProjection(), "projection");
-	glUniform(shader, colorHex(dataColor), "color");
+	glUniform(shader, getProjection(), "u_projection");
+	glUniform(shader, colorHex(dataColor), "u_color");
 	glLineWidth(1);
 	glDisable(GL_LINE_SMOOTH);
 

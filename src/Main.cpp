@@ -186,24 +186,24 @@ void fastLoop(float step){
 	RC->update(step/1000.0f);
 }
 void renderLoop(){
-	Engine::plotGraphs();
-	Engine::generateShadowMap(*scene);
+	// Engine::plotGraphs();
+	// Engine::generateShadowMap(*scene);
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
-	Engine::copyDepth(*scene);
-	if(globalSettings & LIGHTS)Engine::renderLights(*scene);
-	if(globalSettings & LIGHTS)Engine::applyLights(*scene);
-	if(globalSettings & SSAO)Engine::SSAO();
-	if(globalSettings & SOBEL)Engine::Sobel();
-	Engine::postprocess(*scene);
-	Engine::drawOutline(*scene);
+	// Engine::copyDepth(*scene);
+	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
+	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
+	// if(globalSettings & SSAO)Engine::SSAO();
+	// if(globalSettings & SOBEL)Engine::Sobel();
+	// Engine::postprocess(*scene);
+	// Engine::drawOutline(*scene);
 
-	Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
-	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0xff00b0f0);
-	Engine::drawGrids();
+	// Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
+	// Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0xff00b0f0);
+	// Engine::drawGrids();
  	Engine::finalize(*scene);
-	Engine::renderGUI(ui);
-	Engine::renderShapes();
+	// Engine::renderGUI(ui);
+	// Engine::renderShapes();
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
@@ -316,10 +316,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
-		loader.reloadShader("EnviroShade", "EnviroShade", "EnviroShade");
-		loader.reloadShader("EnviroDefColorOnly", "EnviroDef", "EnviroDefColorOnly");
-		loader.reloadShader("SSAO", "frameBuffer", "SSAO");
-		loader.reloadShader("Sobel", "frameBuffer", "Sobel");
+		loader.reloadShader("EnviroShade");
+		loader.reloadShader("EnviroDefColorOnly");
+		loader.reloadShader("SSAO");
+		loader.reloadShader("Sobel");
 	}
 
 	ui.keyInput(key, action, mods);

@@ -54,7 +54,7 @@ public:
 	int count {0};
 
 	void loadResources(CFG::Node &cfg);
-	void reloadShader(const string &name, const string &vert, const string &frag);
+	void reloadShader(const string &shaderName);
 	bool loadShader(CFG::Node &cfg);
 	bool loadMesh(string meshName);
 	bool loadMesh(CFG::Node &cfg);
@@ -65,11 +65,11 @@ public:
 	bool loadImageSet(CFG::Node &_cfg);
 	bool loadObj(fstream &file);
 	bool loadScene(Scene &scene, CFG::Node &cfg);
-	char* loadFile(string fname, GLint &fSize);
+	std::string  loadFile(string fname);
 	void printShaderInfoLog(GLint shader);
 	void fillBuffers();
 
 	bool loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg);
-	GLuint compileShader(string vert, string frag);
+	GLuint compileShader(const string &shaderName);
 };
 

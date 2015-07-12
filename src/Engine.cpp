@@ -492,7 +492,7 @@ void generateShadowMap(Scene &scene){
 
 	shadowProjection = projection*view;
 
-	auto shader = shaders["EnviroShade"];
+	auto shader = shaders["ProjectShadows"];
 	glUseProgram(shader);
 	static auto u_modelPosition = glGetUniformLocation(shader,"u_model");
 	static auto u_shadowProjection = glGetUniformLocation(shader,"u_PV");
@@ -520,10 +520,10 @@ void generateShadowMap(Scene &scene){
 }
 void setup(Scene &scene){
 	auto ctmp = colorHex(clearColor);
-	{
+	if(true){ /// default
 		glViewport(0, 0, window_width, window_height);
-		// glClearColor(0.09f, 0.09f, 0.09f, 1.f);
-		glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
+		glClearColor(0.09f, 0.09f, 0.2f, 1.f);
+		// glClearColor(ctmpctmp.x, ctmp.y, ctmp.z, 1.f);
 		glClearDepth(1);
 		glClearStencil(0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -535,29 +535,31 @@ void setup(Scene &scene){
 		glDepthMask(GL_TRUE);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
+		glFrontFace(GL_CCW);
 	}
 
+	if(false){ /// FBO
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO[0]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
+			glDrawBuffers(2,&DrawBuffers[0]);
+			// glDrawBuffers(1,&DrawBuffers[0]);
+		glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
+		glClearDepth(1);
+		glClearStencil(0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glViewport(0, 0, window_width, window_height);
+		glDisableVertexAttribArray(0);
+		glDepthFunc(GL_LEQUAL);
+		glDepthRange(0.0f, 1.0f);
+		glDisable(GL_BLEND);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO[0]);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
-		glDrawBuffers(2,&DrawBuffers[0]);
-		// glDrawBuffers(1,&DrawBuffers[0]);
-	glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
-	glClearDepth(1);
-	glClearStencil(0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	glViewport(0, 0, window_width, window_height);
-	glDisableVertexAttribArray(0);
-	glDepthFunc(GL_LEQUAL);
-	glDepthRange(0.0f, 1.0f);
-	glDisable(GL_BLEND);
-
-	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glFrontFace(GL_CCW);
+		glDepthMask(GL_TRUE);
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+		glFrontFace(GL_CCW);
+	}
 }
 void renderScene(Scene &scene){
 	// drawTexturedBox(depthBuffer, {0, 12,screenSize.x/7.0, screenSize.y/7.0});
@@ -566,27 +568,29 @@ void renderScene(Scene &scene){
 	// drawTexturedBox(shadowMapBuffer, {0, 100, screenSize.x/7.0, screenSize.x/7.0});
 
 	glStencilFunc(GL_ALWAYS,1,0xFF);
-	auto shader = shaders["EnviroDefColorOnly"];
+	auto shader = shaders["SceneElement"];
 	glUseProgram(shader);
 
-	static auto u_projection = glGetUniformLocation(shader,"projection");
-	static auto u_view = glGetUniformLocation(shader,"view");
-	static auto u_metalTex = glGetUniformLocation(shader,"metalTex");
+	static auto u_projection = glGetUniformLocation(shader,"u_projection");
+	static auto u_view = glGetUniformLocation(shader,"u_view");
+	static auto u_metalTex = glGetUniformLocation(shader,"u_metalTex");
 	static auto u_shadowTex = glGetUniformLocation(shader,"shadowTex");
 	static auto u_eyePos = glGetUniformLocation(shader,"u_eyePos");
 
 	static auto u_shadowProjection = glGetUniformLocation(shader,"u_shadowProjection");
+
 	static auto u_lightPos = glGetUniformLocation(shader,"u_lightPos");
 	static auto u_color = glGetUniformLocation(shader,"u_color");
 	static auto u_size = glGetUniformLocation(shader,"u_size");
 	static auto u_energy = glGetUniformLocation(shader,"u_energy");
+
 	static auto u_lightPos2 = glGetUniformLocation(shader,"u_lightPos2");
 	static auto u_color2 = glGetUniformLocation(shader,"u_color2");
 	static auto u_size2 = glGetUniformLocation(shader,"u_size2");
 	static auto u_energy2 = glGetUniformLocation(shader,"u_energy2");
 
-	glUniform(shader, camera.ProjectionMatrix, "projection");
-	glUniform(shader, camera.ViewMatrix, "view");
+	glUniform(shader, camera.ProjectionMatrix, u_projection);
+	glUniform(shader, camera.ViewMatrix, u_view);
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(u_metalTex,0);
 	glBindTexture(GL_TEXTURE_2D, globalResources->textures["metal"]);
@@ -607,9 +611,9 @@ void renderScene(Scene &scene){
 
 	glBindVertexArray(scene.resources->VAO);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	auto u_colorPosition = glGetUniformLocation(shader,"color");
-	auto u_modelPosition = glGetUniformLocation(shader,"model");
-	auto u_NMPosition = glGetUniformLocation(shader,"NM");
+	auto u_colorPosition = glGetUniformLocation(shader, "u_color");
+	auto u_modelPosition = glGetUniformLocation(shader, "u_model");
+	auto u_NMPosition = glGetUniformLocation(shader, "u_NM");
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
 
@@ -648,7 +652,7 @@ void renderScene(Scene &scene){
 }
 void drawOutline(Scene &scene){
 
-	auto shader = shaders["EnviroDefOutlining"];
+	auto shader = shaders["SceneOutline"];
 	glUseProgram(shader);
 	static auto u_projection = glGetUniformLocation(shader,"projection");
 	static auto u_view = glGetUniformLocation(shader,"view");
@@ -745,11 +749,11 @@ void copyDepth(Scene &scene){
 	glDepthMask(GL_FALSE);
 	setupBuffer(screenQuad);
 
-	auto shader = shaders["frameBufferDepthCopy"];
+	auto shader = shaders["CopyDepth"];
 	glUseProgram(shader);
 	setupBuffer(screenQuad);
 	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(glGetUniformLocation(shader,"texFramebuffer"),0);
+	glUniform1i(glGetUniformLocation(shader,"u_deptBuffer"),0);
 	glBindTexture(GL_TEXTURE_2D, depthBuffer);
 	// glBindTexture(GL_TEXTURE_2D, shadowMapBuffer);
 
@@ -780,13 +784,13 @@ void renderLights(Scene &scene){
 		glDepthMask(GL_FALSE);
 		glEnable(GL_STENCIL_TEST);
 		glStencilOp(GL_KEEP,GL_KEEP,GL_REPLACE);
-		auto shader = shaders["deferredPointLightFirstPass"];
+		auto shader = shaders["LightPointPrePass"];
 		glUseProgram(shader);
 
-		static auto u_projection = glGetUniformLocation(shader,"projection");
-		static auto u_view = glGetUniformLocation(shader,"view");
-		static auto u_lightPos = glGetUniformLocation(shader,"lightPos");
-		static auto u_size = glGetUniformLocation(shader,"size");
+		static auto u_projection = glGetUniformLocation(shader,"u_projection");
+		static auto u_view = glGetUniformLocation(shader,"u_view");
+		static auto u_lightPos = glGetUniformLocation(shader,"u_lightPos");
+		static auto u_size = glGetUniformLocation(shader,"u_size");
 
 		glUniform(shader, camera.ProjectionMatrix, u_projection);
 		glUniform(shader, camera.ViewMatrix, u_view);
@@ -823,19 +827,19 @@ void renderLights(Scene &scene){
 		glStencilMask(0xFF);
 		glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 
-		auto shader = shaders["deferredPointLight"];
+		auto shader = shaders["LightPoint"];
 		glUseProgram(shader);
 
-		static auto u_projection = glGetUniformLocation(shader,"projection");
-		static auto u_view = glGetUniformLocation(shader,"view");
-		static auto u_invPV = glGetUniformLocation(shader,"invPV");
-		static auto u_lightPos = glGetUniformLocation(shader,"lightPos");
-		static auto u_size = glGetUniformLocation(shader,"size");
-		static auto u_eyePos = glGetUniformLocation(shader,"eyePos");
-		static auto u_color = glGetUniformLocation(shader,"color");
-		static auto u_energy = glGetUniformLocation(shader,"energy");
-		static auto u_normalTex = glGetUniformLocation(shader,"normalTex");
-		static auto u_depthTex = glGetUniformLocation(shader,"depthTex");
+		static auto u_projection = glGetUniformLocation(shader,"u_projection");
+		static auto u_view = glGetUniformLocation(shader,"u_view");
+		static auto u_invPV = glGetUniformLocation(shader,"u_invPV");
+		static auto u_lightPos = glGetUniformLocation(shader,"u_lightPos");
+		static auto u_size = glGetUniformLocation(shader,"u_size");
+		static auto u_eyePos = glGetUniformLocation(shader,"u_eyePos");
+		static auto u_color = glGetUniformLocation(shader,"u_color");
+		static auto u_energy = glGetUniformLocation(shader,"u_energy");
+		static auto u_normalTex = glGetUniformLocation(shader,"u_normalTex");
+		static auto u_depthTex = glGetUniformLocation(shader,"u_depthTex");
 
 		glActiveTexture(GL_TEXTURE0);
 			glUniform1i(u_normalTex, 0);
@@ -992,13 +996,13 @@ void finalize(Scene &scene){
 	glDepthMask(GL_FALSE);
 	setupBuffer(screenQuad);
 
-	auto shader = shaders["frameBufferManipA1"];
+	auto shader = shaders["ApplyFBO"];
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 
 	setupBuffer(screenQuad);
 	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(glGetUniformLocation(shader,"texFramebuffer"),0);
+	glUniform1i(glGetUniformLocation(shader,"u_texture"),0);
 	if(globalSettings & DRAW_COLORS)
 		glBindTexture(GL_TEXTURE_2D, colorBuffer);
 	if(globalSettings & DRAW_NORMALS)
@@ -1048,12 +1052,12 @@ void drawGrids(){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	auto shader = shaders["lines"];
+	auto shader = shaders["Lines"];
 	glUseProgram(shader);
 
-	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "projection");
+	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "u_projection");
 	// glUniform(shader, colorHex(0x73A2DE70), "color");
-	glUniform(shader, colorHex(0xE6860090), "color");
+	glUniform(shader, colorHex(0xE6860090), "u_color");
 	glLineWidth(1);
 	glEnable(GL_LINE_SMOOTH);
 
@@ -1097,11 +1101,11 @@ void drawASDFASDF(glm::vec4 point){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	auto shader = shaders["lines"];
+	auto shader = shaders["Lines"];
 	glUseProgram(shader);
 
-	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "projection");
-	glUniform(shader, colorHex(0xff3000a0), "color");
+	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "u_projection");
+	glUniform(shader, colorHex(0xff3000a0), "u_color");
 	glLineWidth(2);
 	glEnable(GL_LINE_SMOOTH);
 
@@ -1118,11 +1122,11 @@ void drawLineStrip(std::vector<glm::vec4> &points, HexColor color, int size){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	auto shader = shaders["lines"];
+	auto shader = shaders["Lines"];
 	glUseProgram(shader);
 
-	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "projection");
-	glUniform(shader, colorHex(color), "color");
+	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "u_projection");
+	glUniform(shader, colorHex(color), "u_color");
 	glLineWidth(size);
 	glEnable(GL_LINE_SMOOTH);
 
@@ -1139,11 +1143,11 @@ void drawLines(std::vector<glm::vec4> &points, HexColor color, int size){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	auto shader = shaders["lines"];
+	auto shader = shaders["Lines"];
 	glUseProgram(shader);
 
-	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "projection");
-	glUniform(shader, colorHex(color), "color");
+	glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "u_projection");
+	glUniform(shader, colorHex(color), "u_color");
 	glLineWidth(size);
 	glEnable(GL_LINE_SMOOTH);
 
@@ -1162,13 +1166,13 @@ void drawPoints(std::vector<glm::vec4> &points, HexColor color, float size){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_POINT_SPRITE );
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	auto shader = shaders["pathPoints"s];
+	auto shader = shaders["PointList"];
 	glUseProgram(shader);
 
-	glUniform(shader, camera.ProjectionMatrix, "projection");
-	glUniform(shader, camera.ViewMatrix, "view");
-	glUniform(shader, size, "size");
-	glUniform(shader, colorHex(color), "color");
+	glUniform(shader, camera.ProjectionMatrix, "u_projection");
+	glUniform(shader, camera.ViewMatrix, "u_view");
+	glUniform(shader, size, "u_size");
+	glUniform(shader, colorHex(color), "u_color");
 
 	b_universalVec4.bind();
 	glDrawArrays(GL_POINTS, 0,  points.size());
@@ -1272,10 +1276,10 @@ void renderGUI(UI::IMGUI &gui){
 	gui.m_UIContainer->draw(gui);
 	for(int layer=0; layer<3; layer++){
 	{ // text
-		GLuint shader = shaders["text"];
+		GLuint shader = shaders["Text"];
 		glUseProgram(shader);
 
-		glUniformMatrix4fv(glGetUniformLocation(shader,"projection"), 1, GL_FALSE, glm::value_ptr(orthoMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(shader,"u_projection"), 1, GL_FALSE, glm::value_ptr(orthoMatrix));
 
 		setupBuffer(quadCorner, 0, 4, 0);
 		for (auto &it : UI::fonts){
@@ -1389,24 +1393,6 @@ void renderShapes(){
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	{ /// lines
-		// lines2D.emplace_back(lineInfo {glm::vec2(50,50), glm::vec2(500,500), 10, cRed});
-
-		// auto shader = shaders["lineShape"];
-		// glUseProgram(shader);
-		// setupBuffer(XLongQuad2, 0,4,0);
-		// glUniform(shader, orthoMatrix, "projection");
-		// for(auto &it : lines2D){
-			// glUniform(shader, colorHex(it.color), "color");
-			// glUniform(shader, it.size, "size");
-			// glUniform(shader, it.start, "start");
-			// glUniform(shader, it.end, "end");
-
-			// glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		// }
-		// lines2D.clear();
-	}
-	// glBlendFunc(GL_ONE, GL_ONE);
 
 	/*if(false){ // text
 		GLuint shader = shaders["text"];
@@ -1470,19 +1456,19 @@ void renderShapes(){
 
 	}*/
 	if(true){ /// patterns
-		GLuint shader = shaders["shapePattern"];
+		GLuint shader = shaders["AlphaPattern2D"];
 		glUseProgram(shader);
 
-		glUniform(shader, orthoMatrix, "projection");
+		glUniform(shader, orthoMatrix, "u_projection");
 
 		setupBuffer(quadCentered, 0, 4, 0);
 		for(auto &it : pattern2D){
 			glUniform(shader, colorHex(it.color), "uColor");
-			glUniform(shader, it.info4, "pattern");
-			glUniform(shader, it.info2, "info");
+			glUniform(shader, it.info4, "u_pattern");
+			glUniform(shader, it.info2, "u_info");
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, it.tex);
-			glUniform1i(glGetUniformLocation(shader,"mainTex"),0);
+			glUniform1i(glGetUniformLocation(shader,"u_texture"),0);
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
@@ -1492,16 +1478,15 @@ void renderShapes(){
 	if(true){ /// graphs
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		auto shader = shaders["plane2D"];
+		auto shader = shaders["Image2D"];
 		glUseProgram(shader);
-		glUniform(shader, orthoMatrix, "projection");
+		glUniform(shader, orthoMatrix, "u_projection");
 		setupBuffer(quadCorner, 0, 4, 0);
 
 		for(auto &it : texturedBoxes){
-			glUniform(shader, it.second, "plane");
+			glUniform(shader, it.second, "u_box");
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, it.first);
-			// glBindTexture(GL_TEXTURE_2D, globalResources->textures["kursor"]);
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}

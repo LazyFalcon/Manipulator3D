@@ -1,6 +1,5 @@
 Main:
- Shaders:
-  - pathPoints pathPoints pathPoints
+ OldShaders:
   - cubes cubes cubes
   - circle shape shapeCircle
   - rectCorners shape shapeRectCorners
@@ -9,7 +8,6 @@ Main:
   - shapeRectStriped shape shapeRectStriped
   - shapeRectFilledCentered shape shapeRectFilledCentered
   - shapeRectFilledNoAlfaCentered shape shapeRectFilledNoAlfaCentered
-  - shapeRectColoredI shapeInstancedColor shapeRectColored
   - shapeRectFilledI shapeInstanced shapeRectFilled
   - shapeButtonI shapeInstanced shapeButton
   - shapeEditI shapeInstanced shapeEdit
@@ -17,39 +15,40 @@ Main:
   - shapePointEmpty point shapePointEmpty
   - shapePointFilled point shapePointFilled
   - shapeCircleFill shape shapeCircleFill
-  - text text text
   - grid grid grid
-  - plane2D plane2D copyTexture
   - graph graph graph
   - letters letters minimal1
   - frameBufferGarage frameBuffer frameBufferGarage
   - frameBuffer frameBuffer frameBuffer
-  - frameBufferDepthCopy frameBuffer frameBufferDepthCopy
-  - frameBufferManipA1 frameBuffer frameBufferManipA1
   - frameBufferDust frameBuffer frameBufferDust
   - frameBufferGarageColors frameBuffer frameBufferGarageColors
-  - frameBufferGarageLights frameBuffer frameBufferGarageLights
   - frameBufferBlurHorizontal frameBuffer frameBufferBlurHorizontal
   - frameBufferBlurVertical frameBuffer frameBufferBlurVertical
   - frameBufferDisplacement frameBuffer frameBufferDisplacement
-  - shapeIcon shapeIcon shapeIcon
-  - shapePattern shapePattern shapePattern
-  - lines lines lines
-  - lines2D lines2D lines
-  - lineShape lineShape lineShape
   - EnviroDef EnviroDef EnviroDef
-  - EnviroDefColorOnly EnviroDef EnviroDefColorOnly
-  - EnviroDefOutlining EnviroDefOutlining EnviroDefOutlining
   - EnviroColorDef EnviroDef EnviroColorDef
   - deffShading frameBuffer deffShading
-  - deferredPointLightFirstPass deferredPointLight deferredPointLightFirstPass
-  - deferredPointLight deferredPointLight deferredPointLight
   - deferredSpotLight deferredSpotLight deferredSpotLight
   - deferredSpotLight_2 deferredSpotLight deferredSpotLight_2
   - SurfaceAlignedParticle SurfaceAlignedParticle SurfaceAlignedParticle
-  - EnviroShade EnviroShade EnviroShade
-  - SSAO frameBuffer SSAO
-  - Sobel frameBuffer Sobel
+ Shaders:
+  - UIIcon2D
+  - UIButton
+  - Lines2D
+  - Image2D
+  - AlphaPattern2D
+  - Text
+  - PointList
+  - Lines
+  - ApplyLights
+  - LightPointPrePass
+  - ApplyFBO
+  - CopyDepth
+  - SceneOutline
+  - SceneElement
+  - ProjectShadows
+  - SSAO
+  - Sobel
  Images:
   - metal.png
   - kursor.png

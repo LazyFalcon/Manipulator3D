@@ -33,38 +33,16 @@ void ResourceLoader::loadResources(CFG::Node &cfg){
 bool ResourceLoader::loadShader(CFG::Node &cfg){
 
 	std::stringstream ss(cfg.value);
-	string name, vert, frag;
-	ss>>name>>vert>>frag;
+	string shaderName;
+	ss>>shaderName;
 
-	vert += ".vert";
-	frag += ".frag";
-	if(shaders.find(name) == shaders.end()){
-		cout<<"shader: "<<name<<endl;
-		shaders[name] = compileShader(vert, frag);
+	shaderName += ".glsl";
+
+	if(shaders.find(shaderName) == shaders.end()){
+		cout<<"shader: "<<shaderName<<endl;
+		shaders[shaderName] = compileShader(shaderName);
 	}
 	return true;
-}
-char* ResourceLoader::loadFile(string fname, GLint &fSize){
-	std::ifstream::pos_type size;
-	char * memblock;
-	string text;
-
-	// file read based on example in cplusplus.com tutorial
-	std::ifstream file (fname.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
-	if (file.is_open()){
-		size = file.tellg();
-		fSize = (GLuint) size;
-		memblock = new char [size];
-		file.seekg (0, std::ios::beg);
-		file.read (memblock, size);
-		file.close();
-		text.assign(memblock);
-	}
-	else{
-		cout << "Unable to open file " << fname << endl;
-		exit(1);
-	}
-	return memblock;
 }
 
 bool ResourceLoader::loadImage(CFG::Node &cfg){
