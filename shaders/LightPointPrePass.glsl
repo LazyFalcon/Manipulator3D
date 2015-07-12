@@ -17,8 +17,8 @@ void main(){
 #ifdef COMPILING_FRAGMENT_SHADER
 
 void main(void){
-}
 
+}
 
 #endif
 

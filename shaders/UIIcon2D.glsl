@@ -23,13 +23,13 @@ out vec4 outColor;
 
 uniform sampler2D u_texture;
 
-uniform vec4 u_Color;
+uniform vec4 uColor;
 
 in vec2 p_uv;
 
 void main(void){
 	vec4 color = texture(u_texture, p_uv);
-	outColor = vec4(u_Color.rgb, color.a*u_Color.a);
+	outColor = vec4(uColor.rgb, color.a*uColor.a);
 }
 
 #endif

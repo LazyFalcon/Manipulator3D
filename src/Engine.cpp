@@ -1180,12 +1180,12 @@ void drawLineStrip(LineStrip &strip, bool clear){
     glLineWidth(strip.lineSize);
     glEnable(GL_LINE_SMOOTH);
 
-    auto shader = shaders["lineStrip"];
+    auto shader = shaders["Lines"];
     glUseProgram(shader);
 
-    glUniform(shader, camera.ProjectionMatrix, "projection");
-    glUniform(shader, camera.ViewMatrix, "view");
-		glUniform(shader, colorHex(strip.color), "color");
+    glUniform(shader, camera.ProjectionMatrix, "u_projection");
+    glUniform(shader, camera.ViewMatrix, "u_view");
+		glUniform(shader, colorHex(strip.color), "u_color");
 
     b_vec4_1024.update(strip.points);
 		b_vec4_1024.bind(0, 4);

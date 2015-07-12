@@ -2,22 +2,21 @@
 
 layout(location=0)in vec4 position;
 
-uniform mat4 projection;
+uniform mat4 u_projection;
 
 void main(){
-	gl_Position = projection*position;
+	gl_Position = u_projection*position;
 }
-
 
 #endif
 
 #ifdef COMPILING_FRAGMENT_SHADER
+out vec4 outColor;
 
-uniform vec4 color;
-out vec4 out_Color;
+uniform vec4 u_color;
 
 void main(void){
-	out_Color = color;
+	outColor = u_color;
 }
 
 #endif
