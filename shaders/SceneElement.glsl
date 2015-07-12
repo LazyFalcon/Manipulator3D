@@ -1,29 +1,29 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec3 Vertex;
-layout(location=1)in vec2 UV;
-layout(location=2)in vec3 Normal;
+layout(location=0)in vec3 mVertex;
+layout(location=1)in vec2 mUV;
+layout(location=2)in vec3 mNormal;
 
-uniform mat4 u_projection;
-uniform mat4 u_view;
-uniform mat4 u_model;
-uniform mat4 u_NM;
-uniform mat4 u_shadowProjection;
+uniform mat4 uPV;
+uniform mat4 uView;
+uniform mat4 uModel;
+uniform mat4 uNM;
+uniform mat4 uShadowProjection;
 
-out vec2 p_uv;
-out vec4 p_normal;
-out vec4 p_vertex;
-out vec4 p_vertexInShadow;
+out vec2 vUV;
+out vec4 vNormal;
+out vec4 vVertex;
+out vec4 vVertexInShadow;
 
 void main(){
-	p_normal = u_NM*(vec4(Normal,0));
-	// p_normal = model*(vec4(Normal,0));
-	p_vertex = u_model*(vec4(Vertex,1));
+	vNormal = uNM*(vec4(mNormal,0));
+	// vNormal = model*(vec4(Normal,0));
+	vVertex = uModel*(vec4(mVertex,1));
 
-	p_vertexInShadow = u_shadowProjection*p_vertex;
+	vVertexInShadow = uShadowProjection*vVertex;
 
-	p_uv = UV;
-	gl_Position = u_projection*u_view*p_vertex;
+	vUV = mUV;
+	gl_Position = uPV*uView*vVertex;
 }
 
 
@@ -32,26 +32,26 @@ void main(){
 #ifdef COMPILING_FRAGMENT_SHADER
 
 
-uniform sampler2D u_metalTex;
-uniform sampler2DShadow u_shadowTex;
+uniform sampler2D uMetalTex;
+uniform sampler2DShadow uShadowTex;
 
-uniform vec4  u_color;
+uniform vec4  uColor;
 
-uniform vec4  u_eyePos;
-uniform vec4  u_lightPos;
-// uniform vec4  u_color;
-uniform float u_size;
-uniform float u_energy;
+uniform vec4  uEyePos;
+uniform vec4  uLightPos;
+// uniform vec4  uColor;
+uniform float uSize;
+uniform float uEnergy;
 
-uniform vec4  u_lightPos2;
-uniform vec4  u_color2;
-uniform float u_size2;
-uniform float u_energy2;
+uniform vec4  uLightPos2;
+uniform vec4  uColor2;
+uniform float uSize2;
+uniform float uEnergy2;
 
-in vec2 p_uv;
-in vec4 p_normal;
-in vec4 p_vertex;
-in vec4 p_vertexInShadow;
+in vec2 vUV;
+in vec4 vNormal;
+in vec4 vVertex;
+in vec4 vVertexInShadow;
 
 float shade(vec4 n, vec4 l, float e){
 	// return clamp( dot(l, -n), 0.0, 1.0 ) * e;
@@ -80,15 +80,15 @@ const float DepthBias = -0.0007;
 
 
 void main(void){
-	float metal = texture(u_metalTex, p_uv*3).r;
-	vec4 vertexInShadow = p_vertexInShadow;
+	float metal = texture(uMetalTex, vUV*3).r;
+	vec4 vertexInShadow = vVertexInShadow;
 	vertexInShadow.xyz /= vertexInShadow.w;
 	vertexInShadow.xy = vertexInShadow.xy * 0.5 + vec2(0.5);
 	vertexInShadow.z = vertexInShadow.z * 0.5 + 0.5;
 
-	vec4 N = normalize(p_normal);
+	vec4 N = normalize(vNormal);
 /*
-	// vec4 L = p_vertex - u_lightPos;
+	// vec4 L = vVertex - uLightPos;
 	// float d = length(L);
 	// L /= d;
 	// vec4 l_shade = vec4(0.4 + clamp(dot(-N, L), -0.1,0.0));
@@ -106,7 +106,7 @@ void main(void){
 	// for(int i=0; i<5; i++){
 	// for(int i=0; i<0; i++){
 		// vec3 uvz = vec3(vertexInShadow.xy+kernel[i]/2048, vertexInShadow.z + bias);
-		// shadowFactor += texture(u_shadowTex, uvz);
+		// shadowFactor += texture(uShadowTex, uvz);
 	// }
 	// shadowFactor = 0.25 + shadowFactor/5;
 	// shadowFactor = 0.4 + shadowFactor/5;
@@ -124,23 +124,23 @@ void main(void){
 		// shadowIntensity = 1.0;
 
 		// N *= metal;
-		// vec4 E = p_vertex - u_eyePos;
+		// vec4 E = vVertex - uEyePos;
 		// float e = length(E);
 		// E /= e;
 
-		// l_shade = shade(N,L, u_energy)*attenuation(d, u_size)*u_color*shadowIntensity;
-		// l_spect = spectacular(N, L, E)*metal*u_color*attenuation(e, 20.0);
+		// l_shade = shade(N,L, uEnergy)*attenuation(d, uSize)*uColor*shadowIntensity;
+		// l_spect = spectacular(N, L, E)*metal*uColor*attenuation(e, 20.0);
 
-		// L = p_vertex - u_lightPos2;
+		// L = vVertex - uLightPos2;
 		// d = length(L);
 		// L /= d;
 
-		// l_shade += shade(N,L, u_energy2)*attenuation(d, u_size2)*u_color2*shadowIntensity;
-		// l_spect += spectacular(N, L, E)*metal*u_color2*attenuation(e, 20.0);
+		// l_shade += shade(N,L, uEnergy2)*attenuation(d, uSize2)*uColor2*shadowIntensity;
+		// l_spect += spectacular(N, L, E)*metal*uColor2*attenuation(e, 20.0);
 	// }
 	 */
 	// gl_FragData[0] = color*l_shade*2 + l_spect;
-	gl_FragData[0] = u_color;
+	gl_FragData[0] = uColor;
 	gl_FragData[1] = vec4(N.xyz, 0.0);
 }
 

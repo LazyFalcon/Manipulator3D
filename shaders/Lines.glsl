@@ -1,11 +1,11 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec4 position;
+layout(location=0)in vec4 mVertex;
 
-uniform mat4 u_projection;
+uniform mat4 uPV;
 
 void main(){
-	gl_Position = u_projection*position;
+	gl_Position = uPV*mVertex;
 }
 
 #endif
@@ -13,10 +13,10 @@ void main(){
 #ifdef COMPILING_FRAGMENT_SHADER
 out vec4 outColor;
 
-uniform vec4 u_color;
+uniform vec4 uColor;
 
 void main(void){
-	outColor = u_color;
+	outColor = uColor;
 }
 
 #endif

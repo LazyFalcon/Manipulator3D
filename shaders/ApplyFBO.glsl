@@ -1,14 +1,12 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec4 quadPosition;
+layout(location=0)in vec4 mVertex;
 
-out vec2 p_uv;
-out vec4 p_persPos;
+out vec2 vUV;
 
 void main(){
-	gl_Position = (vec4(quadPosition.xy,0,1));
-	p_persPos = gl_Position;
-	p_uv = (quadPosition.xy+vec2(1,1))/2;
+	gl_Position = (vec4(mVertex.xy,0,1));
+	vUV = (mVertex.xy+vec2(1,1))/2;
 }
 
 #endif
@@ -17,14 +15,14 @@ void main(){
 
 out vec4 outColor;
 
-in vec2 p_uv;
+in vec2 vUV;
 
-uniform sampler2D u_texture;
+uniform sampler2D uTexture;
 
 void main(void){
-	vec4 color = texture(u_texture, p_uv);
-	float y = p_uv.y*250*3.14;
-	color.rgb = pow(color.rgb, vec3(0.5)*clamp((1+p_uv.x + p_uv.y), 0.9,1.3+ sin(2*y)*0.09)  );
+	vec4 color = texture(uTexture, vUV);
+	float y = vUV.y*250*3.14;
+	color.rgb = pow(color.rgb, vec3(0.5)*clamp((1+vUV.x + vUV.y), 0.9,1.3+ sin(2*y)*0.09)  );
 
 	outColor = color;
 }

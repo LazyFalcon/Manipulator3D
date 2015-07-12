@@ -1,19 +1,19 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec4 vertex;
+layout(location=0)in vec4 mVertex;
 
 uniform float uWidth;
 uniform float uHeight;
-uniform vec4 u_rect;
-uniform vec4 u_uvs;
+uniform vec4 uRect;
+uniform vec4 uUVs;
 
-out vec2 p_uv;
+out vec2 vUV;
 
 void main(){
 	gl_Position = vec4(
-											(vertex.xy*u_rect.zw+u_rect.xy)/vec2(uWidth/2, uHeight/2)-vec2(1)
+											(mVertex.xy*uRect.zw+uRect.xy)/vec2(uWidth/2, uHeight/2)-vec2(1)
 											,0,1);
-	p_uv = u_uvs.xy + vertex.xy*u_uvs.zw ;
+	vUV = uUVs.xy + mVertex.xy*uUVs.zw ;
 }
 
 #endif
@@ -21,14 +21,14 @@ void main(){
 #ifdef COMPILING_FRAGMENT_SHADER
 out vec4 outColor;
 
-uniform sampler2D u_texture;
+uniform sampler2D uTexture;
 
 uniform vec4 uColor;
 
-in vec2 p_uv;
+in vec2 vUV;
 
 void main(void){
-	vec4 color = texture(u_texture, p_uv);
+	vec4 color = texture(uTexture, vUV);
 	outColor = vec4(uColor.rgb, color.a*uColor.a);
 }
 

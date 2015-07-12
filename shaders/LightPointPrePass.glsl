@@ -1,15 +1,15 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec3 Vertex;
+layout(location=0)in vec3 mVertex;
 
-uniform mat4  u_projection;
-uniform mat4  u_view;
-uniform vec4  u_lightPos;
-uniform float u_size;
+uniform mat4  uPV;
+uniform mat4  uView;
+uniform vec4  uLightPos;
+uniform float uSize;
 
 
 void main(){
-	gl_Position = u_projection*u_view*(vec4(Vertex*u_size, 0)+u_lightPos);
+	gl_Position = uPV*uView*(vec4(mVertex*uSize, 0)+uLightPos);
 }
 
 #endif

@@ -1,29 +1,28 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec4 quadPosition;
+layout(location=0)in vec4 mVertex;
 
-out vec2 p_uv;
+out vec2 vUV;
 
 void main(){
-	gl_Position = (vec4(quadPosition.xy,0,1));
-	p_uv = (quadPosition.xy+vec2(1,1))/2;
+	gl_Position = (vec4(mVertex.xy,0,1));
+	vUV = (mVertex.xy+vec2(1,1))/2;
 }
 
 
 #endif
 
 #ifdef COMPILING_FRAGMENT_SHADER
-out vec4 out_ao;
+out vec4 outAO;
 
-uniform sampler2D u_normalTex;
-uniform sampler2D u_depthTex;
-uniform sampler2D u_SSAORandom;
+uniform sampler2D uNormalBuffer;
+uniform sampler2D uDepthBuffer;
+uniform sampler2D uSSAORandom;
 
+uniform mat4 uInvPV;
+uniform mat4 uView;
 
-uniform mat4 u_invPV;
-uniform mat4 u_view;
-
-in vec2 p_uv;
+in vec2 vUV;
 
 const float bias = 0.169;
 const float scale = 95.01;
@@ -34,13 +33,13 @@ const float randomSize = 644;
 
 vec4 getNormal(vec2 uv){
 	// return View * vec4(texture(normalTex, uv).xyz, 0);
-	return texture(u_normalTex, uv);
+	return texture(uNormalBuffer, uv);
 }
 vec4 getPosition(vec2 uv, out float depth){
-	depth = texture(u_depthTex, uv).r;
+	depth = texture(uDepthBuffer, uv).r;
 	// vec3 viewSpace = vec3(uv*2-vec2(1), 0);
 	vec4 viewSpace = vec4(uv*2-1, depth*2 - 1, 1);
-	vec4 worldPos = u_invPV*viewSpace;
+	vec4 worldPos = uInvPV*viewSpace;
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1;
 	// vec4 worldPos = vec4(viewSpace, 1);
@@ -49,8 +48,8 @@ vec4 getPosition(vec2 uv, out float depth){
 }
 
 vec2 getRandom(vec2 uv){
-	// return normalize(texture(u_SSAORandom, uv*randomSize)).xy;
-	return normalize(texture(u_SSAORandom, uv*randomSize)).xy*2 - vec2(1);
+	// return normalize(texture(uSSAORandom, uv*randomSize)).xy;
+	return normalize(texture(uSSAORandom, uv*randomSize)).xy*2 - vec2(1);
 }
 
 float computeAmbientOcclusion(vec2 uv, vec2 dCoord, vec4 position, vec4 normal){
@@ -73,10 +72,10 @@ vec2 kernel[4] = vec2[]
 
 void main(void){
 	float depth;
-	vec4 position = getPosition(p_uv, depth);
-	vec4 normal = getNormal(p_uv);
-	// vec2 rand = getRandom(p_uv);
-	vec2 rand = getRandom(position.xz*p_uv);
+	vec4 position = getPosition(vUV, depth);
+	vec4 normal = getNormal(vUV);
+	// vec2 rand = getRandom(vUV);
+	vec2 rand = getRandom(position.xz*vUV);
 	// vec2 rand = getRandom(normal.xz);
 
 	float ao = 0.0;
@@ -89,17 +88,17 @@ void main(void){
 		vec2 refl = reflect(kernel[i], rand) * radius;
 		vec2 coord = vec2(refl.x*0.707 - refl.y*0.707, refl.x*0.707 + refl.y*0.707);
 
-		ao += computeAmbientOcclusion(p_uv, refl*0.25, position, normal);
-		ao += computeAmbientOcclusion(p_uv, coord*0.5, position, normal);
-		ao += computeAmbientOcclusion(p_uv, refl*0.75, position, normal);
-		ao += computeAmbientOcclusion(p_uv, coord, position, normal);
+		ao += computeAmbientOcclusion(vUV, refl*0.25, position, normal);
+		ao += computeAmbientOcclusion(vUV, coord*0.5, position, normal);
+		ao += computeAmbientOcclusion(vUV, refl*0.75, position, normal);
+		ao += computeAmbientOcclusion(vUV, coord, position, normal);
 	}
 
-	// out_ao = clamp(vec4(1.0-ao/4.0/float(iterations)*28*depth), 0.5, 2);
-	// out_ao = vec4(1.0-ao/4.0/float(iterations)*28*depth);
-	out_ao = vec4(1.1-ao/4.0/float(iterations)*28);
-	// out_ao = vec4(ao/4.0/float(iterations));
-	// out_ao = vec4(1-position.z/20);
+	// outAO = clamp(vec4(1.0-ao/4.0/float(iterations)*28*depth), 0.5, 2);
+	// outAO = vec4(1.0-ao/4.0/float(iterations)*28*depth);
+	outAO = vec4(1.1-ao/4.0/float(iterations)*28);
+	// outAO = vec4(ao/4.0/float(iterations));
+	// outAO = vec4(1-position.z/20);
 
 }
 

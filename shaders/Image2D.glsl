@@ -1,17 +1,17 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec4 vertex;
+layout(location=0)in vec4 mVertex;
 
-uniform mat4 u_projection;
-uniform vec4 u_box;
+uniform mat4 uPV;
+uniform vec4 uBox;
 
-out vec2 p_uv;
+out vec2 vUV;
 
 void main(){
-	vec4 newPlane = vec4(vertex.xy*u_box.zw + u_box.xy, 0.5, 1);
+	vec4 newPlane = vec4(mVertex.xy*uBox.zw + uBox.xy, 0.5, 1);
 
-	p_uv = vertex.xy;
-	gl_Position = u_projection*newPlane;
+	vUV = mVertex.xy;
+	gl_Position = uPV*newPlane;
 }
 
 #endif
@@ -19,12 +19,12 @@ void main(){
 #ifdef COMPILING_FRAGMENT_SHADER
 
 out vec4 outColor;
-in vec2 p_uv;
+in vec2 vUV;
 
-uniform sampler2D u_texture;
+uniform sampler2D uTexture;
 
 void main(void){
-	vec4 color = texture(u_texture, p_uv);
+	vec4 color = texture(uTexture, vUV);
 	// color = pow(color, vec4(18));
 	outColor = color;
 }

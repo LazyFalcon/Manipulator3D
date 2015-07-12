@@ -1,24 +1,24 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec3 Vertex;
-layout(location=1)in vec2 UV;
-layout(location=2)in vec3 Normal;
+layout(location=0)in vec3 mVertex;
+layout(location=1)in vec2 mUV;
+layout(location=2)in vec3 mNormal;
 
-uniform mat4 u_PV;
-uniform mat4 u_model;
+uniform mat4 uPV;
+uniform mat4 uModel;
 
 void main(){
-	gl_Position = u_PV*u_model*(vec4(Vertex,1));
+	gl_Position = uPV*uModel*(vec4(mVertex,1));
 }
 
 #endif
 
 #ifdef COMPILING_FRAGMENT_SHADER
 
-out vec4 color;
+out vec4 outColor;
 
 void main(void){
-	color = vec4(0.2, 0.1, 0.3, 0);
+	outColor = vec4(0.2, 0.1, 0.3, 0);
 }
 
 #endif

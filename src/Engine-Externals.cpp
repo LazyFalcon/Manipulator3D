@@ -19,27 +19,25 @@ void UIContainer::draw(UI::IMGUI &gui){
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, m_boxes.first.m_box.size());
 
-
 	shader = shaders[m_images.second];
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gui.m_imageSet->ID);
-	glUniform1i(glGetUniformLocation(shader,"u_texture"),0);
+	glUniform1i(glGetUniformLocation(shader,"uTexture"),0);
 	setupBuffer(Engine::quadCorner,0,4,0);
 	glUniform(shader, window_width,   "uWidth");
 	glUniform(shader, window_height,  "uHeight");
 
 	for(auto &it : m_images.first){
 		glUniform(shader, colorHex(it.color),"uColor");
-		glUniform(shader, it.rect, "u_rect");
-		glUniform(shader, it.uvs, "u_uvs");
+		glUniform(shader, it.rect, "uRect");
+		glUniform(shader, it.uvs, "uUVs");
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 	m_images.first.clear();
 	m_boxes.first.m_box.clear();
 	m_boxes.first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 
 
@@ -252,8 +250,8 @@ void Graph::draw(){
 	auto shader = shaders["Lines2D"];
 	glUseProgram(shader);
 
-	glUniform(shader, getProjection(), "u_projection");
-	glUniform(shader, colorHex(dataColor), "u_color");
+	glUniform(shader, getProjection(), "uPV");
+	glUniform(shader, colorHex(dataColor), "uColor");
 	glLineWidth(1);
 	glDisable(GL_LINE_SMOOTH);
 
