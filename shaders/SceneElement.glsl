@@ -31,15 +31,15 @@ void main(){
 
 #ifdef COMPILING_FRAGMENT_SHADER
 
-uniform vec4 color;
 
 uniform sampler2D u_metalTex;
 uniform sampler2DShadow u_shadowTex;
 
-uniform vec4 u_eyePos;
-
-uniform vec4  u_lightPos;
 uniform vec4  u_color;
+
+uniform vec4  u_eyePos;
+uniform vec4  u_lightPos;
+// uniform vec4  u_color;
 uniform float u_size;
 uniform float u_energy;
 
@@ -47,13 +47,6 @@ uniform vec4  u_lightPos2;
 uniform vec4  u_color2;
 uniform float u_size2;
 uniform float u_energy2;
-
-struct PointLamp {
-	vec4 position;
-	vec4 color;
-	float falloffDistance;
-	float energy;
-};
 
 in vec2 p_uv;
 in vec4 p_normal;
@@ -94,59 +87,60 @@ void main(void){
 	vertexInShadow.z = vertexInShadow.z * 0.5 + 0.5;
 
 	vec4 N = normalize(p_normal);
-	vec4 L = p_vertex - u_lightPos;
-	float d = length(L);
-	L /= d;
+/*
+	// vec4 L = p_vertex - u_lightPos;
+	// float d = length(L);
+	// L /= d;
 	// vec4 l_shade = vec4(0.4 + clamp(dot(-N, L), -0.1,0.0));
-	vec4 l_shade = vec4(0.8);
-	vec4 l_spect = vec4(0);
+	// vec4 l_shade = vec4(0.8);
+	// vec4 l_spect = vec4(0);
 
-	float shadowFactor = 0.0;
+	// float shadowFactor = 0.0;
 
-	float m = max( abs(N.z / N.x), abs(N.z / N.y) );
+	// float m = max( abs(N.z / N.x), abs(N.z / N.y) );
 	// float m = max( abs(N.z), max(abs(N.x), abs(N.y) ));
-	float lightAngle = dot(-N,L);
-	float bias = (lightAngle * DepthBias) + DepthBias;
+	// float lightAngle = dot(-N,L);
+	// float bias = (lightAngle * DepthBias) + DepthBias;
 
 
-	for(int i=0; i<5; i++){
+	// for(int i=0; i<5; i++){
 	// for(int i=0; i<0; i++){
-		vec3 uvz = vec3(vertexInShadow.xy+kernel[i]/2048, vertexInShadow.z + bias);
-		shadowFactor += texture(u_shadowTex, uvz);
-	}
+		// vec3 uvz = vec3(vertexInShadow.xy+kernel[i]/2048, vertexInShadow.z + bias);
+		// shadowFactor += texture(u_shadowTex, uvz);
+	// }
 	// shadowFactor = 0.25 + shadowFactor/5;
-	shadowFactor = 0.4 + shadowFactor/5;
+	// shadowFactor = 0.4 + shadowFactor/5;
 	// shadowFactor = 0.3 + clamp(shadowFactor,0,1)-1;
 	// shadowFactor = shadowFactor/5;
 
 
 	// float shadowIntensity = 1.0;
-	float shadowIntensity = shadowFactor;
+	// float shadowIntensity = shadowFactor;
 	// if(lightDepth < depthFromTex && dot(-N,L) > 0){
 	// if(shadowFactor > 0.1 && dot(-N,L) > 0){
 	// if(shadowFactor > 0.2 && lightAngle > -0.1){
-	if(false){
+	// if(false){
 		// shadowIntensity = shadowFactor;
 		// shadowIntensity = 1.0;
 
 		// N *= metal;
-		vec4 E = p_vertex - u_eyePos;
-		float e = length(E);
-		E /= e;
+		// vec4 E = p_vertex - u_eyePos;
+		// float e = length(E);
+		// E /= e;
 
-		l_shade = shade(N,L, u_energy)*attenuation(d, u_size)*u_color*shadowIntensity;
-		l_spect = spectacular(N, L, E)*metal*u_color*attenuation(e, 20.0);
+		// l_shade = shade(N,L, u_energy)*attenuation(d, u_size)*u_color*shadowIntensity;
+		// l_spect = spectacular(N, L, E)*metal*u_color*attenuation(e, 20.0);
 
-		L = p_vertex - u_lightPos2;
-		d = length(L);
-		L /= d;
+		// L = p_vertex - u_lightPos2;
+		// d = length(L);
+		// L /= d;
 
-		l_shade += shade(N,L, u_energy2)*attenuation(d, u_size2)*u_color2*shadowIntensity;
-		l_spect += spectacular(N, L, E)*metal*u_color2*attenuation(e, 20.0);
-	}
-	gl_FragData[0] = color*l_shade*2 + l_spect;
-	// gl_FragData[0] = shadowFactor;
-	// gl_FragData[0] = m*0.5 + 0.5;
+		// l_shade += shade(N,L, u_energy2)*attenuation(d, u_size2)*u_color2*shadowIntensity;
+		// l_spect += spectacular(N, L, E)*metal*u_color2*attenuation(e, 20.0);
+	// }
+	 */
+	// gl_FragData[0] = color*l_shade*2 + l_spect;
+	gl_FragData[0] = u_color;
 	gl_FragData[1] = vec4(N.xyz, 0.0);
 }
 

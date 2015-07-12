@@ -32,15 +32,11 @@ void ResourceLoader::loadResources(CFG::Node &cfg){
 
 bool ResourceLoader::loadShader(CFG::Node &cfg){
 
-	std::stringstream ss(cfg.value);
-	string shaderName;
-	ss>>shaderName;
-
-	shaderName += ".glsl";
+	string shaderName = cfg.value;
 
 	if(shaders.find(shaderName) == shaders.end()){
 		cout<<"shader: "<<shaderName<<endl;
-		shaders[shaderName] = compileShader(shaderName);
+		shaders[shaderName] = compileShader(shaderName + ".glsl");
 	}
 	return true;
 }

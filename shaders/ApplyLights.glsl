@@ -18,10 +18,10 @@ out vec4 outColor;
 
 in vec2 p_uv;
 
-uniform sampler2D texFramebuffer;
+uniform sampler2D u_texture;
 
 void main(void){
-	vec4 color = texture(texFramebuffer, p_uv);
+	vec4 color = texture(u_texture, p_uv);
 	outColor = color;
 }
 

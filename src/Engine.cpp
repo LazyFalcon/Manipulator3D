@@ -522,8 +522,8 @@ void setup(Scene &scene){
 	auto ctmp = colorHex(clearColor);
 	if(true){ /// default
 		glViewport(0, 0, window_width, window_height);
-		glClearColor(0.09f, 0.09f, 0.2f, 1.f);
-		// glClearColor(ctmpctmp.x, ctmp.y, ctmp.z, 1.f);
+		// glClearColor(0.09f, 0.09f, 0.2f, 1.f);
+		glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
 		glClearDepth(1);
 		glClearStencil(0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -538,7 +538,7 @@ void setup(Scene &scene){
 		glFrontFace(GL_CCW);
 	}
 
-	if(false){ /// FBO
+	if(true){ /// FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO[0]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
@@ -762,14 +762,8 @@ void copyDepth(Scene &scene){
 	// ui.rect(3,350,150,20).text("error: "+std::to_string(glGetError()))();
 }
 void renderLights(Scene &scene){
-// if(false){ // render lights
-	// blending: mno¿enie
-	// teksturkê ze wiat³ami robimy nie w pe³ni czarn¹: nanosimy ambient
-	// nie zapisujemy do g³êbokosci: nie ma czego, depthTex jest potrzebna do testu
-	// przydalby siê jeszcze culling wiate³
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, lightBuffer, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
@@ -798,7 +792,6 @@ void renderLights(Scene &scene){
 		glBindVertexArray(globalResources->VAO);
 		Mesh &mesh = globalResources->meshes["sphere"];
 		int id = 0x1;
-		// for(auto &lamp : scene.pointLamps){
 		for(u32 i=g_lightsToForward; i<scene.pointLamps.size(); i++){
 			auto &lamp = scene.pointLamps[i];
 			glStencilMask(id); // wszystko co zapisywane do stencila, jest ANDowane przez maskê
@@ -813,9 +806,7 @@ void renderLights(Scene &scene){
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, lightBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
 		glDrawBuffers(1,&DrawBuffers[0]);
-		// glClearColor(0.04,0.04,0.04,0.5);
 		glClearColor(0,0,0,0);
-		// glClearColor(1,1,1,0.5);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glEnable(GL_BLEND);
@@ -856,19 +847,16 @@ void renderLights(Scene &scene){
 		glBindVertexArray(globalResources->VAO);
 		Mesh &mesh = globalResources->meshes["sphere"];
 		int id = 0x1;
-		// for(auto &lamp : scene.pointLamps){
 		for(u32 i=g_lightsToForward; i<scene.pointLamps.size(); i++){
 			auto &lamp = scene.pointLamps[i];
 
-			glStencilFunc(GL_EQUAL, id, id); // ref < stencil
+			glStencilFunc(GL_EQUAL, id, id);
 			id = id<<1;
 
 			if(glm::distance(camera.eyePosition, lamp.position) < lamp.falloffDistance){
 				glDisable(GL_DEPTH_TEST);
-				// glStencilFunc(GL_ALWAYS, id, id); // ref < stencil
 				glFrontFace(GL_CW);
 			}
-
 
 			glUniform(shader, lamp.position, u_lightPos);
 			glUniform(shader, camera.eyePosition, u_eyePos);
@@ -899,11 +887,11 @@ void applyLights(Scene &scene){
 		glBlendFunc(GL_ONE, GL_ONE);
 		// glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
 	setupBuffer(screenQuad);
-	auto shader = shaders["frameBufferGarageLights"];
+	auto shader = shaders["ApplyLights"];
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, lightBuffer);
-		glUniform1i(glGetUniformLocation(shader,"texFramebuffer"),0);
+		glUniform1i(glGetUniformLocation(shader,"u_texture"),0);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -957,10 +945,10 @@ void Sobel(){
 	auto shader = shaders["Sobel"];
 	glUseProgram(shader);
 
-	static auto u_normalTex = glGetUniformLocation(shader,"normalTex");
-	static auto u_depthTex = glGetUniformLocation(shader,"depthTex");
-	static auto u_invPV = glGetUniformLocation(shader,"invPV");
-	static auto u_View = glGetUniformLocation(shader,"View");
+	static auto u_normalTex = glGetUniformLocation(shader,"u_normalTex");
+	static auto u_depthTex = glGetUniformLocation(shader,"u_depthTex");
+	static auto u_invPV = glGetUniformLocation(shader,"u_invPV");
+	static auto u_View = glGetUniformLocation(shader,"u_view");
 	static auto u_near = glGetUniformLocation(shader,"u_near");
 	static auto u_far = glGetUniformLocation(shader,"u_far");
 
@@ -1200,7 +1188,7 @@ void drawLineStrip(LineStrip &strip, bool clear){
 		glUniform(shader, colorHex(strip.color), "color");
 
     b_vec4_1024.update(strip.points);
-        b_vec4_1024.bind(0, 4);
+		b_vec4_1024.bind(0, 4);
 
     glDrawArrays(GL_LINE_STRIP, 0,  strip.count);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
