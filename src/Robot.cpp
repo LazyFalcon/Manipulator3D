@@ -146,14 +146,9 @@ bool Module::goTo(float dt){
 
 	auto maxStep = computeMaxStep(dt);
 
-	// auto step = std::min(abs(targetValue), abs(targetValue*dt*10))*sign(targetValue);
-	// auto step = std::min(abs(targetValue), abs(maxStep))*sign(targetValue);
-	// auto step = maxStep*sign(targetValue);
 	auto step = glm::clamp(targetValue, -maxStep, maxStep);
 	value += step;
 	targetValue -= step;
-	// value += targetValue;
-	// targetValue -= targetValue;
 
 	return false;
 }

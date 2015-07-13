@@ -52,7 +52,7 @@ glm::vec2     screenSize;
 bool 					quit = false;
 bool 					UI::GetInput = false;
 int64_t 			globalSettings;
-float 				g_timeStep = 10.f;
+float 				g_timeStep = 3.f;
 
 std::unordered_map<string, UI::Font>	UI::fonts;
 std::list <Statement> statements;
@@ -222,7 +222,7 @@ void mainLoop(){
 	Timer<double, std::ratio<1,1000>,30> dtimer;
 	Timer<uint32_t, std::ratio<1,1000>,100> msecTimer;
 	Timer<uint32_t, std::ratio<1,1000>,1> msecCounter;
-	Timer<double, std::ratio<1,1000>,60> precisetimer;
+	Timer<double, std::ratio<1,1000>,1> precisetimer;
 	float timeAccumulator = 0.f;
 	// float step = 1.f/120.f;
 	float step = g_timeStep;
@@ -238,6 +238,8 @@ void mainLoop(){
 	// PathCreator pcr((BSpline*)(((MoveCommand*)RC->commands.front().get())->interpolator));
 
 	prerequisites();
+
+	std::string ikTime = "--";
 
 	_DebugLine_
 	while(!quit){
@@ -273,11 +275,14 @@ void mainLoop(){
 		mouseMoveLen = glm::length(mouseTranslation);
 		mousePosition = glm::vec2(mouse_x, mouse_y);
 
+		precisetimer();
 		while(timeAccumulator >= step && !quit){ // fixed step loop
 			timeAccumulator -= step;
 			fastLoop(step);
 		}
 			// fastLoop(dt);
+		if(precisetimer() > 0.0001)
+			ikTime = precisetimer.getString();
 
 		camera.setCamPosition(camPosition);
 		camera.setMatrices();
@@ -295,7 +300,7 @@ void mainLoop(){
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
-			ui.rect().text(std::string(RC->robot->isReady ? "":"not ") + "ready").font("ui_12"s)();
+			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
 			// ui.rect().text("[][][][]").font("ui_12"s).button(RC->robot->isReady)();
 		ui.endTable();
 

@@ -168,13 +168,12 @@ void MoveCommand::init(RobotController &rc){
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
-	// return 0.00001;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
-	requiredDistance += calculateRequiredDistance(dt);
-	// requiredDistance = calculateRequiredDistance(dt);
+	requiredDistance = calculateRequiredDistance(dt);
+
 	glm::vec4 newTarget;
-	// cout<<requiredDistance<<endl;
+
 	while(requiredDistance > 0.0 && (not interpolator->finished)){
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);
