@@ -132,9 +132,9 @@ bool Robot::goTo(float dt){
 }
 
 double Module::computeMaxStep(float dt){
-	// double step = dt * maxVelocty;
+	double step = dt * maxVelocty;
 	// double step = dt * 0.5;
-	double step = dt * std::max(abs(targetValue), jointEpsilon)*5;
+	// double step = dt * std::max(abs(targetValue), jointEpsilon)*5;
 	return step;
 }
 bool Module::goTo(float dt){
@@ -147,10 +147,10 @@ bool Module::goTo(float dt){
 
 	// auto step = std::min(abs(targetValue), abs(targetValue*dt*10))*sign(targetValue);
 	auto step = std::min(abs(targetValue), abs(maxStep))*sign(targetValue);
-	// value += step;
-	// targetValue -= step;
-	value += targetValue;
-	targetValue -= targetValue;
+	value += step;
+	targetValue -= step;
+	// value += targetValue;
+	// targetValue -= targetValue;
 
 	return false;
 }

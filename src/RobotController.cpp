@@ -74,9 +74,7 @@ void RCTest(RobotController &rc){
 
 }
 
-//TODO: Całą odpowiedzialność za wykonanie akcji i tworzenie przerzucić do commandsów, robotControler niech zajmuje się tylko przechowywaniem commandsów, i interfejsowaniem pomiedzy command a userem, i chuj
 
-// załóżmy iż obsługujemy tylko tkomendę move, pomijamy tu pierdoły typu przyspieszenia, prędkości itp. (dojdą później)
 void RobotController::run(){
 	if (!commands.empty()){
 		state = RCStates::Run;
@@ -115,7 +113,7 @@ MoveCommand& RobotController::move(IInterpolator *interpolator, const std::strin
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
 
-	newCommand->velocity = 0.008;
+	newCommand->velocity = 0.8;
 	newCommand->solver = make_unique<JT1>();
 
 	return *newCommand;
@@ -156,7 +154,6 @@ bool RobotController::update(float dt){
 	}
 	return false;
 }
-
 
 void MoveCommand::init(RobotController &rc){
 	isRuning = true;
