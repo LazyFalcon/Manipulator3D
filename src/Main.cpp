@@ -182,8 +182,8 @@ int main(){
 }
 
 void fastLoop(float step){
-	scene->robot->update(step);
 	RC->update(step/1000.0f);
+	scene->robot->update(step);
 }
 void renderLoop(){
 	Engine::plotGraphs();
@@ -191,8 +191,8 @@ void renderLoop(){
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
 	Engine::copyDepth(*scene);
-	if(globalSettings & LIGHTS)Engine::renderLights(*scene);
-	if(globalSettings & LIGHTS)Engine::applyLights(*scene);
+	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
+	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
 	if(globalSettings & SOBEL)Engine::Sobel();
 	Engine::postprocess(*scene);
@@ -200,6 +200,7 @@ void renderLoop(){
 
 	Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
 	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0xff00b0f0);
+	Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
  	Engine::finalize(*scene);
 	Engine::renderGUI(ui);
@@ -276,6 +277,7 @@ void mainLoop(){
 			timeAccumulator -= step;
 			fastLoop(step);
 		}
+			// fastLoop(dt);
 
 		camera.setCamPosition(camPosition);
 		camera.setMatrices();

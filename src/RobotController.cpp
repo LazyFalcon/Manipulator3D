@@ -115,7 +115,7 @@ MoveCommand& RobotController::move(IInterpolator *interpolator, const std::strin
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
 
-	newCommand->velocity = 135.8;
+	newCommand->velocity = 0.008;
 	newCommand->solver = make_unique<JT1>();
 
 	return *newCommand;
@@ -171,16 +171,18 @@ void MoveCommand::init(RobotController &rc){
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
+	// return 0.00001;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
 	// requiredDistance += calculateRequiredDistance(dt);
 	requiredDistance = calculateRequiredDistance(dt);
 	glm::vec4 newTarget;
-
-	// while(requiredDistance > 0.0 && (not interpolator->finished)){
-	for(int i=0; i<250; i++){
+	cout<<requiredDistance<<endl;
+	while(requiredDistance > 0.0 && (not interpolator->finished)){
+	// for(int i=0; i<250; i++){
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);
+		previousPoint = newTarget;
 		// break;
 	}
 
@@ -188,7 +190,8 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 }
 bool MoveCommand::update(RobotController &rc, float dt){
 
-	boundUp.push(pi);
+	// boundUp.push(pi);
+	boundUp.push(requiredDistance);
 	boundDown.push(-pi);
 	zero.push(0);
 	var0.push(sqrt(sqrt(rc.robot->chain[0]->targetValue/dpi))*sign(rc.robot->chain[0]->targetValue)*dpi);
@@ -201,14 +204,13 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	if(not rc.robot->isReady){
 		rc.robot->goTo(dt);
 		previousPoint = rc.robot->endEffector.position;
-		// rc.robot->insertVariables(targetJointPosition);
 		return false;
 	}
-	if(rc.robot->isReady && interpolator->finished){
-		interpolator->reset();
+	// if(rc.robot->isReady && interpolator->finished){
+		// interpolator->reset();
 		// std::cout<<"job done"<<endl;
-		return false;
-	}
+		// return false;
+	// }
 	glm::vec4 newTarget = calculateNextPoint(dt);
 
 	// std::cout<<glm::to_string(newTarget)<<std::endl;

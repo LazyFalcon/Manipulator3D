@@ -105,7 +105,7 @@ glm::mat4 perpendicularTransform(glm::vec4 v, glm::vec4 p);
 void drawASDFASDF(glm::vec4 point);
 void drawLineStrip(std::vector<glm::vec4> &points, HexColor color, int size = 2);
 void drawLines(std::vector<glm::vec4> &points, HexColor color, int size = 2);
-void drawPoints(std::vector<glm::vec4> &points, HexColor color, float size = 5);
+void drawPoints(std::vector<glm::vec4> points, HexColor color, float size = 5);
 
 void drawLineStrip(const LineStrip &strip, bool clear);
 void drawLineSegments(const LineSegments &segments, bool clear);

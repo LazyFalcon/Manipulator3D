@@ -31,6 +31,7 @@ static const double hdpi = 0.5 * 3.141592653589793;
 static const double sqdpi = 3.141592653589793 * 3.141592653589793;
 static const double dpi2 = 2.0 * 3.141592653589793;
 
+glm::vec4 g_targetPosition;
 
 Graph jacobianIterations("jacobianIterations", Graph::LastX, 0xFFFF00FF, 250);
 Graph jacobianPrecision("jacobianPrecision", Graph::LastX, 0xFF4000FF, 250);
@@ -96,9 +97,9 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 	double i = 0.2;
 	// double i = 1.5;
-	for(auto &it : variables.getVector()){
-		it = 0.0;
-	}
+	// for(auto &it : variables.getVector()){
+		// it = 0.0;
+	// }
 	for(auto &it : enhancement.getVector()){
 		// it = i;
 		it = 1;
@@ -115,8 +116,8 @@ bool JT1::performIK(Point aim, Robot &robot){
 	// if(positionError > minError*5.f)
 		// aim.position = robot.endEffector.position + (aim.position - robot.endEffector.position)*0.1f;
 
-		auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
-		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
+	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
+	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iteration = 0;
 	for(; positionError > minError && iteration<iterationLimit; iteration++){
 
@@ -147,17 +148,13 @@ bool JT1::performIK(Point aim, Robot &robot){
 		variables = gradient + variables;
 		// robot.clamp(variables.getVector());
 		endEffector = robot.simulate(variables.getVector());
-
+		g_targetPosition = endEffector.position;
 		positionError = glm::distance(endEffector.position, aim.position);
 	}
 	endPosition = endEffector.position;
 	result = variables.getVector();
 	succes = positionError < minError;
 
-	auto l_v = robot.getVariables();
-	// jacobianIterations.push(std::min(100u, iteration));
-	// jacobianPrecision.push();
-	// succes = true;
 	return succes;
 }
 

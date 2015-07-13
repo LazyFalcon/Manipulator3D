@@ -60,13 +60,13 @@ LIBS					= -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 #-----------------------------------------------------
 
 ../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h
-	$(CXX) -c $(CXXFLAGS) -o2 -g Robot-Commands.cpp -o ../bin/Robot-Commands.o
+	$(CXX) -c $(CXXFLAGS) -o2 Robot-Commands.cpp -o ../bin/Robot-Commands.o
 
 ../bin/Robot-CommandBuilders.o: $(UTIL)/IMGUI_V4.h Robot-CommandBuilders.cpp Robot-CommandBuilders.h
-	$(CXX) -c $(CXXFLAGS) -o2 -g Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
+	$(CXX) -c $(CXXFLAGS) -o2 Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
 
 ../bin/Menu-SideBar.o: $(UTIL)/IMGUI_V4.h Menu-SideBar.cpp Menu-SideBar.h Menu-Tabs.cpp
-	$(CXX) -c $(CXXFLAGS) -o2 -g Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
+	$(CXX) -c $(CXXFLAGS) -o2 Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
 
 #-----------------------------------------------------
 

@@ -1144,12 +1144,13 @@ void drawLines(std::vector<glm::vec4> &points, HexColor color, int size){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
-void drawPoints(std::vector<glm::vec4> &points, HexColor color, float size){
+void drawPoints(std::vector<glm::vec4> points, HexColor color, float size){
 	b_universalVec4.update(points);
 
 	glDepthMask(GL_FALSE);
 	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_POINT_SPRITE );

@@ -52,3 +52,5 @@ void clamp(Matrix &mat, double min, double max);
 void BADBADBADRobotIKRealtimeTest(Robot &robot);
 void jacobianTransposeInit();
 void test(Robot &robot);
+
+extern glm::vec4 g_targetPosition;

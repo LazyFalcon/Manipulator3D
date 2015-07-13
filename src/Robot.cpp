@@ -147,12 +147,11 @@ bool Module::goTo(float dt){
 
 	// auto step = std::min(abs(targetValue), abs(targetValue*dt*10))*sign(targetValue);
 	auto step = std::min(abs(targetValue), abs(maxStep))*sign(targetValue);
-	value += step;
-	targetValue -= step;
-	// value += targetValue;
-	// targetValue -= targetValue;
+	// value += step;
+	// targetValue -= step;
+	value += targetValue;
+	targetValue -= targetValue;
 
-	lastVelocity = std::min(targetValue , maxStep) / dt;
 	return false;
 }
 
