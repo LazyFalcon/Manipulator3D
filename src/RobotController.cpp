@@ -38,7 +38,7 @@ Graph zero("var1", Graph::LastX, 0x202020FF, 250);
 extern Plot mainPlot;
 
 void RCTest(RobotController &rc){
-	glm::vec4 p0(1, 6, 3, 1);
+	glm::vec4 p0(2, 5, 4, 1);
 	glm::vec4 p1(4, 0, 5, 1);
 	glm::vec4 p2(1, -6, 2, 1);
 	glm::vec4 p3(0, -6, 3, 1);
@@ -171,46 +171,31 @@ double MoveCommand::calculateRequiredDistance(float dt){
 	// return 0.00001;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
-	// requiredDistance += calculateRequiredDistance(dt);
-	requiredDistance = calculateRequiredDistance(dt);
+	requiredDistance += calculateRequiredDistance(dt);
+	// requiredDistance = calculateRequiredDistance(dt);
 	glm::vec4 newTarget;
-	cout<<requiredDistance<<endl;
+	// cout<<requiredDistance<<endl;
 	while(requiredDistance > 0.0 && (not interpolator->finished)){
-	// for(int i=0; i<250; i++){
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);
 		previousPoint = newTarget;
-		// break;
 	}
 
 	return newTarget;
 }
 bool MoveCommand::update(RobotController &rc, float dt){
 
-	// boundUp.push(pi);
-	boundUp.push(requiredDistance);
-	boundDown.push(-pi);
-	zero.push(0);
-	var0.push(sqrt(sqrt(rc.robot->chain[0]->targetValue/dpi))*sign(rc.robot->chain[0]->targetValue)*dpi);
-	var1.push(sqrt(sqrt(rc.robot->chain[1]->targetValue/dpi))*sign(rc.robot->chain[1]->targetValue)*dpi);
-	var2.push(sqrt(sqrt(rc.robot->chain[2]->targetValue/dpi))*sign(rc.robot->chain[2]->targetValue)*dpi);
-	var3.push(sqrt(sqrt(rc.robot->chain[3]->targetValue/dpi))*sign(rc.robot->chain[3]->targetValue)*dpi);
-	var4.push(sqrt(sqrt(rc.robot->chain[4]->targetValue/dpi))*sign(rc.robot->chain[4]->targetValue)*dpi);
-	var5.push(sqrt(sqrt(rc.robot->chain[5]->targetValue/dpi))*sign(rc.robot->chain[5]->targetValue)*dpi);
-
 	if(not rc.robot->isReady){
 		rc.robot->goTo(dt);
 		previousPoint = rc.robot->endEffector.position;
 		return false;
 	}
-	// if(rc.robot->isReady && interpolator->finished){
-		// interpolator->reset();
-		// std::cout<<"job done"<<endl;
-		// return false;
-	// }
+	if(rc.robot->isReady && interpolator->finished){
+		interpolator->reset();
+		std::cout<<"job done"<<endl;
+		return false;
+	}
 	glm::vec4 newTarget = calculateNextPoint(dt);
-
-	// std::cout<<glm::to_string(newTarget)<<std::endl;
 
 	solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
