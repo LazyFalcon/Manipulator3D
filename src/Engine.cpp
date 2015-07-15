@@ -2,7 +2,7 @@
 #include <GL/glew.c>
 
 #include "Engine.h"
-#include "glUtils.cpp"
+#include "glUtils.h"
 #include "Graph.h"
 
 #define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
@@ -1499,4 +1499,4 @@ bool initGlew(){
 
 NAM_END
 
-#include "Engine-Externals.cpp"
+#include "Engine-Externals.h"

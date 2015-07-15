@@ -1,5 +1,4 @@
-﻿#pragma once
-#include "Menu-SideBar.h"
+﻿#include "Menu-SideBar.h"
 #include "Robot-CommandBuilders.h"
 
 

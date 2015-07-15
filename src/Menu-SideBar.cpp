@@ -1,14 +1,16 @@
 ﻿#include <Utils/includes.h>
 #include <Utils/Utils.h>
 #include <Utils/IMGUI_V4.h>
+
+extern UI::IMGUI ui;
+extern glm::vec2 screenSize;
+
 #include "Robot-Commands.h"
 #include "Menu-SideBar.h"
 #include "Menu-Tabs.cpp"
 #include "Robot-CommandBuilders.h"
-
-extern UI::IMGUI ui;
-extern glm::vec2 screenSize;
 extern unique_ptr<ICommandBuilder> CommandBuilders[];
+
 
 void ManuSideBar::initTabs(){
 	// menuTabs.push_back(make_unique<CommandBuilderTab>("empty"));

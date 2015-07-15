@@ -1,8 +1,10 @@
 ﻿#pragma once
 #include <Utils/includes.h>
 #include <Utils/Utils.h>
+#include <Utils/IMGUI_V4.h>
 
-
+extern UI::IMGUI ui;
+extern glm::vec2 screenSize;
 
 extern glm::vec2 screenSize;
 

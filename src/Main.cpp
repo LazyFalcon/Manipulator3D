@@ -92,7 +92,7 @@ unique_ptr<Scene> scene;
 unique_ptr<Resources> globalResources;
 #include "Menu.h"
 #include "Menu-SideBar.h"
-unique_ptr<ManuSideBar> manuSideBar;
+unique_ptr<ManuSideBar> menuSideBar;
 CFG::Node cfg_settings;
 
 void loadResources();
@@ -209,10 +209,10 @@ void renderLoop(){
 }
 void prerequisites(){
 	jacobianTransposeInit();
-	manuSideBar = make_unique<ManuSideBar>();
+	menuSideBar = make_unique<ManuSideBar>();
 }
 void updates(float dt){
-	// manuSideBar->run();
+	menuSideBar->run();
 	// BigSplineTest::update(dt);
 	//SomeTests();
 	// robotTest(dt, *RC->robot);

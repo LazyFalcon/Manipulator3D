@@ -6,8 +6,8 @@
 extern UI::IMGUI ui;
 extern const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumWithName;
 
-void incr(double &value){value += 0.01;}
-void decr(double &value){value -= 0.01;}
+void incr(double &value);
+void decr(double &value);
 void incr(float &value){value += 0.01f;}
 void decr(float &value){value -= 0.01f;}
 
