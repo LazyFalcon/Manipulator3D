@@ -186,7 +186,7 @@ void fastLoop(float step){
 	scene->robot->update(step);
 }
 void renderLoop(){
-	Engine::plotGraphs();
+	// Engine::plotGraphs();
 	Engine::generateShadowMap(*scene);
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);

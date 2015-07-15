@@ -39,8 +39,6 @@ public:
 
 	bool update(float dt);
 
-
-
 	MoveCommand& move(IInterpolator *interpolator, const std::string &name);
 	WaitCommand& wait(float time);
 
