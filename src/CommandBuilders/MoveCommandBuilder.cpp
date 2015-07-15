@@ -80,17 +80,19 @@ void MoveCommandBuilderWidget::editVelocity(){
 
 void MoveCommandBuilderWidget::editAcceleration(){
 	FIELDWITHNAME("Velocity",
-		DECR(moveCommandBuilder->moveCommand->velocity);
-		EDIT(moveCommandBuilder->moveCommand->velocity);
-		INCR(moveCommandBuilder->moveCommand->velocity);
+		DECR(moveCommandBuilder->moveCommand->acceleration);
+		accelerations.run([this](double val){moveCommandBuilder->acceleration(val);});
+		EDIT(moveCommandBuilder->moveCommand->acceleration);
+		INCR(moveCommandBuilder->moveCommand->acceleration);
 		);
 }
 
 void MoveCommandBuilderWidget::editTime(){
 	FIELDWITHNAME("Acceleration",
-		DECR(moveCommandBuilder->moveCommand->acceleration);
-		EDIT(moveCommandBuilder->moveCommand->acceleration);
-		INCR(moveCommandBuilder->moveCommand->acceleration);
+		DECR(moveCommandBuilder->moveCommand->time);
+		times.run([this](double val){moveCommandBuilder->time(val);});
+		EDIT(moveCommandBuilder->moveCommand->time);
+		INCR(moveCommandBuilder->moveCommand->time);
 		);
 }
 
