@@ -217,7 +217,7 @@ template<typename Type>
 class DropdownPairWithCallback
 {
 public:
-	void run(){
+	void run(std::function<void(Type)> &callback){
 		ui.box(UI::LayoutHorizontal | UI::AlignLeft );
 		ui.rect(20, 22)
 			// .text(value)
@@ -227,10 +227,10 @@ public:
 			.button(dropped);
 		ui.endBox();
 
-		if(dropped) list();
+		if(dropped) list(callback);
 
 	}
-	void list(){
+	void list(std::function<void(Type)> &callback){
 			ui.beginLayer();
 			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
 
