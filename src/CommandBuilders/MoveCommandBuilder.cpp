@@ -53,7 +53,16 @@ DropdownPairWithCallback<double>(UI::AlignTop, 100, std::vector <pair<string, do
 	{"5s", 5000},
 	{"10s", 10000},
 });
-// DropdownPairWithCallback(UI::AlignTop, 100,std::vector <pair<string, shared_ptr<IInterpolator>>> times {});
+DropdownPairWithCallback(UI::AlignTop, 100,std::vector <pair<string, shared_ptr<IInterpolator>>> times {
+	{sEmpty, Interpolator::Empty},
+	{sLinear, Interpolator::Linear},
+	{sBezierCurve, Interpolator::BezierCurve},
+	{sBSpline, Interpolator::BSpline},
+	{sNURBS, Interpolator::NURBS},
+	{sHermiteCardinal, Interpolator::HermiteCardinal},
+	{sHermiteFiniteDifference, Interpolator::HermiteFiniteDifference},
+	{sHermiteFiniteDifferenceClosed, Interpolator::HermiteFiniteDifferenceClosed},
+});
 
 void MoveCommandBuilderWidget::run(){
 	ui.rect(120, 20).text("Move command editor")();
