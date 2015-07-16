@@ -8,8 +8,8 @@ extern const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumW
 
 void incr(double &value);
 void decr(double &value);
-void incr(float &value){value += 0.01f;}
-void decr(float &value){value -= 0.01f;}
+void incr(float &value);
+void decr(float &value);
 
 wxg::DropdownWithCallback <std::string>velocityDropdowns(UI::AlignTop, 100, {"0.25m/s", "0.5m/s", "1m/s", "100mm/s"});
 wxg::DropdownWithCallback <std::string>accelerationDropdowns(UI::AlignTop, 100, {"0.25m/s", "0.5m/s", "1m/s", "100mm/s"});

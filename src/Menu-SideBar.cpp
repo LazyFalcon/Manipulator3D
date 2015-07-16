@@ -9,6 +9,7 @@ extern glm::vec2 screenSize;
 #include "Menu-SideBar.h"
 #include "Menu-Tabs.cpp"
 #include "Robot-CommandBuilders.h"
+#include "CommandBuilders/MoveCommandBuilder.h"
 extern unique_ptr<ICommandBuilder> CommandBuilders[];
 
 
@@ -49,7 +50,6 @@ void ManuSideBar::drawTabs(){
 
 	ui.endBox();
 }
-
 
 void CommandBuilderTab::run(){
 	/// okienko z wyborem komendy

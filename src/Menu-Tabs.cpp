@@ -1,5 +1,6 @@
 ﻿#include "Menu-SideBar.h"
 #include "Robot-CommandBuilders.h"
+#include "CommandBuilders/MoveCommandBuilder.h"
 
 
 class CommandBuilderTab : public ITab
@@ -16,8 +17,14 @@ private:
 class CommanListTab : public ITab
 {
 public:
-	CommanListTab(const std::string &iconName) : ITab(iconName){}
-	void run(){}
+	CommanListTab(const std::string &iconName) : ITab(iconName){
+		moveCommandBuilderWidget.init();
+	}
+	void run(){
+		moveCommandBuilderWidget.run();
+	}
+	MoveCommandBuilderWidget moveCommandBuilderWidget;
+
 };
 
 class PolylineBuilderTab : public ITab

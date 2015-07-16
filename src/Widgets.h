@@ -247,7 +247,7 @@ public:
 					(UI::Hoverable)
 					.switcher(value, option.second)
 					.button(dropped)
-					.onlClick([this, &option]{
+					.onlClick([this, &option, &callback	]{
 						callback(option.second);
 					});
 

@@ -10,6 +10,8 @@ extern UI::IMGUI ui;
 
 void incr(double &value){value += 0.01;}
 void decr(double &value){value -= 0.01;}
+void incr(float &value){value += 0.01;}
+void decr(float &value){value -= 0.01;}
 
 #define FIELDWITHNAME(name, widget) vertical(ui.rect(120,20).text(name, "ui_10"s)();\
 	horizontal(\
@@ -32,37 +34,37 @@ void decr(double &value){value -= 0.01;}
 #define EDIT(value) \
 			ui.rect(120,22).edit(value)();
 
-DropdownPairWithCallback<double>(UI::AlignTop, 100, std::vector <pair<string, double>> velocities {
+wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1m/s", 0.1},
 	{"0.15m/s", 0.15},
 	{"0.25m/s", 0.25},
 	{"0.5m/s", 0.5},
 	{"1.0m/s", 1.0},
 });
-DropdownPairWithCallback<double>(UI::AlignTop, 100, std::vector <pair<string, double>> accelerations {
+wxg::DropdownPairWithCallback<double> accelerations (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1m/s^2", 0.1},
 	{"0.15m/s^2", 0.15},
 	{"0.25m/s^2", 0.25},
 	{"0.5m/s^2", 0.5},
 	{"1.0m/s^2", 1.0},
 });
-DropdownPairWithCallback<double>(UI::AlignTop, 100, std::vector <pair<string, double>> times {
+wxg::DropdownPairWithCallback<double> times (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"1s", 1000},
 	{"2s", 2000},
 	{"3s", 3000},
 	{"5s", 5000},
 	{"10s", 10000},
 });
-DropdownPairWithCallback(UI::AlignTop, 100,std::vector <pair<string, shared_ptr<IInterpolator>>> times {
-	{sEmpty, Interpolator::Empty},
-	{sLinear, Interpolator::Linear},
-	{sBezierCurve, Interpolator::BezierCurve},
-	{sBSpline, Interpolator::BSpline},
-	{sNURBS, Interpolator::NURBS},
-	{sHermiteCardinal, Interpolator::HermiteCardinal},
-	{sHermiteFiniteDifference, Interpolator::HermiteFiniteDifference},
-	{sHermiteFiniteDifferenceClosed, Interpolator::HermiteFiniteDifferenceClosed},
-});
+// wxg::DropdownPairWithCallbacktimes<Interpolator>(UI::AlignTop, 100,std::vector <pair<string, Interpolator>> {
+	// {sEmpty, Interpolator::Empty},
+	// {sLinear, Interpolator::Linear},
+	// {sBezierCurve, Interpolator::BezierCurve},
+	// {sBSpline, Interpolator::BSpline},
+	// {sNURBS, Interpolator::NURBS},
+	// {sHermiteCardinal, Interpolator::HermiteCardinal},
+	// {sHermiteFiniteDifference, Interpolator::HermiteFiniteDifference},
+	// {sHermiteFiniteDifferenceClosed, Interpolator::HermiteFiniteDifferenceClosed},
+// });
 
 void MoveCommandBuilderWidget::run(){
 	ui.rect(120, 20).text("Move command editor")();
@@ -81,7 +83,7 @@ void MoveCommandBuilderWidget::editName(){
 void MoveCommandBuilderWidget::editVelocity(){
 	FIELDWITHNAME("Velocity",
 		DECR(moveCommandBuilder->moveCommand->velocity);
-		velocities.run([this](double val){moveCommandBuilder->velocity(val);});
+		// velocities.run([this](double val){moveCommandBuilder->velocity(val);});
 		EDIT(moveCommandBuilder->moveCommand->velocity);
 		INCR(moveCommandBuilder->moveCommand->velocity);
 		);
@@ -90,7 +92,7 @@ void MoveCommandBuilderWidget::editVelocity(){
 void MoveCommandBuilderWidget::editAcceleration(){
 	FIELDWITHNAME("Velocity",
 		DECR(moveCommandBuilder->moveCommand->acceleration);
-		accelerations.run([this](double val){moveCommandBuilder->acceleration(val);});
+		// accelerations.run([this](double val){moveCommandBuilder->acceleration(val);});
 		EDIT(moveCommandBuilder->moveCommand->acceleration);
 		INCR(moveCommandBuilder->moveCommand->acceleration);
 		);
@@ -99,7 +101,7 @@ void MoveCommandBuilderWidget::editAcceleration(){
 void MoveCommandBuilderWidget::editTime(){
 	FIELDWITHNAME("Acceleration",
 		DECR(moveCommandBuilder->moveCommand->time);
-		times.run([this](double val){moveCommandBuilder->time(val);});
+		// times.run([this](double val){moveCommandBuilder->time(val);});
 		EDIT(moveCommandBuilder->moveCommand->time);
 		INCR(moveCommandBuilder->moveCommand->time);
 		);

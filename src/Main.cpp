@@ -224,7 +224,6 @@ void mainLoop(){
 	Timer<uint32_t, std::ratio<1,1000>,1> msecCounter;
 	Timer<double, std::ratio<1,1000>,1> precisetimer;
 	float timeAccumulator = 0.f;
-	// float step = 1.f/120.f;
 	float step = g_timeStep;
 	float dt = 0.f;
 	double ddt = 0.0;
@@ -233,9 +232,6 @@ void mainLoop(){
 	glm::vec3 tmpAxis(0);
 	float tmpAngle(0);
 	float tmpAngle2(0);
-	// alert("Welcome\nbhaf haf aj");
-
-	// PathCreator pcr((BSpline*)(((MoveCommand*)RC->commands.front().get())->interpolator));
 
 	prerequisites();
 
@@ -280,17 +276,13 @@ void mainLoop(){
 			timeAccumulator -= step;
 			fastLoop(step);
 		}
-			// fastLoop(dt);
+
 		if(precisetimer() > 0.0001)
 			ikTime = precisetimer.getString();
 
 		camera.setCamPosition(camPosition);
 		camera.setMatrices();
 		camera.updateCamera(dt);
-
-
-		// if (RC->state != RCStates::Pause)
-			// pcr.update();
 
 		UI::GetInput = ui.textEditor.state();
 		updates(dt);
@@ -301,7 +293,6 @@ void mainLoop(){
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
-			// ui.rect().text("[][][][]").font("ui_12"s).button(RC->robot->isReady)();
 		ui.endTable();
 
 		ui.end();

@@ -49,7 +49,11 @@ private:
 class MoveCommandBuilderWidget
 {
 public:
-	void run();;
+	void init(){
+		moveCommandBuilder = make_unique<MoveCommandBuilder>();
+		moveCommandBuilder->init();
+	}
+	void run();
 	void editName();
 	void editVelocity();
 	void editAcceleration();
