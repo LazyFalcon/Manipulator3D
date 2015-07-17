@@ -25,6 +25,7 @@ void ManuSideBar::initTabs(){
 void ManuSideBar::run(){
 	// if(minimized) return;
 	ui.table(UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::Draw)
+		.style(UI::StyleID::Dark)
 		.position(screenSize.x-size, screenSize.y-50)
 		.size(size, -screenSize.y+50);
 

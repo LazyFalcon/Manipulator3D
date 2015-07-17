@@ -14,7 +14,7 @@ Styles:
     - 0x24230EFF
     - 0x24230EFF
   Light:
-   background: 0xDACAC0F0
+   background: 0xDACAC0FF
    button: 0x895E44FF
    hover: 0xCC6628FF
    editBox: 0xCC6628FF
@@ -27,18 +27,18 @@ Styles:
     - 0x24230EFF
     - 0x24230EFF
   Dark:
-   background: 0x454B4FF0
-   button: 0x6F7376FF
-   hover: 0x7B7A74FF
-   editBox: 0x24230EFF
+   background: 0x3B3B3BFF
+   button: 0x626262FF
+   hover: 0x796348FF
+   editBox: 0x7B8388FF
    fontColor: 0xFAF9F7FF
    imageColor: 0xFAF9F7FF
    font: ui_12
    fancy:
-    - 0x5E3C27FF
-    - 0x241106FF
-    - 0x24230EFF
-    - 0x24230EFF
+    - 0x315B4BFF
+    - 0x315B4BFF
+    - 0x315B4BFF
+    - 0x315B4BFF
   Label:
    background: 0x895E44FF
    button: 0x895E44FF
@@ -75,5 +75,5 @@ Graphic:
     -  0x212121FF
     -  0x3D3F4CF0
     -  0x3D3F4CF0
-  clearColor: 0x0f0f0fFF
-  clearColor2: 0xC2AF8FFF
+  clearColor: 0x4B4B4BFF
+  clearColor2: 0x4B4B4BFF

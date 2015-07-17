@@ -13,8 +13,9 @@ void decr(double &value){value -= 0.01;}
 void incr(float &value){value += 0.01;}
 void decr(float &value){value -= 0.01;}
 
-#define FIELDWITHNAME(name, widget) vertical(ui.rect(120,20).text(name, "ui_10"s)();\
+#define FIELDWITHNAME(name, widget) vertical(ui.rect(120,17).text(name, "ui_10"s)();\
 	horizontal(\
+	ui.border(4);\
 		widget\
 	)\
    )
@@ -32,7 +33,7 @@ void decr(float &value){value -= 0.01;}
 				(UI::Button);
 
 #define EDIT(value) \
-			ui.rect(120,22).edit(value)();
+			ui.rect(120,22).edit(value)(UI::EditBox);
 
 wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1m/s", 0.1},
@@ -90,7 +91,7 @@ void MoveCommandBuilderWidget::editVelocity(){
 }
 
 void MoveCommandBuilderWidget::editAcceleration(){
-	FIELDWITHNAME("Velocity",
+	FIELDWITHNAME("Acceleration",
 		DECR(moveCommandBuilder->moveCommand->acceleration);
 		// accelerations.run([this](double val){moveCommandBuilder->acceleration(val);});
 		EDIT(moveCommandBuilder->moveCommand->acceleration);
@@ -99,7 +100,7 @@ void MoveCommandBuilderWidget::editAcceleration(){
 }
 
 void MoveCommandBuilderWidget::editTime(){
-	FIELDWITHNAME("Acceleration",
+	FIELDWITHNAME("Time",
 		DECR(moveCommandBuilder->moveCommand->time);
 		// times.run([this](double val){moveCommandBuilder->time(val);});
 		EDIT(moveCommandBuilder->moveCommand->time);

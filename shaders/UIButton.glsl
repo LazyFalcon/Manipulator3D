@@ -8,12 +8,15 @@ uniform float uWidth;
 uniform float uHeight;
 
 out vec4 vColor;
+out vec4 vInfo;
+out vec2 vPosition;
 
 void main(){
 	vec2 dimensions = mInfo.zw;
+	vInfo = mInfo;
 	vColor = mColor.abgr;
-	vec2 position = vec2(mVertex.x*mInfo.z, mVertex.y*mInfo.w);
-	gl_Position = vec4((position+floor(mInfo.xy))/vec2(uWidth/2, uHeight/2)-vec2(1), 0, 1);
+	vPosition = vec2(mVertex.x*mInfo.z, mVertex.y*mInfo.w);
+	gl_Position = vec4((vPosition+floor(mInfo.xy))/vec2(uWidth/2, uHeight/2)-vec2(1), 0, 1);
 }
 
 #endif
@@ -22,9 +25,14 @@ void main(){
 out vec4 outColor;
 
 in vec4 vColor;
+in vec4 vInfo;
+in vec2 vPosition;
 
 void main(void){
-		outColor = vColor.abgr;
+	if(vPosition.x >= 0 && vPosition.x <= 1 || vPosition.y >= 0 && vPosition.y <= 1 || vPosition.x >= 0 && vPosition.x <= 1 || vPosition.y >= 0 && vPosition.y <= 1)
+		outColor = vColor*0.5;
+	else
+		outColor = vColor;
 }
 
 #endif
