@@ -28,8 +28,22 @@ class TabManager
 		
 	}
 	void keyCallback(){}
-
-	vector<ITab> tabs;
+	
+	template<typename T>
+	T& get(){
+		return static_pointer_cast<CommandEditorTab> tabs[0];
+	}
+	
+	template<>
+	unique_ptr<CommandEditorTab> get<CommandEditorTab>(){
+		return static_pointer_cast<CommandEditorTab> tabs[0];
+	}
+	template<>
+	unique_ptr<PathEditorTab> get<PathEditorTab>(){
+		return static_pointer_cast<PathEditorTab> tabs[2];
+	}
+	
+	vector<unique_ptr<ITab>> tabs;
 	u32 currentTab {0};
 };
 
