@@ -24,7 +24,7 @@ class TabManager
 		currentTab = index;
 	}
 	void run(){
-		tabs[currentTab]->run();
+		tabs[currentTab]->run(*this);
 		
 	}
 	void keyCallback(){}
@@ -37,26 +37,52 @@ class ITab
 {
 public:
 	virtual ~ITab(){};
-	virtual void run() = 0;
+	virtual void run(TabManager &tabManager) = 0;
 };
+
+enum CommandEditorTabCommandWidget {};
 
 class CommandEditorTab : public ITab
 {
 public:
-	void run(){
-		getTypeWidget();
+	void run(TabManager &tabManager){
+		getTypeWidget(tabManager);
 		if(commandEditorWidget){
-			commandEditorWidget();
+			commandEditorWidget(tabManager);
 			doneWidget();
 		}
 		
 	}
-	void getTypeWidget(){
-		commandChoice.run([this](..commandEnum..){  });
+	void getTypeWidget(TabManager &tabManager){
+		commandChoice.run([this](CommandEditorTabCommandWidget val){ commandEditorWidget = buildWidget(val) });
 	}
 	void doneWidget(){}
-	
-	
+	void setToEdit(shared_ptr<ICommandEditor> &ptr){
+		buildWidget(ptr->type);
+		commandEditorWidget->command = ptr;
+	}
+	unique_ptr<ICommandEditorWidget> buildWidget(CommandTypeEnum val){
+		switch(val){
+			case : return make_unique<>();
+			
+		};
+		
+	}
+private:
 	unique_ptr<ICommandEditorWidget> commandEditorWidget;
 };
 
+// trzeba skdas przechwycić RC
+class CommandListTab : public ITab
+{
+public:
+	void run(TabManager &TM){
+		for(auto &it : RC.commands){
+			/// allow edition, rclick przenosi do edytora komend, tylko trzeba pamitać żeby po done nie dodać nowej komendy
+			ui.rect(150, 20).text(it->name)()
+				.onrClick(TM.get<CommandEditorTab>().setToEdit(it));
+		}
+		
+	}
+	
+}
