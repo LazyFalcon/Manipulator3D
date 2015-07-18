@@ -44,8 +44,10 @@ public:
 
 			for(int id=0; id<children.size(); id++){
 				auto &it = children[id];
-				if (it.image != ""){
-					ui.image(it.image).color(it.mainColor)(UI::Hoverable)
+				if(it.image != ""){
+					ui.image(it.image)
+					// ui.rect(60, 20)
+						.color(it.mainColor)(UI::Hoverable)
 						.onlClick([id, &it, this](glm::vec4 r){
 							mark = id;
 							position = r;
@@ -57,7 +59,8 @@ public:
 						});
 				}
 				else {
-					ui.rect(150, 20).color(it.mainColor).font("ui_12").text(it.name);
+					ui.rect(150, 20)
+						.color(it.mainColor).font("ui_12").text(it.name);
 					if (it.children.size())ui.text(u"\ue0e3", "sym_12", UI::TextToRight);
 					ui(UI::Hoverable).onlClick([id,&it,this](glm::vec4 r){
 							mark = id;
@@ -131,12 +134,6 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 		Button {"Stop", "Stop", colorWhite, []{RC->stop();}},
 		Button{ "Undo", "Undo", colorWhite, []{RC->prev(); } },
 		Button{ "Redo", "Redo", colorWhite, []{RC->next(); } },
-
-		// Button {"Play", "Play", colorWhite, []{BigSplineTest::run();}},
-		// Button {"Pause", "Pause", colorWhite, []{BigSplineTest::pause();}},
-		// Button {"Stop", "Stop", colorWhite, []{BigSplineTest::stop();}},
-		// Button{ "Previous", "Undo", colorWhite, []{BigSplineTest::prev(); } },
-		// Button{ "Next", "Redo", colorWhite, []{BigSplineTest::next(); } },
 		Button {"Save", "Save", colorWhite, []{}},
 		Button {"Load", "Load", colorWhite, []{}},
 }};
@@ -269,7 +266,9 @@ void recursiveTopMenu(Button button){
 void MainMenu(){
 	// top menu
 
-	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft | UI::Draw);
+	ui.rect(0, window_height-32, window_width, 32).color(0x3B3B3BFF)(UI::Label);
+	// ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft | UI::Draw);
+	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft);
 		TopBar();
 		// sam się zamyka
 

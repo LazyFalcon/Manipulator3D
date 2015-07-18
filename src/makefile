@@ -6,7 +6,8 @@ CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
-CommandBuilders = D:\Work\Code\Manipulator3D\src\CommandBuilders
+# CommandBuilders = D:\Work\Code\Manipulator3D\src\CommandBuilders
+CommandBuilders = .\CommandBuilders
 UTIL = C:/MinGW/include/Utils
 
 OBJS = \
@@ -30,8 +31,8 @@ OBJS = \
 ../bin/Graph.o \
 ../bin/Robot-Commands.o \
 ../bin/Robot-CommandBuilders.o \
-../bin/Menu-SideBar.o \
 ../bin/MoveCommandBuilder.o \
+../bin/PropertyEditor-TabManager.o \
 ../bin/MAIN.o
 
 LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
@@ -41,7 +42,7 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/Manipulator: $(OBJS)
 	$(CXX) $(OBJS) -o ../bin/Manipulator $(LIBS)
 
-../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Menu-SideBar.h Robot-Commands.h Robot-CommandBuilders.h Widgets.h
+../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Robot-Commands.h Widgets.h $(CommandBuilders)/PropertyEditor-TabManager.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
 
 #-----------------------------------------------------
@@ -49,6 +50,9 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 
 ../bin/MoveCommandBuilder.o: $(CommandBuilders)/MoveCommandBuilder.cpp $(CommandBuilders)/MoveCommandBuilder.h $(UTIL)/IMGUI_V4.h Widgets.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(CommandBuilders)/MoveCommandBuilder.cpp -o ../bin/MoveCommandBuilder.o
+
+../bin/PropertyEditor-TabManager.o: $(CommandBuilders)/PropertyEditor-TabManager.cpp $(CommandBuilders)/PropertyEditor-TabManager.h $(UTIL)/IMGUI_V4.h Widgets.h $(CommandBuilders)/MoveCommandBuilder.h
+	$(CXX) -c $(CXXFLAGS) -o2 $(CommandBuilders)/PropertyEditor-TabManager.cpp -o ../bin/PropertyEditor-TabManager.o
 
 
 #-----------------------------------------------------
@@ -73,11 +77,11 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h
 	$(CXX) -c $(CXXFLAGS) -o2 Robot-Commands.cpp -o ../bin/Robot-Commands.o
 
-../bin/Robot-CommandBuilders.o: $(UTIL)/IMGUI_V4.h Robot-CommandBuilders.cpp Robot-CommandBuilders.h
-	$(CXX) -c $(CXXFLAGS) -o2 Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
+# ../bin/Robot-CommandBuilders.o: $(UTIL)/IMGUI_V4.h Robot-CommandBuilders.cpp Robot-CommandBuilders.h
+	# $(CXX) -c $(CXXFLAGS) -o2 Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
 
-../bin/Menu-SideBar.o: $(UTIL)/IMGUI_V4.h Menu-SideBar.cpp Menu-SideBar.h Menu-Tabs.cpp
-	$(CXX) -c $(CXXFLAGS) -o2 Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
+# ../bin/Menu-SideBar.o: $(UTIL)/IMGUI_V4.h Menu-SideBar.cpp Menu-SideBar.h Menu-Tabs.cpp
+	# $(CXX) -c $(CXXFLAGS) -o2 Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
 
 #-----------------------------------------------------
 

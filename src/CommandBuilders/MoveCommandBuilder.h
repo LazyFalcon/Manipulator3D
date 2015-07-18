@@ -10,7 +10,6 @@ public:
 	MoveCommandBuilder& init(){
 		moveCommand = make_unique<MoveCommand>();
 		return *this;
-
 	}
 	MoveCommandBuilder& velocity(double value){
 		moveCommand->velocity = value;
@@ -44,11 +43,20 @@ private:
 	/// i referencjê do RC, ¿eby móc dodaæ, wtedy RC::move zwraca ten builder :D
 };
 
-
-
-class MoveCommandBuilderWidget
+class ICommandBuilderWidget
 {
 public:
+	virtual ~ICommandBuilderWidget(){}
+	virtual void run() = 0;
+	// virtual void setCommand() = 0;
+};
+
+class MoveCommandBuilderWidget : public ICommandBuilderWidget
+{
+public:
+	MoveCommandBuilderWidget(){
+		init();
+	}
 	void init(){
 		moveCommandBuilder = make_unique<MoveCommandBuilder>();
 		moveCommandBuilder->init();

@@ -91,8 +91,8 @@ unique_ptr<RobotController> RC;
 unique_ptr<Scene> scene;
 unique_ptr<Resources> globalResources;
 #include "Menu.h"
-#include "Menu-SideBar.h"
-unique_ptr<ManuSideBar> menuSideBar;
+#include "CommandBuilders/PropertyEditor-TabManager.h"
+unique_ptr<TabManager> menuSideBar;
 CFG::Node cfg_settings;
 
 void loadResources();
@@ -114,7 +114,7 @@ void Shut_Down(int return_code){
 
 // resize callback
 
-glm::vec3 camPosition(0,0,0);
+glm::vec3 camPosition(0,0,3);
 
 int main(){
 	// logger::init();
@@ -209,7 +209,8 @@ void renderLoop(){
 }
 void prerequisites(){
 	jacobianTransposeInit();
-	menuSideBar = make_unique<ManuSideBar>();
+	menuSideBar = make_unique<TabManager>();
+	menuSideBar->initTabs();
 }
 void updates(float dt){
 	menuSideBar->run();
@@ -314,10 +315,11 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
-		loader.reloadShader("EnviroShade");
-		loader.reloadShader("EnviroDefColorOnly");
-		loader.reloadShader("SSAO");
-		loader.reloadShader("Sobel");
+		// loader.reloadShader("EnviroShade");
+		// loader.reloadShader("EnviroDefColorOnly");
+		// loader.reloadShader("SSAO");
+		// loader.reloadShader("Sobel");
+		loader.reloadShader("UIButton");
 	}
 
 	ui.keyInput(key, action, mods);

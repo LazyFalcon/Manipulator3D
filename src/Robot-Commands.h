@@ -3,16 +3,16 @@
 #include "JacobianTransposed.h"
 class RobotController;
 
-enum CommandType : int
+enum CommandType : u32
 {
-	Empty = 0, Move, Wait, Conditional, ConditionalCall,
+	EMPTY, MOVE, WAIT, EXEXUTE,
 };
 
 class ICommand
 {
 	//uint32_t flags;
 public:
-	// ICommand() : isRuning(false){}
+	ICommand(CommandType type) : type(type), isRuning(false){}
 	//ICommand(uint32_t f) : flags(f){}
 	virtual void init(RobotController &rc) = 0;
 	virtual bool update(RobotController &rc, float dt) = 0;
@@ -20,6 +20,7 @@ public:
 	virtual vector<glm::vec4>& getPolyline() = 0;
 	virtual ~ICommand(){}
 	std::string name = "--empty--";
+	CommandType type;
 	bool isRuning;
 };
 
@@ -27,8 +28,8 @@ class MoveCommand : public ICommand
 {
 public:
 
-	MoveCommand(){}
-	MoveCommand(IInterpolator *interpolator) : interpolator(interpolator){}
+	MoveCommand() : ICommand(MOVE) {}
+	MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	~MoveCommand(){
 		std::cerr<<"delete MoveCommand: "+name<<std::endl;
 	}
@@ -65,7 +66,7 @@ public:
 	~WaitCommand(){
 		std::cerr << "delete Wait command\n";
 	}
-	WaitCommand(float time) : timeLeft(time){}
+	WaitCommand(float time) : ICommand(WAIT), timeLeft(time){}
 	void init(RobotController &rc){
 		isRuning = true;
 	};
