@@ -1,6 +1,7 @@
 #include <Utils/Includes.h>
 #include <Utils/Utils.h>
 #include <Utils/IMGUI_V4.h>
+#include "../IInterpolator.h"
 #include "PropertyEditor-TabManager.h"
 
 extern UI::IMGUI ui;
@@ -32,6 +33,15 @@ void CommandListTab::run(TabManager &TM){
 		// ui.rect(150, 20).text(it->name)()
 			// .onrClick(TM.get<CommandEditorTab>().setToEdit(it));
 	// }
+
+}
+
+void PathListTab::run(TabManager &TM){
+	for(auto &it : getInterpolators()){
+		ui.rect(150, 20).text(it->name)();
+		ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label);
+			// .onrClick(TM.get<CommandEditorTab>().setToEdit(it));
+	}
 
 }
 

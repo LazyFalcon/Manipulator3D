@@ -384,6 +384,57 @@ void HermiteFiniteDifferenceClosed::drawParams(){
 
 /// -------------------------------- FACTORY --------------------------------
 // shared_ptr<IInterpolator> build(const std::string type, vector<glm::vec4> &points){}
+
+std::list<shared_ptr<IInterpolator>> g_interpolators;
+
+void addInterpolator(shared_ptr<IInterpolator> &interpolator){
+	g_interpolators.push_back(interpolator);
+}
+
+shared_ptr<IInterpolator> addInterpolator(const std::string type, vector<glm::vec4> &points){}
+shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::vec4> &points){
+	shared_ptr<IInterpolator> out;
+	if(type == Interpolator::Linear){
+		out = make_shared<Linear>(points);
+	}
+	else if(type == Interpolator::BezierCurve){
+		out = make_shared<BezierCurve>(points);
+	}
+	else if(type == Interpolator::BSpline){
+		out = make_shared<BSpline>(points);
+	}
+	// else if(type == Interpolator::NURBS){
+		// out = make_shared<NURBS>(points);
+	// }
+	else if(type == Interpolator::HermiteCardinal){
+		out = make_shared<HermiteCardinal>(points);
+	}
+	else if(type == Interpolator::HermiteFiniteDifference){
+		out = make_shared<HermiteFiniteDifference>(points);
+	}
+	else if(type == Interpolator::HermiteFiniteDifferenceClosed){
+		out = make_shared<HermiteFiniteDifferenceClosed>(points);
+	}
+
+	// out.build();
+	addInterpolator(out);
+
+	return out;
+}
+
+void removeInterpolator(shared_ptr<IInterpolator> &interpolator){
+	g_interpolators.remove(interpolator);
+}
+std::list<shared_ptr<IInterpolator>>& getInterpolators(){
+	return g_interpolators;
+}
+shared_ptr<IInterpolator>& getInterpolator(const std::string &name){
+	for(auto &it : g_interpolators)
+		if(it->name == name)
+			return it;
+
+}
+
 shared_ptr<IInterpolator> InterpolatorFactory::build(Interpolator type, vector<glm::vec4> &points){
 	shared_ptr<IInterpolator> out;
 	if(type == Interpolator::Linear){
@@ -409,6 +460,7 @@ shared_ptr<IInterpolator> InterpolatorFactory::build(Interpolator type, vector<g
 	}
 
 	// out.build();
+	addInterpolator(out);
 
 	return out;
 }
@@ -435,6 +487,7 @@ const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumWithName
 
 
 
+
 const std::string& InterpolatorTranslate(Interpolator type){
 	if(type == Interpolator::Linear)
 		return sLinear;
@@ -452,5 +505,8 @@ const std::string& InterpolatorTranslate(Interpolator type){
 		return sHermiteFiniteDifferenceClosed;
 	return sEmpty;
 }
+
+
+
 
 

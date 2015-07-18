@@ -1,16 +1,5 @@
 ﻿#pragma once
-/* flow
-	┌──────────────────┐
-	├	move             │
-	├	move             │
-	├	waitOnKey        │
-	├	conditional(key) │
-	│	 ├ move          │
-	│	 └ useGripper    │
-	├	move             │
-	├ useGripper       │
-	└──────────────────┘
-*/
+#include "IInterpolator.h"
 #include "Robot-Commands.h"
 
 enum class CommandStatus : int {
@@ -26,8 +15,8 @@ enum class RCStates {
 class RobotController {
 public:
 	shared_ptr<Robot> robot;
-	std::list<std::unique_ptr<ICommand>> commands;
-	std::list<std::unique_ptr<ICommand>>::iterator commandIter;
+	std::list<std::shared_ptr<ICommand>> commands;
+	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
 
 	~RobotController(){
@@ -39,10 +28,10 @@ public:
 
 	bool update(float dt);
 
-	MoveCommand& move(IInterpolator *interpolator, const std::string &name);
+	MoveCommand& move(shared_ptr<IInterpolator> interpolator, const std::string &name);
 	WaitCommand& wait(float time);
 
-	std::unique_ptr<ICommand>& getCommand(){
+	std::shared_ptr<ICommand>& getCommand(){
 		return *commandIter;
 	}
 

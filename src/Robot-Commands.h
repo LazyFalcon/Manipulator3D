@@ -30,6 +30,7 @@ public:
 
 	MoveCommand() : ICommand(MOVE) {}
 	MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
+	MoveCommand(shared_ptr<IInterpolator> interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	~MoveCommand(){
 		std::cerr<<"delete MoveCommand: "+name<<std::endl;
 	}
@@ -49,8 +50,8 @@ public:
 	double acceleration;
 	double requiredDistance {0.0};
 	float time;
-	unique_ptr<IInterpolator> interpolator;
-	unique_ptr<IIK> solver;
+	shared_ptr<IInterpolator> interpolator;
+	shared_ptr<IIK> solver;
 
 private:
 	glm::vec4 previousPoint;

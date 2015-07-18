@@ -47,7 +47,8 @@ void RCTest(RobotController &rc){
 	glm::vec4 p6(-4, -4, 1.9, 1);
 
 	std::cout<<"Start test"<<std::endl;
-	rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
+	// rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
+	rc.move(addInterpolator(Interpolator::HermiteFiniteDifference, {p0, p1, p2, p3, p4, p5, p6}), "move 4");
 	// rc.wait(20);
 
 
@@ -104,7 +105,7 @@ void RobotController::prev(){
 	if (commandIter != commands.begin())
 		commandIter--;
 }
-MoveCommand& RobotController::move(IInterpolator *interpolator, const std::string &name){
+MoveCommand& RobotController::move(shared_ptr<IInterpolator> interpolator, const std::string &name){
 	MoveCommand *newCommand = new MoveCommand(interpolator);
 	newCommand->name = name;
 	newCommand->isRuning = false;

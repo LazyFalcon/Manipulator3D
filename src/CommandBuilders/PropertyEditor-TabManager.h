@@ -59,7 +59,7 @@ public:
 class PathListTab : public ITab
 {
 public:
-	void run(TabManager &TM){}
+	void run(TabManager &TM);
 };
 
 /// -------- TAB MANAGER -------
