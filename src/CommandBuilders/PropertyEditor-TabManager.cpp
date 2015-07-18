@@ -12,8 +12,8 @@ void CommandEditorTab::run(TabManager &TM){
 		commandBuilderWidget->run();
 		doneWidget();
 	}
-	// else
-		// commandBuilderWidget.reset(new MoveCommandBuilderWidget());
+	else
+		commandBuilderWidget.reset(new MoveCommandBuilderWidget());
 
 }
 void CommandEditorTab::getTypeWidget(TabManager &TM){
@@ -42,7 +42,7 @@ void TabManager::run(){
 		.position(screenSize.x-size, screenSize.y-32)
 		.size(size, -screenSize.y+32);
 	drawTabs();
-	// tabs[currentTab]->run(*this);
+	tabs[currentTab]->run(*this);
 
 
 	ui.endTable();

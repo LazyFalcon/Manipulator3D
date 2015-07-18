@@ -78,12 +78,10 @@ public:
 		if(tabs.size() < 4){
 			tabs.resize(4);
 		}
-		else {
-			if(!tabs[0]) tabs[0].reset(new CommandEditorTab());
-			// if(!tabs[1]) tabs[1].reset(new CommandListTab());
-			// if(!tabs[2]) tabs[2].reset(new PathEditorTab());
-			// if(!tabs[3]) tabs[3].reset(new PathListTab());
-		}
+		if(!tabs[0]) tabs[0].reset(new CommandEditorTab());
+		if(!tabs[1]) tabs[1].reset(new CommandListTab());
+		if(!tabs[2]) tabs[2].reset(new PathEditorTab());
+		if(!tabs[3]) tabs[3].reset(new PathListTab());
 	}
 	void setTab(u32 index){
 		currentTab = index;
