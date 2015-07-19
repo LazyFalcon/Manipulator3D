@@ -5,7 +5,13 @@
 #include "../Robot-Commands.h"
 #include "../Widgets.h"
 #include "../IInterpolator.h"
+#include "../Editor.h"
 #include "../RobotController.h"
+
+namespace Editor
+{
+	extern PolylineEditor polylineEditor;
+}
 
 extern UI::IMGUI ui;
 extern unique_ptr<RobotController> RC;
@@ -73,6 +79,9 @@ void MoveCommandBuilderWidget_inits(){
 	interpolatorTypes.value = interpolatorEnumWithName[0].second;
 	interpolatorFromList.options = &getInterpolators();
 	interpolatorFromList.value = *(getInterpolators().begin());
+}
+void MoveCommandBuilderWidget::enter(){
+	Editor::polylineEditor.set(moveCommandBuilder->moveCommand->interpolator);
 }
 void MoveCommandBuilderWidget::run(){
 	ui.rect(120, 20).text("Move command editor")();

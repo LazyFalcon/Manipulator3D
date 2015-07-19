@@ -81,6 +81,12 @@ vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "Scene.h"
 #include "Widgets.h"
 #include "Engine.h"
+#include "Editor.h"
+namespace Editor
+{
+	extern PolylineEditor polylineEditor;
+}
+
 #include "JacobianTransposed.h"
 #include "IInterpolator.h"
 #include "RobotController.h"
@@ -200,6 +206,10 @@ void renderLoop(){
 
 	Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
 	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0xff00b0f0);
+	if(Editor::polylineEditor.polyline){
+		Engine::drawLineStrip(Editor::polylineEditor.polyline->visualisation, 0xff00b0f0);
+		Engine::drawLineStrip(Editor::polylineEditor.polyline->points, 0xff00b0f0);
+	}
 	Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
  	Engine::finalize(*scene);
@@ -212,9 +222,11 @@ void prerequisites(){
 	menuSideBar = make_unique<TabManager>();
 	menuSideBar->initTabs();
 	MoveCommandBuilderWidget_inits();
+	Editor::init();
 }
 void updates(float dt){
 	menuSideBar->run();
+	Editor::update();
 	// BigSplineTest::update(dt);
 	//SomeTests();
 	// robotTest(dt, *RC->robot);
@@ -324,7 +336,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 
 	ui.keyInput(key, action, mods);
-	if(UI::GetInput) return;
 	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){
 		reloadWhatIsPossible();
 	}
@@ -342,6 +353,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
 		RC->pause();
 	}
+
+	if(UI::GetInput) return;
 
 
 	float targetStep = 0.1;

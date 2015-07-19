@@ -1108,6 +1108,7 @@ void drawLineStrip(std::vector<glm::vec4> &points, HexColor color, int size){
 	glDepthMask(GL_FALSE);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	// glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	auto shader = shaders["Lines"];

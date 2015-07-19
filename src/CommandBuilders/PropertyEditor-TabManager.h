@@ -8,6 +8,7 @@ class ITab
 public:
 	virtual ~ITab(){};
 	virtual void run(TabManager &tabManager) = 0;
+	virtual void enter(TabManager &tabManager) = 0;
 };
 
 // unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr);
@@ -28,6 +29,7 @@ public:
 		std::cerr<<"delete CommandEditorTab"<<std::endl;
 	}
 	void run(TabManager &tabManager);
+	void enter(TabManager &tabManager);
 	void getTypeWidget(TabManager &tabManager);
 
 	void doneWidget(){}
@@ -44,6 +46,7 @@ class CommandListTab : public ITab
 {
 public:
 	void run(TabManager &TM);
+	void enter(TabManager &TM){}
 	~CommandListTab(){
 		std::cerr<<"delete CommandListTab"<<std::endl;
 	}
@@ -53,6 +56,7 @@ class PathEditorTab : public ITab
 {
 public:
 	void run(TabManager &TM){}
+	void enter(TabManager &TM){}
 
 };
 
@@ -60,6 +64,7 @@ class PathListTab : public ITab
 {
 public:
 	void run(TabManager &TM);
+	void enter(TabManager &TM){}
 };
 
 /// -------- TAB MANAGER -------
@@ -85,6 +90,7 @@ public:
 	}
 	void setTab(u32 index){
 		currentTab = index;
+		tabs[currentTab]->enter(*this);
 	}
 	void run();
 	void drawTabs();

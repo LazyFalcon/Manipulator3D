@@ -167,6 +167,9 @@ public:
 
 };
 
+/**
+ *  Okołoglobalne jestestwo do edycji polylini, nic wiecej, niech działa zawsze bądź gdy jest enabled
+ */
 class PolylineEditor : public MainEditorWidget
 {
 public:

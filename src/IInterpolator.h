@@ -83,9 +83,10 @@ public:
 	Linear(const std::vector<glm::vec4> &p) : IInterpolator(p, Interpolator::Linear){
 		maxSections = points.size()-1;
 		section = -1;
-		nextSection();
-
-		generatePath();
+		if(maxSections > 0){
+			nextSection();
+			generatePath();
+		}
 	}
 	void generatePath();
 	void genNextStep();

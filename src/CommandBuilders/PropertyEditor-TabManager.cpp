@@ -2,7 +2,13 @@
 #include <Utils/Utils.h>
 #include <Utils/IMGUI_V4.h>
 #include "../IInterpolator.h"
+#include "../Editor.h"
 #include "PropertyEditor-TabManager.h"
+
+namespace Editor
+{
+	extern PolylineEditor polylineEditor;
+}
 
 extern UI::IMGUI ui;
 extern glm::vec2 screenSize;
@@ -16,6 +22,11 @@ void CommandEditorTab::run(TabManager &TM){
 	else
 		commandBuilderWidget.reset(new MoveCommandBuilderWidget());
 
+}
+
+/// tu przekazujemy do poly edytora interpolator z rozkazu
+void CommandEditorTab::enter(TabManager &TM){
+	commandBuilderWidget->enter();
 }
 void CommandEditorTab::getTypeWidget(TabManager &TM){
 	/// commandTypeSelection.run([this](CommandEditorTabCommandWidget val){ commandBuilderWidget = buildWidget(val) });
@@ -67,6 +78,9 @@ void TabManager::drawTabs(){
 			.switcher(currentTab, i)
 			.getRect(rect)
 			.color(i==currentTab ? 0xB77F3FFF : 0x808080FF)
+			.onlClick([i, this]{
+				setTab(i);
+			})
 			(UI::Button);
 	}
 

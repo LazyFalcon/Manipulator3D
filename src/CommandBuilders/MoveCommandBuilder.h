@@ -50,6 +50,7 @@ class ICommandBuilderWidget
 public:
 	virtual ~ICommandBuilderWidget(){}
 	virtual void run() = 0;
+	virtual void enter() = 0;
 	// virtual void setCommand() = 0;
 };
 
@@ -64,6 +65,7 @@ public:
 		moveCommandBuilder->init();
 	}
 	void run();
+	void enter();
 	void editName();
 	void editVelocity();
 	void editAcceleration();

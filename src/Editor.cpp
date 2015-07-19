@@ -170,6 +170,7 @@ void update(){
 }
 
 void PolylineEditor::mainBody(){
+	if(not polyline) return;
 	polyline->drawParams();
 	ui.image("Refresh").onlClick([this]{polyline->generatePath();})();
 	snapModeDropDown();
@@ -212,6 +213,8 @@ void PolylineEditor::snapModeDropDown(){
 }
 
 void PolylineEditor::processAll(){
+	if(not polyline) return;
+	cout<<"runing"<<endl;
 	if(ui.lClick() && (editorState & EditorFlags::PinSelectedToMouse)){
 		editorState &= ~EditorFlags::PinSelectedToMouse;
 	}
