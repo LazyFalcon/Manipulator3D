@@ -50,7 +50,8 @@ void RCTest(RobotController &rc){
 	// rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
 	rc.move(addInterpolator(Interpolator::HermiteFiniteDifference, {p0, p1, p2, p3, p4, p5, p6}), "move 4");
 	// rc.wait(20);
-
+	addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6})->name = "Hermite Closed";
+	addInterpolator(Interpolator::HermiteCardinal, {p0, p3, p6})->name = "Hermite Cardinal";
 
 	var0.setBouds({0, 250, -pi2, pi2});
 	var1.setBouds({0, 250, -pi2, pi2});
@@ -107,6 +108,7 @@ void RobotController::prev(){
 }
 MoveCommand& RobotController::move(shared_ptr<IInterpolator> interpolator, const std::string &name){
 	MoveCommand *newCommand = new MoveCommand(interpolator);
+	interpolator->name = name;
 	newCommand->name = name;
 	newCommand->isRuning = false;
 	commands.emplace_back(newCommand);

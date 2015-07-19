@@ -211,6 +211,7 @@ void prerequisites(){
 	jacobianTransposeInit();
 	menuSideBar = make_unique<TabManager>();
 	menuSideBar->initTabs();
+	MoveCommandBuilderWidget_inits();
 }
 void updates(float dt){
 	menuSideBar->run();

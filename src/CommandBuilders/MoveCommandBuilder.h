@@ -23,8 +23,8 @@ public:
 		moveCommand->time = value;
 		return *this;
 	}
-	MoveCommandBuilder& interpolator(IInterpolator *value){
-		// moveCommand->interpolator = value;
+	MoveCommandBuilder& interpolator(shared_ptr<IInterpolator> &value){
+		moveCommand->interpolator = value;
 		return *this;
 	}
 	MoveCommandBuilder& interpolator(Interpolator value){
@@ -75,3 +75,4 @@ private:
 	unique_ptr<MoveCommandBuilder> moveCommandBuilder;
 };
 
+void MoveCommandBuilderWidget_inits();

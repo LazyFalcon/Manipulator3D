@@ -34,7 +34,6 @@ void decr(float &value){value -= 0.01;}
 
 #define EDIT(value) \
 			ui.rect(120,22).edit(value)(UI::EditBox);
-
 wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1m/s", 0.1},
 	{"0.15m/s", 0.15},
@@ -56,17 +55,15 @@ wxg::DropdownPairWithCallback<double> times (UI::AlignTop, 100, std::vector <pai
 	{"5s", 5000},
 	{"10s", 10000},
 });
-// wxg::DropdownPairWithCallbacktimes<Interpolator>(UI::AlignTop, 100,std::vector <pair<string, Interpolator>> {
-	// {sEmpty, Interpolator::Empty},
-	// {sLinear, Interpolator::Linear},
-	// {sBezierCurve, Interpolator::BezierCurve},
-	// {sBSpline, Interpolator::BSpline},
-	// {sNURBS, Interpolator::NURBS},
-	// {sHermiteCardinal, Interpolator::HermiteCardinal},
-	// {sHermiteFiniteDifference, Interpolator::HermiteFiniteDifference},
-	// {sHermiteFiniteDifferenceClosed, Interpolator::HermiteFiniteDifferenceClosed},
-// });
+wxg::DropdownPairWithCallback<Interpolator> interpolatorTypes (UI::AlignTop, 100);
+wxg::DropdownListWithCallback<shared_ptr<IInterpolator>> interpolatorFromList (UI::AlignTop, 100);
 
+void MoveCommandBuilderWidget_inits(){
+	interpolatorTypes.options = interpolatorEnumWithName;
+	interpolatorTypes.value = interpolatorEnumWithName[0].second;
+	interpolatorFromList.options = &getInterpolators();
+	interpolatorFromList.value = *(getInterpolators().begin());
+}
 void MoveCommandBuilderWidget::run(){
 	ui.rect(120, 20).text("Move command editor")();
 	editName();
@@ -76,41 +73,44 @@ void MoveCommandBuilderWidget::run(){
 	editInterpolator();
 	editSolver();
 }
-
 void MoveCommandBuilderWidget::editName(){
-	FIELDWITHNAME("Name", ui.rect(120, 20).edit(moveCommandBuilder->moveCommand->name)(););
+	FIELDWITHNAME("Name", EDIT(moveCommandBuilder->moveCommand->name););
 }
-
 void MoveCommandBuilderWidget::editVelocity(){
 	FIELDWITHNAME("Velocity",
 		DECR(moveCommandBuilder->moveCommand->velocity);
-		// velocities.run([this](double val){moveCommandBuilder->velocity(val);});
+		velocities.run([this](double val){moveCommandBuilder->velocity(val);});
 		EDIT(moveCommandBuilder->moveCommand->velocity);
 		INCR(moveCommandBuilder->moveCommand->velocity);
 		);
 }
-
 void MoveCommandBuilderWidget::editAcceleration(){
 	FIELDWITHNAME("Acceleration",
 		DECR(moveCommandBuilder->moveCommand->acceleration);
-		// accelerations.run([this](double val){moveCommandBuilder->acceleration(val);});
+		accelerations.run([this](double val){moveCommandBuilder->acceleration(val);});
 		EDIT(moveCommandBuilder->moveCommand->acceleration);
 		INCR(moveCommandBuilder->moveCommand->acceleration);
 		);
 }
-
 void MoveCommandBuilderWidget::editTime(){
 	FIELDWITHNAME("Time",
 		DECR(moveCommandBuilder->moveCommand->time);
-		// times.run([this](double val){moveCommandBuilder->time(val);});
+		times.run([this](double val){moveCommandBuilder->time(val);});
 		EDIT(moveCommandBuilder->moveCommand->time);
 		INCR(moveCommandBuilder->moveCommand->time);
 		);
 }
-
 void MoveCommandBuilderWidget::editInterpolator(){
+	FIELDWITHNAME("Interpolator",
+		// DECR(moveCommandBuilder->moveCommand->time);
+		// interpolatorTypes.run([this](Interpolator val){moveCommandBuilder->interpolator(val);});
+		interpolatorFromList.run([this](shared_ptr<IInterpolator> val){moveCommandBuilder->interpolator(val);});
+		ui.rect(110,22).text(interpolatorTypes.getSelectedName())(UI::EditBox);
+		ui.rect(10,22).text("+", UI::CenterText)(UI::EditBox);
+		// EDIT(moveCommandBuilder->moveCommand->time);
+		// INCR(moveCommandBuilder->moveCommand->time);
+		);
 }
-
 void MoveCommandBuilderWidget::editSolver(){
 }
 

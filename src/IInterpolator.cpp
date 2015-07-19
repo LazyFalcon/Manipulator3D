@@ -466,7 +466,7 @@ shared_ptr<IInterpolator> InterpolatorFactory::build(Interpolator type, vector<g
 }
 
 
-const std::string sEmpty= "Linear";
+const std::string sEmpty = "Linear";
 const std::string sLinear = "Linear";
 const std::string sBezierCurve = "Bezier Curve";
 const std::string sBSpline = "B-Spline";

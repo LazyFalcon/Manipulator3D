@@ -11,8 +11,9 @@
  */
 
 
-enum class Interpolator : uint32_t
-{
+enum class Interpolator : u32
+{	
+	Empty,
 	Open,
 	Closed,
 	Linear,
@@ -23,6 +24,16 @@ enum class Interpolator : uint32_t
 	HermiteFiniteDifference,
 	HermiteFiniteDifferenceClosed
 };
+
+
+extern const std::string sEmpty;
+extern const std::string sLinear;
+extern const std::string sBezierCurve;
+extern const std::string sBSpline;
+extern const std::string sNURBS;
+extern const std::string sHermiteCardinal;
+extern const std::string sHermiteFiniteDifference;
+extern const std::string sHermiteFiniteDifferenceClosed;
 
 const std::string& InterpolatorTranslate(Interpolator type);
 
