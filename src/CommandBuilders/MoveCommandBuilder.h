@@ -8,7 +8,7 @@ public:
 		// return moveCommand.release();
 	// }
 	MoveCommandBuilder& init(){
-		moveCommand = make_unique<MoveCommand>();
+		moveCommand = make_shared<MoveCommand>();
 		return *this;
 	}
 	MoveCommandBuilder& velocity(double value){
@@ -33,12 +33,14 @@ public:
 	}
 	MoveCommandBuilder& solver(IIK *value){
 		// moveCommand->solver = value;
+		moveCommand->solver = make_unique<JT1>();
 		return *this;
 	}
+	MoveCommandBuilder& finish();
 
 	MoveCommandBuilder(){}
 	~MoveCommandBuilder(){}
-	unique_ptr<MoveCommand> moveCommand;
+	shared_ptr<MoveCommand> moveCommand;
 private:
 	/// i referencjê do RC, ¿eby móc dodaæ, wtedy RC::move zwraca ten builder :D
 };
@@ -68,6 +70,7 @@ public:
 	void editTime();;
 	void editInterpolator();
 	void editSolver();
+	void finalize();
 
 private:
 	std::string fieldValue {""};
