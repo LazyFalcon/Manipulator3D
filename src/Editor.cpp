@@ -174,11 +174,8 @@ void PolylineEditor::mainBody(){
 	polyline->drawParams();
 	ui.image("Refresh").onlClick([this]{polyline->generatePath();})();
 	snapModeDropDown();
-	ui.rect(120, 20).text("2342")();
-	ui.rect(120, 20).text("2342")();
-	ui.rect(120, 20).text("2342")();
-	ui.rect(120, 20).text("2342")();
 }
+
 void PolylineEditor::snapModeDropDown(){
 	glm::vec4 listStart;
 	ui.box(UI::LayoutHorizontal | UI::AlignLeft );
@@ -214,7 +211,6 @@ void PolylineEditor::snapModeDropDown(){
 
 void PolylineEditor::processAll(){
 	if(not polyline) return;
-	cout<<"runing"<<endl;
 	if(ui.lClick() && (editorState & EditorFlags::PinSelectedToMouse)){
 		editorState &= ~EditorFlags::PinSelectedToMouse;
 	}

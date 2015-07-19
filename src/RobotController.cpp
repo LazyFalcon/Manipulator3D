@@ -40,10 +40,10 @@ extern Plot mainPlot;
 void RCTest(RobotController &rc){
 	glm::vec4 p0(2, 5, 4, 1);
 	glm::vec4 p1(4, 0, 5, 1);
-	glm::vec4 p2(1, -6, 2, 1);
-	glm::vec4 p3(0, -6, 3, 1);
-	glm::vec4 p4(-1, -6, 2, 1);
-	glm::vec4 p5(-1, -6.3, 1.9, 1);
+	glm::vec4 p2(1, -5, 2, 1);
+	glm::vec4 p3(0, -5, 3, 1);
+	glm::vec4 p4(-1, -5, 2, 1);
+	glm::vec4 p5(-1, -5.3, 1.9, 1);
 	glm::vec4 p6(-4, -4, 1.9, 1);
 
 	std::cout<<"Start test"<<std::endl;
@@ -116,7 +116,7 @@ MoveCommand& RobotController::move(shared_ptr<IInterpolator> interpolator, const
 	if (commandIter == commands.end())
 		commandIter = commands.begin();
 
-	newCommand->velocity = 0.8;
+	newCommand->velocity = 1.8;
 	newCommand->solver = make_unique<JT1>();
 
 	return *newCommand;
