@@ -1,3 +1,5 @@
+// http://www.sunandblackcat.com/tipFullView.php?l=eng&topicid=34
+// http://sunandblackcat.com/tipFullView.php?l=eng&topicid=35&topic=Shadow-Mapping-Poisson-VSM-ESM-PCF
 #ifdef COMPILING_VERTEX_SHADER
 
 layout(location=0)in vec3 mVertex;
