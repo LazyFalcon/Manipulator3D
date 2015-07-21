@@ -161,6 +161,11 @@ glm::vec4 MultiPointController::moveAlongCameraAxes(){
 
 PolylineEditor polylineEditor;
 
+void set(shared_ptr<IInterpolator> &p){
+	polylineEditor.set(p);
+
+}
+
 void init(){
 	// polylineEditor.set(BigSplineTest::interpolators[0]);
 }
