@@ -4,20 +4,22 @@
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <IL/ilut.h>
-
-void UIContainer::draw(UI::IMGUI &gui){
-	auto shader = shaders[m_boxes.second];
+/// dodać tu jakis cykliczny buffer
+void drawSingleButtonList(BoxColor &boxColor, std::string &shaderName){
+	if(boxColor.m_box.size() == 0) return;
+	
+	auto shader = shaders[shaderName];
 	glUseProgram(shader);
 	glUniform(shader, window_width,   "uWidth");
 	glUniform(shader, window_height,  "uHeight");
 
-	updateBuffer(Engine::b_guiRects, m_boxes.first.m_box);
-	updateBuffer(Engine::b_color, m_boxes.first.m_color);
+	updateBuffer(Engine::b_guiRects, boxColor.m_box);
+	updateBuffer(Engine::b_color, boxColor.m_color);
 		setupBuffer(Engine::quadCorner,0,4,0);
 		setupBuffer(Engine::b_guiRects,1,4,1);
 		setupBuffer(Engine::b_color, 2, 4, 1, GL_UNSIGNED_BYTE, GL_TRUE);
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, m_boxes.first.m_box.size());
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, boxColor.m_box.size());
 
 	shader = shaders[m_images.second];
 	glUseProgram(shader);
@@ -27,8 +29,15 @@ void UIContainer::draw(UI::IMGUI &gui){
 	setupBuffer(Engine::quadCorner,0,4,0);
 	glUniform(shader, window_width,   "uWidth");
 	glUniform(shader, window_height,  "uHeight");
+}
 
-	for(auto &it : m_images.first){
+void UIContainer::draw(UI::IMGUI &gui, int layer){
+	drawSingleButtonList(m_backgroundBox.first[layer], m_backgroundBox.second);
+	drawSingleButtonList(m_label.first[layer], m_label.second);
+	drawSingleButtonList(m_editBox.first[layer], m_editBox.second);
+	drawSingleButtonList(m_boxes.first[layer], m_boxes.second);
+
+	for(auto &it : m_images.first[layer]){
 		glUniform(shader, colorHex(it.color),"uColor");
 		glUniform(shader, it.rect, "uRect");
 		glUniform(shader, it.uvs, "uUVs");
