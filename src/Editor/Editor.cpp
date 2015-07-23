@@ -12,8 +12,21 @@ extern glm::vec2 mouseMoveVector;
 extern float mouseMoveLen;
 
 extern UI::IMGUI ui;
+
+/// ---------------------------------------------
 namespace Editor NAM_START
 
+u32 EditorMode;
+enum EditorModes : u32 {
+	Enabled = 0b1,
+	NewCommand = 0b10,
+	EditCommand = 0b100,
+	NewPath = 0b1000,
+	EditPath = 0b10000,
+
+	DefaultMode = EditCommand | EditPath,
+
+};
 
 unique_ptr<TabManager> menuSideBar;
 
@@ -176,11 +189,37 @@ void init(){
 	menuSideBar->initTabs();
 	// polylineEditor.set(BigSplineTest::interpolators[0]);
 }
+
+/**
+ *  
+ *  
+ */
+void EnterEditor(){}
+void ExitEditor(){}
+
 void update(){
 	menuSideBar->run();
 	polylineEditor.run();
 	polylineEditor.processAll();
 }
+
+void processMouse(int button, int action, int modifier){
+	polylineEditor.processMouse(button, action, modifier);
+}
+void processKeys(int key, int action, int modifier){
+	if(EditorMode & Enabled){
+		polylineEditor.processKeys(key, action, modifier);
+
+		if(key == GLFW_KEY_TAB && action == GLFW_PRESS)
+			ExitEditor();
+	}
+	else {
+		if(key == GLFW_KEY_TAB && action == GLFW_PRESS)
+			EnterEditor();
+
+	}
+}
+
 
 void PolylineEditor::mainBody(){
 	if(not polyline) return;

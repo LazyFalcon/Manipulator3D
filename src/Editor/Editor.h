@@ -223,6 +223,8 @@ extern PolylineEditor polylineEditor;
 
 void init();
 void update();
+void processKeys(int key, int action, int modifier);
+void processMouse(int key, int action, int modifier);
 
 NAM_END
 

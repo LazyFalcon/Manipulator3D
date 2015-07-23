@@ -324,9 +324,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		ResourceLoader loader(scene->resources);
 		// loader.reloadShader("EnviroShade");
 		// loader.reloadShader("EnviroDefColorOnly");
-		// loader.reloadShader("SSAO");
+		loader.reloadShader("SSAO");
 		// loader.reloadShader("Sobel");
-		loader.reloadShader("UIButton");
+		// loader.reloadShader("UIButton");
 	}
 
 	ui.keyInput(key, action, mods);
@@ -341,7 +341,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 
 	ui.keyInput(key, action, mods);
-	Editor::polylineEditor.processKeys(key, action, mods);
+	Editor::processKeys(key, action, mods);
 
 
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
@@ -411,7 +411,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	ui.mouseKeyInput(button, action);
-	Editor::polylineEditor.processMouse(button, action, mods);
+	Editor::processMouse(button, action, mods);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
 		glfwPollEvents();
 		ui.setlClick(true);

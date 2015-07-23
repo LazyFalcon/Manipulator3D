@@ -907,13 +907,13 @@ void SSAO(){
 	auto shader = shaders["SSAO"];
 	glUseProgram(shader);
 
-	static auto uNormalBuffer = glGetUniformLocation(shader,"uNormalBuffer");
-	static auto uDepthBuffer = glGetUniformLocation(shader,"uDepthBuffer");
-	static auto u_SSAORandom = glGetUniformLocation(shader,"uSSAORandom");
-	static auto uInvPV = glGetUniformLocation(shader,"uInvPV");
-	static auto u_View = glGetUniformLocation(shader,"uView");
-	static auto uNear = glGetUniformLocation(shader,"uNear");
-	static auto uFar = glGetUniformLocation(shader,"uFar");
+	auto uNormalBuffer = glGetUniformLocation(shader,"uNormalBuffer");
+	auto uDepthBuffer = glGetUniformLocation(shader,"uDepthBuffer");
+	auto u_SSAORandom = glGetUniformLocation(shader,"uSSAORandom");
+	auto uInvPV = glGetUniformLocation(shader,"uInvPV");
+	auto u_View = glGetUniformLocation(shader,"uView");
+	auto uNear = glGetUniformLocation(shader,"uNear");
+	auto uFar = glGetUniformLocation(shader,"uFar");
 
 	glActiveTexture(GL_TEXTURE0);
 		glUniform1i(uNormalBuffer, 0);

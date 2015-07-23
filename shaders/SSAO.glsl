@@ -27,7 +27,8 @@ in vec2 vUV;
 const float bias = 0.169;
 const float scale = 95.01;
 const float intensity = 5.1;
-const vec2 sampleRadius = 95/vec2(1400, 720);
+// const vec2 sampleRadius = 95/vec2(1400, 720);
+const vec2 sampleRadius = 150/vec2(1400, 720);
 const float randomSize = 644;
 
 
@@ -61,12 +62,17 @@ float computeAmbientOcclusion(vec2 uv, vec2 dCoord, vec4 position, vec4 normal){
 	return max(0.0, dot(normal,v)-bias) * (1.0/(1.0 + d*scale)) * intensity;
 }
 
-vec2 kernel[4] = vec2[]
+vec2 kernel[8] = vec2[]
 (
 	vec2(1,1),
 	vec2(-1,1),
 	vec2(-1,-1),
 	vec2(1,-1)
+
+	,vec2(0,1),
+	vec2(-1,0),
+	vec2(0,-1),
+	vec2(1,0)
 );
 
 
@@ -79,15 +85,19 @@ void main(void){
 	// vec2 rand = getRandom(normal.xz);
 
 	float ao = 0.0;
-	// float radius = sampleRadius/(1 - depth*1.9);
+	float radius = sampleRadius.x/(1 - depth*1.9);
 	// float radius = sampleRadius*depth*1.0;
-	float radius = sampleRadius.x;
+	// float radius = sampleRadius.x;
 
-	const int iterations = 4;
+	const int iterations = 8;
 	for(int i=0; i<iterations; ++i){
 		vec2 refl = reflect(kernel[i], rand) * radius;
 		vec2 coord = vec2(refl.x*0.707 - refl.y*0.707, refl.x*0.707 + refl.y*0.707);
 
+		ao += computeAmbientOcclusion(vUV, refl*0.25, position, normal);
+		ao += computeAmbientOcclusion(vUV, coord*0.5, position, normal);
+		ao += computeAmbientOcclusion(vUV, refl*0.75, position, normal);
+		ao += computeAmbientOcclusion(vUV, coord, position, normal);
 		ao += computeAmbientOcclusion(vUV, refl*0.25, position, normal);
 		ao += computeAmbientOcclusion(vUV, coord*0.5, position, normal);
 		ao += computeAmbientOcclusion(vUV, refl*0.75, position, normal);
