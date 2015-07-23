@@ -336,9 +336,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 
 	ui.keyInput(key, action, mods);
-	if(key == GLFW_KEY_TAB && action == GLFW_PRESS){
-		switchEditObjectMode();
-	}
 	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){
 		reloadWhatIsPossible();
 	}

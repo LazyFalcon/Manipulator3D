@@ -167,8 +167,6 @@ public:
 
 };
 
-void set(shared_ptr<IInterpolator> &p);
-
 /**
  *  Okołoglobalne jestestwo do edycji polylini, nic wiecej, niech działa zawsze bądź gdy jest enabled
  */
