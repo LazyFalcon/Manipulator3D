@@ -1263,9 +1263,9 @@ void renderGUI(UI::IMGUI &gui){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
+	gui.m_UIContainer->draw(gui);
 	for(int layer=0; layer<3; layer++){
 	{ // text
-		gui.m_UIContainer->draw(gui, layer);
 		GLuint shader = shaders["Text"];
 		glUseProgram(shader);
 
