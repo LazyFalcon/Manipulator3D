@@ -9,7 +9,7 @@
  * Krzywych które posłużą do interpolacji trasy
  */
 
-#include "Editor.h"
+#include "Editor/Editor.h"
 
 #define NAM_START {
 #define NAM_END }
