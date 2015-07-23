@@ -7,7 +7,7 @@
 /// dodać tu jakis cykliczny buffer
 void drawSingleButtonList(BoxColor &boxColor, std::string &shaderName){
 	if(boxColor.m_box.size() == 0) return;
-
+	
 	auto shader = shaders[shaderName];
 	glUseProgram(shader);
 	glUniform(shader, window_width,   "uWidth");
@@ -20,6 +20,15 @@ void drawSingleButtonList(BoxColor &boxColor, std::string &shaderName){
 		setupBuffer(Engine::b_color, 2, 4, 1, GL_UNSIGNED_BYTE, GL_TRUE);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, boxColor.m_box.size());
+
+	shader = shaders[m_images.second];
+	glUseProgram(shader);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gui.m_imageSet->ID);
+	glUniform1i(glGetUniformLocation(shader,"uTexture"),0);
+	setupBuffer(Engine::quadCorner,0,4,0);
+	glUniform(shader, window_width,   "uWidth");
+	glUniform(shader, window_height,  "uHeight");
 }
 
 void UIContainer::draw(UI::IMGUI &gui, int layer){
@@ -28,29 +37,15 @@ void UIContainer::draw(UI::IMGUI &gui, int layer){
 	drawSingleButtonList(m_editBox.first[layer], m_editBox.second);
 	drawSingleButtonList(m_boxes.first[layer], m_boxes.second);
 
-	auto shader = shaders[m_images.second];
-	glUseProgram(shader);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gui.m_imageSet->ID);
-	glUniform1i(glGetUniformLocation(shader,"uTexture"),0);
-	setupBuffer(Engine::quadCorner,0,4,0);
-	glUniform(shader, window_width,   "uWidth");
-	glUniform(shader, window_height,  "uHeight");
 	for(auto &it : m_images.first[layer]){
 		glUniform(shader, colorHex(it.color),"uColor");
 		glUniform(shader, it.rect, "uRect");
 		glUniform(shader, it.uvs, "uUVs");
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
-	m_images.first[layer].clear();
-	m_backgroundBox.first[layer].m_box.clear();
-	m_backgroundBox.first[layer].m_color.clear();
-	m_label.first[layer].m_box.clear();
-	m_label.first[layer].m_color.clear();
-	m_editBox.first[layer].m_box.clear();
-	m_editBox.first[layer].m_color.clear();
-	m_boxes.first[layer].m_box.clear();
-	m_boxes.first[layer].m_color.clear();
+	m_images.first.clear();
+	m_boxes.first.m_box.clear();
+	m_boxes.first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -74,7 +69,7 @@ bool ResourceLoader::loadImage(const string &name){
 	//check the file signature and deduce its format
 	fif = FreeImage_GetFileType(fileName.c_str(), 0);
 	if(fif == FIF_UNKNOWN){
-		// std::cout<<"duupa\n";
+		std::cout<<"duupa\n";
 		return false;
 	}
 
@@ -294,7 +289,7 @@ void Plot::init(){
 		glViewport(0, 0, box.z, box.w);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	// std::cout<<"tex & FBO "<<texID<<" "<<fbo<<endl;
+	std::cout<<"tex & FBO "<<texID<<" "<<fbo<<endl;
 }
 void Plot::resize(glm::vec2 newDimensions){
 	box.z = newDimensions.x;

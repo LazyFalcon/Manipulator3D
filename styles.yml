@@ -7,7 +7,6 @@ Styles:
    editBox: 0x1D1D1DFF
    fontColor: 0xFAF9F7FF
    imageColor: 0xFAF9F7FF
-   label: 0xFAF9F7FF
    font: ui_12
    fancy:
     - 0x083455FF
@@ -21,7 +20,6 @@ Styles:
    editBox: 0xCC6628FF
    fontColor: 0x000102FF
    imageColor: 0xFAF9F7FF
-   label: 0xFAF9F7FF
    font: ui_12
    fancy:
     - 0xFAF9F7FF
@@ -35,7 +33,6 @@ Styles:
    editBox: 0x7B8388FF
    fontColor: 0xFAF9F7FF
    imageColor: 0xFAF9F7FF
-   label: 0xFAF9F7FF
    font: ui_12
    fancy:
     - 0x315B4BFF
@@ -49,7 +46,6 @@ Styles:
    editBox: 0x895E44FF
    fontColor: 0xFAF9F7FF
    imageColor: 0xFAF9F7FF
-   label: 0xFAF9F7FF
    font: ui_12
    fancy:
     - 0xFAF9F7FF

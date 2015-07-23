@@ -141,8 +141,8 @@ bool Module::goTo(float dt){
 	if(glm::epsilonEqual(targetValue, 0.0, jointEpsilon)){
 		return true;
 	}
-	// if(abs(targetValue) > dpi)
-		// cout<<targetValue<<endl;
+	if(abs(targetValue) > dpi)
+		cout<<targetValue<<endl;
 
 	auto maxStep = computeMaxStep(dt);
 

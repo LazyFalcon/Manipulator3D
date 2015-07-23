@@ -5,8 +5,8 @@
 #include "common.h"
 #include "Engine.h"
 
-// #define NAM_START {
-// #define NAM_END }
+#define NAM_START {
+#define NAM_END }
 
 
 extern HexColor colorTransparent;

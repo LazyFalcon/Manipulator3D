@@ -2,11 +2,19 @@
 #include <Utils/Utils.h>
 #include <Utils/IMGUI_V4.h>
 #include "MoveCommandBuilder.h"
-#include "Editor.h"
 #include "../Robot-Commands.h"
 #include "../Widgets.h"
 #include "../IInterpolator.h"
+#include "../Editor.h"
 #include "../RobotController.h"
+
+namespace Editor
+{
+	extern PolylineEditor polylineEditor;
+}
+
+extern UI::IMGUI ui;
+extern unique_ptr<RobotController> RC;
 
 void incr(double &value){value += 0.01;}
 void decr(double &value){value -= 0.01;}
@@ -35,20 +43,12 @@ void decr(float &value){value -= 0.01;}
 #define EDIT(value) \
 			ui.rect(120,22).edit(value)(UI::EditBox);
 
-
-extern unique_ptr<RobotController> RC;
-
 MoveCommandBuilder& MoveCommandBuilder::finish(){
 	moveCommand->solver = make_unique<JT1>();
 	RC->commands.push_back(moveCommand);
 	init();
 	return *this;
 }
-
-extern UI::IMGUI ui;
-namespace Editor NAM_START
-
-extern PolylineEditor polylineEditor;
 
 wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1m/s", 0.1},
@@ -140,5 +140,3 @@ void MoveCommandBuilderWidget::finalize(){
 		});
 }
 
-
-NAM_END

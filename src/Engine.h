@@ -12,8 +12,8 @@
 #include "ResourceLoader.h"
 #include "Engine-DrawUtils.h"
 
-// #define NAM_START {
-// #define NAM_END }
+#define NAM_START {
+#define NAM_END }
 
 extern HexColor LightText;
 extern HexColor DarkText;

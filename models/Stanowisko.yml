@@ -1,64 +1,64 @@
-dirname: D:\Work\Repo\Manipulator3D\models
+dirname: D:\Work\Code\Manipulator3D\models
 Robot:
  - Name: Plane.001
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base
      Vec: [0.0000, 0.0000, 0.2915]
      Axis: [0.0000, 0.0000, 1.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0000, 0.0000, 1.3012]
  - Name: Plane.002
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.001
      Vec: [0.0000, -0.7211, 1.4961]
      Axis: [-1.0000, -0.0000, -0.0000]
      Min: -45
      Max: 90
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0000, -0.1964, 1.6182]
  - Name: Plane.003
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.002
      Vec: [-0.0001, 1.2193, 0.0973]
      Axis: [-1.0000, -0.0000, 0.0000]
      Min: 120
      Max: 90
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0001, 2.0640, 0.0344]
  - Name: Plane.005
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.003
      Vec: [0.0005, -2.4634, -0.0337]
      Axis: [-0.0002, 1.0000, -0.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0005, 3.2169, 0.0575]
  - Name: Plane.004
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.004
      Vec: [-0.0007, 0.0063, -0.0170]
      Axis: [-1.0000, 0.0000, -0.0000]
      Min: -120
      Max: 120
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0005, 0.3187, -0.0019]
  - Name: Plane.006
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.005
      Vec: [0.0005, -0.3187, 0.0019]
      Axis: [-0.0001, 1.0000, -0.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0005, 0.9222, -0.0029]
 Meshes:
  - Name: Circle.001

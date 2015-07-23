@@ -9,10 +9,10 @@
  * Krzywych które posłużą do interpolacji trasy
  */
 
-#include "Editor/Editor.h"
+#include "Editor.h"
 
-// #define NAM_START {
-// #define NAM_END }
+#define NAM_START {
+#define NAM_END }
 
 namespace BigSplineTest NAM_START
 

@@ -7,7 +7,7 @@ CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
 # CommandBuilders = D:\Work\Code\Manipulator3D\src\CommandBuilders
-Editor = ./Editor
+CommandBuilders = .\CommandBuilders
 UTIL = C:/MinGW/include/Utils
 
 OBJS = \
@@ -29,10 +29,11 @@ OBJS = \
 ../bin/BigSplineTest.o \
 ../bin/Editor.o  \
 ../bin/Graph.o \
+../bin/Robot-Commands.o \
+../bin/Robot-CommandBuilders.o \
 ../bin/MoveCommandBuilder.o \
 ../bin/PropertyEditor-TabManager.o \
 ../bin/MAIN.o
-# ../bin/Robot-Commands.o \
 
 LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
@@ -41,24 +42,26 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/Manipulator: $(OBJS)
 	$(CXX) $(OBJS) -o ../bin/Manipulator $(LIBS)
 
-../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
+../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Robot-Commands.h Widgets.h $(CommandBuilders)/PropertyEditor-TabManager.h RobotController.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
 
 #-----------------------------------------------------
 
-../bin/PropertyEditor-TabManager.o: $(Editor)/PropertyEditor-TabManager.cpp $(Editor)/PropertyEditor-TabManager.h $(UTIL)/IMGUI_V4.h Widgets.h $(Editor)/MoveCommandBuilder.h
-	$(CXX) -c $(CXXFLAGS) -o2 $(Editor)/PropertyEditor-TabManager.cpp -o ../bin/PropertyEditor-TabManager.o
 
-../bin/MoveCommandBuilder.o: $(Editor)/MoveCommandBuilder.cpp $(Editor)/MoveCommandBuilder.h $(UTIL)/IMGUI_V4.h Widgets.h
-	$(CXX) -c $(CXXFLAGS) -o2 $(Editor)/MoveCommandBuilder.cpp -o ../bin/MoveCommandBuilder.o
+../bin/MoveCommandBuilder.o: $(CommandBuilders)/MoveCommandBuilder.cpp $(CommandBuilders)/MoveCommandBuilder.h $(UTIL)/IMGUI_V4.h Widgets.h
+	$(CXX) -c $(CXXFLAGS) -o2 $(CommandBuilders)/MoveCommandBuilder.cpp -o ../bin/MoveCommandBuilder.o
 
-../bin/Editor.o: $(Editor)/Editor.cpp $(Editor)/Editor.h Widgets.h $(UTIL)/IMGUI_V4.h
-	$(CXX) -c $(CXXFLAGS) -o2  $(Editor)/Editor.cpp -o ../bin/Editor.o
+../bin/PropertyEditor-TabManager.o: $(CommandBuilders)/PropertyEditor-TabManager.cpp $(CommandBuilders)/PropertyEditor-TabManager.h $(UTIL)/IMGUI_V4.h Widgets.h $(CommandBuilders)/MoveCommandBuilder.h
+	$(CXX) -c $(CXXFLAGS) -o2 $(CommandBuilders)/PropertyEditor-TabManager.cpp -o ../bin/PropertyEditor-TabManager.o
+
 
 #-----------------------------------------------------
 
 ../bin/Graph.o: Graph.cpp Graph.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Graph.cpp -o ../bin/Graph.o
+
+../bin/Editor.o: Editor.cpp Editor.h Widgets.h $(UTIL)/IMGUI_V4.h
+	$(CXX) -c $(CXXFLAGS) -o2  Editor.cpp -o ../bin/Editor.o
 
 ../bin/BigSplineTest.o: BigSplineTest.cpp BigSplineTest.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  BigSplineTest.cpp -o ../bin/BigSplineTest.o

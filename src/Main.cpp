@@ -81,8 +81,7 @@ vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "Scene.h"
 #include "Widgets.h"
 #include "Engine.h"
-#include "Editor/Editor.h"
-#include "Editor/MoveCommandBuilder.h"
+#include "Editor.h"
 namespace Editor
 {
 	extern PolylineEditor polylineEditor;
@@ -98,6 +97,8 @@ unique_ptr<RobotController> RC;
 unique_ptr<Scene> scene;
 unique_ptr<Resources> globalResources;
 #include "Menu.h"
+#include "CommandBuilders/PropertyEditor-TabManager.h"
+unique_ptr<TabManager> menuSideBar;
 CFG::Node cfg_settings;
 
 void loadResources();
@@ -192,15 +193,15 @@ void fastLoop(float step){
 }
 void renderLoop(){
 	// Engine::plotGraphs();
-	// Engine::generateShadowMap(*scene);
+	Engine::generateShadowMap(*scene);
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
 	Engine::copyDepth(*scene);
-	if(globalSettings & LIGHTS)Engine::renderLights(*scene);
-	if(globalSettings & LIGHTS)Engine::applyLights(*scene);
+	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
+	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
 	if(globalSettings & SOBEL)Engine::Sobel();
-	// Engine::postprocess(*scene);
+	Engine::postprocess(*scene);
 	Engine::drawOutline(*scene);
 
 	Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
@@ -217,13 +218,18 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
-	_DebugLine_
-	Editor::init();
-	Editor::MoveCommandBuilderWidget_inits();
 	jacobianTransposeInit();
+	menuSideBar = make_unique<TabManager>();
+	menuSideBar->initTabs();
+	MoveCommandBuilderWidget_inits();
+	Editor::init();
 }
 void updates(float dt){
+	menuSideBar->run();
 	Editor::update();
+	// BigSplineTest::update(dt);
+	//SomeTests();
+	// robotTest(dt, *RC->robot);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -331,7 +337,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	ui.keyInput(key, action, mods);
 	if(key == GLFW_KEY_TAB && action == GLFW_PRESS){
-		// switchEditObjectMode();
+		switchEditObjectMode();
 	}
 	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){
 		reloadWhatIsPossible();
@@ -451,7 +457,6 @@ void reloadWhatIsPossible(){
 		ui.m_styles[(int)styleID].editBox    = cfg["editBox"].asColor();
 		ui.m_styles[(int)styleID].fontColor  = cfg["fontColor"].asColor();
 		ui.m_styles[(int)styleID].imageColor = cfg["imageColor"].asColor();
-		ui.m_styles[(int)styleID].label = cfg["label"].asColor();
 		ui.m_styles[(int)styleID].font = cfg["font"].value;
 		for(int i=0; i<4 && i<cfg["fancy"].size(); i++)
 			ui.m_styles[(int)styleID].fancy[i] = cfg["fancy"][i].asColor();

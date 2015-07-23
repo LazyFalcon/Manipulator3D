@@ -2,15 +2,16 @@
 #include <Utils/Utils.h>
 #include <Utils/IMGUI_V4.h>
 #include "../IInterpolator.h"
-#include "Editor.h"
+#include "../Editor.h"
 #include "PropertyEditor-TabManager.h"
+
+namespace Editor
+{
+	extern PolylineEditor polylineEditor;
+}
 
 extern UI::IMGUI ui;
 extern glm::vec2 screenSize;
-namespace Editor NAM_START
-
-extern PolylineEditor polylineEditor;
-
 
 void CommandEditorTab::run(TabManager &TM){
 	getTypeWidget(TM);
@@ -87,4 +88,3 @@ void TabManager::drawTabs(){
 }
 
 
-NAM_END

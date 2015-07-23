@@ -6,7 +6,7 @@
 #include "BigSplineTest.h"
 #include "IInterpolator.h"
 #include "Widgets.h"
-#include "Editor/Editor.h"
+#include "Editor.h"
 #include "Graph.h"
 
 extern UI::IMGUI ui;

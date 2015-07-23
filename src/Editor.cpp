@@ -1,5 +1,4 @@
-﻿#define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
-#include "Editor.h"
+﻿#include "Editor.h"
 
 namespace BigSplineTest {
 	extern vector<shared_ptr<IInterpolator>> interpolators;
@@ -11,11 +10,7 @@ extern glm::vec2 mouseTranslation;
 extern glm::vec2 mouseMoveVector;
 extern float mouseMoveLen;
 
-extern UI::IMGUI ui;
 namespace Editor NAM_START
-
-
-unique_ptr<TabManager> menuSideBar;
 
 namespace EditorAxes
 {
@@ -172,14 +167,11 @@ void set(shared_ptr<IInterpolator> &p){
 }
 
 void init(){
-	menuSideBar = make_unique<TabManager>();
-	menuSideBar->initTabs();
 	// polylineEditor.set(BigSplineTest::interpolators[0]);
 }
 void update(){
-	// menuSideBar->run();
-	// polylineEditor.run();
-	// polylineEditor.processAll();
+	polylineEditor.run();
+	polylineEditor.processAll();
 }
 
 void PolylineEditor::mainBody(){

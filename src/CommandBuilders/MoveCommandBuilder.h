@@ -1,7 +1,6 @@
 #pragma once
 #include "../Robot-Commands.h"
 
-
 class MoveCommandBuilder
 {
 public:
@@ -46,9 +45,6 @@ private:
 	/// i referencjê do RC, ¿eby móc dodaæ, wtedy RC::move zwraca ten builder :D
 };
 
-
-namespace Editor NAM_START
-
 class ICommandBuilderWidget
 {
 public:
@@ -85,5 +81,3 @@ private:
 };
 
 void MoveCommandBuilderWidget_inits();
-
-NAM_END
