@@ -293,7 +293,7 @@ void mainLoop(){
 		camera.updateCamera(dt);
 
 		UI::GetInput = ui.textEditor.state();
-		// updates(dt);
+		updates(dt);
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
 			ui.rect().color(0xA0A0A0FF).text(msecTimer.getString()+"ms").font("ui_12"s)();

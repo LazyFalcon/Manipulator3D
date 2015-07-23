@@ -76,19 +76,19 @@ public:
 			ui.endTable();
 
 
-			// if(!marked)
-				// return marked;
-			// if(ui.lClick() && ui.outOfTable())
-				// marked = false;
-			// ui.table(position,UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::Draw);
-				// marked |= children[mark]();
+			if(!marked)
+				return marked;
+			if(ui.lClick() && ui.outOfTable())
+				marked = false;
+			ui.table(position,UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::Draw);
+				marked |= children[mark]();
 
 			return marked;
 	}
 };
 
 Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
-		Button {"Settings", "", colorWhite,  []{}, vector<Button>{
+		Button {"Settings", "Settings", colorWhite,  []{}, vector<Button>{
 			Button {"Graphic","", colorWhite, []{alert("graphic settings"s);}},
 			Button {"Lights","",  colorWhite, []{globalSettings ^= LIGHTS;}},
 			Button {"Wireframe","",  colorWhite, []{}},
@@ -105,7 +105,7 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 			Button {"Depth","",  colorWhite, []{globalSettings ^=   DRAW_DEPTH;}},
 			Button {"Lights","",  colorWhite, []{globalSettings ^=  DRAW_LIGHTS;}},
 		}},
-		Button {"Scene", "", colorWhite, []{}, std::vector<Button>{
+		Button {"Scene", "Scene", colorWhite, []{}, std::vector<Button>{
 			Button {"Load","",  colorWhite, []{}},
 			Button {"Reload","",  colorWhite, []{}},
 			Button {"Clear","",  colorWhite, []{}},
@@ -121,7 +121,7 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 				Button {"YZ", "", colorWhite, []{globalSettings = globalSettings ^ DRAW_YZ_GRID;}},
 			}},
 		}},
-		Button {"Script", "", colorWhite, []{}, std::vector<Button>{
+		Button {"Script", "File", colorWhite, []{}, std::vector<Button>{
 			Button {"Load","",  colorWhite, []{}},
 			Button {"Reload","",  colorWhite, []{}},
 			Button {"Clear","",  colorWhite, []{}},
@@ -129,13 +129,13 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 			Button {"Pause","",  colorWhite, []{}},
 			Button {"Stop","",  colorWhite, []{}},
 		}},
-		Button {"Play F5", "", colorWhite, []{RC->run();}},
-		Button {"Pause F6", "", colorWhite, []{RC->pause();}},
-		Button {"Stop", "", colorWhite, []{RC->stop();}},
-		Button{ "Undo", "", colorWhite, []{RC->prev(); } },
-		Button{ "Redo", "", colorWhite, []{RC->next(); } },
-		Button {"Save", "", colorWhite, []{}},
-		Button {"Load", "", colorWhite, []{}},
+		Button {"Play F5", "Play", colorWhite, []{RC->run();}},
+		Button {"Pause F6", "Pause", colorWhite, []{RC->pause();}},
+		Button {"Stop", "Stop", colorWhite, []{RC->stop();}},
+		Button{ "Undo", "Undo", colorWhite, []{RC->prev(); } },
+		Button{ "Redo", "Redo", colorWhite, []{RC->next(); } },
+		Button {"Save", "Save", colorWhite, []{}},
+		Button {"Load", "Load", colorWhite, []{}},
 }};
 
 class MovableBar {
@@ -267,8 +267,8 @@ void MainMenu(){
 	// top menu
 
 	ui.rect(0, window_height-32, window_width, 32).color(0x3B3B3BFF)(UI::Label);
-	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft | UI::Draw);
-	// ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft);
+	// ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft | UI::Draw);
+	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft);
 		TopBar();
 		// sam się zamyka
 
