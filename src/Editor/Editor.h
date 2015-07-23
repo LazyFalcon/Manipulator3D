@@ -160,8 +160,8 @@ public:
 	}
 	void doTitle(){
 		ui.box(UI::LayoutHorizontal | UI::Draw).style(UI::StyleID::Label);
-			// ui.rect(24,24)(UI::Hoverable);
-			// ui.rect(lenght-24,24).text(title)();
+			ui.rect(24,24)(UI::Hoverable);
+			ui.rect(lenght-24,24).text(title)();
 		ui.endBox();
 	}
 
