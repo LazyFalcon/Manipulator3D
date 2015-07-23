@@ -7,6 +7,7 @@
 #include "PropertyEditor-TabManager.h"
 #include "../Widgets.h"
 #include "../IInterpolator.h"
+#include "../RobotController.h"
 extern Camera camera;
 extern glm::vec4 CameraUp;
 extern glm::vec4 CameraRight;
@@ -222,8 +223,8 @@ public:
 extern PolylineEditor polylineEditor;
 
 void init();
-void update();
-void processKeys(int key, int action, int modifier);
+void update(RobotController &RC);
+void processKeys(int key, int action, int modifier, RobotController &RC);
 void processMouse(int key, int action, int modifier);
 
 NAM_END

@@ -177,7 +177,7 @@ void init(){
 
 	iit = interpolators.begin();
 	itToEdit = interpolators.end();
-	Editor::init();
+	// Editor::init();
 	mousePositionGraphX.setBouds({0,250,0,1400});
 	mousePositionGraphY.setBouds({0,250,0,700});
 	// mainPlot.push(&mousePositionGraphX);
@@ -191,7 +191,7 @@ void init(){
 void update(float dt){
 	bigSplineWidget.run();
 	ui.rect(window_width/2-50, window_height-30, 100, 30).color(colorOrange).text(InterpolatorTranslate((*iit)->type), "ui_32", UI::CenterText)();
-	Editor::update();
+	// Editor::update();
 	mousePositionGraphX.push(mousePosition.x);
 	mousePositionGraphY.push(mousePosition.y);
 }

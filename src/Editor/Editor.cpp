@@ -28,7 +28,7 @@ enum EditorModes : u32 {
 
 };
 
-unique_ptr<TabManager> menuSideBar;
+unique_ptr<TabManager> tabBar;
 
 namespace EditorAxes
 {
@@ -185,20 +185,32 @@ void set(shared_ptr<IInterpolator> &p){
 }
 
 void init(){
-	menuSideBar = make_unique<TabManager>();
-	menuSideBar->initTabs();
+	tabBar = make_unique<TabManager>();
+	tabBar->initTabs();
 	// polylineEditor.set(BigSplineTest::interpolators[0]);
 }
 
 /**
- *  
- *  
+ *  Inicjalizacja TabBar, przypisanie interpolatora i komendy do edycji(w tabBarze)
+ *  polyEditor jest ustawiany chyba przez taba,
+ *
+ *  jeśli EditCommand == true
+ *  	to ustawiana jest aktualna komenda do edycji oraz jej interpolator
+ *  jeśli nie
+ *  	to tworzona jest nowa
+ *
  */
-void EnterEditor(){}
-void ExitEditor(){}
+void EnterEditor(RobotController &RC){
+	// if(EditorMode & EditCommand)
+		// tabBar->setToEdit(RC);
+	// else
+		// tabBar->buildNew();
+}
+void ExitEditor(RobotController &RC){}
 
-void update(){
-	menuSideBar->run();
+void update(RobotController &RC){
+	// tabBar->run(RC);
+	tabBar->run();
 	polylineEditor.run();
 	polylineEditor.processAll();
 }
@@ -206,16 +218,16 @@ void update(){
 void processMouse(int button, int action, int modifier){
 	polylineEditor.processMouse(button, action, modifier);
 }
-void processKeys(int key, int action, int modifier){
+void processKeys(int key, int action, int modifier, RobotController &RC){
 	if(EditorMode & Enabled){
 		polylineEditor.processKeys(key, action, modifier);
 
-		if(key == GLFW_KEY_TAB && action == GLFW_PRESS)
-			ExitEditor();
+		if(key == GLFW_KEY_TAB && action == GLFW_PRESS){}
+			ExitEditor(RC);
 	}
 	else {
-		if(key == GLFW_KEY_TAB && action == GLFW_PRESS)
-			EnterEditor();
+		if(key == GLFW_KEY_TAB && action == GLFW_PRESS){}
+			EnterEditor(RC);
 
 	}
 }

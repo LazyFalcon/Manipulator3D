@@ -10,7 +10,7 @@ class ITab
 public:
 	virtual ~ITab(){};
 	virtual void run(TabManager &tabManager) = 0;
-	virtual void enter(TabManager &tabManager) = 0;
+	virtual void onEnter(TabManager &tabManager) = 0;
 };
 
 // unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr);
@@ -31,7 +31,7 @@ public:
 		std::cerr<<"delete CommandEditorTab"<<std::endl;
 	}
 	void run(TabManager &tabManager);
-	void enter(TabManager &tabManager);
+	void onEnter(TabManager &tabManager);
 	void getTypeWidget(TabManager &tabManager);
 
 	void doneWidget(){}
@@ -48,7 +48,7 @@ class CommandListTab : public ITab
 {
 public:
 	void run(TabManager &TM);
-	void enter(TabManager &TM){}
+	void onEnter(TabManager &TM){}
 	~CommandListTab(){
 		std::cerr<<"delete CommandListTab"<<std::endl;
 	}
@@ -58,7 +58,7 @@ class PathEditorTab : public ITab
 {
 public:
 	void run(TabManager &TM){}
-	void enter(TabManager &TM){}
+	void onEnter(TabManager &TM){}
 
 };
 
@@ -66,7 +66,7 @@ class PathListTab : public ITab
 {
 public:
 	void run(TabManager &TM);
-	void enter(TabManager &TM){}
+	void onEnter(TabManager &TM){}
 };
 
 /// -------- TAB MANAGER -------
@@ -82,9 +82,9 @@ public:
 		initTabs();
 	}
 	void initTabs(){
-		if(tabs.size() < 4){
-			tabs.resize(4);
-		}
+		// if(tabs.size() < 4){
+			// tabs.resize(4);
+		// }
 		if(!tabs[0]) tabs[0].reset(new CommandEditorTab());
 		if(!tabs[1]) tabs[1].reset(new CommandListTab());
 		if(!tabs[2]) tabs[2].reset(new PathEditorTab());
@@ -92,32 +92,23 @@ public:
 	}
 	void setTab(u32 index){
 		currentTab = index;
-		tabs[currentTab]->enter(*this);
+		tabs[currentTab]->onEnter(*this);
 	}
 	void run();
 	void drawTabs();
 	void keyCallback(){}
+	void onEnter(){}
 
-	// template<typename T>
-	// T& get(){
-		// return static_pointer_cast<CommandEditorTab> tabs[0];
-	// }
+	template<typename Type>
+	Type& get(){
+		return Type();
+	}
 
-
-	vector<unique_ptr<ITab>> tabs;
+	// vector<unique_ptr<ITab>> tabs;
+	unique_ptr<ITab> tabs[4];
 	u32 currentTab {0};
 	u32 size {200};
 };
-
-// template<>
-// unique_ptr<CommandEditorTab> TabManager::get<CommandEditorTab>(){
-	// return static_pointer_cast<CommandEditorTab> tabs[0];
-// }
-// template<>
-// unique_ptr<PathEditorTab> TabManager::get<PathEditorTab>(){
-	// return static_pointer_cast<PathEditorTab> tabs[2];
-// }
-
 
 NAM_END
 

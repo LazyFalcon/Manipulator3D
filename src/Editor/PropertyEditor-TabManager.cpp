@@ -24,8 +24,8 @@ void CommandEditorTab::run(TabManager &TM){
 }
 
 /// tu przekazujemy do poly edytora interpolator z rozkazu
-void CommandEditorTab::enter(TabManager &TM){
-	commandBuilderWidget->enter();
+void CommandEditorTab::onEnter(TabManager &TM){
+	// commandBuilderWidget->onEnter();
 }
 void CommandEditorTab::getTypeWidget(TabManager &TM){
 	/// commandTypeSelection.run([this](CommandEditorTabCommandWidget val){ commandBuilderWidget = buildWidget(val) });
@@ -62,8 +62,8 @@ void TabManager::run(){
 		.position(screenSize.x-size, screenSize.y-32)
 		.size(size, -screenSize.y+32);
 	drawTabs();
-	tabs[currentTab]->run(*this);
 
+	tabs[currentTab]->run(*this);
 
 	ui.endTable();
 }
@@ -71,7 +71,8 @@ void TabManager::run(){
 void TabManager::drawTabs(){
 	ui.box(UI::LayoutHorizontal);
 
-	for(u32 i=0; i<tabs.size(); i++){
+	// for(u32 i=0; i<tabs.size(); i++){
+	for(u32 i=0; i<4; i++){
 		glm::vec4 rect;
 		ui.image("Menu-Property-Tab")
 			.switcher(currentTab, i)
@@ -84,6 +85,23 @@ void TabManager::drawTabs(){
 	}
 
 	ui.endBox();
+}
+
+template<>
+CommandEditorTab& TabManager::get<CommandEditorTab>(){
+	return static_cast<CommandEditorTab&>(*tabs[0]);
+}
+template<>
+CommandListTab& TabManager::get<CommandListTab>(){
+	return static_cast<CommandListTab&>(*tabs[0]);
+}
+template<>
+PathEditorTab& TabManager::get<PathEditorTab>(){
+	return static_cast<PathEditorTab&>(*tabs[0]);
+}
+template<>
+PathListTab& TabManager::get<PathListTab>(){
+	return static_cast<PathListTab&>(*tabs[0]);
 }
 
 
