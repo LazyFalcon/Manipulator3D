@@ -201,10 +201,14 @@ void init(){
  *
  */
 void EnterEditor(RobotController &RC){
-	// if(EditorMode & EditCommand)
-		// tabBar->setToEdit(RC);
-	// else
-		// tabBar->buildNew();
+	if(EditorMode & EditCommand){
+		tabBar->get<CommandEditorTab>().setToEdit(RC.getCommand());
+		tabBar->get<PathEditorTab>().setToEdit(RC.getCommand());
+	}
+	else {
+		tabBar->get<CommandEditorTab>().buildNew();
+		tabBar->get<PathEditorTab>().buildNew();
+	}
 }
 void ExitEditor(RobotController &RC){}
 

@@ -23,6 +23,10 @@ void CommandEditorTab::run(TabManager &TM){
 
 }
 
+void CommandEditorTab::setToEdit(shared_ptr<ICommand> &ptr){
+
+
+}
 /// tu przekazujemy do poly edytora interpolator z rozkazu
 void CommandEditorTab::onEnter(TabManager &TM){
 	// commandBuilderWidget->onEnter();
@@ -32,10 +36,15 @@ void CommandEditorTab::getTypeWidget(TabManager &TM){
 	// createWidgetFromCommandAndSetPtr()
 }
 
-// unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr){
-	// auto type = ptr->type;
+unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr){
+	unique_ptr<ICommandBuilderWidget> out;
+	if(ptr->type == MOVE){
+		out = make_unique<MoveCommandBuilderWidget>();
+		out->init();
+	}
 
-// }
+	return out;
+}
 
 
 void CommandListTab::run(TabManager &TM){

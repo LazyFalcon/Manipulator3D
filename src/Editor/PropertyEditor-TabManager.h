@@ -13,8 +13,6 @@ public:
 	virtual void onEnter(TabManager &tabManager) = 0;
 };
 
-// unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr);
-
 /**
  *  Zakładka do edycji rozkazów, co ma robić?
  *  - móc stworzyć nowy rozkazów
@@ -35,10 +33,10 @@ public:
 	void getTypeWidget(TabManager &tabManager);
 
 	void doneWidget(){}
-	void setToEdit(shared_ptr<ICommand> &ptr){
-		// buildWidget(ptr->type);
-		// commandBuilderWidget->moveCommand = ptr;
-	}
+	/**
+	 *  implikuje stworzenie widgetu pasujacego do typu komendy
+	 */
+	void setToEdit(shared_ptr<ICommand> &ptr);
 private:
 	unique_ptr<ICommandBuilderWidget> commandBuilderWidget;
 };
