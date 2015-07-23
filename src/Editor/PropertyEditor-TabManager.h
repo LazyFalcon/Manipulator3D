@@ -1,6 +1,8 @@
 #pragma once
 #include "MoveCommandBuilder.h"
 
+namespace Editor NAM_START
+
 class TabManager;
 
 class ITab
@@ -116,5 +118,7 @@ public:
 	// return static_pointer_cast<PathEditorTab> tabs[2];
 // }
 
+
+NAM_END
 
 

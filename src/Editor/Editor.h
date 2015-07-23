@@ -4,18 +4,22 @@
 #include <set>
 #include <Utils/IMGUI_V4.h>
 #include <Utils/Camera.h>
-#include "Widgets.h"
-#include "IInterpolator.h"
+#include "PropertyEditor-TabManager.h"
+#include "../Widgets.h"
+#include "../IInterpolator.h"
 extern Camera camera;
 extern glm::vec4 CameraUp;
 extern glm::vec4 CameraRight;
 extern glm::vec4 CameraNormal;
 extern float window_width, window_height;
-// static float pointSize = 16.f;
-#define NAM_START {
-#define NAM_END }
+extern UI::IMGUI ui;
 
 namespace Editor NAM_START
+// static float pointSize = 16.f;
+// #define NAM_START {
+// #define NAM_END }
+
+extern unique_ptr<TabManager> menuSideBar;
 
 namespace EditorFlags
 {
@@ -125,7 +129,7 @@ public:
 	virtual ~MainEditorWidget(){}
 	MainEditorWidget(glm::vec4 _boxPosition, float lenght, float height, std::string title):
 		boxPosition(_boxPosition),
-		style(UI::StyleID::Basic),
+		style(UI::StyleID::Dark),
 		title(title),
 		lenght(lenght),
 		movable(_boxPosition),
@@ -135,7 +139,6 @@ public:
 	void run(){
 		beginwidget();
 		doTitle();
-
 		mainBody();
 
 		endWidget();
@@ -150,8 +153,6 @@ public:
 			.position(boxPosition)
 			// .size(lenght,0)
 			.style(style);
-
-		doTitle();
 	}
 	void endWidget(){
 		movable.move();
@@ -159,8 +160,8 @@ public:
 	}
 	void doTitle(){
 		ui.box(UI::LayoutHorizontal | UI::Draw).style(UI::StyleID::Label);
-			ui.rect(24,24)(UI::Hoverable);
-			ui.rect(lenght-24,24).text(title)();
+			// ui.rect(24,24)(UI::Hoverable);
+			// ui.rect(lenght-24,24).text(title)();
 		ui.endBox();
 	}
 

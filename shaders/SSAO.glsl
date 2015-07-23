@@ -81,7 +81,7 @@ void main(void){
 	float ao = 0.0;
 	// float radius = sampleRadius/(1 - depth*1.9);
 	// float radius = sampleRadius*depth*1.0;
-	float radius = sampleRadius;
+	float radius = sampleRadius.x;
 
 	const int iterations = 4;
 	for(int i=0; i<iterations; ++i){

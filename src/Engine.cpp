@@ -6,8 +6,8 @@
 #include "Graph.h"
 
 #define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
-#define NAM_START {
-#define NAM_END }
+// #define NAM_START {
+// #define NAM_END }
 
 extern std::unordered_map<std::string, uint32_t>shaders;
 extern Resources *globalResources;
@@ -410,7 +410,7 @@ void init(CFG::Node &cfg){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	int error = glGetError();
 	if(error != GL_NO_ERROR)
-		std::cout<<__LINE__<<""<<error<<endl;
+		std::cout<<__LINE__<<" :openGL error"<<error<<endl;
 }
 
 
