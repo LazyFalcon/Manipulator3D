@@ -177,9 +177,9 @@ void init(){
 	// polylineEditor.set(BigSplineTest::interpolators[0]);
 }
 void update(){
-	// menuSideBar->run();
-	// polylineEditor.run();
-	// polylineEditor.processAll();
+	menuSideBar->run();
+	polylineEditor.run();
+	polylineEditor.processAll();
 }
 
 void PolylineEditor::mainBody(){
