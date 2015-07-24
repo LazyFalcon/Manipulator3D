@@ -206,8 +206,8 @@ void EnterEditor(RobotController &RC){
 		tabBar->get<PathEditorTab>().setToEdit(RC.getCommand());
 	}
 	else {
-		tabBar->get<CommandEditorTab>().buildNew();
-		tabBar->get<PathEditorTab>().buildNew();
+		tabBar->get<CommandEditorTab>().reset();
+		tabBar->get<PathEditorTab>().reset();
 	}
 }
 void ExitEditor(RobotController &RC){}

@@ -11,7 +11,7 @@ namespace Editor NAM_START
 
 extern PolylineEditor polylineEditor;
 
-
+/// ----- COMMAND EDITOR TAB ---------------------------------------------
 void CommandEditorTab::run(TabManager &TM){
 	getTypeWidget(TM);
 	if(commandBuilderWidget){
@@ -22,12 +22,10 @@ void CommandEditorTab::run(TabManager &TM){
 		commandBuilderWidget.reset(new MoveCommandBuilderWidget());
 
 }
-
 void CommandEditorTab::setToEdit(shared_ptr<ICommand> &ptr){
 
 
 }
-/// tu przekazujemy do poly edytora interpolator z rozkazu
 void CommandEditorTab::onEnter(TabManager &TM){
 	// commandBuilderWidget->onEnter();
 }
@@ -47,6 +45,7 @@ unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<IC
 }
 
 
+/// ----- COMMAND LIST TAB ---------------------------------------------
 void CommandListTab::run(TabManager &TM){
 	// for(auto &it : RC.commands){
 		// ui.rect(150, 20).text(it->name)()
@@ -55,6 +54,7 @@ void CommandListTab::run(TabManager &TM){
 
 }
 
+/// ----- PATH EDITOR TAB ---------------------------------------------
 void PathListTab::run(TabManager &TM){
 	for(auto &it : getInterpolators()){
 		ui.rect(150, 20).text(it->name)();

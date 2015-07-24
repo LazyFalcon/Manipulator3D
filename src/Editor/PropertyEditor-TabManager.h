@@ -1,5 +1,6 @@
 #pragma once
 #include "MoveCommandBuilder.h"
+#include "../IInterpolator.h"
 
 namespace Editor NAM_START
 
@@ -25,16 +26,26 @@ public:
 class CommandEditorTab : public ITab
 {
 public:
+	CommandEditorTab(){
+		reset();
+	}
 	~CommandEditorTab(){
 		std::cerr<<"delete CommandEditorTab"<<std::endl;
 	}
 	void run(TabManager &tabManager);
+	/**
+	 *  called when user switch to this tab
+	 */
 	void onEnter(TabManager &tabManager);
 	void getTypeWidget(TabManager &tabManager);
+	/**
+	 *  Creates new widget->builder->command
+	 */
+	void reset();
 
 	void doneWidget(){}
 	/**
-	 *  implikuje stworzenie widgetu pasujacego do typu komendy
+	 *  for command creates suitable builder and widget
 	 */
 	void setToEdit(shared_ptr<ICommand> &ptr);
 private:
@@ -57,6 +68,9 @@ class PathEditorTab : public ITab
 public:
 	void run(TabManager &TM){}
 	void onEnter(TabManager &TM){}
+	void setToEdit(shared_ptr<ICommand> &ptr);
+	void setToEdit(shared_ptr<IInterpolator> &ptr);
+	void reset();
 
 };
 
