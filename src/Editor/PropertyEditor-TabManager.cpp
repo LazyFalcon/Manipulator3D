@@ -10,6 +10,15 @@ extern glm::vec2 screenSize;
 namespace Editor NAM_START
 
 extern PolylineEditor polylineEditor;
+unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr){
+	unique_ptr<ICommandBuilderWidget> out;
+	if(ptr->type == MOVE){
+		// out = make_unique<MoveCommandBuilderWidget>(ptr);
+		out.reset(new MoveCommandBuilderWidget(ptr));
+	}
+
+	return out;
+}
 
 /// ----- COMMAND EDITOR TAB ---------------------------------------------
 void CommandEditorTab::run(TabManager &TM){
@@ -18,13 +27,12 @@ void CommandEditorTab::run(TabManager &TM){
 		commandBuilderWidget->run();
 		doneWidget();
 	}
-	else
-		commandBuilderWidget.reset(new MoveCommandBuilderWidget());
+	// else
+		// commandBuilderWidget.reset(new MoveCommandBuilderWidget());
 
 }
-void CommandEditorTab::setToEdit(shared_ptr<ICommand> &ptr){
-
-
+void CommandEditorTab::reset(shared_ptr<ICommand> &ptr){
+	commandBuilderWidget = createWidgetFromCommandAndSetPtr(ptr);
 }
 void CommandEditorTab::onEnter(TabManager &TM){
 	// commandBuilderWidget->onEnter();
@@ -32,16 +40,6 @@ void CommandEditorTab::onEnter(TabManager &TM){
 void CommandEditorTab::getTypeWidget(TabManager &TM){
 	/// commandTypeSelection.run([this](CommandEditorTabCommandWidget val){ commandBuilderWidget = buildWidget(val) });
 	// createWidgetFromCommandAndSetPtr()
-}
-
-unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr){
-	unique_ptr<ICommandBuilderWidget> out;
-	if(ptr->type == MOVE){
-		out = make_unique<MoveCommandBuilderWidget>();
-		out->init();
-	}
-
-	return out;
 }
 
 
@@ -64,6 +62,9 @@ void PathListTab::run(TabManager &TM){
 
 }
 
+
+
+/// ----- TAB MANAGER ---------------------------------------------
 void TabManager::run(){
 
 	ui.table(UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::Draw)

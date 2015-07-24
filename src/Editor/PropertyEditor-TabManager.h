@@ -27,7 +27,7 @@ class CommandEditorTab : public ITab
 {
 public:
 	CommandEditorTab(){
-		reset();
+		// reset();
 	}
 	~CommandEditorTab(){
 		std::cerr<<"delete CommandEditorTab"<<std::endl;
@@ -41,7 +41,10 @@ public:
 	/**
 	 *  Creates new widget->builder->command
 	 */
-	void reset();
+	void reset(shared_ptr<ICommand> &ptr);
+	void reset(){
+		commandBuilderWidget.reset();
+	}
 
 	void doneWidget(){}
 	/**
@@ -68,9 +71,16 @@ class PathEditorTab : public ITab
 public:
 	void run(TabManager &TM){}
 	void onEnter(TabManager &TM){}
-	void setToEdit(shared_ptr<ICommand> &ptr);
-	void setToEdit(shared_ptr<IInterpolator> &ptr);
-	void reset();
+	void reset(shared_ptr<ICommand> &ptr){
+		if(ptr->type == MOVE)
+			reset(static_pointer_cast<MoveCommand>(ptr)->interpolator);
+		// else
+
+	}
+	void reset(shared_ptr<IInterpolator> &ptr){
+
+	}
+	void reset(){}
 
 };
 
@@ -112,9 +122,7 @@ public:
 	void onEnter(){}
 
 	template<typename Type>
-	Type& get(){
-		return Type();
-	}
+	Type& get();
 
 	// vector<unique_ptr<ITab>> tabs;
 	unique_ptr<ITab> tabs[4];

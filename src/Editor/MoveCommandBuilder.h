@@ -55,6 +55,7 @@ public:
 	virtual ~ICommandBuilderWidget(){}
 	virtual void run() = 0;
 	virtual void enter() = 0;
+	virtual void init() = 0;
 	// virtual void setCommand() = 0;
 };
 
@@ -63,6 +64,10 @@ class MoveCommandBuilderWidget : public ICommandBuilderWidget
 public:
 	MoveCommandBuilderWidget(){
 		init();
+	}
+	MoveCommandBuilderWidget(shared_ptr<ICommand> &ptr){
+		moveCommandBuilder = make_unique<MoveCommandBuilder>();
+		moveCommandBuilder->moveCommand = static_pointer_cast<MoveCommand>(ptr);
 	}
 	void init(){
 		moveCommandBuilder = make_unique<MoveCommandBuilder>();

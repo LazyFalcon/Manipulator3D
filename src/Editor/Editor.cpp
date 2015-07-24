@@ -187,6 +187,7 @@ void set(shared_ptr<IInterpolator> &p){
 void init(){
 	tabBar = make_unique<TabManager>();
 	tabBar->initTabs();
+	EditorMode |= EditCommand;
 	// polylineEditor.set(BigSplineTest::interpolators[0]);
 }
 
@@ -202,10 +203,12 @@ void init(){
  */
 void EnterEditor(RobotController &RC){
 	if(EditorMode & EditCommand){
-		tabBar->get<CommandEditorTab>().setToEdit(RC.getCommand());
-		tabBar->get<PathEditorTab>().setToEdit(RC.getCommand());
+		tabBar->get<CommandEditorTab>().reset(RC.getCommand());
+		tabBar->get<PathEditorTab>().reset(RC.getCommand());
+		cout<<"Entering Edit Mode"<<endl;
 	}
 	else {
+		cout<<"Dupa"<<endl;
 		tabBar->get<CommandEditorTab>().reset();
 		tabBar->get<PathEditorTab>().reset();
 	}
@@ -228,15 +231,19 @@ void processKeys(int key, int action, int modifier, RobotController &RC){
 
 		if(key == GLFW_KEY_TAB && action == GLFW_PRESS){}
 			ExitEditor(RC);
+
+		EditorMode &= ~Enabled;
 	}
 	else {
 		if(key == GLFW_KEY_TAB && action == GLFW_PRESS){}
+			cout<<"key: "<<key<<endl;
 			EnterEditor(RC);
 
+			EditorMode |= Enabled;
 	}
 }
 
-
+/// ------- POLYLINE EDITOR ---------------------------------------------
 void PolylineEditor::mainBody(){
 	if(not polyline) return;
 	polyline->drawParams();
