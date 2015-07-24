@@ -33,3 +33,49 @@ GLuint drawShadows(Scene &scene){
   }
   return screenSpaceShadows;
 }
+
+void bigLight(Scene &scene){
+  if(SHADOWS_ENABLED){
+    shader = shaders["GlobalLightWithShadowMap"];
+    shadow = drawShadows(scene);
+  }
+  else {
+    shader = shaders["GlobalLightWithoutShadowMap"];
+    shadow = 0;
+  }
+  
+  glUseProgram(shader);
+  
+  auto uPV = glGetUniformLocation(shader,"uPV");
+	auto uView = glGetUniformLocation(shader,"uView");
+	auto uNormalBuffer = glGetUniformLocation(shader,"uNormalBuffer");
+	auto uDepthBuffer = glGetUniformLocation(shader,"uDepthBuffer");
+	if(shadow)
+	  auto uDepthBuffer = glGetUniformLocation(shader,"uShadowMap");
+		
+	auto uEyePos = glGetUniformLocation(shader,"uEyePos");
+  
+  auto uLightPos = glGetUniformLocation(shader,"uLightPos");
+  auto uColor = glGetUniformLocation(shader,"uColor");
+  auto uSize = glGetUniformLocation(shader,"uSize");
+  auto uEnergy = glGetUniformLocation(shader,"uEnergy");
+  
+  glUniform(shader, camera.ProjectionMatrix, uPV);
+	glUniform(shader, camera.ViewMatrix, uView);
+	glActiveTexture(GL_TEXTURE0);
+  	glUniform1i(uNormalBuffer,0);
+  	glBindTexture(GL_TEXTURE_2D, normalBuffer);
+	glActiveTexture(GL_TEXTURE1);
+  	glUniform1i(uDepthBuffer,1);
+  	glBindTexture(GL_TEXTURE_2D, depthBuffer2);
+
+	glUniform(shader, camera.eyePosition, uEyePos);
+	glUniform(shader, shadowProjection, u_shadowProjection);
+	glUniform(shader, scene.pointLamps[0].position, uLightPos);
+	glUniform(shader, scene.pointLamps[0].color, uColor);
+	glUniform(shader, scene.pointLamps[0].falloffDistance, uSize);
+	glUniform(shader, scene.pointLamps[0].energy, uEnergy);
+  
+  
+  
+}
