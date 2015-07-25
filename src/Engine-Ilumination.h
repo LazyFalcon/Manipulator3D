@@ -1,86 +1,89 @@
-// https://msdn.microsoft.com/en-us/library/windows/desktop/ee416324%28v=vs.85%29.aspx
-// http://encelo.netsons.org/tag/hdr/
-glm::mat4 calculateShadowProjection(){
-  return glm::perspective(1.5f, 1.f, 1.f, 50.f);
+/// https://msdn.microsoft.com/en-us/library/windows/desktop/ee416324%28v=vs.85%29.aspx
+/// http://encelo.netsons.org/tag/hdr/
+
+/// /////////////////////
+/// /////////////////////
+/// /////////////////////
+/// /////////////////////
+/// /////////////////////
+/// /////////////////////
+
+void fullscreenFBOWithoutDepth(GLuint target){
+		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target, 0);
+		glDrawBuffers(1,&DrawBuffers[0]);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
+		glDepthMask(GL_FALSE);
+		setupBuffer(screenQuad);
+}
+void bindTexture(GLuint id, u32 num){
+	glActiveTexture(GL_TEXTURE0 + num);
+	glBindTexture(GL_TEXTURE_2D, id);
+}
+void bindTexture(GLuint shader, GLuint id, const std::string name, u32 num){
+	glActiveTexture(GL_TEXTURE0 + num);
+	glUniform1i(glGetUniformLocation(shader, name.c_str()),num);
+	glBindTexture(GL_TEXTURE_2D, colorBuffer);
+
 }
 
-/// R32F target
-void renderShadowMap(GLuint target, Scene &scene, const glm::mat4 &projection){
+/// RGBA16F, full size
+void renderGlobalLight(GLuint target16, GLuint diffuse8, GLuint normals, GLuint depth){
+	auto shader = shaders["GlobalLightWithoutShadowMap"];
+	fullscreenFBOWithoutDepth(target16);
+	bindTexture(shader, diffuse8, "uDiffuseTex", 0);
+	bindTexture(shader, normals, "uNormalTex", 1);
+	bindTexture(shader, depth, "uDepthTex", 2);
 
-}
-
-/// R8 target, R32F source
-void renderScreenSpaceShadowing(GLuint target, GLuint source){
-
-}
-
-void blurR8(GLuint target, GLuint source){
-/// blur to 1/4 screen size
-}
-
-GLuint screen_full_R8;
-GLuint screen_quarter_R8;
-
-GLuint drawShadows(Scene &scene){
-	bind(shadowFBO);
-	auto projection = calculateShadowProjection();
-	renderShadowMap(shadowMap, scene, projection);
-	
-	GLuint screenSpaceShadows = screen_full_R8;
-	renderScreenSpaceShadowing(screenSpaceShadows, shadowMap);
-	
-	if(BLUR_SHADOWS){
-		blur(screen_quarter_R8, screen_full_R8);
-		screenSpaceShadows = screen_quarter_R8;
-	}
-	return screenSpaceShadows;
-}
-
-/// blend light with diffuse to RGBA16F, or 8 if HDR disabled
-void bigLight(gLuint target, Scene &scene){
-	if(SHADOWS_ENABLED){
-		shader = shaders["GlobalLightWithShadowMap"];
-		shadow = drawShadows(scene);
-	}
-	else {
-		shader = shaders["GlobalLightWithoutShadowMap"];
-		shadow = 0;
-	}
-	bind(screenFBO);
-	glUseProgram(shader);
-  
-	auto uPV = glGetUniformLocation(shader,"uPV");
-	auto uView = glGetUniformLocation(shader,"uView");
-	auto uNormalBuffer = glGetUniformLocation(shader,"uNormalBuffer");
-	auto uDepthBuffer = glGetUniformLocation(shader,"uDepthBuffer");
-	if(shadow)
-		auto uDepthBuffer = glGetUniformLocation(shader,"uShadowMap");
-		
 	auto uEyePos = glGetUniformLocation(shader,"uEyePos");
-  
-	auto uLightPos = glGetUniformLocation(shader,"uLightPos");
+	auto uInvPV = glGetUniformLocation(shader,"uInvPV");
+
+	auto uLightDir = glGetUniformLocation(shader,"uLightDir");
 	auto uColor = glGetUniformLocation(shader,"uColor");
-	auto uSize = glGetUniformLocation(shader,"uSize");
 	auto uEnergy = glGetUniformLocation(shader,"uEnergy");
-	
-	glUniform(shader, camera.ProjectionMatrix, uPV);
-	glUniform(shader, camera.ViewMatrix, uView);
-	glActiveTexture(GL_TEXTURE0);
-		glUniform1i(uNormalBuffer,0);
-		glBindTexture(GL_TEXTURE_2D, normalBuffer);
-	glActiveTexture(GL_TEXTURE1);
-		glUniform1i(uDepthBuffer,1);
-		glBindTexture(GL_TEXTURE_2D, depthBuffer2);
-	
-	glUniform(shader, camera.eyePosition, uEyePos);
-	glUniform(shader, shadowProjection, u_shadowProjection);
-	glUniform(shader, scene.pointLamps[0].position, uLightPos);
-	glUniform(shader, scene.pointLamps[0].color, uColor);
-	glUniform(shader, scene.pointLamps[0].falloffDistance, uSize);
-	glUniform(shader, scene.pointLamps[0].energy, uEnergy);
-	
-	setupBuffer(screenQuad);
+	glUniform(shader, glm::normalize(glm::vec4(10,10,-15,0)), uLightDir);
+	glUniform(shader, glm::vec4(1,0.97,0.9,1), uColor);
+	glUniform(shader, 15.f, uEnergy);
+	glUniform(shader, glm::inverse(camera.ProjectionMatrix*camera.ViewMatrix), uInvPV);
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	
-	glDisableVertexAttribArray(0);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+/// blur to target
+void renderLights(GLuint target, Scene &scene){
+
+}
+
+void brightPass(GLuint target, GLuint source){
+
+}
+void bloom(GLuint target, GLuint source){}
+
+/// RGB16F -> RGB8
+void toneMapping(GLuint target8, GLuint source16){
+	auto shader = shaders["ToneMapping"];
+	fullscreenFBOWithoutDepth(target8);
+	bindTexture(source16, 0);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+/// -> RGB8, trget is 16f,
+void HDR(GLuint buffer16f, GLuint diffuse, GLuint normals, GLuint depth, Scene &scene){
+	renderGlobalLight(buffer16f, diffuse, normals, depth);
+	// renderLights(buffer16f, scene);
+	// brightPass(buffer16f, scene);
+	// bloom(buffer16f, scene);
+	toneMapping(diffuse, buffer16f);
+
+
+}
+
+
+

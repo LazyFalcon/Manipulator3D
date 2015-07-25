@@ -87,6 +87,7 @@ GLuint halfFBO;
 GLuint shadowMapFbo;
 GLuint PlotFBO;
 GLuint full_RGBA8;
+GLuint full_RGBA16F;
 GLuint half_RGBA8_1;
 GLuint half_RGBA8_2;
 GLuint colorBuffer;
@@ -298,6 +299,7 @@ void init(CFG::Node &cfg){
 
 	glGenTextures(1, &colorBuffer);
 	glGenTextures(1, &full_RGBA8);
+	glGenTextures(1, &full_RGBA16F);
 	glGenTextures(1, &normalBuffer);
 	glGenTextures(1, &depthBuffer);
 	glGenTextures(1, &shadowMapBuffer);
@@ -329,6 +331,14 @@ void init(CFG::Node &cfg){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width, window_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glBindTexture(GL_TEXTURE_2D, full_RGBA16F);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F, window_width, window_height, 0,GL_RGBA, GL_HALF_FLOAT, NULL);
+
 	glBindTexture(GL_TEXTURE_2D, half_RGBA8_1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -482,6 +492,8 @@ void clear(){
 void plotGraphs(){
 	drawPlotList();
 }
+
+#include "Engine-Ilumination.h"
 
 glm::mat4 shadowProjection;
 void generateShadowMap(Scene &scene){
@@ -801,6 +813,10 @@ void copyDepth(Scene &scene){
 
 	// ui.rect(3,350,150,20).text("error: "+std::to_string(glGetError()))();
 }
+void HDR(Scene &scene){
+	HDR(full_RGBA16F, colorBuffer, normalBuffer, depthBuffer2, scene);
+}
+
 void renderLights(Scene &scene){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);

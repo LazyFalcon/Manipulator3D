@@ -102,7 +102,9 @@ CFG::Node cfg_settings;
 
 std::string shadersToReload[] = {
 	"BlurVertical",
-	"BlurHorizontal"
+	"BlurHorizontal",
+	"GlobalLightWithoutShadowMap",
+	"ToneMapping",
 };
 
 void loadResources();
@@ -130,6 +132,7 @@ int main(){
 	// logger::init();
 	// globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
 	// globalSettings |= DRAW_XY_GRID;
+	globalSettings |= HDR;
 	globalSettings |= SOBEL;
 	globalSettings |= LIGHTS;
 	globalSettings |= DRAW_COLORS;
@@ -201,8 +204,9 @@ void renderLoop(){
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
 	Engine::copyDepth(*scene);
-	if(globalSettings & LIGHTS)Engine::renderLights(*scene);
-	if(globalSettings & LIGHTS)Engine::applyLights(*scene);
+	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
+	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
+	if(globalSettings & HDR)Engine::HDR(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
 	if(globalSettings & SOBEL)Engine::Sobel();
 	// Engine::postprocess(*scene);

@@ -98,7 +98,7 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 			Button {"Wireframe","",  colorWhite, []{}},
 			Button {"Shadows","",  colorWhite, []{}},
 			Button {"DOF","",  colorWhite, []{}},
-			Button {"HDR","",  colorWhite, []{}},
+			Button {"HDR","",  colorWhite, []{globalSettings ^= HDR;}},
 			Button {"MSAA","",  colorWhite, []{globalSettings ^= MSAA;}},
 			Button {"God Rays","",  colorWhite, []{}},
 			Button {"Object Outlining","",  colorWhite, []{}}, // http://www.learnopengl.com/#!Advanced-OpenGL/Stencil-testing

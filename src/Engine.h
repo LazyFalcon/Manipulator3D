@@ -190,6 +190,7 @@ void renderScene(Scene &scene);
 void drawOutline(Scene &scene);
 
 void copyDepth(Scene &scene);
+void HDR(Scene &scene);
 void renderLights(Scene &scene);
 void applyLights(Scene &scene);
 void SSAO();

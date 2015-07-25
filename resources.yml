@@ -52,6 +52,8 @@ Main:
   - Sobel
   - BlurHorizontal
   - BlurVertical
+  - GlobalLightWithoutShadowMap
+  - ToneMapping
  Images:
   - metal.png
   - kursor.png

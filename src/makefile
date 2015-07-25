@@ -102,7 +102,7 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/CFGparser.o: CFGparser.cpp CFGparser.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) CFGparser.cpp -o ../bin/CFGparser.o
 
-../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h $(UTIL)/Utils.h
+../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h Engine-Ilumination.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) Engine.cpp -o ../bin/Engine.o
 
 ../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h
