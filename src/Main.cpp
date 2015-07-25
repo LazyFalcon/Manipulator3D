@@ -100,6 +100,11 @@ unique_ptr<Resources> globalResources;
 #include "Menu.h"
 CFG::Node cfg_settings;
 
+std::string shadersToReload[] = {
+	"BlurVertical",
+	"BlurHorizontal"
+};
+
 void loadResources();
 void mainLoop();
 void shutDown(int returnCode);
@@ -201,6 +206,7 @@ void renderLoop(){
 	if(globalSettings & SSAO)Engine::SSAO();
 	if(globalSettings & SOBEL)Engine::Sobel();
 	// Engine::postprocess(*scene);
+	Engine::postprocess(*scene);
 	Engine::drawOutline(*scene);
 
 	Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
@@ -322,11 +328,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
-		// loader.reloadShader("EnviroShade");
-		// loader.reloadShader("EnviroDefColorOnly");
-		loader.reloadShader("SSAO");
-		// loader.reloadShader("Sobel");
-		// loader.reloadShader("UIButton");
+		for(auto &it : shadersToReload){
+			loader.reloadShader(it);
+		}
+
 	}
 
 	ui.keyInput(key, action, mods);

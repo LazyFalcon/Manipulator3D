@@ -82,10 +82,12 @@ GLuint XLongQuad2;
 GLuint tankUBO;
 int g_pointsSize;
 
-GLuint FBO[3];
+GLuint fullFBO;
+GLuint halfFBO;
 GLuint shadowMapFbo;
 GLuint PlotFBO;
-GLuint frameBuffer[2];
+GLuint full_RGBA8;
+GLuint half_RGBA8;
 GLuint colorBuffer;
 GLuint plotColorBuffer;
 GLuint normalBuffer;
@@ -294,6 +296,7 @@ void init(CFG::Node &cfg){
 { // FBOs
 
 	glGenTextures(1, &colorBuffer);
+	glGenTextures(1, &full_RGBA8);
 	glGenTextures(1, &normalBuffer);
 	glGenTextures(1, &depthBuffer);
 	glGenTextures(1, &shadowMapBuffer);
@@ -305,12 +308,29 @@ void init(CFG::Node &cfg){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width, window_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
 	glBindTexture(GL_TEXTURE_2D, colorBuffer);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
 		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width, window_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glBindTexture(GL_TEXTURE_2D, full_RGBA8);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width, window_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, half_RGBA8);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width/2, window_height/2, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
 	glBindTexture(GL_TEXTURE_2D, normalBuffer);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -351,30 +371,30 @@ void init(CFG::Node &cfg){
 		GLenum framebufferStatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 			switch (framebufferStatus) {
 					case GL_FRAMEBUFFER_COMPLETE_EXT:
-							std::cout<<"Framebuffer Object  OK"<<endl; break;
+							std::cout<<"FRAMEBUFFER Object  OK"<<endl; break;
 					case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-							std::cout<<"Framebuffer Object %d Error: Attachment Point Unconnected"<<endl;
+							std::cout<<"FRAMEBUFFER Object %d Error: Attachment Point Unconnected"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-							std::cout<<"Framebuffer Object %d Error: Missing Attachment"<<endl;
+							std::cout<<"FRAMEBUFFER Object %d Error: Missing Attachment"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-							std::cout<<"Framebuffer Object  Error: Dimensions do not match"<<endl;
+							std::cout<<"FRAMEBUFFER Object  Error: Dimensions do not match"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-							std::cout<<"Framebuffer Object  Error: Formats"<<endl;
+							std::cout<<"FRAMEBUFFER Object  Error: Formats"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-							std::cout<<"Framebuffer Object  Error: Draw Buffer"<<endl;
+							std::cout<<"FRAMEBUFFER Object  Error: Draw Buffer"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-							std::cout<<"Framebuffer Object  Error: Read Buffer"<<endl;
+							std::cout<<"FRAMEBUFFER Object  Error: Read Buffer"<<endl;
 							break;
 					case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-							std::cout<<"Framebuffer Object  Error: Unsupported Framebuffer Configuration"<<endl;
+							std::cout<<"FRAMEBUFFER Object  Error: Unsupported FRAMEBUFFER Configuration"<<endl;
 							break;
 					default:
-							std::cout<<"Framebuffer Object  Error: Unkown Framebuffer Object Failure"<<endl;
+							std::cout<<"framebuffer Object  Error: Unkown framebuffer Object Failure"<<endl;
 							break;
 			}
 		};
@@ -383,8 +403,8 @@ void init(CFG::Node &cfg){
 	DrawBuffers[1] = GL_COLOR_ATTACHMENT1;
 	glDrawBuffers(2, DrawBuffers);
 
-	glGenFramebuffers(1, FBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO[0]);
+	glGenFramebuffers(1, &fullFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 		glViewport(0, 0, screenSize.x, screenSize.y);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
@@ -399,6 +419,14 @@ void init(CFG::Node &cfg){
 		glDrawBuffers(0, DrawBuffers);
 		glEnable(GL_DEPTH_TEST);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer, 0);
+		FBstatus();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glGenFramebuffers(1, &halfFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
+		glViewport(0, 0, screenSize.x/2.f, screenSize.y/2.f);
+		glDrawBuffers(0, DrawBuffers);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, half_RGBA8, 0);
 		FBstatus();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -429,8 +457,9 @@ void clear(){
 	glDeleteBuffers(1, &XLongQuad);
 	glDeleteBuffers(1, &XLongQuad2);
 	glDeleteBuffers(1, &quadUV_VBO);
-	glDeleteFramebuffers(1, FBO);
-	glDeleteTextures(2, frameBuffer);
+	glDeleteFramebuffers(1, &fullFBO);
+	glDeleteFramebuffers(1, &halfFBO);
+	glDeleteTextures(1, &full_RGBA8);
 	glDeleteTextures(1, &colorBuffer);
 	glDeleteTextures(1, &normalBuffer);
 	glDeleteTextures(1, &depthBuffer);
@@ -539,7 +568,7 @@ void setup(Scene &scene){
 	}
 
 	if(true){ /// FBO
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO[0]);
+		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
@@ -969,8 +998,7 @@ void Sobel(){
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 void postprocess(Scene &scene){
-
-
+	blur(colorBuffer);
 }
 void finalize(Scene &scene){
 
@@ -986,7 +1014,6 @@ void finalize(Scene &scene){
 
 	auto shader = shaders["ApplyFBO"];
 	glUseProgram(shader);
-	glActiveTexture(GL_TEXTURE0);
 
 	setupBuffer(screenQuad);
 	glActiveTexture(GL_TEXTURE0);
@@ -1007,6 +1034,100 @@ void finalize(Scene &scene){
 	glDisableVertexAttribArray(0);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
+}
+
+/**
+ *  takes RGBA8 target, downsample it to 1/4, then blur to buffer texture and swap textures
+ *
+ *
+ *
+ *  genMipmaps(target)
+ *  target(1) -> blurVertical -> half_RGBA8
+ *  half_RGBA8 -> blurHorizontal ->target(1)
+ *
+ *
+ *
+ */
+void blur(GLuint &target){
+	bool blurWithDownsample = true;
+	if(blurWithDownsample){
+		glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, half_RGBA8, 0);
+		glDrawBuffers(1,&DrawBuffers[0]);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
+		glDepthMask(GL_FALSE);
+		setupBuffer(screenQuad);
+
+		float uBlurSize = 1.f;
+
+		auto shader = shaders["BlurVertical"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glUniform(shader, uBlurSize, "uBlurSize");
+		glUniform(shader, screenSize/2.f, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target, 1);
+		shader = shaders["BlurHorizontal"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, full_RGBA8);
+		glUniform(shader, uBlurSize, "uBlurSize");
+		glUniform(shader, screenSize/2.f, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target, 0);
+
+		shader = shaders["ApplyFBO"];
+		glBindTexture(GL_TEXTURE_2D, colorBuffer);
+		glUseProgram(shader);
+
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
+	else {
+		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, full_RGBA8, 0);
+		glDrawBuffers(1,&DrawBuffers[0]);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
+		glDepthMask(GL_FALSE);
+		setupBuffer(screenQuad);
+
+		float uBlurSize = 1.f;
+
+		auto shader = shaders["BlurVertical"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glUniform(shader, uBlurSize, "uBlurSize");
+		glUniform(shader, screenSize/2.f, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target, 0);
+		shader = shaders["BlurHorizontal"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, full_RGBA8);
+		glUniform(shader, uBlurSize, "uBlurSize");
+		glUniform(shader, screenSize/2.f, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
 }
 
 void initGrids(){

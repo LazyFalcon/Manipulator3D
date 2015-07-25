@@ -21,8 +21,8 @@ uniform sampler2D uTexture;
 
 void main(void){
 	vec4 color = texture(uTexture, vUV);
-	float y = vUV.y*250*3.14;
-	color.rgb = pow(color.rgb, vec3(1.0/2.2)*clamp((1+vUV.x + vUV.y), 0.9,1.3+ sin(2*y)*0.09)  );
+	// float y = vUV.y*250*3.14;
+	// color.rgb = pow(color.rgb, vec3(1.0/2.2)*clamp((1+vUV.x + vUV.y), 0.9,1.3+ sin(2*y)*0.09)  );
 
 	outColor = color;
 }

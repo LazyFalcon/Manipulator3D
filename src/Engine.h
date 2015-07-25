@@ -125,8 +125,8 @@ extern GLuint XLongQuad2;
 extern GLuint tankUBO;
 extern int g_pointsSize;
 
-extern GLuint FBO[3];
-extern GLuint frameBuffer[2];
+extern GLuint fullFBO;
+extern GLuint frameBuffer;
 extern GLuint colorBuffer;
 extern GLuint normalBuffer;
 extern GLuint depthBuffer;
@@ -194,6 +194,8 @@ void SSAO();
 void Sobel();
 void postprocess(Scene &scene);
 void finalize(Scene &scene);
+
+void blur(GLuint&);
 
 void initGrids();
 void drawGrids();
