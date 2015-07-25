@@ -27,23 +27,25 @@ extern HexColor GUIspecColor[4];
 
 
 enum {
-	LIGHTS =            0b1,
-	SHADOWS =           0b10,
-	WIREFRAME =         0b100,
-	GOD_RAYS =          0b1000,
-	MSAA =              0b10000,
-	HDR =               0b100000,
-	DOF =               0b1000000,
-	SSAO =              0b10000000,
-	SOBEL =             0b100000000,
-	PREVENT_COLLISIONS =0b1000000000,
-	DRAW_COLORS =       0b10000000000,
-	DRAW_NORMALS =      0b100000000000,
-	DRAW_DEPTH =        0b1000000000000,
-	DRAW_LIGHTS =       0b10000000000000,
-	DRAW_XY_GRID =      0b100000000000000,
-	DRAW_XZ_GRID =      0b1000000000000000,
-	DRAW_YZ_GRID =      0b10000000000000000,
+	LIGHTS =               0b1,
+	SHADOWS =              0b10,
+	WIREFRAME =            0b100,
+	GOD_RAYS =             0b1000,
+	MSAA =                 0b10000,
+	HDR =                  0b100000,
+	DOF =                  0b1000000,
+	SSAO =                 0b10000000,
+	SOBEL =                0b100000000,
+	BLUR =                 0b1000000000,
+	PREVENT_COLLISIONS =   0b10000000000,
+	DRAW_COLORS =          0b100000000000,
+	DRAW_NORMALS =         0b1000000000000,
+	DRAW_DEPTH =           0b10000000000000,
+	DRAW_LIGHTS =          0b100000000000000,
+	DRAW_XY_GRID =         0b1000000000000000,
+	DRAW_XZ_GRID =         0b10000000000000000,
+	DRAW_YZ_GRID =         0b100000000000000000,
+	BLUR_WITH_DOWNSAMPLE = 0b1000000000000000000,
 };
 
 
@@ -195,7 +197,7 @@ void Sobel();
 void postprocess(Scene &scene);
 void finalize(Scene &scene);
 
-void blur(GLuint&);
+// void blur(GLuint&);
 
 void initGrids();
 void drawGrids();

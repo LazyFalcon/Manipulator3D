@@ -89,12 +89,14 @@ public:
 
 Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 		Button {"Settings", "Settings", colorWhite,  []{}, vector<Button>{
+			Button {"SSAO","",  colorWhite, []{globalSettings ^=  SSAO;}},
+			Button {"Sobel","",  colorWhite, []{globalSettings ^=  SOBEL;}},
+			Button {"Blur","",  colorWhite, []{globalSettings ^=  BLUR;}},
+			Button {"Use downsample","",  colorWhite, []{globalSettings ^=  BLUR_WITH_DOWNSAMPLE;}},
 			Button {"Graphic","", colorWhite, []{alert("graphic settings"s);}},
 			Button {"Lights","",  colorWhite, []{globalSettings ^= LIGHTS;}},
 			Button {"Wireframe","",  colorWhite, []{}},
 			Button {"Shadows","",  colorWhite, []{}},
-			Button {"SSAO","",  colorWhite, []{globalSettings ^=  SSAO;}},
-			Button {"Sobel","",  colorWhite, []{globalSettings ^=  SOBEL;}},
 			Button {"DOF","",  colorWhite, []{}},
 			Button {"HDR","",  colorWhite, []{}},
 			Button {"MSAA","",  colorWhite, []{globalSettings ^= MSAA;}},
