@@ -2,63 +2,63 @@ dirname: D:\Work\Repo\Manipulator3D\models
 Robot:
  - Name: Plane.001
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base
      Vec: [0.0000, 0.0000, 0.2915]
      Axis: [0.0000, 0.0000, 1.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0000, 0.0000, 1.3012]
  - Name: Plane.002
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.001
      Vec: [0.0000, -0.7211, 1.4961]
      Axis: [-1.0000, -0.0000, -0.0000]
      Min: -45
      Max: 90
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0000, -0.1964, 1.6182]
  - Name: Plane.003
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.002
      Vec: [-0.0001, 1.2193, 0.0973]
      Axis: [-1.0000, -0.0000, 0.0000]
      Min: 120
      Max: 90
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0001, 2.0640, 0.0344]
  - Name: Plane.005
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.003
      Vec: [0.0005, -2.4634, -0.0337]
      Axis: [-0.0002, 1.0000, -0.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0005, 3.2169, 0.0575]
  - Name: Plane.004
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.004
      Vec: [-0.0007, 0.0063, -0.0170]
      Axis: [-1.0000, 0.0000, -0.0000]
      Min: -120
      Max: 120
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0005, 0.3187, -0.0019]
  - Name: Plane.006
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.005
      Vec: [0.0005, -0.3187, 0.0019]
      Axis: [-0.0001, 1.0000, -0.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0005, 0.9222, -0.0029]
 Meshes:
  - Name: Circle.001
@@ -105,6 +105,10 @@ Meshes:
    Position: [0.0000, 0.0000, -0.2907]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1776, 0.2579, 0.2810]
+ - Name: Icosphere
+   Position: [3.3423, -0.3941, 4.8700]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.1473, 0.1473, 0.1473]
  - Name: Plane
    Position: [0.0000, -2.6740, 1.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
@@ -137,10 +141,6 @@ Meshes:
    Position: [-5.5557, -1.4896, 1.4326]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1776, 0.2579, 0.2810]
- - Name: Plane.008
-   Position: [0.0000, 0.0000, -1.4430]
-   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
-   Color: [0.1781, 0.8000, 0.7771]
  - Name: Plane.009
    Position: [-5.4053, 0.7443, 1.1752]
    Quaternion: [0.9447, 0.0000, 0.0000, 0.3280]
@@ -189,6 +189,10 @@ Meshes:
    Position: [-5.4349, 0.0000, 0.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
+ - Name: Venus2_M01
+   Position: [2.3811, 0.0000, 0.0000]
+   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Color: [0.6314, 0.6824, 0.7725]
 Lamps:
  - Name: Point.000
    Position: [-3.1825, -6.2861, 5.4957]
@@ -232,10 +236,10 @@ Lamps:
    Falloff_distance: 2.0000
    Energy: 3.0000
    Type: POINT
- - Name: Point.006
-   Position: [-8.9314, -2.7658, -1.9085]
+ - Name: Point.007
+   Position: [3.3423, -0.3941, 4.8700]
    Quaternion: [0.6830, 0.1830, -0.1830, -0.6830]
    Color: [1.0000, 1.0000, 1.0000]
-   Falloff_distance: 2.0000
+   Falloff_distance: 4.0000
    Energy: 3.0000
    Type: POINT

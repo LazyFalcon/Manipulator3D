@@ -105,6 +105,7 @@ std::string shadersToReload[] = {
 	"BlurHorizontal",
 	"GlobalLightWithoutShadowMap",
 	"ToneMapping",
+	"SSAO",
 };
 
 void loadResources();
@@ -132,7 +133,8 @@ int main(){
 	// logger::init();
 	// globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
 	// globalSettings |= DRAW_XY_GRID;
-	globalSettings |= HDR;
+	globalSettings |= SSAO;
+	// globalSettings |= HDR;
 	// globalSettings |= SOBEL;
 	// globalSettings |= LIGHTS;
 	globalSettings |= DRAW_COLORS;

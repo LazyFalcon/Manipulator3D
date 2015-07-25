@@ -693,7 +693,9 @@ void renderScene(Scene &scene){
 		glUniform(shader, transform, u_modelPosition);
 		if(globalSettings & MSAA)
 			glUniform(shader, glm::transpose(glm::inverse(transform)), u_NMPosition);
+			// glUniform(shader, glm::transpose(glm::inverse(camera.ViewMatrix*transform)), u_NMPosition);
 		else
+			// glUniform(shader, camera.ViewMatrix*transform, u_NMPosition);
 			glUniform(shader, transform, u_NMPosition);
 		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 	}
