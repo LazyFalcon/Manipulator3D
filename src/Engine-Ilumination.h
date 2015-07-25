@@ -58,8 +58,9 @@ void renderGlobalLight(GLuint target16, GLuint diffuse8, GLuint normals, GLuint 
 	glUniform(shader, camera.eyePosition, uEyePos);
 	// glUniform(shader, glm::normalize(glm::vec4(10,10,-15,0)), uLightDir);
 	// glUniform(shader, glm::normalize(camera.eyePosition + glm::vec4(1,1,5,-1)), uLightDir);
-	glUniform(shader, glm::normalize(camera.eyePosition + glm::vec4(0,0,0,-1)), uLightDir);
-	glUniform(shader, glm::vec4(1,0.97,0.9,1), uColor);
+	glUniform(shader, glm::normalize(camera.eyePosition + glm::vec4(0,0,1,-1)), uLightDir);
+	// glUniform(shader, glm::vec4(1,0.97,0.9,1), uColor);
+	glUniform(shader, glm::vec4(1), uColor);
 	glUniform(shader, 15.f, uEnergy);
 	glUniform(shader, glm::inverse(camera.ProjectionMatrix*camera.ViewMatrix), uInvPV);
 

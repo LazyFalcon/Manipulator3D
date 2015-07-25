@@ -22,6 +22,7 @@ uniform sampler2D uTexture;
 
 float luminance(vec4 color) {
     return dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+    // return dot(color.rgb, vec3(0.5, 0.5, 0.5));
 }
 
 float a = 8.0;
@@ -39,7 +40,7 @@ void main(void){
 	float l = luminance(color);
 	// float l = length(color);
 	// float lavg = texture(sampler, vec2(0.5, 0.5)).r;
-	float lavg = 1;
+	float lavg = 200;
 
 	// outColor = vec4(lumCompressed(lavg, l) * color.rbg, 1.0);
 	outColor = color/5;
