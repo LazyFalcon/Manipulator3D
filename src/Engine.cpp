@@ -99,7 +99,15 @@ GLuint stencilBuffer;
 GLuint lightBuffer;
 GLuint shadowMapBuffer;
 GLuint shadowMapDummyColorBuffer;
-GLenum DrawBuffers[2];
+GLenum DrawBuffers[3];
+/// --- Backups ---
+GLuint bckp_full_RGBA8;
+GLuint bckp_full_RGBA16F;
+GLuint bckp_half_RGBA8_1;
+GLuint bckp_half_RGBA8_2;
+GLuint bckp_colorBuffer;
+
+
 
 const u32 shadowMapSize = 1024;
 
@@ -307,6 +315,13 @@ void init(CFG::Node &cfg){
 	glGenTextures(1, &lightBuffer);
 	glGenTextures(1, &half_RGBA8_1);
 	glGenTextures(1, &half_RGBA8_2);
+
+	bckp_full_RGBA8  = full_RGBA8;
+	bckp_full_RGBA16F = full_RGBA16F;
+	bckp_half_RGBA8_1 = half_RGBA8_1;
+	bckp_half_RGBA8_2 = half_RGBA8_2;
+	bckp_colorBuffer = colorBuffer;
+
 	glBindTexture(GL_TEXTURE_2D, lightBuffer);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -589,6 +604,9 @@ void setup(Scene &scene){
 		glEnable(GL_DEPTH_TEST);
 		glFrontFace(GL_CCW);
 	}
+
+	/// restore backups
+	colorBuffer = bckp_colorBuffer;
 
 	if(true){ /// FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
@@ -993,6 +1011,7 @@ void SSAO(){
 }
 void Sobel(){
 
+	glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer, 0);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ZERO, GL_SRC_COLOR);

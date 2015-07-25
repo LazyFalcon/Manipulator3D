@@ -135,7 +135,7 @@ extern GLuint depthBuffer;
 extern GLuint depthBuffer2;
 extern GLuint stencilBuffer;
 extern GLuint lightBuffer;
-extern GLenum DrawBuffers[2];
+extern GLenum DrawBuffers[3];
 
 
 struct shapeInfo {

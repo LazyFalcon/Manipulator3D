@@ -30,10 +30,11 @@ uniform float uEnergy;
 in vec2 vUV;
 float ambient = 0.1;
 float lambert(vec4 n, vec4 l, float energy){
-	return clamp( dot(l, -n), 0.7, 1.0 ) * energy;
+	return clamp( dot(l.xyz, n.xyz), ambient, 1000.0 ) * energy;
+	// return ambient + dot(l.xyz, n.xyz)*energy;
 }
 float spectacular(vec4 n, vec4 l, vec4 e){
-	vec4 reflection = normalize(reflect(-l, n));
+	vec4 reflection = normalize(reflect(l, n));
 	float ndoth = max(0.0, dot(reflection, e));
 	return pow(ndoth, 128);
 }
@@ -55,9 +56,14 @@ void main(void){
 
 
 	// outColor = diffuse*lambert(uLightDir, normal, uEnergy)*uColor*ambient + spectacular(uLightDir, normal, eyeVec)*uColor;
-	// outColor = diffuse*lambert(uLightDir, normal, uEnergy)*ambient;
-	// outColor = diffuse;
-	outColor = normal;
+	outColor = diffuse*lambert(uLightDir, normal, uEnergy)*uColor + spectacular(uLightDir, normal, eyeVec)*uColor;
+	// outColor = diffuse + spectacular(uLightDir, normal, eyeVec)*uColor;
+	// outColor = diffuse*lambert(uLightDir, normal, uEnergy);
+	// outColor = normal;
+	// outColor = vec4(depth);
+
+	// outColor = abs(diffuse);
+
 }
 
 #endif

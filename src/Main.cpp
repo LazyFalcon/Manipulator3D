@@ -133,8 +133,8 @@ int main(){
 	// globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
 	// globalSettings |= DRAW_XY_GRID;
 	globalSettings |= HDR;
-	globalSettings |= SOBEL;
-	globalSettings |= LIGHTS;
+	// globalSettings |= SOBEL;
+	// globalSettings |= LIGHTS;
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);
@@ -206,9 +206,9 @@ void renderLoop(){
 	Engine::copyDepth(*scene);
 	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
 	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
+	if(globalSettings & SOBEL)Engine::Sobel();
 	if(globalSettings & HDR)Engine::HDR(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
-	if(globalSettings & SOBEL)Engine::Sobel();
 	// Engine::postprocess(*scene);
 	Engine::postprocess(*scene);
 	Engine::drawOutline(*scene);
