@@ -50,6 +50,8 @@ Main:
   - ProjectShadows
   - SSAO
   - Sobel
+  - BlurHorizontal
+  - BlurVertical
  Images:
   - metal.png
   - kursor.png

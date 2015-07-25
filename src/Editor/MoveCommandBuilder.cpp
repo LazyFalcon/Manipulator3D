@@ -56,6 +56,10 @@ wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector
 	{"0.25m/s", 0.25},
 	{"0.5m/s", 0.5},
 	{"1.0m/s", 1.0},
+	{"1.5m/s", 1.5},
+	{"2.0m/s", 2.0},
+	{"3.0m/s", 3.0},
+	{"4.0m/s", 4.0},
 });
 wxg::DropdownPairWithCallback<double> accelerations (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1m/s^2", 0.1},
