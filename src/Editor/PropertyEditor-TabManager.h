@@ -23,6 +23,8 @@ public:
 			- przypisuje mu istniejacy rozkaz, pamiętać by nie wołać done
 
  */
+
+/// --------------------------------------------- COMMAND EDITOR TAB ---------------------------------------------
 class CommandEditorTab : public ITab
 {
 public:
@@ -45,7 +47,9 @@ public:
 	void reset(){
 		commandBuilderWidget.reset();
 	}
-
+	shared_ptr<ICommand> getCommand(){
+		return commandBuilderWidget->getCommand();
+	}
 	void doneWidget(){}
 	/**
 	 *  for command creates suitable builder and widget
@@ -55,7 +59,7 @@ private:
 	unique_ptr<ICommandBuilderWidget> commandBuilderWidget;
 };
 
-// trzeba skdas przechwycić RC
+/// --------------------------------------------- COMMAND LIST TAB ---------------------------------------------
 class CommandListTab : public ITab
 {
 public:
@@ -66,24 +70,29 @@ public:
 	}
 };
 
+/// --------------------------------------------- PATH EDITOR TAB ---------------------------------------------
 class PathEditorTab : public ITab
 {
 public:
-	void run(TabManager &TM){}
+	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	void reset(shared_ptr<ICommand> &ptr){
 		if(ptr->type == MOVE)
 			reset(static_pointer_cast<MoveCommand>(ptr)->interpolator);
-		// else
-
+		else
+			reset();
 	}
 	void reset(shared_ptr<IInterpolator> &ptr){
-
+		interpolator = ptr;
 	}
-	void reset(){}
-
+	void reset(){
+		interpolator.reset();
+	}
+private:
+	shared_ptr<IInterpolator> interpolator;
 };
 
+/// --------------------------------------------- PATH LIST TAB ---------------------------------------------
 class PathListTab : public ITab
 {
 public:
@@ -91,7 +100,7 @@ public:
 	void onEnter(TabManager &TM){}
 };
 
-/// -------- TAB MANAGER -------
+/// --------------------------------------------- TAB MANAGER -------
 class TabManager
 {
 public:
@@ -131,5 +140,3 @@ public:
 };
 
 NAM_END
-
-

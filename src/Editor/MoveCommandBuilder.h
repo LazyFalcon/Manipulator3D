@@ -43,7 +43,6 @@ public:
 	~MoveCommandBuilder(){}
 	shared_ptr<MoveCommand> moveCommand;
 private:
-	/// i referencjê do RC, ¿eby móc dodaæ, wtedy RC::move zwraca ten builder :D
 };
 
 
@@ -56,6 +55,7 @@ public:
 	virtual void run() = 0;
 	virtual void enter() = 0;
 	virtual void init() = 0;
+	virtual shared_ptr<ICommand> getCommand() = 0;
 	// virtual void setCommand() = 0;
 };
 
@@ -83,6 +83,9 @@ public:
 	void editSolver();
 	void finalize();
 
+	shared_ptr<ICommand> getCommand(){
+		return moveCommandBuilder->moveCommand;
+	}
 private:
 	std::string fieldValue {""};
 

@@ -192,9 +192,11 @@ public:
 
 	void set(shared_ptr<IInterpolator> &p){
 		polyline = p;
-		// nodes.clear();
-		// for(auto &point : polyline->points)
-			// nodes.emplace_back(point);
+	}
+	void reset(){
+		polyline.reset();
+		markedNodes.points.clear();
+		markedNodes.pointsOriginal.clear();
 	}
 	void clear(){
 		polyline.reset();

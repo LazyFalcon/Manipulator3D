@@ -205,51 +205,56 @@ void EnterEditor(RobotController &RC){
 	if(EditorMode & EditCommand){
 		auto &command = RC.getCommand();
 		tabBar->get<CommandEditorTab>().reset(command);
-		tabBar->get<PathEditorTab>().reset(command);
 		if(command->type == MOVE)
+			tabBar->get<PathEditorTab>().reset(static_pointer_cast<MoveCommand>(command)->interpolator);
 			polylineEditor.set(static_pointer_cast<MoveCommand>(command)->interpolator);
-		cout<<"Entering Edit Mode"<<endl;
-	}
+		}
 	else {
-		cout<<"Dupa"<<endl;
 		tabBar->get<CommandEditorTab>().reset();
 		tabBar->get<PathEditorTab>().reset();
 	}
 }
-void ExitEditor(RobotController &RC){}
+void ExitEditor(RobotController &RC){
+		polylineEditor.reset();
+		tabBar->get<CommandEditorTab>().reset();
+		tabBar->get<PathEditorTab>().reset();
+}
 
 void update(RobotController &RC){
-	// tabBar->run(RC);
-	tabBar->run();
-	polylineEditor.run();
-	polylineEditor.processAll();
+	if(EditorMode & Enabled){
+		polylineEditor.run();
+		polylineEditor.processAll();
+		tabBar->run();
+	}
 }
 
 void processMouse(int button, int action, int modifier){
 	polylineEditor.processMouse(button, action, modifier);
 }
 void processKeys(int key, int action, int modifier, RobotController &RC){
-	if(EditorMode & Enabled){
-		polylineEditor.processKeys(key, action, modifier);
+	polylineEditor.processKeys(key, action, modifier);
+	if(action == GLFW_PRESS){
+		if(EditorMode & Enabled){
 
-		if(key == GLFW_KEY_TAB && action == GLFW_PRESS){}
-			ExitEditor(RC);
+			if(key == GLFW_KEY_TAB){
+				EditorMode &= ~Enabled;
+				ExitEditor(RC);
+			}
+		}
+		else {
+			if(key == GLFW_KEY_TAB){
+				cout<<"key: "<<key<<endl;
+				EditorMode |= Enabled;
+				EnterEditor(RC);
 
-		EditorMode &= ~Enabled;
-	}
-	else {
-		if(key == GLFW_KEY_TAB && action == GLFW_PRESS){}
-			cout<<"key: "<<key<<endl;
-			EnterEditor(RC);
-
-			EditorMode |= Enabled;
+			}
+		}
 	}
 }
 
 /// ------- POLYLINE EDITOR ---------------------------------------------
 void PolylineEditor::mainBody(){
 	if(not polyline) return;
-	polyline->drawParams();
 	ui.image("Refresh").onlClick([this]{polyline->generatePath();})();
 	snapModeDropDown();
 }
@@ -446,6 +451,7 @@ void PolylineEditor::processMouse(int button, int action, int modifier){
 	}
 }
 void PolylineEditor::processKeys(int key, int action, int modifier){
+	if(not polyline) return;
 	if(action == GLFW_PRESS){
 		if(key == 'C'){
 			markedNodes.preferedDirection = 0;

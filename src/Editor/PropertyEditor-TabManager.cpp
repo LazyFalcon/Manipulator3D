@@ -53,6 +53,13 @@ void CommandListTab::run(TabManager &TM){
 }
 
 /// ----- PATH EDITOR TAB ---------------------------------------------
+void PathEditorTab::run(TabManager &TM){
+	if(interpolator){
+		interpolator->drawParams();
+	}
+}
+
+/// ----- PATH LIST TAB ---------------------------------------------
 void PathListTab::run(TabManager &TM){
 	for(auto &it : getInterpolators()){
 		ui.rect(150, 20).text(it->name)();
@@ -103,15 +110,15 @@ CommandEditorTab& TabManager::get<CommandEditorTab>(){
 }
 template<>
 CommandListTab& TabManager::get<CommandListTab>(){
-	return static_cast<CommandListTab&>(*tabs[0]);
+	return static_cast<CommandListTab&>(*tabs[1]);
 }
 template<>
 PathEditorTab& TabManager::get<PathEditorTab>(){
-	return static_cast<PathEditorTab&>(*tabs[0]);
+	return static_cast<PathEditorTab&>(*tabs[2]);
 }
 template<>
 PathListTab& TabManager::get<PathListTab>(){
-	return static_cast<PathListTab&>(*tabs[0]);
+	return static_cast<PathListTab&>(*tabs[3]);
 }
 
 

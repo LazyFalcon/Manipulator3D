@@ -270,11 +270,13 @@ void MainMenu(){
 
 	ui.rect(0, window_height-32, window_width, 32).color(0x3B3B3BFF)(UI::Label);
 	// ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft | UI::Draw);
-	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft);
+	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignLeft)
+		.style(UI::StyleID::Dark);
 		TopBar();
 		// sam się zamyka
 
-	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignRight );
+	ui.table(UI::LayoutHorizontal | UI::AlignTop | UI::AlignRight )
+		.style(UI::StyleID::Dark);
 	ui.image("Exit").color(colorRed)()
 		.onlClick([&]{
 			quit = true;

@@ -131,12 +131,10 @@ glm::vec3 camPosition(0,0,3);
 
 int main(){
 	// logger::init();
-	// globalSettings |= LIGHTS | DRAW_COLORS | DRAW_XY_GRID;
 	// globalSettings |= DRAW_XY_GRID;
 	globalSettings |= SSAO;
-	// globalSettings |= HDR;
+	globalSettings |= HDR;
 	// globalSettings |= SOBEL;
-	// globalSettings |= LIGHTS;
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);

@@ -12,6 +12,8 @@ void main(){
 
 #endif
 
+/// TODO: dodaæ zanikanie wartoœci wraz z odleg³oœci¹, mo¿na wtedy podbiæ wartoœci
+
 #ifdef COMPILING_FRAGMENT_SHADER
 out vec4 outAO;
 
@@ -31,7 +33,7 @@ const float bias = -0.0069;
 const float scale = 10.01;
 const float intensity = 3.1;
 // const vec2 sampleRadius = 95/vec2(1400, 720);
-const vec2 sampleRadius = 20/vec2(1400, 720);
+const vec2 sampleRadius = 30/vec2(1400, 720);
 const float randomSize = 60;
 
 
