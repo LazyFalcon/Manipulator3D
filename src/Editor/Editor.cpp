@@ -203,8 +203,11 @@ void init(){
  */
 void EnterEditor(RobotController &RC){
 	if(EditorMode & EditCommand){
+		MoveCommand &command = *RC.getCommand();
 		tabBar->get<CommandEditorTab>().reset(RC.getCommand());
 		tabBar->get<PathEditorTab>().reset(RC.getCommand());
+		if(command->type == MOVE)
+			polylineEditor.set(command.interpolator);
 		cout<<"Entering Edit Mode"<<endl;
 	}
 	else {
