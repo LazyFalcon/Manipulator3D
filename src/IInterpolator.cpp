@@ -18,7 +18,7 @@ glm::vec4 Linear::nextPoint(){
 		return points[maxSections];
 	}
 	auto out = mix(points[section], points[section+1], position);
-	position = glm::clamp(position + singleStepLength, 0.0, (double)numOfBeziers);
+	position = glm::clamp(position + singleStepLength, 0.0, (double)maxSections);
 	finished = position == (double)maxSections;
 	
 	//auto out = points[section] + sectionStep*step;
@@ -70,6 +70,8 @@ void Linear::genNextStep(){
 }
 void Linear::drawParams(){
 	wxg::editBox("step: ", singleStepLength, 160);
+	ui.rect(120,20).text("smooth corers: false")();
+	ui.rect(120,20).text("smooth radius")();
 }
 
 /// -------------------------------- BEZIERCURVE --------------------------------
@@ -127,6 +129,8 @@ void BezierCurve::reset(){
 }
 void BezierCurve::drawParams(){
 	wxg::editBox("step: ", singleStepLength, 160);
+	for(u32 i=0; i<weights.size(); i++)
+		wxg::editBox("weight "+std::to_string(i)+": ", weights[i], 160);
 }
 
 /// -------------------------------- BSPLINE --------------------------------
@@ -136,7 +140,7 @@ glm::vec4 BSpline::nextPoint(){
 	return eval(position);
 }
 void BSpline::calculateLength(){}
-
+/// daloby sie to wyliczac w runtime? bez cachowania bezierów?
 void BSpline::generatePath(){
 	makeNurbs();
 	visualisation.clear();
@@ -227,7 +231,7 @@ void BSpline::reset(){
 
 std::vector<BezierCurve> BSpline::split(){return std::vector<BezierCurve>{};}
 void BSpline::drawParams(){
-	wxg::editBox("weight: ", weight, 160); /// a może slider?
+	wxg::editBox("weight: ", weight, 160); /// a może slider? kolowy?
 }
 
 /// -------------------------------- NURBS --------------------------------
@@ -256,6 +260,7 @@ void HermiteCardinal::generatePath(){
 
 }
 void HermiteCardinal::calculateLength(){}
+/// tension/weight proporcjonalny do odleglosci?
 glm::vec4 HermiteCardinal::eval(double param){
 	double integral;
 	double t = modf(param, &integral);
