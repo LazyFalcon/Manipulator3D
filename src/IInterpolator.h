@@ -67,6 +67,7 @@ class Linear : public IInterpolator
 public:
 	/// editable params
 	float singleStepLength {0.01f};
+	double position;
 
 	///
 
@@ -83,6 +84,7 @@ public:
 	Linear(const std::vector<glm::vec4> &p) : IInterpolator(p, Interpolator::Linear){
 		maxSections = points.size()-1;
 		section = -1;
+		position = 0;
 		if(maxSections > 0){
 			nextSection();
 			generatePath();
