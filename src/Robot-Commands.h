@@ -14,8 +14,9 @@ class ICommand
 public:
 	ICommand(CommandType type) : type(type), isRuning(false){}
 	//ICommand(uint32_t f) : flags(f){}
-	virtual void init(RobotController &rc) = 0;
+	virtual bool enter(RobotController &rc) = 0;
 	virtual bool update(RobotController &rc, float dt) = 0;
+	virtual bool exit(RobotController &rc) = 0;
 	virtual vector<glm::vec4>& getPath() = 0;
 	virtual vector<glm::vec4>& getPolyline() = 0;
 	virtual ~ICommand(){}
@@ -49,6 +50,10 @@ public:
 	double acceleration;
 	double requiredDistance {0.0};
 	float time;
+	float inTime;
+	flaot outTime;
+	bool useOrientation {false};
+	
 	shared_ptr<IInterpolator> interpolator;
 	shared_ptr<IIK> solver;
 
@@ -60,26 +65,36 @@ private:
 
 class WaitCommand : public ICommand
 {
-	vector <glm::vec4> fakePath{};
-	float timeLeft = 0.f;
 public:
 	~WaitCommand(){
 		std::cerr << "delete Wait command\n";
 	}
 	WaitCommand(float time) : ICommand(WAIT), timeLeft(time){}
-	void init(RobotController &rc){
-		isRuning = true;
-	};
 	bool update(RobotController &rc, float dt);
-	vector<glm::vec4>& getPath(){
-		return fakePath;
-	}
-	vector<glm::vec4>& getPolyline(){
-		return fakePath;
-	}
-
-
+	
+	void init(RobotController &rc);
+	bool enter(RobotController &rc);
+	bool update(RobotController &rc, float dt);
+	bool exit(RobotController &rc);
+	vector<glm::vec4>& getPath();
+	vector<glm::vec4>& getPolyline();
+	
+	float time = 0.f;
+	float releaseTime = 0.f;
+	u32 releaseFlag {0};
+	std::function<bool(RobotController &rc)> releaseFuction;
 };
-class UseEffectorCommand : public ICommand {};
-class ConditionalCommand : public ICommand {};
-class FunctionCommand : public ICommand {};
+class ExecuteCommand : public ICommand 
+{
+public:
+	void init(RobotController &rc);
+	bool enter(RobotController &rc);
+	bool update(RobotController &rc, float dt);
+	bool exit(RobotController &rc);
+	vector<glm::vec4>& getPath();
+	vector<glm::vec4>& getPolyline();
+	
+	std::function<void(RobotController &rc)> enterCallback;
+	std::function<void(RobotController &rc)> func;
+	std::function<void(RobotController &rc)> exitCallback;
+};
