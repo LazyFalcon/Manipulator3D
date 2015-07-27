@@ -17,13 +17,14 @@ glm::vec4 Linear::nextPoint(){
 		finished = true;
 		return points[maxSections];
 	}
-
-	auto out = points[section] + sectionStep*step;
-	step++;
-	if(sectionMaxSteps <= step)
-		nextSection();
-
-	// std::cout<<"step: "<<step<<std::endl;
+	auto out = mix(points[section], points[section+1], position);
+	position = glm::clamp(position + singleStepLength, 0.0, (double)numOfBeziers);
+	finished = position == (double)maxSections;
+	
+	//auto out = points[section] + sectionStep*step;
+	//step++;
+	//if(sectionMaxSteps <= step)
+	//	nextSection();
 	return out;
 }
 void Linear::nextSection(){
