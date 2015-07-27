@@ -17,7 +17,7 @@ glm::vec4 Linear::nextPoint(){
 		finished = true;
 		return points[maxSections];
 	}
-	auto out = mix(points[section], points[section+1], position);
+	auto out = glm::mix(points[section], points[section+1], position);
 	position = glm::clamp(position + singleStepLength, 0.0, (double)maxSections);
 	finished = position == (double)maxSections;
 	

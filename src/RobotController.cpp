@@ -135,10 +135,6 @@ WaitCommand& RobotController::wait(float time){
 	return *newCommand;
 }
 
-bool WaitCommand::update(RobotController &rc, float dt){
-	timeLeft -= dt;
-	return timeLeft < 0.f;
-}
 
 bool RobotController::update(float dt){
 

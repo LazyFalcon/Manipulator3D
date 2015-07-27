@@ -86,6 +86,8 @@ GLuint fullFBO;
 GLuint halfFBO;
 GLuint shadowMapFbo;
 GLuint PlotFBO;
+GLuint full_R8;
+GLuint half_R8;
 GLuint full_RGBA8;
 GLuint full_RGBA16F;
 GLuint half_RGBA8_1;
@@ -307,6 +309,8 @@ void init(CFG::Node &cfg){
 
 	glGenTextures(1, &colorBuffer);
 	glGenTextures(1, &full_RGBA8);
+	glGenTextures(1, &full_R8);
+	glGenTextures(1, &half_R8);
 	glGenTextures(1, &full_RGBA16F);
 	glGenTextures(1, &normalBuffer);
 	glGenTextures(1, &depthBuffer);
@@ -341,6 +345,23 @@ void init(CFG::Node &cfg){
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, full_RGBA8);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width, window_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glBindTexture(GL_TEXTURE_2D, full_R8);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8 , window_width, window_height, 0,GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, half_R8);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -386,8 +407,8 @@ void init(CFG::Node &cfg){
 		glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, window_width, window_height, 0, GL_RED, GL_FLOAT, NULL);
 	glBindTexture(GL_TEXTURE_2D, shadowMapBuffer);
 		// glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
@@ -1004,6 +1025,7 @@ void SSAO(){
 	glBindTexture(GL_TEXTURE_2D, globalResources->textures["SSAORandom"]);
 
 	glUniform(shader, glm::inverse(camera.ProjectionMatrix*camera.ViewMatrix), uInvPV);
+	// glUniform(shader, glm::inverse(camera.ProjectionMatrix), uInvPV);
 	glUniform(shader, glm::inverse(camera.ViewMatrix), u_View);
 	glUniform(shader, camera.m_near, uNear);
 	glUniform(shader, camera.m_far, uFar);
@@ -1095,6 +1117,94 @@ void finalize(Scene &scene){
  *
  */
 void blur(GLuint target){
+	float uBlurSize = 0.5f;
+	if(globalSettings & BLUR_WITH_DOWNSAMPLE){
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, half_RGBA8_1, 0);
+		glViewport(0, 0, window_width/2, window_height/2);
+		glDrawBuffers(1,&DrawBuffers[0]);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
+		glDepthMask(GL_FALSE);
+		setupBuffer(screenQuad);
+
+		auto shader = shaders["BlurVertical"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glUniform(shader, uBlurSize/2, "uBlurSize");
+		glUniform(shader, screenSize/2.f, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, half_RGBA8_2, 0);
+		shader = shaders["BlurHorizontal"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, half_RGBA8_1);
+		glUniform(shader, uBlurSize/2, "uBlurSize");
+		glUniform(shader, screenSize/2.f, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target, 0);
+
+		glViewport(0, 0, window_width, window_height);
+		shader = shaders["ApplyFBO"];
+		glBindTexture(GL_TEXTURE_2D, colorBuffer);
+		glUseProgram(shader);
+
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, half_RGBA8_2);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
+	else {
+		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, full_RGBA8, 0);
+		glDrawBuffers(1,&DrawBuffers[0]);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
+		glDepthMask(GL_FALSE);
+		setupBuffer(screenQuad);
+
+
+		auto shader = shaders["BlurVertical"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glUniform(shader, uBlurSize, "uBlurSize");
+		glUniform(shader, screenSize, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target, 0);
+		shader = shaders["BlurHorizontal"];
+		glUseProgram(shader);
+		setupBuffer(screenQuad);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, full_RGBA8);
+		glUniform(shader, uBlurSize, "uBlurSize");
+		glUniform(shader, screenSize, "uScreenSize");
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+void blurR8(GLuint target){
 	float uBlurSize = 0.5f;
 	if(globalSettings & BLUR_WITH_DOWNSAMPLE){
 

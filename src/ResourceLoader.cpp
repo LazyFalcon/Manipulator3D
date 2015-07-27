@@ -297,7 +297,10 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	std::sort(scene.pointLamps.begin(), scene.pointLamps.end(), sortLampsBySize);
 
 	Engine::genVao(model_vertices, model_coords, model_normals, model_indices, scene.resources);
-	loadRobot(scene, *scene.robot, cfg["Robot"]);
+
+	if(cfg.has("Robot"))
+		loadRobot(scene, *scene.robot, cfg["Robot"]);
+
 	return true;
 }
 bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){

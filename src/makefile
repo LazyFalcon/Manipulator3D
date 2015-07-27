@@ -6,7 +6,6 @@ CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
-# CommandBuilders = D:\Work\Code\Manipulator3D\src\CommandBuilders
 Editor = ./Editor
 UTIL = C:/MinGW/include/Utils
 
@@ -31,8 +30,8 @@ OBJS = \
 ../bin/Graph.o \
 ../bin/MoveCommandBuilder.o \
 ../bin/PropertyEditor-TabManager.o \
+../bin/Robot-Commands.o \
 ../bin/MAIN.o
-# ../bin/Robot-Commands.o \
 
 LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
@@ -73,12 +72,6 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 
 ../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h
 	$(CXX) -c $(CXXFLAGS) -o2 Robot-Commands.cpp -o ../bin/Robot-Commands.o
-
-# ../bin/Robot-CommandBuilders.o: $(UTIL)/IMGUI_V4.h Robot-CommandBuilders.cpp Robot-CommandBuilders.h
-	# $(CXX) -c $(CXXFLAGS) -o2 Robot-CommandBuilders.cpp -o ../bin/Robot-CommandBuilders.o
-
-# ../bin/Menu-SideBar.o: $(UTIL)/IMGUI_V4.h Menu-SideBar.cpp Menu-SideBar.h Menu-Tabs.cpp
-	# $(CXX) -c $(CXXFLAGS) -o2 Menu-SideBar.cpp -o ../bin/Menu-SideBar.o
 
 #-----------------------------------------------------
 
