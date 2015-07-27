@@ -5,7 +5,7 @@ class RobotController;
 
 enum CommandType : u32
 {
-	EMPTY, MOVE, WAIT, EXEXUTE,
+	EMPTY, MOVE, WAIT, EXECUTE,
 };
 
 class ICommand
