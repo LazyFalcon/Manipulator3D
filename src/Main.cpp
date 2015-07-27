@@ -133,7 +133,7 @@ int main(){
 	// logger::init();
 	// globalSettings |= DRAW_XY_GRID;
 	globalSettings |= SSAO;
-	globalSettings |= HDR;
+	// globalSettings |= HDR;
 	// globalSettings |= SOBEL;
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");

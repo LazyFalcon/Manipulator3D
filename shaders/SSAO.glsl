@@ -26,47 +26,50 @@ uniform mat4 uView;
 
 in vec2 vUV;
 
-// const float bias = -0.169;
-// const float scale = 50.01;
-// const float intensity = 150.1;
-// const float bias = -0.0069;
-const float bias = 0.12069;
-const float scale = 40.01;
-// const float intensity = 3.1;
-const float intensity = 25.1;
-const vec2 sampleRadius = 75/vec2(1400, 720);
-// const vec2 sampleRadius = 30/vec2(1400, 720);
-const float randomSize = 60;
+uniform vec2 camerarange = vec2(0.10, 50.0);
 
+float pw = 1.0/1400.0*0.5;
+float ph = 1.0/720.0*0.5;
+const vec2 screen = vec2(1400, 720);
 
-vec4 getNormal(vec2 uv){
-	return texture(uNormalBuffer, uv);
-}
-vec4 getPosition(vec2 uv, out float depth){
-	depth = texture(uDepthBuffer, uv).r;
-	// vec4 viewSpace = vec4(uv*2-1, depth*2 - 1, 1);
-	vec4 viewSpace = vec4(uv*2-1, depth, 1);
-	vec4 worldPos = uInvPV*viewSpace;
-	worldPos.xyz /= worldPos.w;
-	worldPos.w = 1;
-
-	return worldPos;
+float readDepth(in vec2 coord){
+	if (coord.x<0||coord.y<0) return 1.0;
+	float nearZ = camerarange.x;
+	float farZ =camerarange.y;
+	float posZ = texture(uDepthBuffer, coord).x;
+	return (2.0 * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));
 }
 
-vec2 getRandom(vec2 uv){
-	return normalize(texture(uSSAORandom, uv*randomSize)).xy;
+float compareDepths(in float depth1, in float depth2){
+	float gauss = 0.0;
+	float diff = (depth1 - depth2)*100.0; //depth difference (0-100)
+	float gdisplace = 0.2; //gauss bell center
+	float garea = 3.0; //gauss bell width
+
+	//reduce left bell width to avoid self-shadowing
+	if (diff<gdisplace) garea = 0.2;
+
+	gauss = pow(2.7182,-2*(diff-gdisplace)*(diff-gdisplace)/(garea*garea));
+
+	return max(0.2,gauss);
 }
 
-float computeAmbientOcclusion(vec2 uv, vec2 dCoord, vec4 position, vec4 normal){
-	float depth;
-	// vec4 diff = getPosition(uv + dCoord, depth) - position;
-	vec4 diff = getPosition(uv + dCoord, depth) - position;
-	float d = length(diff);
-	vec4 v = diff / d;
-	return sqrt(max(0.0, dot(normal,v)-bias)) * (1.0/(1.0 + d*scale)) * intensity;
-}
+vec4 calAO(float depth, vec2 uv,  float dw, float dh, inout float ao){
+	float temp = 0;
+	vec4 bleed = vec4(1);
+	float coordw = vUV.x + (uv.x + dw)/depth*0.5;
+	float coordh = vUV.y + (uv.y + dh)/depth*0.5;
 
-vec2 kernel[16] = vec2[]
+	if (coordw  < 1.0 && coordw  > 0.0 && coordh < 1.0 && coordh  > 0.0){
+
+	vec2 coord = vec2(coordw , coordh);
+	temp = compareDepths(depth, readDepth(coord));
+
+	}
+	ao += temp;
+	return temp*bleed;
+}
+const vec2 kernel[16] = vec2[]
 (
 	vec2(  0.5244396,  0.6552907 ),
 	vec2(  0.7802591,  0.1212579 ),
@@ -101,40 +104,55 @@ vec2 kernel[16] = vec2[]
 	// vec2(  0.19984126,   0.78641367 ),
 	// vec2(  0.14383161,  -0.14100790 )
 );
-
-
 void main(void){
-	float depth;
-	vec4 position = getPosition(vUV, depth);
-	vec4 normal = getNormal(vUV);
-	// vec2 rand = getRandom(position.xz*vUV);
+ //randomization texture:
+ vec2 fres = vec2(20);
+ vec4 random = texture(uSSAORandom, vUV*fres.xy);
+ random = random*2.0-vec4(1.0);
 
-	float ao = 0.0;
-	depth = depth*2-1;
-	vec2 radius = min(sampleRadius, sampleRadius/(1 - depth*0.9));
-	// vec2 radius = sampleRadius/(1 - depth*2.9);
+ //initialize stuff:
+ float depth = readDepth(vUV);
+ vec4 gi = vec4(0);
+ float ao = 0.0;
 
-	const int iterations = 16;
+ 	const int iterations = 8;
 	for(int i=0; i<iterations; ++i){
-		vec2 rand = getRandom(position.xz*vUV*i);
-		// vec2 refl = reflect(kernel[i], rand) * radius;
-		// vec2 refl = normalize(kernel[i]) * radius;
-		vec2 refl = kernel[i] * radius;
-		// ao += computeAmbientOcclusion(vUV, refl*rand, position, normal)*0.15;
-		// ao += computeAmbientOcclusion(vUV, refl*rand*0.75, position, normal)*0.35;
-		// ao += computeAmbientOcclusion(vUV, refl*rand*0.5, position, normal)*0.75;
-		ao += computeAmbientOcclusion(vUV, refl*rand, position, normal)*length(refl)*15;
-	}
-	// ao *= ao;
-	ao = clamp(ao/float(iterations), 0, 1);
-	// ao = sqrt(ao);
-	// ao = ceil(ao*6)/6;
-	// outAO = clamp(vec4(1.0-ao/4.0/float(iterations)*28*depth), 0.5, 2);
-	// outAO = vec4(1.0-ao/4.0/float(iterations)*28*depth);
-	outAO = vec4(1.01-ao);
-	// outAO = vec4(ao/4.0/float(iterations));
-	// outAO = vec4(1-position.z/20);
+	 gi += calAO(depth,kernel[i]/screen, pw, ph,ao);
+	 gi += calAO(depth,kernel[i]/screen, pw, -ph,ao);
+	 gi += calAO(depth,kernel[i]/screen, -pw, ph,ao);
+	 gi += calAO(depth,kernel[i]/screen, -pw, -ph,ao);
 
+	 //sample jittering:
+	 // pw += random.x*0.0005;
+	 // ph += random.y*0.0005;
+
+	 //increase sampling area:
+	 pw *= 1.4;
+	 ph *= 1.4;
+
+	}
+/*
+ for(int i=0; i<8; ++i){
+	 //calculate color bleeding and ao:
+	 gi += calAO(depth,vec2(0),  pw, ph,ao);
+	 gi += calAO(depth,vec2(0),  pw, -ph,ao);
+	 gi += calAO(depth,vec2(0),  -pw, ph,ao);
+	 gi += calAO(depth,vec2(0),  -pw, -ph,ao);
+
+	 //sample jittering:
+	 // pw += random.x*0.0005;
+	 // ph += random.y*0.0005;
+
+	 //increase sampling area:
+	 pw *= 1.4;
+	 ph *= 1.4;
+ }
+*/
+ //final values, some adjusting:
+ vec4 finalAO = vec4(1.0-(ao/32.0));
+ vec4 finalGI = (gi/32)*0.6;
+
+ outAO = vec4(finalAO+finalGI);
 }
 
 
