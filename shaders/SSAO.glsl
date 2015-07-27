@@ -33,8 +33,8 @@ in vec2 vUV;
 const float bias = 0.12069;
 const float scale = 40.01;
 // const float intensity = 3.1;
-const float intensity = 35.1;
-const vec2 sampleRadius = 95/vec2(1400, 720);
+const float intensity = 25.1;
+const vec2 sampleRadius = 75/vec2(1400, 720);
 // const vec2 sampleRadius = 30/vec2(1400, 720);
 const float randomSize = 60;
 
@@ -123,7 +123,7 @@ void main(void){
 		// ao += computeAmbientOcclusion(vUV, refl*rand, position, normal)*0.15;
 		// ao += computeAmbientOcclusion(vUV, refl*rand*0.75, position, normal)*0.35;
 		// ao += computeAmbientOcclusion(vUV, refl*rand*0.5, position, normal)*0.75;
-		ao += computeAmbientOcclusion(vUV, refl*rand, position, normal);
+		ao += computeAmbientOcclusion(vUV, refl*rand, position, normal)*length(refl)*15;
 	}
 	// ao *= ao;
 	ao = clamp(ao/float(iterations), 0, 1);
