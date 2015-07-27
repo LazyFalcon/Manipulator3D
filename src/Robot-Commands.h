@@ -25,6 +25,17 @@ public:
 	bool isRuning;
 };
 
+class ICommandBuilderWidget
+{
+public:
+	virtual ~ICommandBuilderWidget(){}
+	virtual void run() = 0;
+	virtual void enter() = 0;
+	virtual void init() = 0;
+	virtual shared_ptr<ICommand> getCommand() = 0;
+	// virtual void setCommand() = 0;
+};
+
 class MoveCommand : public ICommand
 {
 public:
