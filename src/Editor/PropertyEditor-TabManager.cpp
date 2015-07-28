@@ -2,6 +2,7 @@
 #include <Utils/Utils.h>
 #include <Utils/IMGUI_V4.h>
 #include "../IInterpolator.h"
+#include "../Widgets.h"
 #include "Editor.h"
 #include "PropertyEditor-TabManager.h"
 
@@ -61,17 +62,45 @@ PathListTab& TabManager::get<PathListTab>(){
 
 
 extern PolylineEditor polylineEditor;
+unique_ptr<ICommandBuilderWidget> createWidgetFromCommandType(CommandType type){
+	unique_ptr<ICommandBuilderWidget> out;
+	if(type == MOVE){
+		out.reset(new MoveCommandBuilderWidget());
+	}
+	else if(type == WAIT){
+		// out.reset(new WaitCommandBuilderWidget());
+	}
+	else if(type == EXECUTE){
+		// out.reset(new ExecuteCommandBuilderWidget());
+	}
+
+	return out;
+}
 unique_ptr<ICommandBuilderWidget> createWidgetFromCommandAndSetPtr(shared_ptr<ICommand> &ptr){
 	unique_ptr<ICommandBuilderWidget> out;
-	if(ptr->type == MOVE){
-		// out = make_unique<MoveCommandBuilderWidget>(ptr);
+	auto type =ptr->type;
+	if(type == MOVE){
 		out.reset(new MoveCommandBuilderWidget(ptr));
+	}
+	else if(type == WAIT){
+		// out.reset(new WaitCommandBuilderWidget(ptr));
+	}
+	else if(type == EXECUTE){
+		// out.reset(new ExecuteCommandBuilderWidget(ptr));
 	}
 
 	return out;
 }
 
 /// ----- COMMAND EDITOR TAB ---------------------------------------------
+wxg::DropdownPairWithCallback<CommandType> CommandTypes (UI::AlignTop, 100, std::vector <pair<string, CommandType>>{
+	{"----", EMPTY},
+	{"Move", MOVE},
+	{"Wait", WAIT},
+	{"Execute", EXECUTE},
+});
+
+
 void CommandEditorTab::run(TabManager &TM){
 	getTypeWidget(TM);
 	if(commandBuilderWidget){
@@ -89,8 +118,9 @@ void CommandEditorTab::onEnter(TabManager &TM){
 	// commandBuilderWidget->onEnter();
 }
 void CommandEditorTab::getTypeWidget(TabManager &TM){
-	/// commandTypeSelection.run([this](CommandEditorTabCommandWidget val){ commandBuilderWidget = buildWidget(val) });
-	// createWidgetFromCommandAndSetPtr()
+	CommandTypes.run([this](CommandType val){
+		commandBuilderWidget = createWidgetFromCommandType(val);
+	});
 }
 
 
