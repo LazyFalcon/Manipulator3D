@@ -51,22 +51,33 @@ namespace Editor NAM_START
 extern PolylineEditor polylineEditor;
 
 wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
-	{"0.1m/s", 0.1},
-	{"0.15m/s", 0.15},
-	{"0.25m/s", 0.25},
-	{"0.5m/s", 0.5},
-	{"1.0m/s", 1.0},
-	{"1.5m/s", 1.5},
-	{"2.0m/s", 2.0},
-	{"3.0m/s", 3.0},
-	{"4.0m/s", 4.0},
+	{"0.1 m/s", 0.1},
+	{"0.15 m/s", 0.15},
+	{"0.25 m/s", 0.25},
+	{"0.5 m/s", 0.5},
+	{"1.0 m/s", 1.0},
+	{"1.5 m/s", 1.5},
+	{"2.0 m/s", 2.0},
+	{"3.0 m/s", 3.0},
+	{"4.0 m/s", 4.0},
+});
+wxg::DropdownPairWithCallback<double> jointVelocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
+	{"0.1 rad/s", 0.1},
+	{"0.15 rad/s", 0.15},
+	{"0.25 rad/s", 0.25},
+	{"0.5 rad/s", 0.5},
+	{"1.0 rad/s", 1.0},
+	{"1.5 rad/s", 1.5},
+	{"2.0 rad/s", 2.0},
+	{"3.0 rad/s", 3.0},
+	{"4.0 rad/s", 4.0},
 });
 wxg::DropdownPairWithCallback<double> accelerations (UI::AlignTop, 100, std::vector <pair<string, double>>{
-	{"0.1m/s^2", 0.1},
-	{"0.15m/s^2", 0.15},
-	{"0.25m/s^2", 0.25},
-	{"0.5m/s^2", 0.5},
-	{"1.0m/s^2", 1.0},
+	{"0.1 m/s^2", 0.1},
+	{"0.15 m/s^2", 0.15},
+	{"0.25 m/s^2", 0.25},
+	{"0.5 m/s^2", 0.5},
+	{"1.0 m/s^2", 1.0},
 });
 wxg::DropdownPairWithCallback<double> times (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"1s", 1000},
@@ -106,6 +117,14 @@ void MoveCommandBuilderWidget::editVelocity(){
 		velocities.run([this](double val){moveCommandBuilder->velocity(val);});
 		EDIT(moveCommandBuilder->moveCommand->velocity);
 		INCR(moveCommandBuilder->moveCommand->velocity);
+		);
+}
+void MoveCommandBuilderWidget::editJointVelocity(){
+	FIELDWITHNAME("JointVelocity",
+		DECR(moveCommandBuilder->moveCommand->jointVelocity);
+		jointVelocities.run([this](double val){moveCommandBuilder->jointVelocity(val);});
+		EDIT(moveCommandBuilder->moveCommand->jointVelocity);
+		INCR(moveCommandBuilder->moveCommand->jointVelocity);
 		);
 }
 void MoveCommandBuilderWidget::editAcceleration(){

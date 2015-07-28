@@ -16,6 +16,10 @@ public:
 		moveCommand->velocity = value;
 		return *this;
 	}
+	MoveCommandBuilder& jointVelocity(double value){
+		moveCommand->jointVelocity = value;
+		return *this;
+	}
 	MoveCommandBuilder& acceleration(double value){
 		moveCommand->acceleration = value;
 		return *this;
@@ -77,6 +81,7 @@ public:
 	void enter();
 	void editName();
 	void editVelocity();
+	void editJointVelocity();
 	void editAcceleration();
 	void editTime();;
 	void editInterpolator();

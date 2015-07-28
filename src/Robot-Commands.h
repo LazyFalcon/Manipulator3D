@@ -61,6 +61,7 @@ public:
 	double calculateRequiredDistance(float dt);
 
 	double velocity;
+	double jointVelocity;
 	double acceleration;
 	double requiredDistance {0.0};
 	float time;
