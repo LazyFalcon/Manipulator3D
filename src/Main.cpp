@@ -58,16 +58,6 @@ u32           GreenC = 0x00FF0000;
 u32           BlueC = 0x0000FF00;
 u32           AlphaC = 0x000000FF;
 
-HexColor gradientCalc(HexColor left, HexColor right, u8 position){
-	u8 *arrLeft = reinterpret_cast<u8*>(&left);
-	u8 *arrRight = reinterpret_cast<u8*>(&right);
-	arrLeft[0] = arrLeft[0] + ((arrRight[0]-arrLeft[0])*position)/0xFF;
-	arrLeft[1] = arrLeft[1] + ((arrRight[1]-arrLeft[1])*position)/0xFF;
-	arrLeft[2] = arrLeft[2] + ((arrRight[2]-arrLeft[2])*position)/0xFF;
-	arrLeft[3] = arrLeft[3] + ((arrRight[3]-arrLeft[3])*position)/0xFF;
-	return left;
-}
-
 std::unordered_map<string, UI::Font>	UI::fonts;
 std::list <Statement> statements;
 std::default_random_engine randEngine(156);
@@ -138,8 +128,6 @@ void Shut_Down(int return_code){
 	glfwTerminate();
 	exit(return_code);
 }
-
-// resize callback
 
 glm::vec3 camPosition(0,0,3);
 
