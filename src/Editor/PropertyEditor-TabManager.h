@@ -50,7 +50,7 @@ public:
 	shared_ptr<ICommand> getCommand(){
 		return commandBuilderWidget->getCommand();
 	}
-	void doneWidget(){}
+	void applyCommand();
 	/**
 	 *  for command creates suitable builder and widget
 	 */

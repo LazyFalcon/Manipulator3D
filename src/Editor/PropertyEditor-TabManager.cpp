@@ -105,11 +105,10 @@ void CommandEditorTab::run(TabManager &TM){
 	getTypeWidget(TM);
 	if(commandBuilderWidget){
 		commandBuilderWidget->run();
-		doneWidget();
+		applyCommand();
 	}
 	// else
 		// commandBuilderWidget.reset(new MoveCommandBuilderWidget());
-
 }
 void CommandEditorTab::reset(shared_ptr<ICommand> &ptr){
 	commandBuilderWidget = createWidgetFromCommandAndSetPtr(ptr);
@@ -121,6 +120,13 @@ void CommandEditorTab::getTypeWidget(TabManager &TM){
 	CommandTypes.run([this](CommandType val){
 		commandBuilderWidget = createWidgetFromCommandType(val);
 	});
+}
+void CommandEditorTab::applyCommand(){
+	ui.rect(120, 30).text("Apply")(UI::Label)
+		.onlClick([this]{
+			getRC().insertCommand(commandBuilderWidget->getCommand());
+			commandBuilderWidget = createWidgetFromCommandType(EMPTY);
+		});
 }
 
 

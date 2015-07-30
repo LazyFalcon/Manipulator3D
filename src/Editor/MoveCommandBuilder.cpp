@@ -157,10 +157,10 @@ void MoveCommandBuilderWidget::editSolver(){
 	);
 }
 void MoveCommandBuilderWidget::finalize(){
-	ui.rect(130,22).text("Add new command", UI::CenterText)(UI::Button)
-		.onlClick([this]{
-			moveCommandBuilder->finish();
-		});
+	// ui.rect(130, 30).text("Add new command", UI::CenterText)(UI::Button)
+		// .onlClick([this]{
+			// moveCommandBuilder->finish();
+		// });
 }
 
 

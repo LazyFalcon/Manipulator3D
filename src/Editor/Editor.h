@@ -228,6 +228,9 @@ void init();
 void update(RobotController &RC);
 void processKeys(int key, int action, int modifier, RobotController &RC);
 void processMouse(int key, int action, int modifier);
+void set(shared_ptr<IInterpolator> &p);
+void set(shared_ptr<ICommand> &p);
+RobotController& getRC();
 
 NAM_END
 

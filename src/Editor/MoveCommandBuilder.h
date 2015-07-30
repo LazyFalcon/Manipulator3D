@@ -89,7 +89,7 @@ public:
 	void finalize();
 
 	shared_ptr<ICommand> getCommand(){
-		return moveCommandBuilder->moveCommand;
+		return static_pointer_cast<ICommand>(moveCommandBuilder->moveCommand);
 	}
 private:
 	std::string fieldValue {""};

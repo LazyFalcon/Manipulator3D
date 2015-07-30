@@ -12,6 +12,7 @@ extern glm::vec2 mouseMoveVector;
 extern float mouseMoveLen;
 
 extern UI::IMGUI ui;
+extern unique_ptr<RobotController> RC;
 
 /// ---------------------------------------------
 namespace Editor NAM_START
@@ -28,7 +29,7 @@ enum EditorModes : u32 {
 
 };
 
-unique_ptr<TabManager> tabBar;
+unique_ptr<TabManager> tabBar; /// tabbar też raczej będzie żył przez cały program, ew do pełnego przeładowania, ale to nie problem
 
 namespace EditorAxes
 {
@@ -178,17 +179,24 @@ glm::vec4 MultiPointController::moveAlongCameraAxes(){
 }
 
 PolylineEditor polylineEditor;
-
+void set(shared_ptr<ICommand> &command){
+	if(command->type == MOVE){
+		tabBar->get<PathEditorTab>().reset(static_pointer_cast<MoveCommand>(command)->interpolator);
+		polylineEditor.set(static_pointer_cast<MoveCommand>(command)->interpolator);
+	}
+}
 void set(shared_ptr<IInterpolator> &p){
 	polylineEditor.set(p);
+}
 
+RobotController& getRC(){
+	return *RC;
 }
 
 void init(){
 	tabBar = make_unique<TabManager>();
 	tabBar->initTabs();
 	EditorMode |= EditCommand;
-	// polylineEditor.set(BigSplineTest::interpolators[0]);
 }
 
 /**
@@ -205,10 +213,8 @@ void EnterEditor(RobotController &RC){
 	if(EditorMode & EditCommand){
 		auto &command = RC.getCommand();
 		tabBar->get<CommandEditorTab>().reset(command);
-		if(command->type == MOVE)
-			tabBar->get<PathEditorTab>().reset(static_pointer_cast<MoveCommand>(command)->interpolator);
-			polylineEditor.set(static_pointer_cast<MoveCommand>(command)->interpolator);
-		}
+		set(command);
+	}
 	else {
 		tabBar->get<CommandEditorTab>().reset();
 		tabBar->get<PathEditorTab>().reset();

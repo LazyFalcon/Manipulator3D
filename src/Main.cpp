@@ -53,6 +53,20 @@ bool 					quit = false;
 bool 					UI::GetInput = false;
 int64_t 			globalSettings;
 float 				g_timeStep = 3.f;
+u32           RedC = 0xFF000000;
+u32           GreenC = 0x00FF0000;
+u32           BlueC = 0x0000FF00;
+u32           AlphaC = 0x000000FF;
+
+HexColor gradientCalc(HexColor left, HexColor right, u8 position){
+	u8 *arrLeft = reinterpret_cast<u8*>(&left);
+	u8 *arrRight = reinterpret_cast<u8*>(&right);
+	arrLeft[0] = arrLeft[0] + ((arrRight[0]-arrLeft[0])*position)/0xFF;
+	arrLeft[1] = arrLeft[1] + ((arrRight[1]-arrLeft[1])*position)/0xFF;
+	arrLeft[2] = arrLeft[2] + ((arrRight[2]-arrLeft[2])*position)/0xFF;
+	arrLeft[3] = arrLeft[3] + ((arrRight[3]-arrLeft[3])*position)/0xFF;
+	return left;
+}
 
 std::unordered_map<string, UI::Font>	UI::fonts;
 std::list <Statement> statements;
@@ -94,7 +108,7 @@ namespace Editor
 #include "PathCreator.h"
 #include "SomeTests.h"
 #include "BigSplineTest.h"
-unique_ptr<RobotController> RC;
+unique_ptr<RobotController> RC; /// only one instace, full time living, initialized before otrer inits
 unique_ptr<Scene> scene;
 unique_ptr<Resources> globalResources;
 #include "Menu.h"
@@ -306,11 +320,13 @@ void mainLoop(){
 		updates(dt);
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			ui.rect().color(0xA0A0A0FF).text(msecTimer.getString()+"ms").font("ui_12"s)();
+			// ui.rect().color(0xA0A0A0FF).text(msecTimer.getString()+"ms").font("ui_12"s)();
+			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/16*255))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
+			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();

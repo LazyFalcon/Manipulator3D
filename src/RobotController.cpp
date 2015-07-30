@@ -7,6 +7,7 @@
 #include "IInterpolator.h"
 #include "RobotController.h"
 #include "Graph.h"
+#include "Editor/Editor.h"
 
 extern UI::IMGUI ui;
 /*
@@ -99,13 +100,19 @@ void RobotController::stop(){
 }
 void RobotController::next(){
 	//if (std::next(commandIter) != commands.end() && commandIter != commands.end())
-		commandIter++;
-		if (commandIter == commands.end())
-			stop();
+	commandIter++;
+	if(commandIter == commands.end()){
+		stop();
+	}
+	else {
+		Editor::set(*commandIter);
+	}
 }
 void RobotController::prev(){
-	if (commandIter != commands.begin())
+	if(commandIter != commands.begin()){
 		commandIter--;
+
+	}
 }
 MoveCommand& RobotController::move(shared_ptr<IInterpolator> interpolator, const std::string &name){
 	MoveCommand *newCommand = new MoveCommand(interpolator);
