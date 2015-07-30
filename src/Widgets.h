@@ -231,7 +231,7 @@ public:
 
 	}
 	void list(const std::function<void(Type)> &callback){
-			ui.beginLayer();
+			// ui.beginLayer();
 			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
 
 			float direction = -1.f;
@@ -240,9 +240,11 @@ public:
 				direction = -1.f;
 			}
 
+			ui.rect(lenght, 2)(UI::Label);
 			for(int i=0; i<options.size(); i++){
 				auto &option = options[i];
-				ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
+				// ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
+				ui.rect(lenght, 20)
 					.text(option.first)
 					(UI::Hoverable)
 					.switcher(value, option.second)
@@ -251,6 +253,7 @@ public:
 						selectedOption = i;
 						callback(option.second);
 					});
+			ui.rect(lenght, 2)(UI::Label);
 
 				dropPosition.y -= 20.f;
 			}
@@ -258,7 +261,7 @@ public:
 				dropped = false;
 
 			ui.endBox();
-			ui.endLayer();
+			// ui.endLayer();
 	}
 	const std::string& getSelectedName(){
 		return options[selectedOption].first;
@@ -305,7 +308,7 @@ public:
 
 	}
 	void list(const std::function<void(Type)> &callback){
-			ui.beginLayer();
+			// ui.beginLayer();
 			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
 
 			float direction = -1.f;
@@ -314,8 +317,10 @@ public:
 				direction = -1.f;
 			}
 
+			ui.rect(lenght, 2)(UI::Label);
 			for(auto &it : (*options)){
-				ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
+				// ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
+				ui.rect(lenght, 20)
 					.text(it->name)
 					(UI::Hoverable)
 					.switcher(value, it)
@@ -326,11 +331,12 @@ public:
 
 				dropPosition.y -= 20.f;
 			}
+			ui.rect(lenght, 2)(UI::Label);
 			if(ui.outOfTable())
 				dropped = false;
 
 			ui.endBox();
-			ui.endLayer();
+			// ui.endLayer();
 	}
 	const std::string& getSelectedName(){
 		return value->name;
