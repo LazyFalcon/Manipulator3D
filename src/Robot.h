@@ -79,6 +79,9 @@ public:
 	bool isReady { true };
 	Point endEffector;
 	std::vector<std::unique_ptr<Module>> chain;
+
+	btCompoundShape    *compound;
+	btRigidBody        *rgBody;
 };
 
 class JT0 : public IIK {

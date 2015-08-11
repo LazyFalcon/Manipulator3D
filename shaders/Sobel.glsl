@@ -36,7 +36,7 @@ vec4 getNormal(vec2 uv){
 	return texture(uNormalBuffer, uv);
 }
 
-vec2 kernel[10] = vec2[]
+const vec2 kernel[10] = vec2[]
 (
 	vec2(1,1),
 

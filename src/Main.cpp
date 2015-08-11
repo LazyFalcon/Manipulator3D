@@ -81,6 +81,7 @@ class Entity;
 int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
+#include "BulletWorld.h"
 #include "ResourceLoader.h"
 #include "Scene.h"
 #include "Widgets.h"
@@ -134,9 +135,9 @@ glm::vec3 camPosition(0,0,3);
 int main(){
 	// logger::init();
 	// globalSettings |= DRAW_XY_GRID;
-	globalSettings |= SSAO;
+	// globalSettings |= SSAO;
 	// globalSettings |= HDR;
-	// globalSettings |= SOBEL;
+	globalSettings |= SOBEL;
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);
@@ -144,7 +145,7 @@ int main(){
 	scene = make_unique<Scene>();
 	RC = make_unique<RobotController>();
 	globalResources = make_unique<Resources>();
-
+	bulletWorld.init();
 	{ // load res
 		auto &&resources = CFG::Load("../resources.yml");
 		ResourceLoader loader(globalResources);
@@ -198,6 +199,8 @@ int main(){
 
 void fastLoop(float step){
 	RC->update(step/1000.0f);
+	// bulletWorld.update(step/1000.0f);
+	bulletWorld.update(step);
 	scene->robot->update(step);
 }
 void renderLoop(){
@@ -233,6 +236,8 @@ void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	jacobianTransposeInit();
+
+	bulletWorld.init();
 }
 void updates(float dt){
 	Editor::update(*RC);
