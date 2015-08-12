@@ -614,19 +614,20 @@ void renderScene(Scene &scene){
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
 
-#ifdef USE_BULLET
+// #ifdef USE_BULLET
 		auto rgBody = entity.second.rgBody;
 		if(rgBody){
 			// if(rgBody->isStaticOrKinematicObject()){}
 			// else {
 				auto btPos = rgBody->getCenterOfMassPosition();
-				// entity.second.position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
+				entity.second.position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
 
 				auto btQuat = rgBody->getOrientation();
-				// entity.second.quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
+				entity.second.quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
 			// }
+
 		}
-#endif
+// #endif
 
 		glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
 

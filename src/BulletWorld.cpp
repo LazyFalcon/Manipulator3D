@@ -32,9 +32,6 @@ void BulletWorld::clear(){}
 btRigidBody* BulletWorld::createRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, float inertiaScalling){
 	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
 
-	//rigidbody is dynamic if and only if mass is non zero, otherwise static
-	bool isDynamic = (mass != 0.f);
-
 	btVector3 localInertia(0,0,0);
 	if (mass > 0.f)
 		shape->calculateLocalInertia(mass,localInertia);

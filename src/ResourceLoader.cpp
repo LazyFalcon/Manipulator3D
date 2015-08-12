@@ -275,16 +275,12 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};
-#ifdef USE_BULLET
 		auto bulletData = buildBulletData(it);
 
 		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
 
 		if(bulletData)
 			std::cout<<"\tBulleted"<<std::endl;
-#else
-		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat()});
-#endif
 	}
 
 	auto &lamps = cfg["Lamps"];
@@ -296,7 +292,6 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 				lamp["Falloff_distance"].asFloat(),
 				lamp["Energy"].asFloat()
 			});
-
 		}
 	}
 
@@ -312,7 +307,7 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 
 	return true;
 }
-btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
+btRigidBody* ResourceLoader::buildBulletData(CFG::Node cfg){
 	float mass = cfg["Mass"].asFloat();
 	if(mass < 0.1f)
 		return nullptr;
@@ -320,13 +315,11 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
 	vector<float> &floatArr = cfg["BBox"].cacheFloat;
 	btConvexHullShape *convex = new btConvexHullShape(floatArr.data(), 24);
 
-
 	btTransform tr;
 	tr.setIdentity();
 	tr.setOrigin(cfg["Position"].asbtVec3());
 
-	// btCollisionShape *shape = new btBoxShape(dims*0.5f);
-	// auto body = bulletWorld.createRigidBody(mass, tr, shape);
+	// btCollisionShape *convex = new btBoxShape(btVector3(2,2,2));
 	auto body = bulletWorld.createRigidBody(mass, tr, convex);
 
 	return body;
@@ -341,16 +334,16 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		auto entity = &scene.units[it["Name"].value];
 
 #ifdef USE_BULLET
-		if(entity->rgBody){
-			auto newKinematicBody = bulletWorld.createRigidBody(0.f, entity->rgBody->getCenterOfMassTransform(), entity->rgBody->getCollisionShape());
+		// if(entity->rgBody){
+			// auto newKinematicBody = bulletWorld.createRigidBody(0.f, entity->rgBody->getCenterOfMassTransform(), entity->rgBody->getCollisionShape());
 
-			bulletWorld.deleteMotionState(entity->rgBody);
-			bulletWorld.dynamicsWorld->removeRigidBody(entity->rgBody);
+			// bulletWorld.deleteMotionState(entity->rgBody);
+			// bulletWorld.dynamicsWorld->removeRigidBody(entity->rgBody);
 
-			entity->rgBody = newKinematicBody;
-			entity->rgBody->setCollisionFlags(entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-			entity->rgBody->setActivationState(DISABLE_DEACTIVATION);
-		}
+			// entity->rgBody = newKinematicBody;
+			// entity->rgBody->setCollisionFlags(entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+			// entity->rgBody->setActivationState(DISABLE_DEACTIVATION);
+		// }
 #endif
 
 		auto module = std::make_unique<Module>();

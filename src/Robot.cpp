@@ -41,15 +41,15 @@ void Robot::update(float dt){
 		module->entity->quat = transform;
 		module->entity->position = position;
 
-#ifdef USE_BULLET
+// #ifdef USE_BULLET
 		if(module->entity->rgBody){
 			btTransform tr;
 			tr.setRotation(btQuaternion(transform.x, transform.y, transform.z, transform.w));
 			tr.setOrigin(btVector3(position.x, position.y, position.z));
 
-			// module->entity->rgBody->setWorldTransform(tr);
+			module->entity->rgBody->setWorldTransform(tr);
 		}
-#endif
+// #endif
 
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
