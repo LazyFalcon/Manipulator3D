@@ -12,8 +12,8 @@ typedef vector<float> floats;
 void BulletWorld::init(){
 	btVector3 worldMin(-250,-250,-50);
 	btVector3 worldMax(250,250,50);
-	// broadphase = new btDbvtBroadphase();
-	broadphase = new btAxisSweep3(worldMin,worldMax);// precyzja pozycjonowania œwiata
+	// broadphase = new btAxisSweep3(worldMin,worldMax);// precyzja pozycjonowania œwiata
+	broadphase = new btDbvtBroadphase();
 
 
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -25,8 +25,6 @@ void BulletWorld::init(){
 	dynamicsWorld->getSolverInfo().m_numIterations = 100;
 	// btContactSolverInfo& info = dynamicsWorld->getSolverInfo();
 	// info.m_solverMode |= SOLVER_INTERLEAVE_CONTACT_AND_FRICTION_CONSTRAINTS;
-	// info.m_numIterations = 100;
-	// info.m_minimumSolverBatchSize = 128;
 	// info.m_erp = 0.8;
   // info.m_globalCfm = 0.1;
 }

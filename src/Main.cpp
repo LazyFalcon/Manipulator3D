@@ -148,7 +148,7 @@ int main(){
 
 	bulletWorld.init();
 
-	{ // load res
+  { // load res
 		auto &&resources = CFG::Load("../resources.yml");
 		ResourceLoader loader(globalResources);
 		loader.loadResources(resources["Main"]);
@@ -179,31 +179,23 @@ int main(){
 	scene->robot->chain[3]->value = 30*toRad;
 
 
-	// for(auto &it : scene->robot.chain)
-	// steeringConsole.buttons.push_back(PlusMinusWidget(it));
-
-	 RC->robot = scene->robot;
-	 // RC->solver = new JT1;
-	 RCTest(*RC);
+	RC->robot = scene->robot;
+	// RC->solver = new JT1;
+	RCTest(*RC);
 	glfwShowWindow(window);
 	mainLoop();
-	cerr<<"----"<<endl;
 	Engine::clear();
-	cerr<<"----"<<endl;
 	globalResources.reset();
-	cerr<<"----"<<endl;
 	RC.reset();
-	cerr<<"----"<<endl;
 	scene.reset();
-	cerr<<"Bye!"<<endl;
 	return 0;
 }
 
 void fastLoop(float step){
 	RC->update(step/1000.0f);
-	bulletWorld.update(step);
 	// bulletWorld.update(step/1000.0f);
 	scene->robot->update(step);
+	bulletWorld.update(step);
 }
 void renderLoop(){
 	// Engine::plotGraphs();

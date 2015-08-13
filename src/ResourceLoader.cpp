@@ -279,8 +279,6 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 		auto bulletData = buildBulletData(it);
 
 		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
-		if(bulletData)
-			std::cout<<"\tBulleted"<<std::endl;
 	}
 
 	auto &lamps = cfg["Lamps"];
@@ -309,22 +307,23 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 }
 btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
 	float mass = cfg["Mass"].asFloat();
-	// if(mass < 0.1f)
+	cout<<mass<<endl;
+	if(mass < 0.1f)
 		return nullptr;
- 	vector<float> &floatArr = cfg["BBox"].cacheFloat;
-	// btConvexHullShape *convex = new btConvexHullShape();
-	// for(u32 i = 0; i<8; i++){
-		// convex->addPoint(btVector3(floatArr[i*3+0], floatArr[i*3+1], floatArr[i*3+2]));
-	// }
 
-	// glm::quat quat = it["Quaternion"].asQuat();
+ 	vector<float> &floatArr = cfg["BBox"].cacheFloat;
+	btConvexHullShape *convex = new btConvexHullShape();
+	for(u32 i = 0; i<8; i++){
+		convex->addPoint(btVector3(floatArr[i*3+0], floatArr[i*3+1], floatArr[i*3+2]));
+	}
+
 	btTransform tr;
 	tr.setIdentity();
-	// tr.setOrigin(cfg["Position"].asbtVec3());
-	// tr.setRotation(btQuaternion(quat.x, quat.y, quat.z, quat.w));
-	btCollisionShape *convex = new btBoxShape(btVector3(2,2,2));
-	// auto body = bulletWorld.createRigidBody(mass, tr, convex);
-	auto body = bulletWorld.createRigidBody(20, tr, convex);
+	tr.setOrigin(cfg["Position"].asbtVec3());
+	glm::quat quat = cfg["Quaternion"].asQuat();
+	tr.setRotation(btQuaternion(quat.x, quat.y, quat.z, quat.w));
+
+	auto body = bulletWorld.createRigidBody(mass, tr, convex);
 	body->setDamping(0.6f, 0.3f);
 	body->setActivationState(DISABLE_DEACTIVATION);
 	return body;
@@ -349,9 +348,12 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->max = it["ParentJoint"]["Max"].asFloat()*toRad;
 		module->name = it["Name"].value;
 		module->entity = &scene.units[it["Name"].value];
+		// module->entity->rgBody = nullptr;
 		module->maxVelocty = 0.2; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 
+		module->entity->rgBody->setMassProps(0, btVector3(0,0,0));
+		module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 
 		robot.chain.push_back(std::move(module));
 

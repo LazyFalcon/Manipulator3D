@@ -614,13 +614,13 @@ void renderScene(Scene &scene){
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
 		glm::mat4 transform;
+
 // #ifdef USE_BULLET
 		auto rgBody = entity.second.rgBody;
-		// if(rgBody && !rgBody->isStaticOrKinematicObject()){
-		if(rgBody){
+		if(rgBody && !rgBody->isStaticOrKinematicObject()){
+		// if(rgBody){
 			auto btPos = rgBody->getCenterOfMassTransform().getOrigin();
 			entity.second.position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
-			cout<<btPos[2]<<endl;
 			auto btQuat = rgBody->getOrientation();
 			entity.second.quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
 			rgBody->applyCentralImpulse(btVector3(1,0,1));
