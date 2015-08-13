@@ -1,4 +1,5 @@
-﻿#include <Utils/Utils.h>
+﻿#include <Utils/Includes.h>
+#include <Utils/Utils.h>
 #include <Utils/Camera.h>
 #include <Utils/MeshInfo.h>
 #include <Utils/Camera.h>
@@ -8,7 +9,6 @@
 #include "CFGParser.h"
 #include "ResourceLoader.h"
 #include "Engine.h"
-#include "BulletWorld.h"
 
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
@@ -275,16 +275,7 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};
-#ifdef USE_BULLET
-		auto bulletData = buildBulletData(it);
-
-		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
-
-		if(bulletData)
-			std::cout<<"\tBulleted"<<std::endl;
-#else
 		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat()});
-#endif
 	}
 
 	auto &lamps = cfg["Lamps"];
@@ -312,25 +303,6 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 
 	return true;
 }
-btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
-	float mass = cfg["Mass"].asFloat();
-	if(mass < 0.1f)
-		return nullptr;
-
-	vector<float> &floatArr = cfg["BBox"].cacheFloat;
-	btConvexHullShape *convex = new btConvexHullShape(floatArr.data(), 24);
-
-
-	btTransform tr;
-	tr.setIdentity();
-	tr.setOrigin(cfg["Position"].asbtVec3());
-
-	// btCollisionShape *shape = new btBoxShape(dims*0.5f);
-	// auto body = bulletWorld.createRigidBody(mass, tr, shape);
-	auto body = bulletWorld.createRigidBody(mass, tr, convex);
-
-	return body;
-}
 bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 	for(auto &it : cfg.Vector){
 		int type;
@@ -338,20 +310,6 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 			type = PRISMATIC;
 		else if(it["Type"].value == "hinge")
 			type = HINGE;
-		auto entity = &scene.units[it["Name"].value];
-
-#ifdef USE_BULLET
-		if(entity->rgBody){
-			auto newKinematicBody = bulletWorld.createRigidBody(0.f, entity->rgBody->getCenterOfMassTransform(), entity->rgBody->getCollisionShape());
-
-			bulletWorld.deleteMotionState(entity->rgBody);
-			bulletWorld.dynamicsWorld->removeRigidBody(entity->rgBody);
-
-			entity->rgBody = newKinematicBody;
-			entity->rgBody->setCollisionFlags(entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-			entity->rgBody->setActivationState(DISABLE_DEACTIVATION);
-		}
-#endif
 
 		auto module = std::make_unique<Module>();
 		cout<<"-- "+it["Name"].value<<endl;
@@ -362,7 +320,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->min = it["ParentJoint"]["Min"].asFloat()*toRad;
 		module->max = it["ParentJoint"]["Max"].asFloat()*toRad;
 		module->name = it["Name"].value;
-		module->entity = entity;
+		module->entity = &scene.units[it["Name"].value];
 		module->maxVelocty = 0.2; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 

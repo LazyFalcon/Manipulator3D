@@ -2,7 +2,7 @@
 # -D_GLIBCXX_USE_CXX11_ABI=0
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
-CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g -DUSE_BULLET
+CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
@@ -16,7 +16,6 @@ OBJS = \
 ../bin/Camera.o \
 ../bin/Logger.o \
 ../bin/CFGparser.o \
-../bin/BulletWorld.o \
 ../bin/ResourceLoader.o \
 ../bin/Engine.o \
 ../bin/JacobianTransposed.o \
@@ -99,13 +98,8 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h Engine-Ilumination.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) Engine.cpp -o ../bin/Engine.o
 
-../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h BulletWorld.h
+../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) ResourceLoader.cpp -o ../bin/ResourceLoader.o
-
-# --------- BULLET -------------------------
-
-../bin/BulletWorld.o: BulletWorld.cpp BulletWorld.h
-	$(CXX) -c $(CXXFLAGS) BulletWorld.cpp -o ../bin/BulletWorld.o
 
 # --------- UTILS -------------------------
 

@@ -48,28 +48,8 @@ enum {
 	BLUR_WITH_DOWNSAMPLE = 0b1000000000000000000,
 };
 
+
 namespace Engine NAM_START
-
-struct Config
-{
-	struct Sobel {
-		bool enabled;
-		float outlineSize;
-	} sobel;
-	struct SSAO {
-		bool enabled;
-		bool depthOnly;
-		bool withDownsample;
-		float blurRadius;
-	} ssao;
-	struct Shadows {
-		bool enabled;
-		u32 textureSize;
-
-	} shadows;
-};
-
-
 extern GLuint b_position;
 extern GLuint b_uv;
 extern GLuint b_size;
@@ -132,6 +112,31 @@ struct UniversalCyclicBuffer {
         setupBuffer(current, numBuffer, dataSize, divisor, type, normalize);
     }
 };
+
+extern UniversalCyclicBuffer <glm::vec4>b_vec4_1024;
+extern UniversalCyclicBuffer <float>b_float_1024;
+extern UniversalCyclicBuffer <HexColor>b_color_1024;
+
+extern GLuint point_VBO;
+extern GLuint quadCentered;
+extern GLuint quadCorner;
+extern GLuint quadUV_VBO;
+extern GLuint screenQuad;
+extern GLuint XLongQuad;
+extern GLuint XLongQuad2;
+extern GLuint tankUBO;
+extern int g_pointsSize;
+
+extern GLuint fullFBO;
+extern GLuint frameBuffer;
+extern GLuint colorBuffer;
+extern GLuint normalBuffer;
+extern GLuint depthBuffer;
+extern GLuint depthBuffer2;
+extern GLuint stencilBuffer;
+extern GLuint lightBuffer;
+extern GLenum DrawBuffers[3];
+
 
 struct shapeInfo {
 	glm::vec4 info4;
