@@ -1,8 +1,9 @@
 #pragma once
+#define USE_BULLET 1
 #include <Utils/Includes.h>
 #include <Utils/BaseStructs.h>
 
-struct Resources 
+struct Resources
 {
 
 	uint32_t VAO;
@@ -70,7 +71,7 @@ public:
 	void fillBuffers();
 
 	bool loadScene(Scene &scene, CFG::Node &cfg);
-	btRigidBody* buildBulletData(CFG::Node cfg);
+	btRigidBody* buildBulletData(CFG::Node &cfg);
 	bool loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg);
 	GLuint compileShader(const string &shaderName);
 };

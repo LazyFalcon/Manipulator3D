@@ -3,7 +3,6 @@
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g -DUSE_BULLET
-# CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
@@ -72,7 +71,7 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 
 #-----------------------------------------------------
 
-../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h $(UTIL)/BaseStructs.h
+../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h
 	$(CXX) -c $(CXXFLAGS) -o2 Robot-Commands.cpp -o ../bin/Robot-Commands.o
 
 #-----------------------------------------------------
@@ -97,10 +96,10 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/CFGparser.o: CFGparser.cpp CFGparser.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) CFGparser.cpp -o ../bin/CFGparser.o
 
-../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h Engine-Ilumination.h $(UTIL)/Utils.h $(UTIL)/BaseStructs.h
+../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h Engine-Ilumination.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) Engine.cpp -o ../bin/Engine.o
 
-../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h BulletWorld.h $(UTIL)/BaseStructs.h
+../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h BulletWorld.h
 	$(CXX) -c $(CXXFLAGS) ResourceLoader.cpp -o ../bin/ResourceLoader.o
 
 # --------- BULLET -------------------------
