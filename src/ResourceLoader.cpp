@@ -278,9 +278,9 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 		Material material {it["Color"].asVec31()};
 		auto bulletData = buildBulletData(it);
 
-		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat()});
-		// if(bulletData)
-			// std::cout<<"\tBulleted"<<std::endl;
+		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+		if(bulletData)
+			std::cout<<"\tBulleted"<<std::endl;
 	}
 
 	auto &lamps = cfg["Lamps"];
@@ -336,6 +336,8 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 			type = PRISMATIC;
 		else if(it["Type"].value == "hinge")
 			type = HINGE;
+
+
 
 		auto module = std::make_unique<Module>();
 		cout<<"-- "+it["Name"].value<<endl;

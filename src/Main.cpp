@@ -201,8 +201,8 @@ int main(){
 
 void fastLoop(float step){
 	RC->update(step/1000.0f);
-	// bulletWorld.update(step);
-	bulletWorld.update(step/1000.0f);
+	bulletWorld.update(step);
+	// bulletWorld.update(step/1000.0f);
 	scene->robot->update(step);
 }
 void renderLoop(){

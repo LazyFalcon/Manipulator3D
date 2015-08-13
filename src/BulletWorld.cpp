@@ -15,7 +15,7 @@ void BulletWorld::init(){
 	// broadphase = new btDbvtBroadphase();
 	broadphase = new btAxisSweep3(worldMin,worldMax);// precyzja pozycjonowania œwiata
 
- 
+
 	collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver();
@@ -54,7 +54,6 @@ btRigidBody* BulletWorld::createRigidBody(float mass, const btTransform& startTr
 
 	return body;
 }
-
 
 void BulletWorld::deleteMotionState(btRigidBody* body){
 	u32 i;
