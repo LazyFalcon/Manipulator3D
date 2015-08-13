@@ -623,7 +623,6 @@ void renderScene(Scene &scene){
 			entity.second.position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
 			auto btQuat = rgBody->getOrientation();
 			entity.second.quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
-			rgBody->applyCentralImpulse(btVector3(1,0,1));
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
 		else

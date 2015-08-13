@@ -42,7 +42,7 @@ namespace CFG {
 		int size(){
 			return max(Map.size(), Vector.size());
 		}
-		bool has(string prop){
+		bool has(const string &prop){
 			auto it = Map.find(prop);
 			return it != Map.end();
 		}
@@ -142,6 +142,25 @@ namespace CFG {
 		}
 		void operator &= (int val){ // reset bit userinfo &= ~bit
 			 userInfo &= val;
+		}
+
+		bool operator == (const string &s){
+			return value == s;
+		}
+		bool operator == (int s){
+			return asInt() == s;
+		}
+		bool operator == (float s){
+			return asFloat() == s;
+		}
+		bool operator != (const string &s){
+			return value == s;
+		}
+		bool operator != (int s){
+			return asInt() == s;
+		}
+		bool operator != (float s){
+			return asFloat() == s;
 		}
 
 		bool isSeq(){

@@ -27,4 +27,3 @@ public:
 	void deleteBodies();
 };
 
-extern BulletWorld bulletWorld;

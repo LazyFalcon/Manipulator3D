@@ -20,7 +20,7 @@ void BulletWorld::init(){
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver();
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(10,10,-30));
+	dynamicsWorld->setGravity(btVector3(0,0,-30));
 	dynamicsWorld ->getSolverInfo().m_minimumSolverBatchSize = 128;
 	dynamicsWorld->getSolverInfo().m_numIterations = 100;
 	// btContactSolverInfo& info = dynamicsWorld->getSolverInfo();
@@ -43,7 +43,6 @@ btRigidBody* BulletWorld::createRigidBody(float mass, const btTransform& startTr
 
 	btRigidBody* body = new btRigidBody(cInfo);
 	body->setContactProcessingThreshold(BT_LARGE_FLOAT);
-	body->setFriction(0.6);
 	body->setUserPointer(NULL);
 	dynamicsWorld->addRigidBody(body);
 	bodies.push_back(body);
@@ -65,7 +64,27 @@ void BulletWorld::deleteMotionState(btRigidBody* body){
 }
 
 void BulletWorld::update(float step){
-	dynamicsWorld->stepSimulation(step,2);
+	dynamicsWorld->stepSimulation(step, 10);
+
+	int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
+	if(numManifolds > 0)
+		cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+	for(u32 i=0; i<numManifolds; i++){
+		btPersistentManifold* contactManifold =  dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		// btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
+		btCollisionObject* obA = (btCollisionObject*)(contactManifold->getBody0());
+		btCollisionObject* obB = (btCollisionObject*)(contactManifold->getBody1());
+
+		int numContacts = contactManifold->getNumContacts();
+		for(u32 j=0; j<numContacts; j++){
+			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+			if(pt.getDistance()<0.f){
+				const btVector3& ptA = pt.getPositionWorldOnA();
+				const btVector3& ptB = pt.getPositionWorldOnB();
+				const btVector3& normalOnB = pt.m_normalWorldOnB;
+			}
+		}
+	}
 }
 
 void BulletWorld::deleteBodies(){
@@ -99,5 +118,4 @@ void BulletWorld::deleteBodies(){
 	shapes.clear();
 }
 
-BulletWorld bulletWorld;
 

@@ -82,6 +82,7 @@ int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "BulletWorld.h"
+BulletWorld bulletWorld;
 #include "ResourceLoader.h"
 #include "Scene.h"
 #include "Widgets.h"
@@ -193,9 +194,8 @@ int main(){
 
 void fastLoop(float step){
 	RC->update(step/1000.0f);
-	// bulletWorld.update(step/1000.0f);
+	bulletWorld.update(step/1000.0f);
 	scene->robot->update(step);
-	bulletWorld.update(step);
 }
 void renderLoop(){
 	// Engine::plotGraphs();
@@ -230,8 +230,6 @@ void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	jacobianTransposeInit();
-
-	bulletWorld.init();
 }
 void updates(float dt){
 	Editor::update(*RC);

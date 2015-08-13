@@ -107,7 +107,7 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 # --------- BULLET -------------------------
 
 ../bin/BulletWorld.o: BulletWorld.cpp BulletWorld.h
-	$(CXX) -c $(CXXFLAGS) BulletWorld.cpp -o ../bin/BulletWorld.o
+	$(CXX) -c $(CXXFLAGS) -o2 BulletWorld.cpp -o ../bin/BulletWorld.o
 
 # --------- UTILS -------------------------
 

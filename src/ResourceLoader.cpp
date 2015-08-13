@@ -11,6 +11,7 @@
 #include "BulletWorld.h"
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
+extern BulletWorld bulletWorld;
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
 	count = cfg["Shaders"].size() + cfg["Images"].size() + cfg["Meshes"].size();
@@ -306,12 +307,18 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	return true;
 }
 btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
-	float mass = cfg["Mass"].asFloat();
-	cout<<mass<<endl;
-	if(mass < 0.1f)
-		return nullptr;
 
- 	vector<float> &floatArr = cfg["BBox"].cacheFloat;
+	if(!cfg.has("RigidBody")){
+		return nullptr;
+	}
+	CFG::Node &rgData = cfg["RigidBody"];
+	float mass = rgData["mass"].asFloat();
+	if(rgData["type"] == "PASSIVE"s){
+		mass = 0;
+		cout<<"\t-";
+	}
+	cout<<" +"<<endl;
+ 	vector<float> &floatArr = rgData["BBox"].cacheFloat;
 	btConvexHullShape *convex = new btConvexHullShape();
 	for(u32 i = 0; i<8; i++){
 		convex->addPoint(btVector3(floatArr[i*3+0], floatArr[i*3+1], floatArr[i*3+2]));
@@ -326,6 +333,10 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
 	auto body = bulletWorld.createRigidBody(mass, tr, convex);
 	body->setDamping(0.6f, 0.3f);
 	body->setActivationState(DISABLE_DEACTIVATION);
+
+	body->setFriction(rgData["friction"].asFloat());
+	body->setRollingFriction(rgData["friction"].asFloat());
+
 	return body;
 }
 bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
