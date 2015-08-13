@@ -2,7 +2,9 @@
 # -D_GLIBCXX_USE_CXX11_ABI=0
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
-CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
+# CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -DUSE_BULLET
+CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
+# CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
@@ -16,6 +18,7 @@ OBJS = \
 ../bin/Camera.o \
 ../bin/Logger.o \
 ../bin/CFGparser.o \
+../bin/BulletWorld.o \
 ../bin/ResourceLoader.o \
 ../bin/Engine.o \
 ../bin/JacobianTransposed.o \
@@ -37,8 +40,8 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 -lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
 
 
-../bin/Manipulator: $(OBJS)
-	$(CXX) -g $(OBJS) -o ../bin/Manipulator $(LIBS)
+../bin/3DoManipulator: $(OBJS)
+	$(CXX) -g $(OBJS) -o ../bin/3DoManipulator $(LIBS)
 
 ../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
@@ -70,7 +73,7 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 
 #-----------------------------------------------------
 
-../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h
+../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h $(UTIL)/BaseStructs.h
 	$(CXX) -c $(CXXFLAGS) -o2 Robot-Commands.cpp -o ../bin/Robot-Commands.o
 
 #-----------------------------------------------------
@@ -95,11 +98,16 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/CFGparser.o: CFGparser.cpp CFGparser.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) CFGparser.cpp -o ../bin/CFGparser.o
 
-../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h Engine-Ilumination.h $(UTIL)/Utils.h
+../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h Engine-Ilumination.h $(UTIL)/Utils.h $(UTIL)/BaseStructs.h
 	$(CXX) -c $(CXXFLAGS) Engine.cpp -o ../bin/Engine.o
 
-../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h
+../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h BulletWorld.h $(UTIL)/BaseStructs.h
 	$(CXX) -c $(CXXFLAGS) ResourceLoader.cpp -o ../bin/ResourceLoader.o
+
+# --------- BULLET -------------------------
+
+../bin/BulletWorld.o: BulletWorld.cpp BulletWorld.h
+	$(CXX) -c $(CXXFLAGS) BulletWorld.cpp -o ../bin/BulletWorld.o
 
 # --------- UTILS -------------------------
 

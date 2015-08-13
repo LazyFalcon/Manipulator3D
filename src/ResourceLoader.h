@@ -1,7 +1,8 @@
 #pragma once
+#include <Utils/Includes.h>
 #include <Utils/BaseStructs.h>
 
-struct Resources
+struct Resources 
 {
 
 	uint32_t VAO;
@@ -64,11 +65,12 @@ public:
 	bool loadScene(CFG::Node &_cfg);
 	bool loadImageSet(CFG::Node &_cfg);
 	bool loadObj(fstream &file);
-	bool loadScene(Scene &scene, CFG::Node &cfg);
 	std::string  loadFile(string fname);
 	void printShaderInfoLog(GLint shader);
 	void fillBuffers();
 
+	bool loadScene(Scene &scene, CFG::Node &cfg);
+	btRigidBody* buildBulletData(CFG::Node &cfg);
 	bool loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg);
 	GLuint compileShader(const string &shaderName);
 };

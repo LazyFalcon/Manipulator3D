@@ -1,5 +1,4 @@
-﻿#include <Utils/Includes.h>
-#include <Utils/Utils.h>
+﻿#include <Utils/Utils.h>
 #include <Utils/Camera.h>
 #include <Utils/MeshInfo.h>
 #include <Utils/Camera.h>
@@ -9,6 +8,8 @@
 #include "CFGParser.h"
 #include "ResourceLoader.h"
 #include "Engine.h"
+#include "BulletWorld.h"
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
@@ -275,7 +276,11 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};
+		auto bulletData = buildBulletData(it);
+
 		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat()});
+		// if(bulletData)
+			// std::cout<<"\tBulleted"<<std::endl;
 	}
 
 	auto &lamps = cfg["Lamps"];
@@ -287,7 +292,6 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 				lamp["Falloff_distance"].asFloat(),
 				lamp["Energy"].asFloat()
 			});
-
 		}
 	}
 
@@ -302,6 +306,28 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 		loadRobot(scene, *scene.robot, cfg["Robot"]);
 
 	return true;
+}
+btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
+	float mass = cfg["Mass"].asFloat();
+	// if(mass < 0.1f)
+		return nullptr;
+ 	vector<float> &floatArr = cfg["BBox"].cacheFloat;
+	// btConvexHullShape *convex = new btConvexHullShape();
+	// for(u32 i = 0; i<8; i++){
+		// convex->addPoint(btVector3(floatArr[i*3+0], floatArr[i*3+1], floatArr[i*3+2]));
+	// }
+
+	// glm::quat quat = it["Quaternion"].asQuat();
+	btTransform tr;
+	tr.setIdentity();
+	// tr.setOrigin(cfg["Position"].asbtVec3());
+	// tr.setRotation(btQuaternion(quat.x, quat.y, quat.z, quat.w));
+	btCollisionShape *convex = new btBoxShape(btVector3(2,2,2));
+	// auto body = bulletWorld.createRigidBody(mass, tr, convex);
+	auto body = bulletWorld.createRigidBody(20, tr, convex);
+	body->setDamping(0.6f, 0.3f);
+	body->setActivationState(DISABLE_DEACTIVATION);
+	return body;
 }
 bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 	for(auto &it : cfg.Vector){

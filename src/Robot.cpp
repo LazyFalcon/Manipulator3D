@@ -40,6 +40,7 @@ void Robot::update(float dt){
 		}
 		module->entity->quat = transform;
 		module->entity->position = position;
+
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
 
@@ -118,7 +119,6 @@ bool Robot::goTo(const std::vector<double> &jointPositions){
 	u32 loopSize = std::min(chain.size(), jointPositions.size());
 	isReady = false;
 	for(u32 i=0; i<loopSize; i++){
-		// auto delta = jointPositions[i] - chain[i]->value;
 		auto delta = circleDistance(jointPositions[i], chain[i]->value);
 		chain[i]->targetValue = delta;
 	}
@@ -133,17 +133,12 @@ bool Robot::goTo(float dt){
 
 double Module::computeMaxStep(float dt){
 	double step = dt * maxVelocty;
-	// double step = dt * 0.5;
-	// double step = dt * std::max(abs(targetValue), jointEpsilon)*5;
 	return step;
 }
 bool Module::goTo(float dt){
 	if(glm::epsilonEqual(targetValue, 0.0, jointEpsilon)){
 		return true;
 	}
-	if(abs(targetValue) > dpi)
-		cout<<targetValue<<endl;
-
 	auto maxStep = computeMaxStep(dt);
 
 	auto step = glm::clamp(targetValue, -maxStep, maxStep);

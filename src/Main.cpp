@@ -12,7 +12,7 @@
 #include <Utils/Camera.h>
 #include "CFGParser.h"
 #include "Timer.h"
-#define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 using namespace std::chrono;
 glm::vec4 		viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
@@ -81,6 +81,7 @@ class Entity;
 int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
+#include "BulletWorld.h"
 #include "ResourceLoader.h"
 #include "Scene.h"
 #include "Widgets.h"
@@ -134,9 +135,9 @@ glm::vec3 camPosition(0,0,3);
 int main(){
 	// logger::init();
 	// globalSettings |= DRAW_XY_GRID;
-	globalSettings |= SSAO;
+	// globalSettings |= SSAO;
 	// globalSettings |= HDR;
-	// globalSettings |= SOBEL;
+	globalSettings |= SOBEL;
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);
@@ -144,6 +145,8 @@ int main(){
 	scene = make_unique<Scene>();
 	RC = make_unique<RobotController>();
 	globalResources = make_unique<Resources>();
+
+	bulletWorld.init();
 
 	{ // load res
 		auto &&resources = CFG::Load("../resources.yml");
@@ -198,6 +201,8 @@ int main(){
 
 void fastLoop(float step){
 	RC->update(step/1000.0f);
+	// bulletWorld.update(step);
+	bulletWorld.update(step/1000.0f);
 	scene->robot->update(step);
 }
 void renderLoop(){
@@ -233,6 +238,8 @@ void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	jacobianTransposeInit();
+
+	bulletWorld.init();
 }
 void updates(float dt){
 	Editor::update(*RC);
@@ -307,7 +314,11 @@ void mainLoop(){
 		UI::GetInput = ui.textEditor.state();
 		updates(dt);
 		MainMenu();
+		Robot &robot = *(scene->robot);
+		std::vector<double> vars = robot.getVariables();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
+			for(auto &it : vars)
+				ui.rect().text(to_string(it))();
 			// ui.rect().color(0xA0A0A0FF).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/16*255))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
