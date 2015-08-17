@@ -37,56 +37,12 @@ Graph jacobianIterations("jacobianIterations", Graph::LastX, 0xFFFF00FF, 250);
 Graph jacobianPrecision("jacobianPrecision", Graph::LastX, 0xFF4000FF, 250);
 extern Plot mainPlot;
 
-bool JT0::solve(Point aim, Robot &robot){
-	if(performIK(aim, robot))
+bool JT0::solve(Point target, Robot &robot){
+	if(performIK(target, robot))
 		robot.insertVariables(result);
 	return true;
 }
-bool JT0::performIK(Point aim, Robot &robot){
-	int iterationLimit = 2000;
-	float minError = 0.001f;
-
-	auto jacobian = buildJacobian(robot);
-	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
-
-	auto endEffector = robot.endEffector;
-	Matrix variables(robot.getSize(), 1);
-	Matrix enhancement(robot.getSize(), 1);
-	auto force = Matrix(6,1);
-
-	variables.insertColumn(0, robot.getVariables());
-
-	float error = glm::distance(aim.position, endEffector.position);
-	for(int i=0; error > minError && i<iterationLimit; i++){
-		auto delta  = (aim.position - endEffector.position);
-		force.insertColumn(0, {delta.x, delta.y, delta.z,0,0,0});
-
-		auto a = dot(jjp*force, force);
-		a = a/dot(jjp*force, jjp*force);
-		// a = 0.005f;
-		auto q = jacobian*force*a;
-		// q = mul(q, enhancement);
-		variables = q + variables;
-		// robot.clamp(variables.getVector());
-		endEffector = robot.simulate(variables.getVector());
-
-		error = glm::distance(endEffector.position, aim.position);
-	}
-
-	result = variables.getVector();
-	// succes = error > minError;
-	succes = true;
-	return succes;
-}
-
-
-//TODO: dodać sprawdzanie orientacji jeszcze
-bool JT1::solve(Point aim, Robot &robot){
-	performIK(aim, robot);
-		// robot.insertVariables(result);
-	return glm::distance(endPosition, aim.position) < 0.005;
-}
-bool JT1::performIK(Point aim, Robot &robot){
+bool JT0::performIK(Point target, Robot &robot){
 	int iterationLimit = 2000;
 	float minError = 0.001f;
 
@@ -110,11 +66,11 @@ bool JT1::performIK(Point aim, Robot &robot){
 
 	variables.insertColumn(0, robot.getVariables());
 
-	float positionError = glm::distance(aim.position, robot.endEffector.position);
+	float positionError = glm::distance(target.position, robot.endEffector.position);
 
-	g_mousePositions(aim.position);
+	g_mousePositions(target.position);
 	// if(positionError > minError*5.f)
-		// aim.position = robot.endEffector.position + (aim.position - robot.endEffector.position)*0.1f;
+		// target.position = robot.endEffector.position + (target.position - robot.endEffector.position)*0.1f;
 
 	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
@@ -122,8 +78,8 @@ bool JT1::performIK(Point aim, Robot &robot){
 	for(; positionError > minError && iteration<iterationLimit; iteration++){
 
 
-		auto positionDelta  = (aim.position - endEffector.position);
-		// auto axisDelta  = glm::cross(glm::axis(endEffector.quat), glm::axis(aim.quat));
+		auto positionDelta  = (target.position - endEffector.position);
+		// auto axisDelta  = glm::cross(glm::axis(endEffector.quat), glm::axis(target.quat));
 
 		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z,0, 0, 0});
 
@@ -149,7 +105,7 @@ bool JT1::performIK(Point aim, Robot &robot){
 		// robot.clamp(variables.getVector());
 		endEffector = robot.simulate(variables.getVector());
 		g_targetPosition = endEffector.position;
-		positionError = glm::distance(endEffector.position, aim.position);
+		positionError = glm::distance(endEffector.position, target.position);
 	}
 	endPosition = endEffector.position;
 	result = variables.getVector();
@@ -158,11 +114,117 @@ bool JT1::performIK(Point aim, Robot &robot){
 	return succes;
 }
 
-bool JTReversed::performIK(Point aim, Robot &robot){
+void cutHigherThanPi(vector <double> &vec){
+	for(auto &v : vec){
+		if(v > dpi2){
+			v -= dpi2 * floor(v/dpi2);
+		}
+		else if(v < -dpi2){
+			v -= dpi2 * floor(v/dpi2);
+		}
+
+	}
+}
+//TODO: dodać sprawdzanie orientacji jeszcze
+bool JT1::solve(Point target, Robot &robot){
+	performIK(target, robot);
+	// cutHigherThanPi(result);
+
+		// robot.insertVariables(result);
+	return glm::distance(endPosition, target.position) < 0.005;
+}
+bool JT1::performIK(Point target, Robot &robot){
+	int iterationLimit = 2000;
+	float minError = 0.001f;
+	// double minError = 0.01f;
+
+	auto endEffector = robot.endEffector;
+	auto force = Matrix(6,1);
+	Matrix variables(robot.getSize(), 1);
+	Matrix enhancement(robot.getSize(), 1);
+
+	// double i = 0.2;
+	double i = 1.5;
+	// for(auto &it : variables.getVector()){
+		// it = 0.0;
+	// }
+	for(auto &it : enhancement.getVector()){
+		// it = i;
+		it = 1;
+		i -= 0.2;
+		// i += 0.9;
+	}
+	// enhancement(3) *= 15;
+
+	variables.insertColumn(0, robot.getVariables());
+
+	double positionError = glm::distance(target.position, robot.endEffector.position);
+
+	g_mousePositions(target.position);
+	// if(positionError > minError*5.f)
+		// target.position = robot.endEffector.position + (target.position - robot.endEffector.position)*0.1f;
+
+	u32 iteration = 0;
+
+	glm::vec4 vecToTarget = glm::normalize(target.position - robot.endEffector.position);
+	glm::vec4 semiTarget = robot.endEffector.position;
+	// while(positionError > minError && iteration<iterationLimit){
+	while(positionError > minError){
+		double semiPositionError = glm::clamp(positionError, 0.0, 0.10);
+		semiTarget += vecToTarget*glm::clamp(float(semiPositionError), 0.f, 0.1f);
+		iteration = 0;
+
+		cutHigherThanPi(variables.getVector());
+
+		auto jacobian = buildJacobian(robot, variables.getVector(), endEffector);
+		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
+
+
+		cout<<semiPositionError<<" "<<positionError<<endl;
+		for(; semiPositionError > minError && iteration<iterationLimit; iteration++){
+			auto positionDelta  = (semiTarget - endEffector.position);
+			// auto axisDelta  = glm::cross(glm::axis(endEffector.quat), glm::axis(target.quat));
+
+			force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z,0, 0, 0});
+
+			auto a = dot(jjp*force, force);
+			a = a/dot(jjp*force, jjp*force);
+			auto gradient = jacobian*force*a;
+			gradient = mul(gradient, enhancement);
+
+			// for(int i=0; i<robot.chain.size(); i++){
+				// float val = robot.chain[i]->value;
+				// float max = robot.chain[i]->max;
+				// float min = robot.chain[i]->min;
+
+				// if(val > max/2)
+					// gradient(i) *=  (0.1 + max - val)/max/2 + 0.5;
+				// else if(val < min/2)
+					// gradient(i) *=  (0.1 + min - val)/min/2 + 0.5;
+			// }
+
+			variables = gradient + variables;
+			// robot.clamp(variables.getVector());
+			endEffector = robot.simulate(variables.getVector());
+			g_targetPosition = endEffector.position;
+			semiPositionError = glm::distance(endEffector.position, semiTarget);
+		}
+
+		positionError = glm::distance(endEffector.position, target.position);
+	}
+	cout<<"> "<<iteration<<" "<<positionError<<endl;
+	endPosition = endEffector.position;
+	result = variables.getVector();
+	succes = positionError < minError;
+
+	return succes;
+}
+
+bool JTReversed::performIK(Point target, Robot &robot){
 
 	return true;
 }
-bool CCD::performIK(Point aim, Robot &robot){
+bool CCD::performIK(Point target, Robot &robot){
 
 	return true;
 }
@@ -173,7 +235,7 @@ extern glm::vec4 normal;
 extern glm::vec4 surfaceOfMotion;
 extern glm::quat gripperQuat;
 // TODO: poprawić newPoint, ma on bć punktm przecięcia ray z płaszczyzną, obecnie jest po chuju
-void BADBADBADRobotIKRealtimeTest(Robot &robot){
+void robotFollowTheMouseTest(Robot &robot){
 	if(ui.rClick()){
 		endPos = robot.endEffector.position;
 		gripperQuat = robot.endEffector.quat;
@@ -207,3 +269,20 @@ void jacobianTransposeUpdate(){
 }
 void test(Robot &robot){
 }
+
+void jacobianTransposeInitialCall(Robot &robot){
+	auto solver = make_unique<JT1>();
+
+	// Point target = {glm::vec4(3,3,3,1), glm::quat(0.1, 0,0,-1)};
+
+	// Point target = {glm::vec4(2, 5, 4, 1), glm::quat(0, 0, 0, 1)};
+
+	// solver->solve(target, robot);
+	// robot.reset();
+	// robot.insertVariables(solver->result);
+	// cout<<">>  ";
+	// for(auto &it : solver->result)
+		// std::cout<<it<<" ";
+	// std::cout<<std::endl;
+}
+

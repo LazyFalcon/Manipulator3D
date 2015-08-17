@@ -111,5 +111,6 @@ void drawLineStrip(const LineStrip &strip, bool clear);
 void drawLineSegments(const LineSegments &segments, bool clear);
 void drawAABB(const glm::vec4 &center, const glm::vec4 &dimensions, HexColor color, int lineSize);
 
+void drawVector(glm::vec4 position, glm::vec4 axis, float lenght = 1.f);
 NAM_END
 

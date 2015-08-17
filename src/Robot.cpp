@@ -170,3 +170,8 @@ void robotTest(float dt, Robot &robot){
 
 
 }
+
+void Robot::reset(){
+	for(auto &module : chain)
+		module->reset();
+}

@@ -47,10 +47,9 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables);
 void clamp(std::vector<double> &vec, double min, double max);
 void clamp(Matrix &mat, double min, double max);
 
-
-
-void BADBADBADRobotIKRealtimeTest(Robot &robot);
+void robotFollowTheMouseTest(Robot &robot);
 void jacobianTransposeInit();
 void test(Robot &robot);
 
 extern glm::vec4 g_targetPosition;
+void jacobianTransposeInitialCall(Robot &robot);

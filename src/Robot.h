@@ -19,6 +19,20 @@ public:
 		lastAcceleration = 0.0;
 		value = 0.0;
 	}
+	bool goTo(float dt);
+	double computeMaxStep(float dt);
+	glm::vec4 getMainAxis(){
+		return glm::normalize(vecToA + vecToB);
+	}
+	glm::vec3 getMainAxis3(){
+		return glm::normalize(vecToA.xyz() + vecToB.xyz());
+	}
+	void reset(){
+		lastVelocity = 0;
+		lastAcceleration = 0;
+		value = 0;
+		targetValue = 0;
+	}
 
 	int type;
 	glm::vec4 axis;
@@ -34,14 +48,6 @@ public:
 	double lastVelocity;
 	double lastAcceleration;
 
-	bool goTo(float dt);
-	double computeMaxStep(float dt);
-	glm::vec4 getMainAxis(){
-		return glm::normalize(vecToA + vecToB);
-	}
-	glm::vec3 getMainAxis3(){
-		return glm::normalize(vecToA.xyz() + vecToB.xyz());
-	}
 };
 
 class Gripper : public Module{};
@@ -75,17 +81,21 @@ public:
 	glm::vec4 clamp(std::vector<double> &vec);
 	glm::vec4 insertVariables(std::vector<double> &vec);
 	int getSize(){return chain.size();}
+	void reset();
 
 	bool isReady { true };
 	Point endEffector;
+
 	std::vector<std::unique_ptr<Module>> chain;
 };
 
+/// without orientation
 class JT0 : public IIK {
 public:
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point aim, Robot &robot);
 };
+/// with orientation
 class JT1 : public IIK {
 public:
 	~JT1(){

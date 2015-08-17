@@ -1340,6 +1340,12 @@ void drawTexturedBox(GLuint texture, const glm::vec4 &box){
 	texturedBoxes.emplace_back(texture, box);
 }
 
+
+void drawVector(glm::vec4 position, glm::vec4 axis, float lenght){
+
+
+}
+
 void renderGUI(UI::IMGUI &gui){
 
 	glDepthMask(0);

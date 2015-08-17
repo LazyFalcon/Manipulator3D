@@ -229,6 +229,7 @@ void prerequisites(){
 	_DebugLine_
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
+	jacobianTransposeInitialCall(*(scene->robot));
 	jacobianTransposeInit();
 }
 void updates(float dt){
