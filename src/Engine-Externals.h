@@ -174,8 +174,7 @@ GLuint ResourceLoader::compileShader(const string &shaderName){
 	if (!compiled){
 		cout << "Fragment shader in "<<shaderName<<" not compiled." << endl;
 		printShaderInfoLog(fragmentS);
-		int x;
-		cin>>x;
+		cin.ignore();
 
 		return compileShader(shaderName);
 	}
