@@ -363,8 +363,8 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->maxVelocty = 0.2; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 
-		module->entity->rgBody->setMassProps(0, btVector3(0,0,0));
-		module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+		// module->entity->rgBody->setMassProps(0, btVector3(0,0,0));
+		// module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 
 		robot.chain.push_back(std::move(module));
 

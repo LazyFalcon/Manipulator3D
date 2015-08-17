@@ -20,8 +20,8 @@ void BulletWorld::init(){
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	solver = new btSequentialImpulseConstraintSolver();
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0,0,-30));
-	dynamicsWorld ->getSolverInfo().m_minimumSolverBatchSize = 128;
+	dynamicsWorld->setGravity(btVector3(0,0,-10));
+	dynamicsWorld->getSolverInfo().m_minimumSolverBatchSize = 128;
 	dynamicsWorld->getSolverInfo().m_numIterations = 100;
 	// btContactSolverInfo& info = dynamicsWorld->getSolverInfo();
 	// info.m_solverMode |= SOLVER_INTERLEAVE_CONTACT_AND_FRICTION_CONSTRAINTS;
@@ -67,8 +67,6 @@ void BulletWorld::update(float step){
 	dynamicsWorld->stepSimulation(step, 10);
 
 	int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
-	if(numManifolds > 0)
-		cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
 	for(u32 i=0; i<numManifolds; i++){
 		btPersistentManifold* contactManifold =  dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
 		// btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
