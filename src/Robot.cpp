@@ -7,7 +7,7 @@
 extern const float pi;
 extern const double dpi;
 extern PositionSaver g_robotPositions;
-const double jointEpsilon = 1.0*dpi/60.0/180.0; /// one/10 minute in radians
+const double jointEpsilon = 1.0*dpi/60.0/180.0; /// one minute in radians
 
 std::vector<glm::vec4> Robot::forward(){
 	for(auto &module : chain){

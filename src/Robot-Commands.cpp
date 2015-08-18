@@ -57,11 +57,6 @@ void MoveCommand::init(RobotController &rc){
 	targetJointPosition = solver->result;
 	rc.robot->isReady = false;
 	std::cout<<"Init command"<<std::endl;
-	// rc.robot->reset();
-	cout<<">>  ";
-	for(auto &it : solver->result)
-		std::cout<<it<<" ";
-	std::cout<<std::endl;
 
 	previousPoint = rc.robot->endEffector.position;
 	rc.robot->insertVariables(targetJointPosition);
