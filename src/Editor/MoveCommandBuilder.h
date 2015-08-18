@@ -1,6 +1,6 @@
 #pragma once
 #include "../Robot-Commands.h"
-
+class RobotController;
 
 class MoveCommandBuilder
 {
@@ -50,7 +50,7 @@ public:
 		moveCommand->solver = make_unique<JT1>();
 		return *this;
 	}
-	MoveCommandBuilder& finish();
+	MoveCommandBuilder& finish(shared_ptr<RobotController> RC);
 
 	MoveCommandBuilder(){}
 	~MoveCommandBuilder(){}
