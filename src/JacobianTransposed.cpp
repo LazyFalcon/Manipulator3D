@@ -66,8 +66,8 @@ bool JT0::performIK(Point target, Robot &robot){
 	// double i = 0.2;
 	double i = 1.5;
 	for(auto &it : enhancement.getVector()){
-		it = i;
-		// it = 1;
+		// it = i;
+		it = 1;
 		i -= 0.2;
 		// i += 0.9;
 	}
@@ -80,17 +80,19 @@ bool JT0::performIK(Point target, Robot &robot){
 
 	glm::vec4 vecToTarget = glm::normalize(target.position - robot.endEffector.position);
 	glm::vec4 semiTarget = robot.endEffector.position;
-	while(positionError > minError && iteration < iterationLimit){
-		double semiPositionError = glm::clamp(positionError, 0.0, 0.20);
-		semiTarget += vecToTarget*glm::clamp(float(semiPositionError), 0.f, 0.2f);
+	// while(positionError > minError && iteration < iterationLimit){
+		// double semiPositionError = glm::clamp(positionError, 0.0, 0.20);
+		double semiPositionError = positionError;
+		// semiTarget += vecToTarget*glm::clamp(float(semiPositionError), 0.f, 0.2f);
+		semiTarget += target.position;
 		// iteration -= 100;
 
 		// cutHigherThanPi(variables.getVector());
 
 		auto jacobian = buildJacobian(robot, variables.getVector(), endEffector);
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
-
 		for(; semiPositionError > minError && iteration<iterationLimit; iteration++){
+
 			auto positionDelta  = (semiTarget - endEffector.position);
 			force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z,0,0,0});
 
@@ -99,28 +101,14 @@ bool JT0::performIK(Point target, Robot &robot){
 			auto gradient = jacobian*force*a;
 			gradient = mul(gradient, enhancement);
 
-		// for(int i=0; i<robot.chain.size(); i++){
-			// float val = robot.chain[i]->value;
-			// float max = robot.chain[i]->max;
-			// float min = robot.chain[i]->min;
-
-			// if(val > max/2)
-				// gradient(i) *=  (0.1 + max - val)/max/2 + 0.5;
-			// else if(val < min/2)
-				// gradient(i) *=  (0.1 + min - val)/min/2 + 0.5;
-
-
-		// }
-
 			variables = gradient + variables;
-			// robot.clamp(variables.getVector());
 			endEffector = robot.simulate(variables.getVector());
 			g_targetPosition = endEffector.position;
 			semiPositionError = glm::distance(endEffector.position, semiTarget);
 		}
 
 		positionError = glm::distance(endEffector.position, target.position);
-	}
+	// }
 	endPosition = endEffector.position;
 	result = variables.getVector();
 	succes = positionError < minError;
