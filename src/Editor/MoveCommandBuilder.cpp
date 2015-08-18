@@ -164,4 +164,9 @@ void MoveCommandBuilderWidget::finalize(){
 }
 
 
+MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
+	RC->insertCommand(moveCommand);
+	return *this;
+}
+
 NAM_END
