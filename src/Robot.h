@@ -58,8 +58,8 @@ public:
 	glm::vec4 endPosition;
 	bool succes = false;
 
-	virtual bool solve(Point aim, Robot &robot) = 0;
-	virtual bool performIK(Point aim, Robot &robot)=0;
+	virtual bool solve(Point target, Robot &robot) = 0;
+	virtual bool performIK(Point start, Point target, Robot &robot)=0;
 	virtual ~IIK(){}
 };
 
@@ -93,7 +93,7 @@ public:
 class JT0 : public IIK {
 public:
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point aim, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot);
 };
 /// with orientation
 class JT1 : public IIK {
@@ -102,20 +102,20 @@ public:
 		std::cerr<<"delete JT1"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point aim, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot);
 };
 class JTReversed : public IIK {
 public:
 
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point aim, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot);
 };
-class CCD : public IIK {
-public:
+// class CCD : public IIK {
+// public:
 
-	bool solve(Point aim, Robot &robot);
-	bool performIK(Point aim, Robot &robot);
-};
+	// bool solve(Point aim, Robot &robot);
+	// bool performIK(Point start, Point target, Robot &robot);
+// };
 
 void robotTestInit(Robot &robot);
 void robotTest(float dt, Robot &robot);

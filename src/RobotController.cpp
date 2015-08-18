@@ -49,8 +49,8 @@ void RCTest(RobotController &rc){
 
 	std::cout<<"Start test"<<std::endl;
 	// rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
-	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p1, p2, p3, p4, p5, p6}), "First move");
-	rc.move(addInterpolator(Interpolator::HermiteFiniteDifference, {p0, p1, p2, p3, p4, p5, p6}), "First move");
+	rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p1, p2, p3, p4, p5, p6}), "First move");
+	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifference, {p0, p1, p2, p3, p4, p5, p6}), "First move");
 	rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6, p1, p4, p5, p2}), "Second move");
 	// rc.wait(20);
 	addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6})->name = "Hermite Closed";
@@ -125,7 +125,7 @@ MoveCommand& RobotController::move(shared_ptr<IInterpolator> interpolator, const
 
 	newCommand->velocity = 1.8;
 	newCommand->acceleration = 1.8;
-	newCommand->solver = make_unique<JT0>();
+	newCommand->solver = make_unique<JT1>();
 
 	return *newCommand;
 }
