@@ -36,6 +36,15 @@ public:
 		// build interpolator from enum
 		return *this;
 	}
+	MoveCommandBuilder& interpolator(const std::string& name){
+		// build interpolator from enum
+		return *this;
+	}
+	MoveCommandBuilder& solver(const std::string& name){
+		// moveCommand->solver = value;
+		moveCommand->solver = make_unique<JT1>();
+		return *this;
+	}
 	MoveCommandBuilder& solver(IIK *value){
 		// moveCommand->solver = value;
 		moveCommand->solver = make_unique<JT1>();
