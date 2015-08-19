@@ -212,7 +212,15 @@ namespace CFG {
 				cout<<"reading: "+filename<<endl;
 				while(!file.eof()){
 					getline(file, buff);
-					fileBuff.push_back(buff);
+                    auto hashPos = buff.find_first_of('#');
+                    if(hashPos != string::npos){
+                        buff.erase(hashPos);
+                        if(buff.find_first_not_of(' ') != string::npos)
+                            fileBuff.push_back(buff);
+                    }
+                    else
+                        fileBuff.push_back(buff);
+
 				}
 			}
 		else
