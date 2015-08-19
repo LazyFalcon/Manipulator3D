@@ -17,7 +17,7 @@ public:
 		return *this;
 	}
 	MoveCommandBuilder& jointVelocity(double value){
-		moveCommand->jointVelocity = value;
+		moveCommand->jointVelocityModifier = value;
 		return *this;
 	}
 	MoveCommandBuilder& acceleration(double value){

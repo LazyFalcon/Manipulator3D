@@ -79,7 +79,6 @@ void RCTest(RobotController &rc){
 
 }
 
-
 void RobotController::run(){
 	if (!commands.empty()){
 		state = RCStates::Run;
@@ -124,6 +123,7 @@ MoveCommand& RobotController::move(shared_ptr<IInterpolator> interpolator, const
 		commandIter = commands.begin();
 
 	newCommand->velocity = 1.8;
+	newCommand->jointVelocityModifier = 0.5;
 	newCommand->acceleration = 1.8;
 	newCommand->solver = make_unique<JT1>();
 

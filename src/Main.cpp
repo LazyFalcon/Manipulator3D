@@ -14,6 +14,8 @@
 #include "Timer.h"
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
+extern u32 lastIterationCount;
+
 using namespace std::chrono;
 glm::vec4 		viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
 glm::vec3 		Z =			glm::vec3(0.f,0.f,1.f);
@@ -179,9 +181,8 @@ int main(){
 	scene->robot->chain[0]->value = 45*toRad;
 	scene->robot->chain[3]->value = 30*toRad;
 
-
 	RC->robot = scene->robot;
-	// RC->solver = new JT1;
+
 	RCTest(*RC);
 	glfwShowWindow(window);
 	mainLoop();
@@ -212,11 +213,11 @@ void renderLoop(){
 	Engine::postprocess(*scene);
 	Engine::drawOutline(*scene);
 
-	Engine::drawLineStrip(RC->getCommand()->getPath(), 0x0000b0f0);
-	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0xff00b0f0);
+	Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
+	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0x73FF0080,1);
 	if(Editor::polylineEditor.polyline){
-		Engine::drawLineStrip(Editor::polylineEditor.polyline->visualisation, 0xff00b0f0);
-		Engine::drawLineStrip(Editor::polylineEditor.polyline->points, 0xff00b0f0);
+		Engine::drawLineStrip(Editor::polylineEditor.polyline->visualisation, 0xFF6200F0);
+		Engine::drawLineStrip(Editor::polylineEditor.polyline->points, 0xFF620080,1);
 	}
 	Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
@@ -226,7 +227,6 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
-	_DebugLine_
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	jacobianTransposeInitialCall(*(scene->robot));
@@ -255,7 +255,6 @@ void mainLoop(){
 
 	std::string ikTime = "--";
 
-	_DebugLine_
 	while(!quit){
 		dt = timer();
 		ddt = dtimer();
@@ -310,13 +309,13 @@ void mainLoop(){
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
 			for(auto &it : vars)
 				ui.rect().text(to_string(it))();
-			// ui.rect().color(0xA0A0A0FF).text(msecTimer.getString()+"ms").font("ui_12"s)();
-			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/16*255))).text(msecTimer.getString()+"ms").font("ui_12"s)();
+			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/20.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
+			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();

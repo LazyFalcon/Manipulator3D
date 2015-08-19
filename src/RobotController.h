@@ -31,6 +31,10 @@ public:
 	MoveCommand& move(shared_ptr<IInterpolator> interpolator, const std::string &name);
 	WaitCommand& wait(float time);
 	WaitCommand& execute(float time){}
+    void grabObject(const std::string &ObjName){
+        /// znaleźć obiekt, jego orientację, wyrównać robota do osi/płaszczyzny, przypiąć pozycję
+        /// w update przenosić obiekt
+    }
 
 	void insertCommand(shared_ptr<ICommand> &ptr){
 		commands.push_back(ptr);

@@ -123,6 +123,7 @@ Matrix buildJacobian(Robot &robot){
 	glm::quat transform(1,0,0,0);
 	glm::vec3 currentEndPosition = robot.endEffector.position.xyz();
 
+    // transform = robot.chain[0]
 
 	for(u32 i=0; i<robot.chain.size(); i++){
 		auto &module = robot.chain[i];
@@ -144,7 +145,6 @@ Matrix buildJacobian(Robot &robot){
 		}
 		if(module->type == PRISMATIC)
 			jacobian.insertRow(i, {axis.x, axis.y, axis.z,0,0,0});
-
 	}
 	return jacobian;
 
@@ -175,12 +175,14 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoin
 			glm::vec3 c = glm::cross(axis.xyz(), currentEndPosition - endPosition.xyz());
 			jacobian.insertRow(i, {c.x, c.y, c.z, axis.x, axis.y, axis.z});
 		}
-		if(module->type == PRISMATIC)
+		if(module->type == PRISMATIC){
 			jacobian.insertRow(i, {axis.x, axis.y, axis.z,0,0,0});
-
+        }
 
 			// axis = module->entity->quat*axis;
+        // cout<<glm::to_string(axis)<<endl;
 	}
+    // cout<<"-------"<<endl;
 	return jacobian;
 
 }

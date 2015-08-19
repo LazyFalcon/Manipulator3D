@@ -132,22 +132,22 @@ bool Robot::goTo(const std::vector<double> &jointPositions){
 	}
 }
 
-bool Robot::goTo(float dt){
+bool Robot::goTo(float dt, double jVelocityModifier){
 	isReady = true;
 	for(auto &module : chain){
-		isReady &= module->goTo(dt);
+		isReady &= module->goTo(dt, jVelocityModifier);
 	}
 }
 
-double Module::computeMaxStep(float dt){
-	double step = dt * maxVelocty;
+double Module::computeMaxStep(float dt, double jVelocityModifier){
+	double step = dt * maxVelocty * jVelocityModifier;
 	return step;
 }
-bool Module::goTo(float dt){
+bool Module::goTo(float dt, double jVelocityModifier){
 	if(glm::epsilonEqual(targetValue, 0.0, jointEpsilon)){
 		return true;
 	}
-	auto maxStep = computeMaxStep(dt);
+	auto maxStep = computeMaxStep(dt, jVelocityModifier);
 
 	auto step = glm::clamp(targetValue, -maxStep, maxStep);
 	value += step;

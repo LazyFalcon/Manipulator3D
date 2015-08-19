@@ -308,16 +308,14 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 }
 btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
 
-	if(!cfg.has("RigidBody")){
+	// if(!cfg.has("RigidBody")){
 		return nullptr;
-	}
+	// }
 	CFG::Node &rgData = cfg["RigidBody"];
 	float mass = rgData["mass"].asFloat();
 	if(rgData["type"] == "PASSIVE"s){
 		mass = 0;
-		cout<<"\t-";
 	}
-	cout<<" +"<<endl;
  	vector<float> &floatArr = rgData["BBox"].cacheFloat;
 	btConvexHullShape *convex = new btConvexHullShape();
 	for(u32 i = 0; i<8; i++){
@@ -360,7 +358,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->name = it["Name"].value;
 		module->entity = &scene.units[it["Name"].value];
 		// module->entity->rgBody = nullptr;
-		module->maxVelocty = 0.2; /// rad/s
+		module->maxVelocty = 0.9; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 
 		// module->entity->rgBody->setMassProps(0, btVector3(0,0,0));

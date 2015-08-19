@@ -59,8 +59,8 @@ void MoveCommand::init(RobotController &rc){
 	std::cout<<"Init command"<<std::endl;
 
 	previousPoint = rc.robot->endEffector.position;
-	rc.robot->insertVariables(targetJointPosition);
-	rc.pause();
+	// rc.robot->insertVariables(targetJointPosition);
+	// rc.pause();
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
@@ -81,7 +81,7 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 bool MoveCommand::update(RobotController &rc, float dt){
 
 	if(not rc.robot->isReady){
-		rc.robot->goTo(dt);
+		rc.robot->goTo(dt, jointVelocityModifier);
 		previousPoint = rc.robot->endEffector.position;
 		return false;
 	}

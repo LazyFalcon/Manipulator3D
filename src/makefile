@@ -3,8 +3,8 @@
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Wextra -Werror
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -DUSE_BULLET
-CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
-# CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
+# CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
+CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src

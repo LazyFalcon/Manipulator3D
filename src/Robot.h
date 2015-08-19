@@ -19,8 +19,8 @@ public:
 		lastAcceleration = 0.0;
 		value = 0.0;
 	}
-	bool goTo(float dt);
-	double computeMaxStep(float dt);
+	bool goTo(float dt, double jVelocityModifier);
+	double computeMaxStep(float dt, double jVelocityModifier);
 	glm::vec4 getMainAxis(){
 		return glm::normalize(vecToA + vecToB);
 	}
@@ -47,11 +47,9 @@ public:
 	double maxAcceleration;
 	double lastVelocity;
 	double lastAcceleration;
-
 };
 
 class Gripper : public Module{};
-
 class IIK {
 public:
 	std::vector<double> result;
@@ -63,7 +61,6 @@ public:
 	virtual ~IIK(){}
 };
 
-
 class Robot {
 public:
 	~Robot(){
@@ -74,7 +71,7 @@ public:
 	void inverse(); // wspó³¿êdne z punktu
 	void update(float dt);
 	std::vector<double> getVariables();
-	bool goTo(float dt);
+	bool goTo(float dt, double jVelocityModifier);
 	bool goTo(const std::vector<double> &jointPositions);
 	Point simulate(std::vector<double> &vec);
 	std::vector<Point> simulateFullData(std::vector<double> &variables);
@@ -104,20 +101,6 @@ public:
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot);
 };
-class JTReversed : public IIK {
-public:
-
-	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot);
-};
-// class CCD : public IIK {
-// public:
-
-	// bool solve(Point aim, Robot &robot);
-	// bool performIK(Point start, Point target, Robot &robot);
-// };
 
 void robotTestInit(Robot &robot);
 void robotTest(float dt, Robot &robot);
-
-

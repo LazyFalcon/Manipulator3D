@@ -38,13 +38,12 @@ void decr(float &value){value -= 0.01;}
 
 extern unique_ptr<RobotController> RC;
 
-MoveCommandBuilder& MoveCommandBuilder::finish(){
+MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
 	moveCommand->solver = make_unique<JT1>();
-	RC->commands.push_back(moveCommand);
+	RC->insertCommand(moveCommand);
 	init();
 	return *this;
 }
-
 extern UI::IMGUI ui;
 namespace Editor NAM_START
 
@@ -62,15 +61,18 @@ wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector
 	{"4.0 m/s", 4.0},
 });
 wxg::DropdownPairWithCallback<double> jointVelocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
-	{"0.1 rad/s", 0.1},
-	{"0.15 rad/s", 0.15},
-	{"0.25 rad/s", 0.25},
-	{"0.5 rad/s", 0.5},
-	{"1.0 rad/s", 1.0},
-	{"1.5 rad/s", 1.5},
-	{"2.0 rad/s", 2.0},
-	{"3.0 rad/s", 3.0},
-	{"4.0 rad/s", 4.0},
+	{"1%", 0.01},
+	{"10 %", 0.1},
+	{"20 %", 0.2},
+	{"30 %", 0.3},
+	{"40 %", 0.4},
+	{"50 %", 0.5},
+	{"60 %", 0.6},
+	{"70 %", 0.7},
+	{"80 %", 0.8},
+	{"90 %", 0.9},
+	{"100 %", 1.0},
+	{"150 %", 1.5},
 });
 wxg::DropdownPairWithCallback<double> accelerations (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1 m/s^2", 0.1},
@@ -102,6 +104,7 @@ void MoveCommandBuilderWidget::run(){
 	ui.rect(120, 20).text("Move command editor")();
 	editName();
 	editVelocity();
+	editJointVelocity();
 	editAcceleration();
 	editTime();
 	editInterpolator();
@@ -121,10 +124,10 @@ void MoveCommandBuilderWidget::editVelocity(){
 }
 void MoveCommandBuilderWidget::editJointVelocity(){
 	FIELDWITHNAME("JointVelocity",
-		DECR(moveCommandBuilder->moveCommand->jointVelocity);
+		DECR(moveCommandBuilder->moveCommand->jointVelocityModifier);
 		jointVelocities.run([this](double val){moveCommandBuilder->jointVelocity(val);});
-		EDIT(moveCommandBuilder->moveCommand->jointVelocity);
-		INCR(moveCommandBuilder->moveCommand->jointVelocity);
+		EDIT(moveCommandBuilder->moveCommand->jointVelocityModifier);
+		INCR(moveCommandBuilder->moveCommand->jointVelocityModifier);
 		);
 }
 void MoveCommandBuilderWidget::editAcceleration(){
@@ -163,10 +166,5 @@ void MoveCommandBuilderWidget::finalize(){
 		// });
 }
 
-
-MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
-	RC->insertCommand(moveCommand);
-	return *this;
-}
 
 NAM_END
