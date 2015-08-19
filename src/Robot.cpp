@@ -26,8 +26,8 @@ void Robot::update(float dt){
 
 	glm::vec4 position = glm::vec4(0,0,0,1);
 	glm::vec3 axis = chain[0]->axis.xyz();
-	// glm::quat transform(1,0,0,0);
-	glm::quat transform{0,0,0,1};
+	glm::quat transform(1,0,0,0);
+	// glm::quat transform{0,0,0,1};
 	for(auto &module : chain){
 		if(module->type == HINGE){
 			// module->value = period(module->value);
@@ -53,7 +53,7 @@ void Robot::update(float dt){
 		position += transform*module->vecToB;
 
 	}
-	endEffector = Point {position, glm::angleAxis(0.f,glm::normalize(axis.xyz()))};
+	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 
 	g_robotPositions(position);
 }
@@ -67,8 +67,8 @@ std::vector<double> Robot::getVariables(){
 Point Robot::simulate(std::vector<double> &variables){
 	glm::vec4 position = glm::vec4(0,0,0,1);
 	glm::vec3 axis = chain[0]->axis.xyz();
-	// glm::quat transform(1,0,0,0);
-	glm::quat transform{0,0,0,1};
+	glm::quat transform(1,0,0,0);
+	// glm::quat transform{0,0,0,1};
 	for(int i=0; i<getSize(); i++){
 		auto &module = chain[i];
 		if(module->type == HINGE){
@@ -79,11 +79,12 @@ Point Robot::simulate(std::vector<double> &variables){
 		else if(module->type == PRISMATIC){
 			position += transform*(module->vecToA + module->axis*(float)variables[i]);
 		}
+
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
 
 	}
-	return {position, glm::angleAxis(0.f,glm::normalize(axis.xyz()))};
+	return {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 }
 std::vector<Point> Robot::simulateFullData(std::vector<double> &variables){
 	glm::vec4 position = glm::vec4(0,0,0,1);
