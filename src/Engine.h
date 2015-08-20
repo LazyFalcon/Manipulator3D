@@ -23,9 +23,6 @@ extern HexColor GUIhover[4];
 extern HexColor GUIfontColor[4];
 extern HexColor GUIspecColor[4];
 
-
-
-
 enum {
 	LIGHTS =               0b1,
 	SHADOWS =              0b10,
@@ -69,6 +66,14 @@ struct Config
 	} shadows;
 };
 
+struct DataUnderMouse
+{
+    float depth;
+    glm::vec4 position;
+    glm::vec4 normal;
+    u16 objID;
+};
+extern DataUnderMouse dataUnderMouse;
 
 extern GLuint b_position;
 extern GLuint b_uv;
@@ -200,8 +205,11 @@ void drawGrids();
 void renderGUI(UI::IMGUI &gui);
 void renderShapes();
 
+float sampleDepth();
+glm::vec4 sampleNormal();
 
-
+void sampleDataUnderMouse(glm::vec2 mouse);
+void processMouse(glm::vec2 mouse, bool lClick, bool rClick);
 
 bool initGlew();
 

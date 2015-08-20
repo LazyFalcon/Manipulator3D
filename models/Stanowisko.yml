@@ -1,64 +1,64 @@
-dirname: D:\Work\Code\Manipulator3D\models
+dirname: ..\models
 Robot:
  - Name: Plane.001
    Type: hinge
-   ParentJoint: 
+   ParentJoint:
      Name: Robot-Base
      Vec: [0.0000, 0.0000, 0.2915]
      Axis: [0.0000, 0.0000, 1.0000]
      Min: -370
      Max: 370
-   ChildJoint: 
+   ChildJoint:
      Vec: [0.0000, 0.0000, 1.3012]
  - Name: Plane.002
    Type: hinge
-   ParentJoint: 
+   ParentJoint:
      Name: Robot-Base.001
      Vec: [0.0000, -0.7211, 1.4961]
      Axis: [-1.0000, -0.0000, -0.0000]
      Min: -45
      Max: 90
-   ChildJoint: 
+   ChildJoint:
      Vec: [-0.0000, -0.1964, 1.6182]
  - Name: Plane.003
    Type: hinge
-   ParentJoint: 
+   ParentJoint:
      Name: Robot-Base.002
      Vec: [-0.0001, 1.2193, 0.0973]
      Axis: [-1.0000, -0.0000, 0.0000]
      Min: 120
      Max: 90
-   ChildJoint: 
+   ChildJoint:
      Vec: [0.0001, 2.0640, 0.0344]
  - Name: Plane.005
    Type: hinge
-   ParentJoint: 
+   ParentJoint:
      Name: Robot-Base.003
      Vec: [0.0005, -2.4634, -0.0337]
      Axis: [-0.0002, 1.0000, -0.0000]
      Min: -370
      Max: 370
-   ChildJoint: 
+   ChildJoint:
      Vec: [0.0005, 3.2169, 0.0575]
  - Name: Plane.004
    Type: hinge
-   ParentJoint: 
+   ParentJoint:
      Name: Robot-Base.004
      Vec: [-0.0007, 0.0063, -0.0170]
      Axis: [-1.0000, 0.0000, -0.0000]
      Min: -120
      Max: 120
-   ChildJoint: 
+   ChildJoint:
      Vec: [-0.0005, 0.3187, -0.0019]
  - Name: Plane.006
    Type: hinge
-   ParentJoint: 
+   ParentJoint:
      Name: Robot-Base.005
      Vec: [0.0005, -0.3187, 0.0019]
      Axis: [-0.0001, 1.0000, -0.0000]
      Min: -370
      Max: 370
-   ChildJoint: 
+   ChildJoint:
      Vec: [-0.0005, 0.9222, -0.0029]
 Meshes:
  - Name: Circle.001
@@ -66,7 +66,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1902, 0.1467, 0.0771]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: PASSIVE
      mass: 1.0000
@@ -87,7 +87,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: PASSIVE
      mass: 1.0000
@@ -98,7 +98,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: PASSIVE
      mass: 1.0000
@@ -109,7 +109,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -120,7 +120,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -131,7 +131,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.5017, 0.5173, 0.2831]
    Spectacular: 0.0000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -142,7 +142,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.0521, 0.2598, 0.0000]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -153,7 +153,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.8000, 0.0000, 0.0008]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -164,7 +164,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -175,7 +175,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -186,7 +186,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.8000, 0.0000, 0.0008]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -197,7 +197,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.0521, 0.2598, 0.0000]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -208,7 +208,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.5017, 0.5173, 0.2831]
    Spectacular: 0.0000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -219,7 +219,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -230,7 +230,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -241,7 +241,7 @@ Meshes:
    Quaternion: [0.8603, -0.4667, -0.1855, -0.0873]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -252,7 +252,7 @@ Meshes:
    Quaternion: [0.8603, -0.4667, -0.1855, -0.0873]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -263,7 +263,7 @@ Meshes:
    Quaternion: [0.9871, 0.0908, 0.0633, 0.1158]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -274,7 +274,7 @@ Meshes:
    Quaternion: [0.8603, -0.4667, -0.1855, -0.0873]
    Color: [0.5017, 0.5173, 0.2831]
    Spectacular: 0.0000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -285,7 +285,7 @@ Meshes:
    Quaternion: [0.8603, -0.4667, -0.1855, -0.0873]
    Color: [0.0521, 0.2598, 0.0000]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -296,7 +296,7 @@ Meshes:
    Quaternion: [0.8603, -0.4667, -0.1855, -0.0873]
    Color: [0.8000, 0.0000, 0.0008]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -307,7 +307,7 @@ Meshes:
    Quaternion: [0.8603, -0.4667, -0.1855, -0.0873]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -318,7 +318,7 @@ Meshes:
    Quaternion: [0.9871, 0.0908, 0.0633, 0.1158]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -329,7 +329,7 @@ Meshes:
    Quaternion: [0.9871, 0.0908, 0.0633, 0.1158]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -340,7 +340,7 @@ Meshes:
    Quaternion: [0.9871, 0.0908, 0.0633, 0.1158]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -351,7 +351,7 @@ Meshes:
    Quaternion: [0.9871, 0.0908, 0.0633, 0.1158]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -362,7 +362,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -373,7 +373,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -384,7 +384,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -395,7 +395,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -406,7 +406,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -417,7 +417,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -428,7 +428,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: PASSIVE
      mass: 1.0000
@@ -444,7 +444,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1027, 0.4020, 0.0428]
    Spectacular: 0.0000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -455,7 +455,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.4480, 0.1785, 0.0057]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -466,7 +466,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.8000, 0.2397, 0.0000]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -477,7 +477,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.0521, 0.2598, 0.0000]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -488,7 +488,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.8000, 0.0000, 0.0008]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -499,7 +499,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -520,7 +520,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.3250, 0.3588, 0.2417]
    Spectacular: 0.0000
-   RigidBody: 
+   RigidBody:
      enabled: yes
      type: PASSIVE
      mass: 0.0010

@@ -2,7 +2,7 @@
 #include <Utils/Includes.h>
 #include <Utils/BaseStructs.h>
 
-struct Resources 
+struct Resources
 {
 
 	uint32_t VAO;
@@ -22,6 +22,7 @@ class Scene
 {
 public:
 	std::unordered_map<std::string, Entity> units;
+	std::vector<Entity*> units_ptrs;
 	std::vector<PointLamp> pointLamps;
 	unique_ptr<Resources> resources;
 	shared_ptr<Robot> robot;

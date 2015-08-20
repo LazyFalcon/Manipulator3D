@@ -17,48 +17,51 @@
 extern u32 lastIterationCount;
 
 using namespace std::chrono;
-glm::vec4 		viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
-glm::vec3 		Z =			glm::vec3(0.f,0.f,1.f);
-glm::vec3 		X =			glm::vec3(1.f,0.f,0.f);
-glm::vec3 		Y =			glm::vec3(0.f,1.f,0.f);
-glm::vec4 		Zz =		glm::vec4(0.f,0.f,1.f,0.f);
-glm::vec4 		Xx =		glm::vec4(1.f,0.f,0.f,0.f);
-glm::vec4 		Yy =		glm::vec4(0.f,1.f,0.f,0.f);
-glm::vec4 		CameraUp;
-glm::vec4 		CameraRight;
-glm::vec4 		CameraNormal;
-const float 	PI = 3.141592f;
-const float 	pi = 3.141592f;
-const double  dpi = 3.141592653589793;
-const float 	toRad = pi/180;
-const float 	toDeg = 180/pi;
+glm::vec4       viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
+glm::vec3       Z =			glm::vec3(0.f,0.f,1.f);
+glm::vec3       X =			glm::vec3(1.f,0.f,0.f);
+glm::vec3       Y =			glm::vec3(0.f,1.f,0.f);
+glm::vec4       Zz =		glm::vec4(0.f,0.f,1.f,0.f);
+glm::vec4       Xx =		glm::vec4(1.f,0.f,0.f,0.f);
+glm::vec4       Yy =		glm::vec4(0.f,1.f,0.f,0.f);
+glm::vec4       CameraUp;
+glm::vec4       CameraRight;
+glm::vec4       CameraNormal;
+const float     PI = 3.141592f;
+const float     pi = 3.141592f;
+const double    dpi = 3.141592653589793;
+const float     toRad = pi/180;
+const float     toDeg = 180/pi;
 bool 					GUI = true;
 glm::mat4 		identity = glm::mat4(1);
-bool 					rClick = false;
-float					g_scrollPos = 0;
-float					g_scrollDel = 0;
-float					scrollMov = 0;
-float					mouse_x, mouse_y;
+bool            lClick = false;
+bool            rClick = false;
+float           g_scrollPos = 0;
+float           g_scrollDel = 0;
+float           scrollMov = 0;
+float           mouse_x, mouse_y;
 // glm::vec4 		mousePosition(0);
-glm::vec2 		mousePosition(700, 350);
-glm::vec2 		mouseTranslation(0);
-glm::vec2     mouseMoveVector(0);
-float         mouseMoveLen(0);
-bool					LeftMousePressed = false;
-bool					RightMousePressed = false;
-bool					signal10ms = false;
-glm::mat4 		orthoMatrix;
-GLFWwindow 		*window;
-float 				window_width = 1400, window_height = 700;
-glm::vec2     screenSize;
-bool 					quit = false;
-bool 					UI::GetInput = false;
-int64_t 			globalSettings;
-float 				g_timeStep = 3.f;
-u32           RedC = 0xFF000000;
-u32           GreenC = 0x00FF0000;
-u32           BlueC = 0x0000FF00;
-u32           AlphaC = 0x000000FF;
+glm::vec2      mousePosition(700, 350);
+glm::vec2      mouseTranslation(0);
+glm::vec2      mouseMoveVector(0);
+glm::vec2      mouselClick(0);
+glm::vec2      mouserClick(0);
+float          mouseMoveLen(0);
+bool           LeftMousePressed = false;
+bool           RightMousePressed = false;
+bool           signal10ms = false;
+glm::mat4      orthoMatrix;
+GLFWwindow     *window;
+float          window_width = 1400, window_height = 700;
+glm::vec2      screenSize;
+bool           quit = false;
+bool           UI::GetInput = false;
+int64_t        globalSettings;
+float          g_timeStep = 3.f;
+u32            RedC = 0xFF000000;
+u32            GreenC = 0x00FF0000;
+u32            BlueC = 0x0000FF00;
+u32            AlphaC = 0x000000FF;
 
 std::unordered_map<string, UI::Font>	UI::fonts;
 std::list <Statement> statements;
@@ -204,6 +207,7 @@ void renderLoop(){
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
 	Engine::copyDepth(*scene);
+    Engine::sampleDataUnderMouse(mousePosition);
 	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
 	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
 	if(globalSettings & SOBEL)Engine::Sobel();
@@ -234,6 +238,7 @@ void prerequisites(){
 }
 void updates(float dt){
 	Editor::update(*RC);
+    Engine::processMouse(mousePosition, lClick, rClick);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -303,6 +308,8 @@ void mainLoop(){
 
 		UI::GetInput = ui.textEditor.state();
 		updates(dt);
+        lClick = false;
+        rClick = false;
 		MainMenu();
 		Robot &robot = *(scene->robot);
 		std::vector<double> vars = robot.getVariables();
@@ -316,6 +323,8 @@ void mainLoop(){
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
+			ui.rect().text("Depth: " + glm::to_string(Engine::dataUnderMouse.normal)).font("ui_12"s)();
+			ui.rect().text("ID: " + std::to_string(Engine::dataUnderMouse.objID)).font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();
@@ -426,18 +435,24 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	ui.mouseKeyInput(button, action);
 	Editor::processMouse(button, action, mods);
+    double m_x, m_y;
+    glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
 		glfwPollEvents();
+        mouselClick = glm::vec2(m_x, m_y);
 		ui.setlClick(true);
 		LeftMousePressed = true;
+        lClick = true;
 	}
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_RELEASE){
 		LeftMousePressed = false;
 	}
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_PRESS){
+        mouserClick = glm::vec2(m_x, m_y);
 		rClick = !rClick;
 		ui.setrClick(true);
 		RightMousePressed = true;
+        rClick = true;
 	}
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_RELEASE){
 		RightMousePressed = false;

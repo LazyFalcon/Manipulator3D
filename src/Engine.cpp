@@ -6,8 +6,8 @@
 #include "Graph.h"
 
 #define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
-#define NAM_START {
 #define NAM_END }
+#define NAM_START {
 
 extern std::unordered_map<std::string, uint32_t>shaders;
 extern Resources *globalResources;
@@ -57,6 +57,8 @@ LineBuffer		g_lines(100);
 
 namespace Engine NAM_START
 
+Entity *hoveredObject;
+Entity *selectedObject;
 
 GLuint b_position;
 GLuint b_uv;
@@ -89,6 +91,7 @@ GLuint halfFBO;
 #include "TextureObject.h"
 
 /// buffers
+Texture objectIDTex_R16;
 Texture full_R8;
 Texture full_R8_2;
 Texture half_R8;
@@ -109,7 +112,7 @@ GLuint shadowMapFbo;
 GLuint PlotFBO;
 GLuint plotColorBuffer;
 
-GLenum DrawBuffers[3];
+GLenum DrawBuffers[5];
 
 const u32 shadowMapSize = 1024;
 
@@ -307,6 +310,7 @@ void init(CFG::Node &cfg){
 }
 { /// textures
 	/// buffers
+	objectIDTex_R16 = Texture {GL_R16, window_width, window_height, GL_RED, GL_UNSIGNED_SHORT, GL_NEAREST, 0};
 	full_R8 = Texture {GL_R8, window_width, window_height, GL_RED, GL_UNSIGNED_BYTE, GL_LINEAR, 0};
 	full_R8_2 = Texture {GL_R8, window_width, window_height, GL_RED, GL_UNSIGNED_BYTE, GL_LINEAR, 0};
 	half_R8 = Texture {GL_R8, window_width/2, window_height/2, GL_RED, GL_UNSIGNED_BYTE, GL_LINEAR, 0};
@@ -398,7 +402,8 @@ void init(CFG::Node &cfg){
 
 	DrawBuffers[0] = GL_COLOR_ATTACHMENT0;
 	DrawBuffers[1] = GL_COLOR_ATTACHMENT1;
-	glDrawBuffers(2, DrawBuffers);
+	DrawBuffers[2] = GL_COLOR_ATTACHMENT2;
+	glDrawBuffers(3, DrawBuffers);
 
 	glGenFramebuffers(1, &fullFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
@@ -573,7 +578,6 @@ void setup(Scene &scene){
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer.ID, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
 			glDrawBuffers(2,&DrawBuffers[0]);
-			// glDrawBuffers(1,&DrawBuffers[0]);
 		glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
 		glClearDepth(1);
 		glClearStencil(0);
@@ -611,6 +615,7 @@ void renderScene(Scene &scene){
 	auto u_colorPosition = glGetUniformLocation(shader, "uColor");
 	auto u_modelPosition = glGetUniformLocation(shader, "uModel");
 	auto u_NMPosition = glGetUniformLocation(shader, "uNM");
+	auto uID = glGetUniformLocation(shader, "uID");
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second.mesh);
 		glm::mat4 transform;
@@ -618,7 +623,6 @@ void renderScene(Scene &scene){
 // #ifdef USE_BULLET
 		auto rgBody = entity.second.rgBody;
 		if(rgBody && !rgBody->isStaticOrKinematicObject()){
-		// if(rgBody){
 			auto btPos = rgBody->getCenterOfMassTransform().getOrigin();
 			entity.second.position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
 			auto btQuat = rgBody->getOrientation();
@@ -630,6 +634,7 @@ void renderScene(Scene &scene){
 			transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
 
 		glUniform(shader, entity.second.material.color, u_colorPosition);
+		glUniform(shader, u32(entity.second.ID), uID);
 		glUniform(shader, transform, u_modelPosition);
 		if(globalSettings & MSAA)
 			glUniform(shader, glm::transpose(glm::inverse(transform)), u_NMPosition);
@@ -642,6 +647,9 @@ void renderScene(Scene &scene){
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, 0, 0);
 	glBindVertexArray(0);
 }
 void drawOutline(Scene &scene){
@@ -675,18 +683,19 @@ void drawOutline(Scene &scene){
 		glUniform(shader, camera.ViewMatrix, uView);
 
 		glBindVertexArray(scene.resources->VAO);
-		for(auto &entity : scene.units){
-			if(entity.second.isOutlined){
-				auto &mesh = *(entity.second.mesh);
+		// for(auto &entity : scene.units){
+			if(selectedObject){
+            auto entity = *selectedObject;
+				auto &mesh = *(entity.mesh);
 
-				glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+				glm::mat4 transform = glm::translate(entity.position.xyz()) * glm::mat4_cast(entity.quat);
 
-				glUniform(shader, entity.second.material.color, uColor);
+				glUniform(shader, entity.material.color, uColor);
 				glUniform(shader, transform, uModel);
 				glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 
 			}
-		}
+		// }
 	}
 	{ // draw outline
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
@@ -708,19 +717,20 @@ void drawOutline(Scene &scene){
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(2);
 		// glEnable(GL_LINE_SMOOTH);
-		for(auto &entity : scene.units){
-			if(entity.second.isOutlined){
-				auto &mesh = *(entity.second.mesh);
+		// for(auto &entity : scene.units){
+			if(selectedObject){
+            auto entity = *selectedObject;
+				auto &mesh = *(entity.mesh);
 
 				// glm::mat4 transform = glm::scale(glm::vec3(1.1, 1.1, 1.1))*glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
-				glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+				glm::mat4 transform = glm::translate(entity.position.xyz()) * glm::mat4_cast(entity.quat);
 
 				glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
 				glUniform(shader, transform, uModel);
 				glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
-				entity.second.isOutlined = false;
+				entity.isOutlined = false;
 			}
-		}
+		// }
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
@@ -995,7 +1005,7 @@ void SSAO(){
 			glUniform1i(u_SSAORandom, 2);
 		glBindTexture(GL_TEXTURE_2D, globalResources->textures["SSAORandom"]);
 
-		glUniform(shader, glm::inverse(camera.ProjectionMatrix*camera.ViewMatrix), uInvPV);
+		glUniform(shader, camera.invPV, uInvPV);
 
 		setupBuffer(screenQuad);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1061,7 +1071,8 @@ void finalize(Scene &scene){
 	if(globalSettings & DRAW_NORMALS)
 		normalBuffer.bind();
 	if(globalSettings & DRAW_DEPTH)
-		depthBuffer.bind();
+		// depthBuffer.bind();
+		objectIDTex_R16.bind();
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

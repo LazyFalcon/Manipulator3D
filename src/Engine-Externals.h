@@ -4,6 +4,10 @@
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <IL/ilut.h>
+#include <glm/gtc/packing.hpp>
+#include "BulletWorld.h"
+
+extern BulletWorld bulletWorld;
 
 void UIContainer::draw(UI::IMGUI &gui){
 	auto shader = shaders[m_boxes.second];
@@ -39,7 +43,6 @@ void UIContainer::draw(UI::IMGUI &gui){
 	m_boxes.first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-
 
 bool ResourceLoader::loadImage(const string &name){
 	auto &images = resources->images;
@@ -162,8 +165,7 @@ GLuint ResourceLoader::compileShader(const string &shaderName){
 	if (!compiled){
 		cout << "Vertex shader in " <<shaderName<<" not compiled." << endl;
 		printShaderInfoLog(vertexS);
-		int x;
-		cin>>x;
+		cin.ignore();
 
 		return compileShader(shaderName);
 	}
@@ -174,8 +176,7 @@ GLuint ResourceLoader::compileShader(const string &shaderName){
 	if (!compiled){
 		cout << "Fragment shader in "<<shaderName<<" not compiled." << endl;
 		printShaderInfoLog(fragmentS);
-		int x;
-		cin>>x;
+		cin.ignore();
 
 		return compileShader(shaderName);
 	}
@@ -317,3 +318,85 @@ void Plot::plot(){
 	Engine::drawTexturedBox(texID, box);
 }
 
+namespace Engine NAM_START
+
+DataUnderMouse dataUnderMouse;
+
+void samplePosition(glm::vec2 mouse){
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, depthBuffer2.ID, 0);
+
+    float depth;
+    glReadPixels(mouse.x, mouse.y, 1, 1, GL_RED, GL_FLOAT, &depth);
+
+    depth = depth*2 - 1;
+
+    glm::vec4 viewSpace(mouse.x/screenSize.x*2.f - 1.f, mouse.y/screenSize.y*2.f - 1.f, depth, 1);
+    glm::vec4 worldPos = camera.invPV * viewSpace;
+    worldPos /= worldPos.w;
+    worldPos.w = 1;
+    dataUnderMouse.position = worldPos;
+}
+void sampleNormal(glm::vec2 mouse){
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, normalBuffer.ID, 0);
+
+    uint64_t normal;
+    glReadPixels(mouse.x, mouse.y, 1, 1, GL_RGBA, GL_HALF_FLOAT, &normal);
+
+    dataUnderMouse.normal = glm::unpackHalf4x16(normal);
+    dataUnderMouse.objID = dataUnderMouse.normal.w*16384.f;
+}
+void sampleID(glm::vec2 mouse){
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectIDTex_R16.ID, 0);
+    // u16 id = 13;
+    // glReadPixels(mouse.x, mouse.y, 1, 1, GL_RED, GL_UNSIGNED_SHORT, &id);
+    // dataUnderMouse.objID = id;
+}
+
+void sampleDataUnderMouse(glm::vec2 mouse){
+    // glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
+
+    sampleID(mouse);
+    samplePosition(mouse);
+    sampleNormal(mouse);
+
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
+/// clean in each update
+void hoverObject(Entity *obj){
+    hoveredObject = obj;
+}
+void selectObject(Entity *obj){
+    selectedObject = obj;
+    if(hoveredObject == obj)
+        hoveredObject = nullptr;
+}
+
+Entity* hovered(){
+    return hoveredObject;
+}
+Entity* selected(){
+    return selectedObject;
+}
+
+void processMouse(glm::vec2 mouse, bool lClick, bool rClick){
+    hoveredObject = nullptr;
+
+    auto result = bulletWorld.raycast(camera.eyePosition, camera.eyePosition + camera.getMouseRay()*200.f);
+    if(result.hasHit()){
+        Entity *entity = ((EntityPayload*)result.m_collisionObject->getUserPointer())->backPointer;
+
+        if(lClick){
+            entity->material.color = glm::vec4(1);
+            entity->rgBody->applyCentralImpulse(btVector3(0,0,20));
+            selectObject(entity);
+        }
+        else {
+            hoverObject(entity);
+        }
+    }
+}
+
+NAM_END

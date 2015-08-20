@@ -254,16 +254,15 @@ bool JT1::performIK(Point start, Point target, Robot &robot){
 	variables.insertColumn(0, robot.getVariables());
 
 	float positionError = glm::distance(target.position, endEffector.position);
-	float quatError = 1;
+    float quatError = 1;
 	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iterations = 0;
 	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
 		auto positionDelta = (target.position - endEffector.position);
-		auto axisDelta = glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat))*10.f;
-		// auto axisDelta = glm::axis(target.quat) - glm::axis(endEffector.quat);
+        auto axisDelta = glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat))*10.f;
 
-		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x, axisDelta.y, axisDelta.z});
+        force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x, axisDelta.y, axisDelta.z});
 
 		auto a = dot(jjp*force, force);
 		a = a/dot(jjp*force, jjp*force);
@@ -275,14 +274,9 @@ bool JT1::performIK(Point start, Point target, Robot &robot){
 		endEffector = robot.simulate(variables.getVector());
 		g_targetPosition = endEffector.position;
 		positionError = glm::distance(endEffector.position, target.position);
-        quatError = glm::length(axisDelta)/10.f;
+        quatError = glm::length(axisDelta);
 	}
-	auto tmp = jjp*force;
-	for(auto it : tmp.getVector())
-		cout<<it<<" ";
-	cout<<endl;
-	auto q = endEffector.quat;
-    cout<<iterations<<" << "<<glm::to_string(glm::axis(endEffector.quat))<<endl;
+    // cout<<iterations<<" << "<<quatError<<endl;
 	endPosition = endEffector.position;
 	result = variables.getVector();
 	succes = positionError < minError;
@@ -338,13 +332,5 @@ void jacobianTransposeInitialCall(Robot &robot){
 
 	// solver->solve(target, robot);
 	// robot.insertVariables(solver->result);
-
-	glm::quat q1 = glm::angleAxis(0.f, glm::normalize(glm::vec3(1,1,1)));
-	glm::quat q2 = glm::angleAxis(2.f, glm::normalize(glm::vec3(1,1,1)));
-
-	cout<<glm::to_string(glm::axis(q1))<<endl;
-	cout<<glm::to_string(glm::axis(q2))<<endl;
-
-
 }
 

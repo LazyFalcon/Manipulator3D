@@ -29,22 +29,21 @@ void main(){
 
 #ifdef COMPILING_FRAGMENT_SHADER
 
-
 uniform sampler2D uMetalTex;
 
-uniform vec4  uColor;
+uniform uint uID;
+uniform vec4 uColor;
 
 in vec2 vUV;
 in vec4 vNormal;
 in vec4 vVertex;
-
 
 void main(void){
 	float metal = texture(uMetalTex, vUV*3).r;
 	vec4 N = normalize(vNormal);
 
 	gl_FragData[0] = uColor;
-	gl_FragData[1] = vec4(N.xyz, 0.0);
+	gl_FragData[1] = vec4(N.xyz, uID/16384.f);
 }
 
 #endif

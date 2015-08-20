@@ -10,7 +10,7 @@
 #include "Engine.h"
 #include "BulletWorld.h"
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
-
+u16 objectID = 0;
 extern BulletWorld bulletWorld;
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
@@ -279,7 +279,13 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 		Material material {it["Color"].asVec31()};
 		auto bulletData = buildBulletData(it);
 
-		scene.units.emplace(it["Name"].value, Entity {&resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+		scene.units.emplace(it["Name"].value, Entity {++objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+
+        if(scene.units[it["Name"].value].rgBody){
+            EntityPayload *payload = (EntityPayload*)(scene.units[it["Name"].value].rgBody->getUserPointer());
+            payload->backPointer = &scene.units[it["Name"].value];
+            payload->owner = (void*)payload->backPointer;
+        }
 	}
 
 	auto &lamps = cfg["Lamps"];
@@ -313,10 +319,12 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
 	// }
 	CFG::Node &rgData = cfg["RigidBody"];
 	float mass = rgData["mass"].asFloat();
-	if(rgData["type"] == "PASSIVE"s){
+
+    if(rgData["type"].value == "PASSIVE"){
 		mass = 0;
 	}
- 	vector<float> &floatArr = rgData["BBox"].cacheFloat;
+
+    vector<float> &floatArr = rgData["BBox"].cacheFloat;
 	btConvexHullShape *convex = new btConvexHullShape();
 	for(u32 i = 0; i<8; i++){
 		convex->addPoint(btVector3(floatArr[i*3+0], floatArr[i*3+1], floatArr[i*3+2]));
@@ -334,6 +342,10 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
 
 	body->setFriction(rgData["friction"].asFloat());
 	body->setRollingFriction(rgData["friction"].asFloat());
+
+    EntityPayload *payload = new EntityPayload();
+    payload->ownerType = OwnerType::Casual;
+    body->setUserPointer(payload);
 
 	return body;
 }
@@ -357,10 +369,13 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->max = it["ParentJoint"]["Max"].asFloat()*toRad;
 		module->name = it["Name"].value;
 		module->entity = &scene.units[it["Name"].value];
-		// module->entity->rgBody = nullptr;
 		module->maxVelocty = 0.9; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 
+        if(module->entity->rgBody){
+            EntityPayload *payload = (EntityPayload*)(module->entity->rgBody->getUserPointer());
+            payload->owner = (void*)(&robot);
+        }
 		// module->entity->rgBody->setMassProps(0, btVector3(0,0,0));
 		// module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 
