@@ -168,6 +168,10 @@ bool RobotController::update(float dt){
 	return false;
 }
 
+void RobotController::grab(Entity *obj){
+	grabbedObject = obj;
+}
+void RobotController::left(){}
 void RobotController::grabObject(Entity *obj){
 	MoveCommandBuilder moveBuilder;
 	auto interpolator = addInterpolator(Interpolator::Simple, {obj->position});
@@ -181,10 +185,25 @@ void RobotController::grabObject(Entity *obj){
 		.interpolator(interpolator)
 		.finish(*this);
 
+	executeBuilder
+		.onEnter([obj](RobotController &rc){
+			rc.grab(obj);
 
-	// grabbedObject = obj;
+		})
+		.finish(*this);
 
 }
-
+/**
+ *  Plan na piatęk
+ *  - Zrobić builder dla executora
+ *  - Zrobić executora
+ *  - Łapanie, przenoszenie, puszczeni obiektów zrobić
+ *    Najprosciej to grab jako useEffector, stopEffector
+ *    Dotarcie do obiektu jako jakas funkcję pomocniczą najlepiej
+ *
+ *
+ *
+ *  Zamówić pizzę
+ */
 
 
