@@ -12,11 +12,12 @@
 
 
 enum class Interpolator : u32
-{	
+{
 	Empty,
 	Open,
 	Closed,
 	Linear,
+	Simple,
 	BezierCurve, // always nonUniform
 	BSpline,
 	NURBS,
@@ -28,6 +29,7 @@ enum class Interpolator : u32
 
 extern const std::string sEmpty;
 extern const std::string sLinear;
+extern const std::string sSimple;
 extern const std::string sBezierCurve;
 extern const std::string sBSpline;
 extern const std::string sNURBS;
@@ -98,6 +100,24 @@ public:
 	void drawParams();
 
 	~Linear(){}
+};
+
+class Simple : public IInterpolator
+{
+public:
+	u32 currentPoint;
+	u32 maxPoints;
+
+	Simple(const std::vector<glm::vec4> &p) : IInterpolator(p, Interpolator::Simple){
+		maxPoints = points.size() - 1;
+		currentPoint = 0;
+	}
+	void generatePath();
+	glm::vec4 nextPoint();
+	void reset();
+	void drawParams();
+
+	~Simple(){}
 };
 
 /**

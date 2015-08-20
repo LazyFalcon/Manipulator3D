@@ -238,7 +238,7 @@ void prerequisites(){
 }
 void updates(float dt){
 	Editor::update(*RC);
-    Engine::processMouse(mousePosition, lClick, rClick);
+	Engine::processMouse(mousePosition, *scene, lClick, rClick);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -365,7 +365,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	ui.keyInput(key, action, mods);
 	Editor::processKeys(key, action, mods, *RC);
+	if(key == 'G' && action == GLFW_PRESS){
+		RC->grabObject(scene->units_ptrs[Engine::dataUnderMouse.objID]);
 
+	}
 
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
 		RC->run();

@@ -209,7 +209,7 @@ float sampleDepth();
 glm::vec4 sampleNormal();
 
 void sampleDataUnderMouse(glm::vec2 mouse);
-void processMouse(glm::vec2 mouse, bool lClick, bool rClick);
+void processMouse(glm::vec2 mouse, Scene &scene, bool lClick, bool rClick);
 
 bool initGlew();
 

@@ -381,22 +381,21 @@ Entity* selected(){
     return selectedObject;
 }
 
-void processMouse(glm::vec2 mouse, bool lClick, bool rClick){
-    hoveredObject = nullptr;
+void processMouse(glm::vec2 mouse, Scene &scene, bool lClick, bool rClick){
+	hoveredObject = nullptr;
 
-    auto result = bulletWorld.raycast(camera.eyePosition, camera.eyePosition + camera.getMouseRay()*200.f);
-    if(result.hasHit()){
-        Entity *entity = ((EntityPayload*)result.m_collisionObject->getUserPointer())->backPointer;
-
-        if(lClick){
-            entity->material.color = glm::vec4(1);
-            entity->rgBody->applyCentralImpulse(btVector3(0,0,20));
-            selectObject(entity);
-        }
-        else {
-            hoverObject(entity);
-        }
-    }
+	// auto result = bulletWorld.raycast(camera.eyePosition, camera.eyePosition + camera.getMouseRay()*200.f);
+	if(dataUnderMouse.objID > 0 && dataUnderMouse.objID < 0xff00 && scene.units_ptrs[dataUnderMouse.objID] && selectedObject == nullptr){
+		if(lClick){
+			selectObject(scene.units_ptrs[dataUnderMouse.objID]);
+		}
+		else {
+			hoverObject(scene.units_ptrs[dataUnderMouse.objID]);
+		}
+	}
+	else if(rClick){
+		selectObject(nullptr);
+	}
 }
 
 NAM_END

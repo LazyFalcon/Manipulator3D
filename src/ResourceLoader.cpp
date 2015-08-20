@@ -10,7 +10,7 @@
 #include "Engine.h"
 #include "BulletWorld.h"
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
-u16 objectID = 0;
+u16 objectID = 1;
 extern BulletWorld bulletWorld;
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
@@ -274,18 +274,21 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	meshPath = cfg["dirname"].value+"\\";
 
 	auto &meshes = cfg["Meshes"];
+	scene.units_ptrs.resize(meshes.Vector.size()+5);
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};
 		auto bulletData = buildBulletData(it);
 
-		scene.units.emplace(it["Name"].value, Entity {++objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+		scene.units.emplace(it["Name"].value, Entity {objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
 
-        if(scene.units[it["Name"].value].rgBody){
-            EntityPayload *payload = (EntityPayload*)(scene.units[it["Name"].value].rgBody->getUserPointer());
-            payload->backPointer = &scene.units[it["Name"].value];
-            payload->owner = (void*)payload->backPointer;
-        }
+		scene.units_ptrs[objectID++] = &scene.units[it["Name"].value];
+
+		if(scene.units[it["Name"].value].rgBody){
+				EntityPayload *payload = (EntityPayload*)(scene.units[it["Name"].value].rgBody->getUserPointer());
+				payload->backPointer = &scene.units[it["Name"].value];
+				payload->owner = (void*)payload->backPointer;
+		}
 	}
 
 	auto &lamps = cfg["Lamps"];

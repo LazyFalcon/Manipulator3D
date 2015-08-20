@@ -8,8 +8,12 @@
 #include "RobotController.h"
 #include "Graph.h"
 #include "Editor/Editor.h"
+#include "Editor/MoveCommandBuilder.h"
+#include "CFGParser.h"
+#include "ResourceLoader.h"
 
 extern UI::IMGUI ui;
+extern unique_ptr<Scene> scene;
 /*
 	Robot ma w IK wbudowane sledzenie punktu z okresloną predkością, nie udaje się do zadanego punktu od razu. wiec jak interpolator wypluje kolejny punkt robot dojedzie do niego
 	- ze "stałą" prędkością(po prostej)
@@ -46,6 +50,8 @@ void RCTest(RobotController &rc){
 	glm::vec4 p4(-1, -5, 2, 1);
 	glm::vec4 p5(-1, -5.3, 1.9, 1);
 	glm::vec4 p6(-4, -4, 1.9, 1);
+
+	rc.grabObject(&scene->units["Cube.039"]);
 
 	std::cout<<"Start test"<<std::endl;
 	// rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
@@ -162,7 +168,23 @@ bool RobotController::update(float dt){
 	return false;
 }
 
+void RobotController::grabObject(Entity *obj){
+	MoveCommandBuilder moveBuilder;
+	auto interpolator = addInterpolator(Interpolator::Simple, {obj->position});
 
+	moveBuilder
+		.init()
+		.velocity(1.0)
+		.jointVelocity(0.5)
+		.acceleration(0.2)
+		.solver(nullptr)
+		.interpolator(interpolator)
+		.finish(*this);
+
+
+	// grabbedObject = obj;
+
+}
 
 
 

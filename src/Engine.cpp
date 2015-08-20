@@ -57,8 +57,8 @@ LineBuffer		g_lines(100);
 
 namespace Engine NAM_START
 
-Entity *hoveredObject;
-Entity *selectedObject;
+Entity *hoveredObject = nullptr;
+Entity *selectedObject = nullptr;
 
 GLuint b_position;
 GLuint b_uv;
@@ -708,21 +708,20 @@ void drawOutline(Scene &scene){
 		glUniform(shader, camera.ProjectionMatrix, uPV);
 		glUniform(shader, camera.ViewMatrix, uView);
 
-		// glDisable(GL_DEPTH_TEST);
-		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
+		// glEnable(GL_DEPTH_TEST);
 		glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 		glStencilMask(0x00);
 		glStencilFunc(GL_NOTEQUAL,0x1,0xFF);
 		// glStencilFunc(GL_EQUAL,0x1,0xFF);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glLineWidth(2);
-		// glEnable(GL_LINE_SMOOTH);
+		glLineWidth(4);
+		glDisable(GL_LINE_SMOOTH);
 		// for(auto &entity : scene.units){
 			if(selectedObject){
-            auto entity = *selectedObject;
+				auto entity = *selectedObject;
 				auto &mesh = *(entity.mesh);
 
-				// glm::mat4 transform = glm::scale(glm::vec3(1.1, 1.1, 1.1))*glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
 				glm::mat4 transform = glm::translate(entity.position.xyz()) * glm::mat4_cast(entity.quat);
 
 				glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);

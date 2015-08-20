@@ -7,7 +7,7 @@ uniform mat4 uView;
 uniform mat4 uModel;
 
 void main(){
-	gl_Position = uPV*uView*uModel*(vec4(mVertex,1));
+	gl_Position = uPV*uView*uModel*(vec4(mVertex,1))*1.1;
 }
 
 #endif

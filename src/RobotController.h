@@ -14,15 +14,10 @@ enum class RCStates {
 
 class RobotController {
 public:
-	shared_ptr<Robot> robot;
-	std::list<std::shared_ptr<ICommand>> commands;
-	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
-	RCStates state = RCStates::Pause;
-
 	~RobotController(){
 		std::cerr<<"delete RobotController"<<std::endl;
 	}
-	RobotController(){
+	RobotController() : grabbedObject(nullptr){
 		commandIter = commands.end();
 	}
 
@@ -31,10 +26,10 @@ public:
 	MoveCommand& move(shared_ptr<IInterpolator> interpolator, const std::string &name);
 	WaitCommand& wait(float time);
 	WaitCommand& execute(float time){}
-    void grabObject(const std::string &ObjName){
-        /// znaleźć obiekt, jego orientację, wyrównać robota do osi/płaszczyzny, przypiąć pozycję
-        /// w update przenosić obiekt
-    }
+	void grabObject(Entity *obj);
+	/// znaleźć obiekt, jego orientację, wyrównać robota do osi/płaszczyzny, przypiąć pozycję
+	/// w update przenosić obiekt
+
 
 	void insertCommand(shared_ptr<ICommand> &ptr){
 		commands.push_back(ptr);
@@ -52,6 +47,11 @@ public:
 	void next();
 	void prev();
 
+	shared_ptr<Robot> robot;
+	std::list<std::shared_ptr<ICommand>> commands;
+	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
+	RCStates state = RCStates::Pause;
+	Entity *grabbedObject;
 };
 
 void RCTest(RobotController &rc);

@@ -20,7 +20,7 @@ glm::vec4 Linear::nextPoint(){
 	auto out = glm::mix(points[section], points[section+1], position);
 	position = glm::clamp(position + singleStepLength, 0.0, (double)maxSections);
 	finished = position == (double)maxSections;
-	
+
 	//auto out = points[section] + sectionStep*step;
 	//step++;
 	//if(sectionMaxSteps <= step)
@@ -72,6 +72,22 @@ void Linear::drawParams(){
 	wxg::editBox("step: ", singleStepLength, 160);
 	ui.rect(120,20).text("smooth corers: false")();
 	ui.rect(120,20).text("smooth radius")();
+}
+
+glm::vec4 Simple::nextPoint(){
+	if(currentPoint > maxPoints){
+		finished = true;
+		return points[maxPoints];
+	}
+	return points[currentPoint++];
+}
+void Simple::generatePath(){
+}
+void Simple::reset(){
+	finished = false;
+	currentPoint = 0;
+}
+void Simple::drawParams(){
 }
 
 /// -------------------------------- BEZIERCURVE --------------------------------
@@ -403,6 +419,9 @@ shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::v
 	if(type == Interpolator::Linear){
 		out = make_shared<Linear>(points);
 	}
+	else if(type == Interpolator::Simple){
+		out = make_shared<Simple>(points);
+	}
 	else if(type == Interpolator::BezierCurve){
 		out = make_shared<BezierCurve>(points);
 	}
@@ -474,6 +493,7 @@ shared_ptr<IInterpolator> InterpolatorFactory::build(Interpolator type, vector<g
 
 const std::string sEmpty = "Linear";
 const std::string sLinear = "Linear";
+const std::string sSimple = "Simple";
 const std::string sBezierCurve = "Bezier Curve";
 const std::string sBSpline = "B-Spline";
 const std::string sNURBS = "NURBS";
@@ -483,6 +503,7 @@ const std::string sHermiteFiniteDifferenceClosed = "Hermite Finite Difference - 
 
 const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumWithName {
 	{{sLinear                       }, {Interpolator::Linear}       }          ,
+	{{sSimple                       }, {Interpolator::Simple}       }          ,
 	{{sBezierCurve                  }, {Interpolator::BezierCurve} }           ,
 	{{sBSpline                      }, {Interpolator::BSpline}    }            ,
 	{{sNURBS                        }, {Interpolator::NURBS}     }             ,
@@ -491,12 +512,11 @@ const std::vector<std::pair<std::string, Interpolator>> interpolatorEnumWithName
 	{{sHermiteFiniteDifferenceClosed}, {Interpolator::HermiteFiniteDifferenceClosed}}
 };
 
-
-
-
 const std::string& InterpolatorTranslate(Interpolator type){
 	if(type == Interpolator::Linear)
 		return sLinear;
+	if(type == Interpolator::Simple)
+		return sSimple;
 	if(type == Interpolator::BezierCurve)
 		return sBezierCurve;
 	if(type == Interpolator::BSpline)
@@ -511,8 +531,4 @@ const std::string& InterpolatorTranslate(Interpolator type){
 		return sHermiteFiniteDifferenceClosed;
 	return sEmpty;
 }
-
-
-
-
 

@@ -51,6 +51,7 @@ public:
 		return *this;
 	}
 	MoveCommandBuilder& finish(shared_ptr<RobotController> RC);
+	MoveCommandBuilder& finish(RobotController &RC);
 
 	MoveCommandBuilder(){}
 	~MoveCommandBuilder(){}
