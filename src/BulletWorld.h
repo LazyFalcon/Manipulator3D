@@ -22,6 +22,10 @@ public:
 	void init();
 	void clear();
 	btRigidBody* createRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, float inertiaScalling = 1.f);
+
+    btCollisionWorld::ClosestRayResultCallback raycast(glm::vec4 from, glm::vec4 to);
+    btCollisionWorld::ClosestRayResultCallback raycast(btVector3 from, btVector3 to);
+
 	void deleteMotionState(btRigidBody* body);
 	void update(float step);
 	void deleteBodies();

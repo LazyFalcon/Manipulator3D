@@ -116,4 +116,14 @@ void BulletWorld::deleteBodies(){
 	shapes.clear();
 }
 
+btCollisionWorld::ClosestRayResultCallback BulletWorld::raycast(glm::vec4 from, glm::vec4 to){
+    return raycast(btVector3(from.x, from.y, from.z), btVector3(to.x, to.y, to.z));
+}
+
+btCollisionWorld::ClosestRayResultCallback BulletWorld::raycast(btVector3 from, btVector3 to){
+    btCollisionWorld::ClosestRayResultCallback closestResults(from,to);
+    // closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
+    dynamicsWorld->rayTest(from,to,closestResults);
+    return closestResults;
+}
 
