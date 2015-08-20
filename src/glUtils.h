@@ -106,7 +106,10 @@ void glUniform(uint32_t shader, int v, const GLint name){
 	glUniform1i(name, v);
 }
 void glUniform(uint32_t shader, uint32_t v, const GLint name){
-	glUniform1i(name, v);
+	glUniform1ui(name, v);
+}
+void glUniform(uint32_t shader, uint16_t v, const GLint name){
+	glUniform1ui(name, v);
 }
 
 void glUniform(uint32_t shader, const glm::mat4 &m, const char *name){
