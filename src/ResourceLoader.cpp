@@ -362,7 +362,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 
 
 
-		auto module = std::make_unique<Module>();
+		auto module = std::make_shared<Module>();
 		cout<<"-- "+it["Name"].value<<endl;
 		module->type = type;
 		module->vecToA = it["ParentJoint"]["Vec"].asVec30();
@@ -375,10 +375,10 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->maxVelocty = 0.9; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 
-        if(module->entity->rgBody){
-            EntityPayload *payload = (EntityPayload*)(module->entity->rgBody->getUserPointer());
-            payload->owner = (void*)(&robot);
-        }
+		if(module->entity->rgBody){
+				EntityPayload *payload = (EntityPayload*)(module->entity->rgBody->getUserPointer());
+				payload->owner = (void*)(&robot);
+		}
 		// module->entity->rgBody->setMassProps(0, btVector3(0,0,0));
 		// module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 

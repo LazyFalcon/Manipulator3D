@@ -24,26 +24,26 @@ public:
 	std::unordered_map<std::string, Entity> units;
 	std::vector<Entity*> units_ptrs;
 	std::vector<PointLamp> pointLamps;
-	unique_ptr<Resources> resources;
+	shared_ptr<Resources> resources;
 	shared_ptr<Robot> robot;
 
-    /// python binding utils, sorry
-    Entity& getObject(const std::string &name){
-        return units[name];
-    }
-    /// --
+	/// python binding utils, sorry
+	Entity& getObject(const std::string &name){
+		return units[name];
+	}
+	/// --
 
 	~Scene();
-	Scene() : robot(make_shared<Robot>()), resources(make_unique<Resources>()) {}
+	Scene() : robot(make_shared<Robot>()), resources(make_shared<Resources>()) {}
 };
 
 class ResourceLoader
 {
 public:
 
-	unique_ptr<Resources> &resources;
+	shared_ptr<Resources> &resources;
 
-	ResourceLoader(unique_ptr<Resources> &_resources):resources(_resources){}
+	ResourceLoader(shared_ptr<Resources> &_resources):resources(_resources){}
 	~ResourceLoader(){
 		cerr<<"~ResourceLoader"<<endl;
 	}

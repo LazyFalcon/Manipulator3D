@@ -129,7 +129,7 @@ vector<std::pair<GLuint, glm::vec4>> texturedBoxes;
 const u32 g_lightsToForward = 2;
 
 
-void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, unique_ptr<Resources> &res){
+void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, shared_ptr<Resources> &res){
 
 	glGenVertexArrays(1, &(res->VAO));
 	glBindVertexArray(res->VAO);

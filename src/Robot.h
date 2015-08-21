@@ -83,7 +83,7 @@ public:
 	bool isReady { true };
 	Point endEffector;
 
-	std::vector<std::unique_ptr<Module>> chain;
+	std::vector<std::shared_ptr<Module>> chain;
 };
 
 /// without orientation

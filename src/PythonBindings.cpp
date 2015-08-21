@@ -1,6 +1,12 @@
+#include <Utils/Includes.h>
+#include <Utils/Utils.h>
+#include <Utils/BaseStructs.h>
+#include "IInterpolator.h"
 #include "Robot.h"
 #include "Robot-Commands.h"
 #include "RobotController.h"
+#include "CFGparser.h"
+#include "ResourceLoader.h"
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
 
@@ -16,7 +22,6 @@
 namespace PythonBindings NAM_START
 
 BOOST_PYTHON_MODULE(glm){
-    bpl::def("manipulateVector", &manipulateVector);
 
     std::string (*to_string_vec3)(const glm::vec3&) = &to_string;
     std::string (*to_string_vec4)(const glm::vec4&) = &to_string;
@@ -90,48 +95,48 @@ BOOST_PYTHON_MODULE(glm){
 }
 
 BOOST_PYTHON_MODULE(commandBuilders){
-    MoveCommandBuilder& (*interpolator_string)(const std::string& name) = &MoveCommandBuilder::interpolator;
-    MoveCommandBuilder& (*interpolator_enum)(Interpolator value) = &MoveCommandBuilder::interpolator;
-    MoveCommandBuilder& (*interpolator_ptr)(shared_ptr<IInterpolator> &value) = &MoveCommandBuilder::interpolator;
-    MoveCommandBuilder& (*solver_string)(const std::string& name) = &MoveCommandBuilder::solver;
+    // MoveCommandBuilder& (*interpolator_string)(const std::string&) = &MoveCommandBuilder::interpolator;
+    // MoveCommandBuilder& (*interpolator_enum)(Interpolator) = &MoveCommandBuilder::interpolator;
+    MoveCommandBuilder& (MoveCommandBuilder::*interpolator_ptr)(shared_ptr<IInterpolator>&) = &MoveCommandBuilder::interpolator;
+    MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
+    MoveCommandBuilder& (MoveCommandBuilder::*finish_ptr)(shared_ptr<RobotController>) = &MoveCommandBuilder::finish;
 
 
     bpl::class_<MoveCommandBuilder, std::shared_ptr<MoveCommandBuilder>>("MoveCommandBuilder")
         .def_readwrite("moveCommand", &MoveCommandBuilder::moveCommand)
-        .def("init", &MoveCommandBuilder::init)
-        .def("velocity", &MoveCommandBuilder::velocity)
-        .def("jointVelocity", &MoveCommandBuilder::jointVelocity)
-        .def("acceleration", &MoveCommandBuilder::acceleration)
-        .def("time", &MoveCommandBuilder::time)
-        .def("interpolator", interpolator_string)
-        .def("interpolator", interpolator_enum)
-        .def("interpolator", interpolator_ptr)
-        .def("solver", solver_string)
-        .def("finish", &MoveCommandBuilder::finish)
+        // .def("init", &MoveCommandBuilder::init, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("name", &MoveCommandBuilder::name, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("velocity", &MoveCommandBuilder::velocity, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("jointVelocity", &MoveCommandBuilder::jointVelocity, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("acceleration", &MoveCommandBuilder::acceleration, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("time", &MoveCommandBuilder::time, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("interpolator", interpolator_ptr, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("solver", solver_string, bpl::return_value_policy<bpl::reference_existing_object>())
+        // .def("finish", finish_ptr, bpl::return_value_policy<bpl::reference_existing_object>())
         ;
 
-    bpl::enum_<Interpolator>("Interpolator")
-        .value("Empty", Interpolator::Empty)
-        .value("Open", Interpolator::Open)
-        .value("Closed", Interpolator::Closed)
-        .value("Linear", Interpolator::Linear)
-        .value("BezierCurve", Interpolator::BezierCurve)
-        .value("BSpline", Interpolator::BSpline)
-        .value("NURBS", Interpolator::NURBS)
-        .value("HermiteCardinal", Interpolator::HermiteCardinal)
-        .value("HermiteFiniteDifference", Interpolator::HermiteFiniteDifference)
-        .value("HermiteFiniteDifferenceClosed", Interpolator::HermiteFiniteDifferenceClosed)
-        ;
-    bpl::class_<IInterpolator, std::shared_ptr<IInterpolator>>("IInterpolator", bpl::init<const std::vector<glm::vec4> &, Interpolator>(), const std::string &)
-        .def("firstPoint", &IInterpolator::firstPoint)
-        .def("nextPoint", &IInterpolator::nextPoint)
-        .def("generatePath", &IInterpolator::generatePath)
-        .def("reset", &IInterpolator::reset)
-        .def_readwrite("type", &IInterpolator::type)
-        .def_readwrite("finished", &IInterpolator::finished)
-        .def_readwrite("name", &IInterpolator::name)
-        .def_readwrite("points", &IInterpolator::points)
-        ;
+    // bpl::enum_<Interpolator>("Interpolator")
+        // .value("Empty", Interpolator::Empty)
+        // .value("Open", Interpolator::Open)
+        // .value("Closed", Interpolator::Closed)
+        // .value("Linear", Interpolator::Linear)
+        // .value("BezierCurve", Interpolator::BezierCurve)
+        // .value("BSpline", Interpolator::BSpline)
+        // .value("NURBS", Interpolator::NURBS)
+        // .value("HermiteCardinal", Interpolator::HermiteCardinal)
+        // .value("HermiteFiniteDifference", Interpolator::HermiteFiniteDifference)
+        // .value("HermiteFiniteDifferenceClosed", Interpolator::HermiteFiniteDifferenceClosed)
+        // ;
+    // bpl::class_<IInterpolator, std::shared_ptr<IInterpolator>>("IInterpolator", bpl::init<const std::vector<glm::vec4>&, Interpolator, const std::string&>())
+        // .def("firstPoint", &IInterpolator::firstPoint)
+        // .def("nextPoint", &IInterpolator::nextPoint)
+        // .def("generatePath", &IInterpolator::generatePath)
+        // .def("reset", &IInterpolator::reset)
+        // .def_readwrite("type", &IInterpolator::type)
+        // .def_readwrite("finished", &IInterpolator::finished)
+        // .def_readwrite("name", &IInterpolator::name)
+        // .def_readwrite("points", &IInterpolator::points)
+        // ;
 
 }
 /**
@@ -140,82 +145,84 @@ BOOST_PYTHON_MODULE(commandBuilders){
  * http://stackoverflow.com/questions/3881457/boostpython-howto-call-a-function-that-expects-a-pointer
  */
 BOOST_PYTHON_MODULE(scene){
-    bpl::class_<Entity, std::shared_ptr<Entity>>("Entity")
-        .def_readonly("ID", &RobotController::ID)
-        .def_readwrite("position", &RobotController::position)
-        .def_readwrite("quat", &RobotController::quat)
-        .def("rgBody", &RobotController::rgBodyRef)
-        ;
-    bpl::class_<Scene, std::shared_ptr<Scene>>("Scene")
-        .def("getObject", &RobotController::getObject)
-        ;
+    // bpl::class_<Entity, std::shared_ptr<Entity>>("Entity")
+        // .def_readonly("ID", &Entity::ID)
+        // .def_readwrite("position", &Entity::position)
+        // .def_readwrite("quat", &Entity::quat)
+        // .def("rgBody", &Entity::rgBodyRef)
+        // ;
+    // bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
+        // .def("getObject", &Scene::getObject, bpl::return_value_policy<bpl::reference_existing_object>()) /// when returning reference
+        // ;
 }
 BOOST_PYTHON_MODULE(robotController){
-    bpl::enum_<RCStates>("RCStates")
-        .value("Run", RCStates::Run)
-        .value("Pause", RCStates::Pause)
-        .value("Stop", RCStates::Stop)
-        ;
+    // bpl::enum_<RCStates>("RCStates")
+        // .value("Run", RCStates::Run)
+        // .value("Pause", RCStates::Pause)
+        // .value("Stop", RCStates::Stop)
+        // ;
 
-    void (*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &MoveCommandBuilder::insertCommand;
-    bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
-        .def("move", &RobotController::move)
-        .def("wait", &RobotController::wait)
-        .def("execute", &RobotController::execute)
-        .def("insertCommand", insertCommand_ptr)
-        .def("run", &RobotController::run)
-        .def("pause", &RobotController::pause)
-        .def("stop", &RobotController::stop)
-        .def("next", &RobotController::next)
-        .def("prev", &RobotController::prev)
-        .def("savePosition", &RobotController::savePosition)
-        .def("restorePosition", &RobotController::restorePosition)
-        .def("grabObject", &RobotController::grabObject)
-        .def("releaseObject", &RobotController::releaseObject)
-        .def_readwrite("robot", &RobotController::robot)
-        .def_readwrite("state ", &RobotController::state )
+    // void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
+    // bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
+        // .def("move", &RobotController::move)
+        // .def("wait", &RobotController::wait)
+        // .def("execute", &RobotController::execute)
+        // .def("insertCommand", insertCommand_ptr)
+        // .def("run", &RobotController::run)
+        // .def("pause", &RobotController::pause)
+        // .def("stop", &RobotController::stop)
+        // .def("next", &RobotController::next)
+        // .def("prev", &RobotController::prev)
+        // .def("savePosition", &RobotController::savePosition)
+        // .def("restorePosition", &RobotController::restorePosition)
+        // .def("grabObject", &RobotController::grabObject)
+        // .def("releaseObject", &RobotController::releaseObject)
+        // .def_readwrite("robot", &RobotController::robot)
+        // .def_readwrite("state ", &RobotController::state )
         // .def_readwrite("commands", &MoveCommandBuilder::commands)
         ;
 
-    bpl::class_<std::vector<Module>>("ModuleVec")
-        .def(bpl::vector_indexing_suite<std::vector<Module>>())
-        ;
 
-    void (*goTo_1_ptr)(float, double) = &Robot::goTo;
-    void (*goTo_2_ptr)(const std::vector<double>&) = &Robot::goTo;
-    bpl::class_<Robot, std::shared_ptr<Robot>>("Robot")
-        .def("goTo", &Robot::goTo_1_ptr)
-        .def("goTo", &Robot::goTo_2_ptr)
-        .def_readwrite("chain", &Robot::chain)
-        ;
+    // bool (Robot::*goTo_1_ptr)(float, double) = &Robot::goTo;
+    // bool (Robot::*goTo_2_ptr)(const std::vector<double>&) = &Robot::goTo;
+    // bpl::class_<Robot, std::shared_ptr<Robot>>("Robot")
+        // .def("goTo", goTo_1_ptr)
+        // .def("goTo", goTo_2_ptr)
+        // .def_readwrite("chain", &Robot::chain)
+        // ;
 
-    bpl::class_<Module, std::shared_ptr<Module>>("Module")
-        .def("getMainAxis", &Module::getMainAxis)
-        .def("getMainAxis3", &Module::getMainAxis3)
-        .def_readwrite("axis", &Robot::axis)
-        .def_readwrite("vecToA", &Robot::vecToA)
-        .def_readwrite("vecToB", &Robot::vecToB)
-        .def_readwrite("name", &Robot::name)
-        .def_readwrite("entity", &Robot::entity)
-        .def_readwrite("min", &Robot::min)
-        .def_readwrite("max", &Robot::max)
-        .def_readwrite("value", &Robot::value)
-        .def_readwrite("maxVelocty", &Robot::maxVelocty)
-        .def_readwrite("maxAcceleration", &Robot::maxAcceleration)
-        .def_readwrite("lastVelocity", &Robot::lastVelocity)
-        .def_readwrite("lastAcceleration", &Robot::lastAcceleration)
-        ;
+    // bpl::class_<Module, std::shared_ptr<Module>>("Module")
+        // .def("getMainAxis", &Module::getMainAxis)
+        // .def("getMainAxis3", &Module::getMainAxis3)
+        // .def_readwrite("axis", &Module::axis)
+        // .def_readwrite("vecToA", &Module::vecToA)
+        // .def_readwrite("vecToB", &Module::vecToB)
+        // .def_readwrite("name", &Module::name)
+        // .def_readwrite("entity", &Module::entity)
+        // .def_readwrite("min", &Module::min)
+        // .def_readwrite("max", &Module::max)
+        // .def_readwrite("value", &Module::value)
+        // .def_readwrite("maxVelocty", &Module::maxVelocty)
+        // .def_readwrite("maxAcceleration", &Module::maxAcceleration)
+        // .def_readwrite("lastVelocity", &Module::lastVelocity)
+        // .def_readwrite("lastAcceleration", &Module::lastAcceleration)
+        // ;
+    // bpl::class_<std::vector<shared_ptr<Module>>>("ModuleVec")
+        // .def(bpl::vector_indexing_suite<std::vector<shared_ptr<Module>>())
+        // ;
 }
 
 bpl::object main;
 bpl::object global;
 bpl::object mainScript;
 
-void init(){
+void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
     Py_Initialize();
     try {
-        initcpp();
-        initcpp_vehicle();
+        initglm();
+        initscene();
+        initrobotController();
+        initcommandBuilders();
         main = bpl::import("__main__");
         global = bpl::object(main.attr("__dict__"));
         bpl::str script(
@@ -225,26 +232,23 @@ void init(){
             % bpl::str("module")
             );
         bpl::object result = bpl::exec(script, global, global);
-        mainScript = bpl::import("testScript");
+        mainScript = bpl::import("python/script_a1");
 
   } catch (bpl::error_already_set) {
     PyErr_Print();
   }
-
-  vehicle_ptr = std::make_shared<Vehicle>();
-  tank_ptr = std::make_shared<Tank>();
 }
 
-void update(){
+void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
     try {
-        mainScript.attr("update")(vehicle_ptr, 0.01);
 
-      } catch (bpl::error_already_set) {
+      }
+			catch (bpl::error_already_set) {
         PyErr_Print();
       }
 }
 
-void terminate(){
+void terminate(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
     Py_Finalize();
 }
 

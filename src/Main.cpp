@@ -105,9 +105,9 @@ namespace Editor
 #include "PathCreator.h"
 #include "SomeTests.h"
 #include "BigSplineTest.h"
-unique_ptr<RobotController> RC; /// only one instace, full time living, initialized before otrer inits
-unique_ptr<Scene> scene;
-unique_ptr<Resources> globalResources;
+shared_ptr<RobotController> RC; /// only one instace, full time living, initialized before otrer inits
+shared_ptr<Scene> scene;
+shared_ptr<Resources> globalResources;
 #include "Menu.h"
 CFG::Node cfg_settings;
 
@@ -148,9 +148,9 @@ int main(){
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);
 
-	scene = make_unique<Scene>();
-	RC = make_unique<RobotController>();
-	globalResources = make_unique<Resources>();
+	scene = make_shared<Scene>();
+	RC = make_shared<RobotController>();
+	globalResources = make_shared<Resources>();
 
 	bulletWorld.init();
 
