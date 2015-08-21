@@ -9,8 +9,12 @@
 #include "Graph.h"
 #include "Editor/Editor.h"
 #include "Editor/MoveCommandBuilder.h"
+#include "Editor/ExecuteCommandBuilder.h"
 #include "CFGParser.h"
 #include "ResourceLoader.h"
+
+#define NAM_END }
+#define NAM_START {
 
 extern UI::IMGUI ui;
 extern unique_ptr<Scene> scene;
@@ -52,6 +56,8 @@ void RCTest(RobotController &rc){
 	glm::vec4 p6(-4, -4, 1.9, 1);
 
 	rc.grabObject(&scene->units["Cube.039"]);
+	rc.grabObject(&scene->units["Cube.038"]);
+	rc.grabObject(&scene->units["Cube.037"]);
 
 	std::cout<<"Start test"<<std::endl;
 	// rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
@@ -110,6 +116,7 @@ void RobotController::next(){
 	}
 	else {
 		Editor::set(*commandIter);
+		(*commandIter)->init(*this);
 	}
 }
 void RobotController::prev(){
@@ -147,7 +154,6 @@ WaitCommand& RobotController::wait(float time){
 	return *newCommand;
 }
 
-
 bool RobotController::update(float dt){
 
 	if(commandIter == commands.end()){
@@ -158,26 +164,27 @@ bool RobotController::update(float dt){
 		return false;
 
 	if((*commandIter)->update(*this, dt)){
-		++commandIter;
-		(*commandIter)->init(*this);
-		if (commandIter == commands.end()){
-			stop();
-		}
+		std::cout<<"Starting new job."<<endl;
+		next();
 		return true;
 	}
 	return false;
 }
 
-void RobotController::grab(Entity *obj){
-	grabbedObject = obj;
-}
-void RobotController::left(){}
+void RobotController::releaseObject(){}
+/**
+ * http://www.gamedev.net/page/resources/_/technical/apis-and-tools/why-nasa-switched-from-unity-to-blend4web-r4150
+ *
+*/
 void RobotController::grabObject(Entity *obj){
 	MoveCommandBuilder moveBuilder;
+	ExecuteCommandBuilder executeBuilder;
 	auto interpolator = addInterpolator(Interpolator::Simple, {obj->position});
+	auto target = addInterpolator(Interpolator::Simple, {glm::rotate(2.f, glm::vec3(0,0,1)) * obj->position});
 
 	moveBuilder
 		.init()
+        .name("Move to target")
 		.velocity(1.0)
 		.jointVelocity(0.5)
 		.acceleration(0.2)
@@ -186,9 +193,30 @@ void RobotController::grabObject(Entity *obj){
 		.finish(*this);
 
 	executeBuilder
+        .init()
+        .name("Grab target")
 		.onEnter([obj](RobotController &rc){
-			rc.grab(obj);
+			RCUtils::pinObjectToEffector(obj, rc.robot->chain.back()->entity);
+            return true;
+		})
+		.finish(*this);
 
+	moveBuilder
+		.init()
+        .name("Move target")
+		.velocity(1.0)
+		.jointVelocity(0.5)
+		.acceleration(0.2)
+		.solver(nullptr)
+		.interpolator(target)
+		.finish(*this);
+
+    executeBuilder
+        .init()
+        .name("Release target")
+		.onEnter([obj](RobotController &rc){
+			RCUtils::releaseObjects();
+            return true;
 		})
 		.finish(*this);
 
@@ -206,4 +234,33 @@ void RobotController::grabObject(Entity *obj){
  *  Zamówić pizzę
  */
 
+namespace RCUtils NAM_START
 
+/// musimy zapamiętać pozycję i orientację względem efektora
+std::pair<Entity*, Entity*> pairedObjects;
+Point effectorToPairedRelation;
+
+void pinObjectToEffector(Entity *obj, Entity *effector){
+    if(obj && effector){
+        pairedObjects = std::make_pair(obj, effector);
+        effectorToPairedRelation.position = obj->position - effector->position;
+        effectorToPairedRelation.quat = glm::inverse(effector->quat) * obj->quat;
+    }
+}
+Entity* releaseObjects(){
+    Entity *out = pairedObjects.first;
+    pairedObjects = make_pair<Entity*, Entity*>(nullptr, nullptr);
+    return out;
+}
+void update(){
+    if(pairedObjects.first && pairedObjects.second){
+        auto obj = pairedObjects.first;
+        auto effector = pairedObjects.second;
+        obj->position = effector->position + effector->quat * effectorToPairedRelation.quat * effectorToPairedRelation.position;
+        obj->quat = effector->quat * effectorToPairedRelation.quat;
+    }
+
+}
+
+
+NAM_END

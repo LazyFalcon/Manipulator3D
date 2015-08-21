@@ -12,6 +12,10 @@ public:
 		moveCommand = make_shared<MoveCommand>();
 		return *this;
 	}
+    MoveCommandBuilder& name(const std::string &s){
+		moveCommand->name = s;
+		return *this;
+    }
 	MoveCommandBuilder& velocity(double value){
 		moveCommand->velocity = value;
 		return *this;

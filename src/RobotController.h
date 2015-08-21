@@ -2,6 +2,9 @@
 #include "IInterpolator.h"
 #include "Robot-Commands.h"
 
+#define NAM_END }
+#define NAM_START {
+
 enum class CommandStatus : int {
 
 
@@ -26,10 +29,8 @@ public:
 	MoveCommand& move(shared_ptr<IInterpolator> interpolator, const std::string &name);
 	WaitCommand& wait(float time);
 	WaitCommand& execute(float time){}
-	void grabObject(Entity *obj);
-	/// znaleźć obiekt, jego orientację, wyrównać robota do osi/płaszczyzny, przypiąć pozycję
-	/// w update przenosić obiekt
-
+    void useEffector();
+    void releaseEffector();
 
 	void insertCommand(shared_ptr<ICommand> &ptr){
 		commands.push_back(ptr);
@@ -47,6 +48,18 @@ public:
 	void next();
 	void prev();
 
+    /// zapisuje aktualną konfigurację robota na stosie
+    void savePosition();
+    /// zdejmuje konfigurację robota ze stosu, defaultowo odpala komendę na dotarcie tam
+    void restorePosition();
+
+    /// ---- UTILS ----
+    void grabObject(Entity *obj);
+    void releaseObject();
+
+
+    /// ---- UTILS ----
+
 	shared_ptr<Robot> robot;
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
@@ -56,4 +69,10 @@ public:
 
 void RCTest(RobotController &rc);
 
+namespace RCUtils NAM_START
 
+void pinObjectToEffector(Entity *obj, Entity *effector);
+Entity* releaseObjects();
+void update();
+
+NAM_END

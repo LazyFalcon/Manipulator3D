@@ -200,6 +200,7 @@ void fastLoop(float step){
 	RC->update(step/1000.0f);
 	bulletWorld.update(step/1000.0f);
 	scene->robot->update(step);
+    RCUtils::update();
 }
 void renderLoop(){
 	// Engine::plotGraphs();
@@ -314,16 +315,16 @@ void mainLoop(){
 		Robot &robot = *(scene->robot);
 		std::vector<double> vars = robot.getVariables();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			for(auto &it : vars)
-				ui.rect().text(to_string(it))();
+			// for(auto &it : vars)
+				// ui.rect().text(to_string(it))();
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/20.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
+			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
-			ui.rect().text("Depth: " + glm::to_string(Engine::dataUnderMouse.normal)).font("ui_12"s)();
 			ui.rect().text("ID: " + std::to_string(Engine::dataUnderMouse.objID)).font("ui_12"s)();
 		ui.endTable();
 

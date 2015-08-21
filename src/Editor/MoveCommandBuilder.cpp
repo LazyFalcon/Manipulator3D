@@ -36,7 +36,6 @@ void decr(float &value){value -= 0.01;}
 			ui.rect(120,22).edit(value)(UI::EditBox);
 
 
-extern unique_ptr<RobotController> RC;
 
 MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
 	moveCommand->solver = make_unique<JT1>();

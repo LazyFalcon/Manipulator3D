@@ -4,7 +4,7 @@
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -DUSE_BULLET
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
-CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g
+CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g  -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
@@ -32,12 +32,14 @@ OBJS = \
 ../bin/Editor.o  \
 ../bin/Graph.o \
 ../bin/MoveCommandBuilder.o \
+../bin/ExecuteCommandBuilder.o \
 ../bin/PropertyEditor-TabManager.o \
 ../bin/Robot-Commands.o \
+../bin/PythonBindings.o \
 ../bin/MAIN.o
 
 LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
--lglew32  -lglfw3 -lgdi32 -lFreeImage -lglu32  -lopengl32
+-lglew32 -lglfw3 -lgdi32 -lFreeImage -lglu32 -lopengl32 -lboost_python-mgw49-mt-d-1_56 -LC:\Python27\libs -lpython27
 
 
 ../bin/manipulator: $(OBJS)
@@ -54,10 +56,16 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/MoveCommandBuilder.o: $(Editor)/MoveCommandBuilder.cpp $(Editor)/MoveCommandBuilder.h $(UTIL)/IMGUI_V4.h Widgets.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(Editor)/MoveCommandBuilder.cpp -o ../bin/MoveCommandBuilder.o
 
+../bin/ExecuteCommandBuilder.o: $(Editor)/ExecuteCommandBuilder.cpp $(Editor)/ExecuteCommandBuilder.h $(UTIL)/IMGUI_V4.h Widgets.h
+	$(CXX) -c $(CXXFLAGS) -o2 $(Editor)/ExecuteCommandBuilder.cpp -o ../bin/ExecuteCommandBuilder.o
+
 ../bin/Editor.o: $(Editor)/Editor.cpp $(Editor)/Editor.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  $(Editor)/Editor.cpp -o ../bin/Editor.o
 
 #-----------------------------------------------------
+
+../bin/PythonBindings.o: PythonBindings.cpp PythonBindings.h
+	$(CXX) -c $(CXXFLAGS) -o2  PythonBindings.cpp -o ../bin/PythonBindings.o
 
 ../bin/Graph.o: Graph.cpp Graph.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Graph.cpp -o ../bin/Graph.o

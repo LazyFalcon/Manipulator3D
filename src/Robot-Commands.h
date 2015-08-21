@@ -15,7 +15,6 @@ public:
 	ICommand(CommandType type) : type(type), isRuning(false){}
 	//ICommand(uint32_t f) : flags(f){}
 	virtual void init(RobotController &rc) = 0;
-	virtual bool enter(RobotController &rc) = 0;
 	virtual bool update(RobotController &rc, float dt) = 0;
 	virtual bool exit(RobotController &rc) = 0;
 	virtual vector<glm::vec4>& getPath() = 0;
@@ -55,7 +54,6 @@ public:
 	}
 	void init(RobotController &rc);
 	bool update(RobotController &rc, float dt);
-	bool enter(RobotController &rc){}
 	bool exit(RobotController &rc){}
 	glm::vec4 calculateNextPoint(float dt);
 	double calculateRequiredDistance(float dt);
@@ -88,7 +86,6 @@ public:
 	bool update(RobotController &rc, float dt);
 
 	void init(RobotController &rc);
-	bool enter(RobotController &rc);
 	bool exit(RobotController &rc);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
@@ -102,16 +99,16 @@ public:
 class ExecuteCommand : public ICommand
 {
 public:
+    ExecuteCommand() : ICommand(EXECUTE){}
 	void init(RobotController &rc);
-	bool enter(RobotController &rc);
 	bool update(RobotController &rc, float dt);
 	bool exit(RobotController &rc);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
-	std::function<void(RobotController &rc)> enterCallback;
-	std::function<void(RobotController &rc)> func;
-	std::function<void(RobotController &rc)> exitCallback;
+	std::function<void(RobotController &rc)> onEnter;
+	std::function<void(RobotController &rc)> onUpdate;
+	std::function<void(RobotController &rc)> onExit;
 };
 
 

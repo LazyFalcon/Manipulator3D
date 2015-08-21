@@ -27,6 +27,12 @@ public:
 	unique_ptr<Resources> resources;
 	shared_ptr<Robot> robot;
 
+    /// python binding utils, sorry
+    Entity& getObject(const std::string &name){
+        return units[name];
+    }
+    /// --
+
 	~Scene();
 	Scene() : robot(make_shared<Robot>()), resources(make_unique<Resources>()) {}
 };

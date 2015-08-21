@@ -14,7 +14,6 @@
 void WaitCommand::init(RobotController &rc){
 	isRuning = true;
 };
-bool WaitCommand::enter(RobotController &rc){}
 bool WaitCommand::update(RobotController &rc, float dt){
 	// if(releaseTime <= 0.f || releaseFlag&globalFlags || (releaseFuction && releaseFuction()))
 	if(releaseTime <= 0.f || releaseFlag&globalFlags)
@@ -34,15 +33,17 @@ vector<glm::vec4>& WaitCommand::getPolyline(){
 
 void ExecuteCommand::init(RobotController &rc){
 	isRuning = true;
+	if(onEnter) onEnter(rc);
 };
-bool ExecuteCommand::enter(RobotController &rc){
-	if(enterCallback) enterCallback(rc);
-}
 bool ExecuteCommand::update(RobotController &rc, float dt){
-	if(func) func(rc);
+	if(onUpdate) onUpdate(rc);
+    else return exit(rc);
+    return false;
 }
 bool ExecuteCommand::exit(RobotController &rc){
-	if(exitCallback) exitCallback(rc);
+	isRuning = false;
+    if(onExit) onExit(rc);
+    return true;
 }
 vector<glm::vec4>& ExecuteCommand::getPath(){
 	return fakePath;
@@ -87,8 +88,7 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	}
 	if(rc.robot->isReady && interpolator->finished){
 		interpolator->reset();
-		std::cout<<"job done"<<endl;
-		return false;
+		return true;
 	}
 	glm::vec4 newTarget = calculateNextPoint(dt);
 
