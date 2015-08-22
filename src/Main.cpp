@@ -240,12 +240,12 @@ void prerequisites(){
 	Editor::init();
 	jacobianTransposeInitialCall(*(scene->robot));
 	jacobianTransposeInit();
-	PythonBindings::init(RC, scene);
+	// PythonBindings::init(RC, scene);
 }
 void updates(float dt){
 	Editor::update(*RC);
 	Engine::processMouse(mousePosition, *scene, lClick, rClick);
-	PythonBindings::update(RC, scene);
+	// PythonBindings::update(RC, scene);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -321,8 +321,8 @@ void mainLoop(){
 		Robot &robot = *(scene->robot);
 		std::vector<double> vars = robot.getVariables();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			// for(auto &it : vars)
-				// ui.rect().text(to_string(it))();
+			for(auto &it : vars)
+				ui.rect().text(to_string(it))();
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/20.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
@@ -331,7 +331,7 @@ void mainLoop(){
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
 			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
-			ui.rect().text("ID: " + std::to_string(Helper::getObjectUnderMouse()->ID)).font("ui_12"s)();
+			// ui.rect().text("ID: " + std::to_string(Helper::getObjectUnderMouse()->ID)).font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();

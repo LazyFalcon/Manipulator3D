@@ -22,7 +22,7 @@
 
 namespace PythonBindings NAM_START
 
-BOOST_PYTHON_MODULE(glm){
+BOOST_PYTHON_MODULE(glm_export){
 
     std::string (*to_string_vec3)(const glm::vec3&) = &to_string;
     std::string (*to_string_vec4)(const glm::vec4&) = &to_string;
@@ -92,10 +92,9 @@ BOOST_PYTHON_MODULE(glm){
         .def(bpl::self * float())
         .def("__str__", to_string_vec3)
         ;
-
 }
 
-BOOST_PYTHON_MODULE(commandBuilders){
+BOOST_PYTHON_MODULE(commandBuilders_export){
     // MoveCommandBuilder& (*interpolator_string)(const std::string&) = &MoveCommandBuilder::interpolator;
     // MoveCommandBuilder& (*interpolator_enum)(Interpolator) = &MoveCommandBuilder::interpolator;
     MoveCommandBuilder& (MoveCommandBuilder::*interpolator_ptr)(shared_ptr<IInterpolator>&) = &MoveCommandBuilder::interpolator;
@@ -145,18 +144,18 @@ BOOST_PYTHON_MODULE(commandBuilders){
  http://stackoverflow.com/questions/5055443/boost-python-how-to-pass-a-c-class-instance-to-a-python-class/5056462#5056462
  * http://stackoverflow.com/questions/3881457/boostpython-howto-call-a-function-that-expects-a-pointer
  */
-BOOST_PYTHON_MODULE(scene){
+BOOST_PYTHON_MODULE(scene_export){
     // bpl::class_<Entity, std::shared_ptr<Entity>>("Entity")
         // .def_readonly("ID", &Entity::ID)
         // .def_readwrite("position", &Entity::position)
         // .def_readwrite("quat", &Entity::quat)
         // .def("rgBody", &Entity::rgBodyRef)
         // ;
-    // bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
-        // .def("getObject", &Scene::getObject, bpl::return_value_policy<bpl::reference_existing_object>()) /// when returning reference
-        // ;
+    bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
+        .def("getObject", &Scene::getObject, bpl::return_value_policy<bpl::reference_existing_object>()) /// when returning reference
+        ;
 }
-BOOST_PYTHON_MODULE(robotController){
+BOOST_PYTHON_MODULE(robotController_export){
     // bpl::enum_<RCStates>("RCStates")
         // .value("Run", RCStates::Run)
         // .value("Pause", RCStates::Pause)
@@ -212,15 +211,15 @@ BOOST_PYTHON_MODULE(robotController){
         // .def(bpl::vector_indexing_suite<std::vector<shared_ptr<Module>>())
         // ;
 }
-BOOST_PYTHON_MODULE(helper){
+BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;
-	// bpl::def("getPositionUnderMouse", &getPositionUnderMouse);
-	// bpl::def("getNormalUnderMouse", &getNormalUnderMouse);
+	bpl::def("getPositionUnderMouse", &getPositionUnderMouse);
+	bpl::def("getNormalUnderMouse", &getNormalUnderMouse);
 	// bpl::def("getObjectUnderMouse", &getObjectUnderMouse);
 
-	// bpl::def("savePoint", &savePoint);
+	bpl::def("savePoint", &savePoint);
 	// bpl::def("getPoint", &getPoint);
-	// bpl::def("saveGroup", &saveGroup);
+	bpl::def("saveGroup", &saveGroup);
 	// bpl::def("getGroup", &getGroup);
 
 }
@@ -233,10 +232,11 @@ bpl::object mainScript;
 void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	Py_Initialize();
 	try {
-		initglm();
-		initscene();
-		initrobotController();
-		initcommandBuilders();
+		initglm_export();
+		initscene_export();
+		initrobotController_export();
+		initcommandBuilders_export();
+		inithelper_export();
 		main = bpl::import("__main__");
 		global = bpl::object(main.attr("__dict__"));
 		bpl::str script(
@@ -246,17 +246,19 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 				% bpl::str("module")
 				);
 		bpl::object result = bpl::exec(script, global, global);
-		mainScript = bpl::import("python/script_a1");
-		mainScript.attr("init")(rc, scene);
+		// mainScript = bpl::import("../python/script_a1");
+		mainScript = bpl::import("script_a1");
+		// mainScript.attr("init")(rc, scene);
 
-	} catch (bpl::error_already_set) {
-	PyErr_Print();
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
 	}
 }
 
 void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
-		mainScript.attr("update")(rc, scene);
+		// mainScript.attr("update")(rc, scene, 0.01);
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();

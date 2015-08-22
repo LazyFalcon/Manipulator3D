@@ -32,6 +32,7 @@ glm::vec4 getNormalUnderMouse(){
 	return dataUnderMouse.normal;
 }
 Entity* getObjectUnderMouse(){
+	if(dataUnderMouse.objID == 0 || dataUnderMouse.objID >= scene.units_ptrs.size()-1) return scene.units_ptrs[1];
 	return (scene.units_ptrs[dataUnderMouse.objID]);
 }
 
