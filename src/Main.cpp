@@ -188,7 +188,6 @@ int main(){
 
 	RC->robot = scene->robot;
 
-	RCTest(*RC);
 	glfwShowWindow(window);
 	mainLoop();
 	Engine::clear();
@@ -236,11 +235,12 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
+	RCTest(*RC);
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	jacobianTransposeInitialCall(*(scene->robot));
 	jacobianTransposeInit();
-	// PythonBindings::init(RC, scene);
+	PythonBindings::init(RC, scene);
 }
 void updates(float dt){
 	Editor::update(*RC);

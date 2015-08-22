@@ -248,7 +248,7 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 		bpl::object result = bpl::exec(script, global, global);
 		// mainScript = bpl::import("../python/script_a1");
 		mainScript = bpl::import("script_a1");
-		// mainScript.attr("init")(rc, scene);
+		mainScript.attr("init")(rc, scene);
 
 	}
 	catch (bpl::error_already_set) {
@@ -258,7 +258,7 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 
 void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
-		// mainScript.attr("update")(rc, scene, 0.01);
+		mainScript.attr("update")(rc, scene, 0.01);
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();

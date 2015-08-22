@@ -12,6 +12,7 @@
 def update(RC, scene, dt):
 	return True
 def init(RC, scene):
+	print 'Hello! This is first entry in this script'
 	return True
 	# target[:] = ['brick.001','brick.002','brick.003','brick.004']
 	# target[:] = getSelectedList('itemsToGrab')
