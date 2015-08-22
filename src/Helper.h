@@ -16,7 +16,7 @@ struct DataUnderMouse
 
 glm::vec4 getPositionUnderMouse();
 glm::vec4 getNormalUnderMouse();
-Entity* getObjectUnderMouse();
+shared_ptr<Entity>& getObjectUnderMouse();
 
 void moveCameraByKeys(Camera &camera, int key, int action, int mods);
 void moveCameraByMouse(Camera &camera, int key, int action, int mods);
@@ -30,8 +30,8 @@ std::string generatePointName();
 
 bool processMouse(int key, int action, int mods);
 bool processKeys(int key, int action, int mods);
-void saveGroup(std::vector<Entity*>&);
-std::vector<Entity*>& getGroup(const std::string &name);
+void saveGroup(std::vector<shared_ptr<Entity>>&);
+std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
 
 

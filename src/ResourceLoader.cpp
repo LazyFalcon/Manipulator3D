@@ -280,13 +280,20 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 		Material material {it["Color"].asVec31()};
 		auto bulletData = buildBulletData(it);
 
-		scene.units.emplace(it["Name"].value, Entity {objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+		// scene.units.emplace(it["Name"].value, Entity {objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+		auto en = make_shared<Entity>();
+		en->ID = objectID;
+		en->mesh = &resources->meshes[it["Name"].value];
+		en->material = material;
+		en->position = it["Position"].asVec31();
+		en->quat = it["Quaternion"].asQuat();
+		en->rgBody = bulletData;
+		scene.units[it["Name"].value] = en;
+		scene.units_ptrs[objectID++] = en;
 
-		scene.units_ptrs[objectID++] = &scene.units[it["Name"].value];
-
-		if(scene.units[it["Name"].value].rgBody){
-				EntityPayload *payload = (EntityPayload*)(scene.units[it["Name"].value].rgBody->getUserPointer());
-				payload->backPointer = &scene.units[it["Name"].value];
+		if(en->rgBody){
+				EntityPayload *payload = (EntityPayload*)(en->rgBody->getUserPointer());
+				payload->backPointer = en.get();
 				payload->owner = (void*)payload->backPointer;
 		}
 	}
@@ -371,7 +378,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->min = it["ParentJoint"]["Min"].asFloat()*toRad;
 		module->max = it["ParentJoint"]["Max"].asFloat()*toRad;
 		module->name = it["Name"].value;
-		module->entity = &scene.units[it["Name"].value];
+		module->entity = scene.units[it["Name"].value];
 		module->maxVelocty = 0.9; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 

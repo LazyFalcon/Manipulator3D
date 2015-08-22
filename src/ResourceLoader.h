@@ -21,14 +21,14 @@ struct Resources
 class Scene
 {
 public:
-	std::unordered_map<std::string, Entity> units;
-	std::vector<Entity*> units_ptrs;
+	std::unordered_map<std::string, shared_ptr<Entity>> units;
+	std::vector<shared_ptr<Entity>> units_ptrs;
 	std::vector<PointLamp> pointLamps;
 	shared_ptr<Resources> resources;
 	shared_ptr<Robot> robot;
 
 	/// python binding utils, sorry
-	Entity& getObject(const std::string &name){
+	shared_ptr<Entity>& get(const std::string &name){
 		return units[name];
 	}
 	/// --

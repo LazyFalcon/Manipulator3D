@@ -39,7 +39,7 @@ public:
 	glm::vec4 vecToA;
 	glm::vec4 vecToB;
 	std::string name;
-	Entity *entity;
+	std::shared_ptr<Entity> entity;
 	double min, max;
 	double value;
 	double targetValue;

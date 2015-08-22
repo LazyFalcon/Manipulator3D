@@ -1,9 +1,8 @@
-# import * from glm_export
-# import * from RCUtils
-# import * from commandBuilders_export
-# import * from scene_export
-# import * from robotController_export
-# import * from helper_export
+from glm_export import *
+from commandBuilders_export import *
+from scene_export import *
+from robotController_export import *
+from helper_export import *
 
 # target = EntityVector()
 # targetCenter = vec4(0,0,0,0)
@@ -12,7 +11,20 @@
 def update(RC, scene, dt):
 	return True
 def init(RC, scene):
-	print 'Hello! This is first entry in this script'
+	print 'Hello! This is first entry in this script.'
+	moveBuilder = MoveCommandBuilder()
+	points = Vec4Vec()
+	points[:] = [vec4(2, 5, 4, 1), vec4(4, 0, 5, 1), vec4(1, -5, 2, 1), vec4(0, -5, 3, 1), vec4(-1, -5, 2, 1),  vec4(-1, -5.3, 1.9, 1),  vec4(-4, -4, 1.9, 1)]
+
+	path = addInterpolator(Interpolator.HermiteCardinal, points)
+	moveBuilder.init().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
+	print 'Now new order is created.'
+
+	RC.grabObject(scene.get("Cube.039"))
+	RC.grabObject(scene.get("Cube.038"))
+	RC.grabObject(scene.get("Cube.037"))
+
+	print 'End.'
 	return True
 	# target[:] = ['brick.001','brick.002','brick.003','brick.004']
 	# target[:] = getSelectedList('itemsToGrab')

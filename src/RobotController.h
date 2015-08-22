@@ -20,7 +20,7 @@ public:
 	~RobotController(){
 		std::cerr<<"delete RobotController"<<std::endl;
 	}
-	RobotController() : grabbedObject(nullptr){
+	RobotController() {
 		commandIter = commands.end();
 	}
 
@@ -39,7 +39,11 @@ public:
 		commands.push_back(ptr);
 	}
 	std::shared_ptr<ICommand>& getCommand(){
-		return *commandIter;
+		if(commandIter != commands.end())
+			return *commandIter;
+		// else if(!commands.empty())
+		else 
+			return commands.front();
 	}
 
 	void run();
@@ -54,7 +58,7 @@ public:
     void restorePosition();
 
     /// ---- UTILS ----
-    void grabObject(Entity *obj);
+    void grabObject(shared_ptr<Entity> &obj);
     void releaseObject();
 
 
@@ -64,15 +68,14 @@ public:
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
-	Entity *grabbedObject;
 };
 
 void RCTest(RobotController &rc);
 
 namespace RCUtils NAM_START
 
-void pinObjectToEffector(Entity *obj, Entity *effector);
-Entity* releaseObjects();
+void pinObjectToEffector(shared_ptr<Entity> &obj, shared_ptr<Entity> &effector);
+shared_ptr<Entity>& releaseObjects();
 void update();
 
 NAM_END

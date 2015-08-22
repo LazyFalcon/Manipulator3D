@@ -534,9 +534,9 @@ void generateShadowMap(Scene &scene){
 	// glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "u_PV");
 
 	for(auto &entity : scene.units){
-		auto &mesh = *(entity.second.mesh);
+		auto &mesh = *(entity.second->mesh);
 
-		glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+		glm::mat4 transform = glm::translate(entity.second->position.xyz()) * glm::mat4_cast(entity.second->quat);
 
 		glUniform(shader, transform, u_modelPosition);
 		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
@@ -617,24 +617,24 @@ void renderScene(Scene &scene){
 	auto u_NMPosition = glGetUniformLocation(shader, "uNM");
 	auto uID = glGetUniformLocation(shader, "uID");
 	for(auto &entity : scene.units){
-		auto &mesh = *(entity.second.mesh);
+		auto &mesh = *(entity.second->mesh);
 		glm::mat4 transform;
 
 // #ifdef USE_BULLET
-		auto rgBody = entity.second.rgBody;
+		auto rgBody = entity.second->rgBody;
 		if(rgBody && !rgBody->isStaticOrKinematicObject()){
 			auto btPos = rgBody->getCenterOfMassTransform().getOrigin();
-			entity.second.position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
+			entity.second->position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
 			auto btQuat = rgBody->getOrientation();
-			entity.second.quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
+			entity.second->quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
 		else
 // #endif
-			transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+			transform = glm::translate(entity.second->position.xyz()) * glm::mat4_cast(entity.second->quat);
 
-		glUniform(shader, entity.second.material.color, u_colorPosition);
-		glUniform(shader, u32(entity.second.ID), uID);
+		glUniform(shader, entity.second->material.color, u_colorPosition);
+		glUniform(shader, u32(entity.second->ID), uID);
 		glUniform(shader, transform, u_modelPosition);
 		if(globalSettings & MSAA)
 			glUniform(shader, glm::transpose(glm::inverse(transform)), u_NMPosition);

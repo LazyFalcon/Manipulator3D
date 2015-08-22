@@ -36,6 +36,10 @@ public:
 		moveCommand->interpolator = value;
 		return *this;
 	}
+	MoveCommandBuilder& interpolator(IInterpolatorContainer &value){
+		moveCommand->interpolator = value.interpolator;
+		return *this;
+	}
 	MoveCommandBuilder& interpolator(Interpolator value){
 		// build interpolator from enum
 		return *this;

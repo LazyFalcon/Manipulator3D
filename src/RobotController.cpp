@@ -55,18 +55,18 @@ void RCTest(RobotController &rc){
 	glm::vec4 p5(-1, -5.3, 1.9, 1);
 	glm::vec4 p6(-4, -4, 1.9, 1);
 
-	rc.grabObject(&scene->units["Cube.039"]);
-	rc.grabObject(&scene->units["Cube.038"]);
-	rc.grabObject(&scene->units["Cube.037"]);
+	// rc.grabObject(scene->get("Cube.039"));
+	// rc.grabObject(scene->get("Cube.038"));
+	// rc.grabObject(scene->get("Cube.037"));
 
-	std::cout<<"Start test"<<std::endl;
+	// std::cout<<"Start test"<<std::endl;
 	// rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
-	rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p1, p2, p3, p4, p5, p6}), "First move");
+	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p1, p2, p3, p4, p5, p6}), "First move");
 	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifference, {p0, p1, p2, p3, p4, p5, p6}), "First move");
-	rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6, p1, p4, p5, p2}), "Second move");
+	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6, p1, p4, p5, p2}), "Second move");
 	// rc.wait(20);
-	addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6})->name = "Hermite Closed";
-	addInterpolator(Interpolator::HermiteCardinal, {p0, p3, p6})->name = "Hermite Cardinal";
+	// addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6})->name = "Hermite Closed";
+	// addInterpolator(Interpolator::HermiteCardinal, {p0, p3, p6})->name = "Hermite Cardinal";
 
 	var0.setBouds({0, 250, -pi2, pi2});
 	var1.setBouds({0, 250, -pi2, pi2});
@@ -176,15 +176,15 @@ void RobotController::releaseObject(){}
  * http://www.gamedev.net/page/resources/_/technical/apis-and-tools/why-nasa-switched-from-unity-to-blend4web-r4150
  *
 */
-void RobotController::grabObject(Entity *obj){
+void RobotController::grabObject(shared_ptr<Entity> &obj){
 	MoveCommandBuilder moveBuilder;
 	ExecuteCommandBuilder executeBuilder;
 	auto interpolator = addInterpolator(Interpolator::Simple, {obj->position});
 	auto target = addInterpolator(Interpolator::Simple, {glm::rotate(2.f, glm::vec3(0,0,1)) * obj->position});
-
+	std::cout<<"One wants grab object."<<std::endl;
 	moveBuilder
 		.init()
-        .name("Move to target")
+		.name("Move to target")
 		.velocity(1.0)
 		.jointVelocity(0.5)
 		.acceleration(0.2)
@@ -195,7 +195,8 @@ void RobotController::grabObject(Entity *obj){
 	executeBuilder
         .init()
         .name("Grab target")
-		.onEnter([obj](RobotController &rc){
+		.onEnter([&obj, this](RobotController &rc){
+			// RCUtils::pinObjectToEffector(obj, rc.robot->chain.back()->entity);
 			RCUtils::pinObjectToEffector(obj, rc.robot->chain.back()->entity);
             return true;
 		})
@@ -221,35 +222,23 @@ void RobotController::grabObject(Entity *obj){
 		.finish(*this);
 
 }
-/**
- *  Plan na piatęk
- *  - Zrobić builder dla executora
- *  - Zrobić executora
- *  - Łapanie, przenoszenie, puszczeni obiektów zrobić
- *    Najprosciej to grab jako useEffector, stopEffector
- *    Dotarcie do obiektu jako jakas funkcję pomocniczą najlepiej
- *
- *
- *
- *  Zamówić pizzę
- */
 
 namespace RCUtils NAM_START
 
 /// musimy zapamiętać pozycję i orientację względem efektora
-std::pair<Entity*, Entity*> pairedObjects;
+std::pair<shared_ptr<Entity>, shared_ptr<Entity>> pairedObjects;
 Point effectorToPairedRelation;
 
-void pinObjectToEffector(Entity *obj, Entity *effector){
+void pinObjectToEffector(shared_ptr<Entity> &obj, shared_ptr<Entity> &effector){
     if(obj && effector){
         pairedObjects = std::make_pair(obj, effector);
         effectorToPairedRelation.position = obj->position - effector->position;
         effectorToPairedRelation.quat = glm::inverse(effector->quat) * obj->quat;
     }
 }
-Entity* releaseObjects(){
-    Entity *out = pairedObjects.first;
-    pairedObjects = make_pair<Entity*, Entity*>(nullptr, nullptr);
+shared_ptr<Entity>& releaseObjects(){
+    auto &out = pairedObjects.first;
+    pairedObjects = make_pair<shared_ptr<Entity>, shared_ptr<Entity>>(nullptr, nullptr);
     return out;
 }
 void update(){

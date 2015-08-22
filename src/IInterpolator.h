@@ -49,6 +49,7 @@ public:
 	std::string name;
 	std::vector<glm::vec4> points;
 	std::vector<glm::vec4> visualisation; // for draving
+	IInterpolator(){}
 	IInterpolator(const std::vector<glm::vec4> &points, Interpolator type) : type(type), points(points), name("--empty--") {}
 	IInterpolator(const std::vector<glm::vec4> &points, Interpolator type, const std::string &name) : type(type), points(points), name(name) {}
 	virtual glm::vec4 firstPoint(){return points[0];};
@@ -59,6 +60,12 @@ public:
 	virtual ~IInterpolator(){
 		std::cerr<<"delete IInterpolator"<<std::endl;
 	}
+};
+
+struct IInterpolatorContainer
+{
+	shared_ptr<IInterpolator> interpolator;
+	std::string name;
 };
 
 /**
@@ -352,6 +359,7 @@ public:
 void addInterpolator(shared_ptr<IInterpolator>&);
 shared_ptr<IInterpolator> addInterpolator(const std::string type, vector<glm::vec4> &points);
 shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::vec4> &points);
+IInterpolatorContainer addInterpolatorByContainer(Interpolator type, const vector<glm::vec4> &points);
 
 void removeInterpolator(shared_ptr<IInterpolator>&);
 

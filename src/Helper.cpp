@@ -31,7 +31,7 @@ glm::vec4 getPositionUnderMouse(){
 glm::vec4 getNormalUnderMouse(){
 	return dataUnderMouse.normal;
 }
-Entity* getObjectUnderMouse(){
+shared_ptr<Entity>& getObjectUnderMouse(){
 	if(dataUnderMouse.objID == 0 || dataUnderMouse.objID >= scene.units_ptrs.size()-1) return scene.units_ptrs[1];
 	return (scene.units_ptrs[dataUnderMouse.objID]);
 }
@@ -90,8 +90,8 @@ std::string generatePointName(){
 
 
 /// --------------------------------
-std::vector<Entity*> currentSelection;
-std::map<std::string, std::vector<Entity*>> groupList;
+std::vector<shared_ptr<Entity>> currentSelection;
+std::map<std::string, std::vector<shared_ptr<Entity>>> groupList;
 u32 groupNameCount;
 
 bool processMouse(int key, int action, int mods){
@@ -111,11 +111,11 @@ bool processKeys(int key, int action, int mods){
 		}
 	}
 }
-void saveGroup(std::vector<Entity*> &s){
+void saveGroup(std::vector<shared_ptr<Entity>> &s){
 	groupList[generateGroupName()] = s;
 	s.clear();
 }
-std::vector<Entity*>& getGroup(const std::string &name);
+std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName(){
 	char buff[4] = "000";
 	sprintf(buff, "%.3u", groupNameCount);

@@ -190,6 +190,8 @@ int main(){
 
 	glfwShowWindow(window);
 	mainLoop();
+
+	cout<<"One says goodbay!"<<endl;
 	Engine::clear();
 	globalResources.reset();
 	RC.reset();
@@ -221,8 +223,10 @@ void renderLoop(){
 	Engine::postprocess(*scene);
 	Engine::drawOutline(*scene);
 
-	Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
-	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0x73FF0080,1);
+	if(!RC->commands.empty()){
+		Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
+		Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0x73FF0080,1);
+	}
 	if(Editor::polylineEditor.polyline){
 		Engine::drawLineStrip(Editor::polylineEditor.polyline->visualisation, 0xFF6200F0);
 		Engine::drawLineStrip(Editor::polylineEditor.polyline->points, 0xFF620080,1);
@@ -315,8 +319,8 @@ void mainLoop(){
 
 		UI::GetInput = ui.textEditor.state();
 		updates(dt);
-        lClick = false;
-        rClick = false;
+		lClick = false;
+		rClick = false;
 		MainMenu();
 		Robot &robot = *(scene->robot);
 		std::vector<double> vars = robot.getVariables();
@@ -329,7 +333,7 @@ void mainLoop(){
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
-			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
+			// ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			// ui.rect().text("ID: " + std::to_string(Helper::getObjectUnderMouse()->ID)).font("ui_12"s)();
 		ui.endTable();
