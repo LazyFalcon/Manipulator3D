@@ -4,7 +4,7 @@
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -DUSE_BULLET
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
-CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g  -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64
+CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse  -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
@@ -36,6 +36,7 @@ OBJS = \
 ../bin/PropertyEditor-TabManager.o \
 ../bin/Robot-Commands.o \
 ../bin/PythonBindings.o \
+../bin/Helper.o \
 ../bin/MAIN.o
 
 LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
@@ -63,6 +64,9 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 	$(CXX) -c $(CXXFLAGS) -o2  $(Editor)/Editor.cpp -o ../bin/Editor.o
 
 #-----------------------------------------------------
+
+../bin/Helper.o: Helper.cpp Helper.h
+	$(CXX) -c $(CXXFLAGS) -o2  Helper.cpp -o ../bin/Helper.o
 
 ../bin/PythonBindings.o: PythonBindings.cpp PythonBindings.h
 	$(CXX) -c $(CXXFLAGS) -o2  PythonBindings.cpp -o ../bin/PythonBindings.o

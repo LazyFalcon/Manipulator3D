@@ -7,6 +7,7 @@
 #include "RobotController.h"
 #include "CFGparser.h"
 #include "ResourceLoader.h"
+#include "Helper.h"
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
 
@@ -162,24 +163,24 @@ BOOST_PYTHON_MODULE(robotController){
         // .value("Stop", RCStates::Stop)
         // ;
 
-    // void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
-    // bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
+    void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
+    bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
         // .def("move", &RobotController::move)
         // .def("wait", &RobotController::wait)
         // .def("execute", &RobotController::execute)
-        // .def("insertCommand", insertCommand_ptr)
-        // .def("run", &RobotController::run)
-        // .def("pause", &RobotController::pause)
-        // .def("stop", &RobotController::stop)
-        // .def("next", &RobotController::next)
-        // .def("prev", &RobotController::prev)
+        .def("insertCommand", insertCommand_ptr)
+        .def("run", &RobotController::run)
+        .def("pause", &RobotController::pause)
+        .def("stop", &RobotController::stop)
+        .def("next", &RobotController::next)
+        .def("prev", &RobotController::prev)
         // .def("savePosition", &RobotController::savePosition)
         // .def("restorePosition", &RobotController::restorePosition)
-        // .def("grabObject", &RobotController::grabObject)
-        // .def("releaseObject", &RobotController::releaseObject)
-        // .def_readwrite("robot", &RobotController::robot)
-        // .def_readwrite("state ", &RobotController::state )
-        // .def_readwrite("commands", &MoveCommandBuilder::commands)
+        .def("grabObject", &RobotController::grabObject)
+        .def("releaseObject", &RobotController::releaseObject)
+        .def_readwrite("robot", &RobotController::robot)
+        .def_readwrite("state ", &RobotController::state )
+        .def_readwrite("commands", &RobotController::commands)
         ;
 
 
@@ -211,45 +212,59 @@ BOOST_PYTHON_MODULE(robotController){
         // .def(bpl::vector_indexing_suite<std::vector<shared_ptr<Module>>())
         // ;
 }
+BOOST_PYTHON_MODULE(helper){
+	using namespace Helper;
+	// bpl::def("getPositionUnderMouse", &getPositionUnderMouse);
+	// bpl::def("getNormalUnderMouse", &getNormalUnderMouse);
+	// bpl::def("getObjectUnderMouse", &getObjectUnderMouse);
+
+	// bpl::def("savePoint", &savePoint);
+	// bpl::def("getPoint", &getPoint);
+	// bpl::def("saveGroup", &saveGroup);
+	// bpl::def("getGroup", &getGroup);
+
+}
+
 
 bpl::object main;
 bpl::object global;
 bpl::object mainScript;
 
 void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
-    Py_Initialize();
-    try {
-        initglm();
-        initscene();
-        initrobotController();
-        initcommandBuilders();
-        main = bpl::import("__main__");
-        global = bpl::object(main.attr("__dict__"));
-        bpl::str script(
-            "import sys, os.path\n"
-            "path = os.path.dirname(%r)\n"
-            "sys.path.insert(0, path)"
-            % bpl::str("module")
-            );
-        bpl::object result = bpl::exec(script, global, global);
-        mainScript = bpl::import("python/script_a1");
+	Py_Initialize();
+	try {
+		initglm();
+		initscene();
+		initrobotController();
+		initcommandBuilders();
+		main = bpl::import("__main__");
+		global = bpl::object(main.attr("__dict__"));
+		bpl::str script(
+				"import sys, os.path\n"
+				"path = os.path.dirname(%r)\n"
+				"sys.path.insert(0, path)"
+				% bpl::str("module")
+				);
+		bpl::object result = bpl::exec(script, global, global);
+		mainScript = bpl::import("python/script_a1");
+		mainScript.attr("init")(rc, scene);
 
-  } catch (bpl::error_already_set) {
-    PyErr_Print();
-  }
+	} catch (bpl::error_already_set) {
+	PyErr_Print();
+	}
 }
 
 void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
-    try {
-
-      }
-			catch (bpl::error_already_set) {
-        PyErr_Print();
-      }
+	try {
+		mainScript.attr("update")(rc, scene);
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+	}
 }
 
 void terminate(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
-    Py_Finalize();
+	Py_Finalize();
 }
 
 NAM_END

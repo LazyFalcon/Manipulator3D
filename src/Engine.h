@@ -66,15 +66,6 @@ struct Config
 	} shadows;
 };
 
-struct DataUnderMouse
-{
-    float depth;
-    glm::vec4 position;
-    glm::vec4 normal;
-    u16 objID;
-};
-extern DataUnderMouse dataUnderMouse;
-
 extern GLuint b_position;
 extern GLuint b_uv;
 extern GLuint b_size;

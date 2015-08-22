@@ -110,6 +110,8 @@ shared_ptr<Scene> scene;
 shared_ptr<Resources> globalResources;
 #include "Menu.h"
 CFG::Node cfg_settings;
+#include "Helper.h"
+#include "PythonBindings.h"
 
 std::string shadersToReload[] = {
 	"BlurVertical",
@@ -193,6 +195,8 @@ int main(){
 	globalResources.reset();
 	RC.reset();
 	scene.reset();
+
+	PythonBindings::terminate(RC, scene);
 	return 0;
 }
 
@@ -236,10 +240,12 @@ void prerequisites(){
 	Editor::init();
 	jacobianTransposeInitialCall(*(scene->robot));
 	jacobianTransposeInit();
+	PythonBindings::init(RC, scene);
 }
 void updates(float dt){
 	Editor::update(*RC);
 	Engine::processMouse(mousePosition, *scene, lClick, rClick);
+	PythonBindings::update(RC, scene);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -325,7 +331,7 @@ void mainLoop(){
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
 			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
-			ui.rect().text("ID: " + std::to_string(Engine::dataUnderMouse.objID)).font("ui_12"s)();
+			ui.rect().text("ID: " + std::to_string(Helper::getObjectUnderMouse()->ID)).font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();
@@ -364,10 +370,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		RC->run();
 	}
 
-	ui.keyInput(key, action, mods);
 	Editor::processKeys(key, action, mods, *RC);
 	if(key == 'G' && action == GLFW_PRESS){
-		RC->grabObject(scene->units_ptrs[Engine::dataUnderMouse.objID]);
+		RC->grabObject(Helper::getObjectUnderMouse());
 
 	}
 
@@ -383,7 +388,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	float targetStep = 0.1;
 	float targetStepPerSec = targetStep/1;
-	{
+	if(false){
 	if(key == GLFW_KEY_UP && action == GLFW_PRESS)
 		robotTarget += glm::vec4(targetStep,0,0,0);
 	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS)
@@ -413,27 +418,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		robotTarget += glm::vec4(0,0,targetStepPerSec,0);
 	if(key == GLFW_KEY_END && action == GLFW_REPEAT)
 		robotTarget += glm::vec4(0,0,-targetStepPerSec,0);
-	if(key == GLFW_KEY_KP_1 && action == GLFW_PRESS && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi);
-	else if(key == GLFW_KEY_KP_1 && action == GLFW_PRESS && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, 0);
 
-	else if(key == GLFW_KEY_KP_3 && action == GLFW_PRESS && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi+pi/2);
-	else if(key == GLFW_KEY_KP_3 && action == GLFW_PRESS && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi/2);
-
-	else if(key == GLFW_KEY_KP_7 && action == GLFW_PRESS && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi, 0);
-	else if(key == GLFW_KEY_KP_7 && action == GLFW_PRESS && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(0, 0);
-	else if(key == GLFW_KEY_KP_5 && action == GLFW_PRESS){
-		if(camera.cameraProjection == PERSPECTIVE_PROJECTION)
-				camera.cameraProjection = ORTHO_PROJECTION;
-			else
-				camera.cameraProjection = PERSPECTIVE_PROJECTION;
-		camera.setProjection();
-	}
 	}
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){

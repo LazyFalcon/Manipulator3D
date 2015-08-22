@@ -6,6 +6,7 @@
 #include <IL/ilut.h>
 #include <glm/gtc/packing.hpp>
 #include "BulletWorld.h"
+#include "Helper.h"
 
 extern BulletWorld bulletWorld;
 
@@ -318,10 +319,10 @@ void Plot::plot(){
 	Engine::drawTexturedBox(texID, box);
 }
 
+namespace Helper {
+	extern DataUnderMouse dataUnderMouse;
+}
 namespace Engine NAM_START
-
-DataUnderMouse dataUnderMouse;
-
 void samplePosition(glm::vec2 mouse){
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, depthBuffer2.ID, 0);
@@ -335,7 +336,7 @@ void samplePosition(glm::vec2 mouse){
     glm::vec4 worldPos = camera.invPV * viewSpace;
     worldPos /= worldPos.w;
     worldPos.w = 1;
-    dataUnderMouse.position = worldPos;
+    Helper::dataUnderMouse.position = worldPos;
 }
 void sampleNormal(glm::vec2 mouse){
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, normalBuffer.ID, 0);
@@ -343,8 +344,8 @@ void sampleNormal(glm::vec2 mouse){
     uint64_t normal;
     glReadPixels(mouse.x, mouse.y, 1, 1, GL_RGBA, GL_HALF_FLOAT, &normal);
 
-    dataUnderMouse.normal = glm::unpackHalf4x16(normal);
-    dataUnderMouse.objID = dataUnderMouse.normal.w*16384.f;
+    Helper::dataUnderMouse.normal = glm::unpackHalf4x16(normal);
+    Helper::dataUnderMouse.objID = Helper::dataUnderMouse.normal.w*16384.f;
 }
 void sampleID(glm::vec2 mouse){
     // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectIDTex_R16.ID, 0);
@@ -357,8 +358,8 @@ void sampleDataUnderMouse(glm::vec2 mouse){
     // glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 
     // sampleID(mouse);
-    // samplePosition(mouse);
-    // sampleNormal(mouse);
+    samplePosition(mouse);
+    sampleNormal(mouse);
 
     // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -385,17 +386,17 @@ void processMouse(glm::vec2 mouse, Scene &scene, bool lClick, bool rClick){
 	hoveredObject = nullptr;
 
 	// auto result = bulletWorld.raycast(camera.eyePosition, camera.eyePosition + camera.getMouseRay()*200.f);
-	if(dataUnderMouse.objID > 0 && dataUnderMouse.objID < 1000 && scene.units_ptrs[dataUnderMouse.objID] && selectedObject == nullptr){
-		if(lClick){
-			selectObject(scene.units_ptrs[dataUnderMouse.objID]);
-		}
-		else {
-			hoverObject(scene.units_ptrs[dataUnderMouse.objID]);
-		}
-	}
-	else if(rClick){
-		selectObject(nullptr);
-	}
+	// if(dataUnderMouse.objID > 0 && dataUnderMouse.objID < 1000 && scene.units_ptrs[dataUnderMouse.objID] && selectedObject == nullptr){
+		// if(lClick){
+			// selectObject(scene.units_ptrs[dataUnderMouse.objID]);
+		// }
+		// else {
+			// hoverObject(scene.units_ptrs[dataUnderMouse.objID]);
+		// }
+	// }
+	// else if(rClick){
+		// selectObject(nullptr);
+	// }
 }
 
 NAM_END
