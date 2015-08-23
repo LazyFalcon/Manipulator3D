@@ -336,7 +336,7 @@ void mainLoop(){
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
 			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
-			// ui.rect().text("ID: " + std::to_string(Helper::getObjectUnderMouse()->ID)).font("ui_12"s)();
+			ui.rect().text("ID: " + std::to_string(Helper::getIDUnderMouse())+" ").text(Helper::getObjectUnderMouse()?"good":"bad").font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();
@@ -378,10 +378,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 
 	Editor::processKeys(key, action, mods, *RC);
-	if(key == 'G' && action == GLFW_PRESS){
-		RC->grabObject(Helper::getObjectUnderMouse());
-
-	}
 
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
 		RC->run();

@@ -274,7 +274,7 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	meshPath = cfg["dirname"].value+"\\";
 
 	auto &meshes = cfg["Meshes"];
-	scene.units_ptrs.resize(meshes.Vector.size()+5);
+	scene.units_ptrs.resize(meshes.Vector.size()+1);
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};

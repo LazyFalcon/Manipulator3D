@@ -366,7 +366,6 @@ void sampleDataUnderMouse(glm::vec2 mouse){
     // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-
 /// clean in each update
 void hoverObject(Entity *obj){
     hoveredObject = obj;

@@ -33,9 +33,12 @@ glm::vec4 getPositionUnderMouse(){
 glm::vec4 getNormalUnderMouse(){
 	return dataUnderMouse.normal;
 }
-shared_ptr<Entity>& getObjectUnderMouse(){
-	if(dataUnderMouse.objID == 0 || dataUnderMouse.objID >= scene.units_ptrs.size()-1) return scene.units_ptrs[1];
+shared_ptr<Entity> getObjectUnderMouse(){
+	if(dataUnderMouse.objID == 0 || dataUnderMouse.objID > scene.units_ptrs.size()-1) return shared_ptr<Entity>();
 	return (scene.units_ptrs[dataUnderMouse.objID]);
+}
+u32 getIDUnderMouse(){
+	return dataUnderMouse.objID;
 }
 
 void moveCameraByKeys(Camera &camera, int key, int action, int mods){
@@ -110,13 +113,21 @@ std::vector<shared_ptr<Entity>> currentSelection;
 std::map<std::string, std::vector<shared_ptr<Entity>>> groupList;
 u32 groupNameCount;
 
+std::vector<shared_ptr<Entity>>& getCurrentSelection(){
+	return currentSelection;
+}
 bool processMouse(int key, int action, int mods){
 	if((mods & GLFW_MOD_CONTROL) && key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-		currentSelection.push_back(getObjectUnderMouse());
+		// auto &&obj = getObjectUnderMouse();
+		// if(obj)
+			// currentSelection.push_back(obj);
 	}
 	else if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-		currentSelection.clear();
-		currentSelection.push_back(getObjectUnderMouse());
+		// auto &&obj = getObjectUnderMouse();
+		// if(obj){
+			// currentSelection.clear();
+			// currentSelection.push_back(obj);
+		// }
 	}
 
 }

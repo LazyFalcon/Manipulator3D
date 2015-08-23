@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "glUtils.h"
 #include "Graph.h"
+#include "Helper.h"
 
 #define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 #define NAM_END }
@@ -661,6 +662,8 @@ void drawOutline(Scene &scene){
 	static auto uModel = glGetUniformLocation(shader,"uModel");
 	static auto uColor = glGetUniformLocation(shader,"uColor");
 
+	auto &objects = Helper::getCurrentSelection();
+
 	{ // fill stencil
 		// glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
@@ -683,19 +686,15 @@ void drawOutline(Scene &scene){
 		glUniform(shader, camera.ViewMatrix, uView);
 
 		glBindVertexArray(scene.resources->VAO);
-		// for(auto &entity : scene.units){
-			if(selectedObject){
-            auto entity = *selectedObject;
-				auto &mesh = *(entity.mesh);
+		for(auto &obj : objects){
+			auto &mesh = *(obj->mesh);
 
-				glm::mat4 transform = glm::translate(entity.position.xyz()) * glm::mat4_cast(entity.quat);
+			glm::mat4 transform = glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
-				glUniform(shader, entity.material.color, uColor);
-				glUniform(shader, transform, uModel);
-				glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
-
-			}
-		// }
+			glUniform(shader, obj->material.color, uColor);
+			glUniform(shader, transform, uModel);
+			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+		}
 	}
 	{ // draw outline
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
@@ -717,19 +716,15 @@ void drawOutline(Scene &scene){
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(4);
 		glDisable(GL_LINE_SMOOTH);
-		// for(auto &entity : scene.units){
-			if(selectedObject){
-				auto entity = *selectedObject;
-				auto &mesh = *(entity.mesh);
+		for(auto &obj : objects){
+			auto &mesh = *(obj->mesh);
 
-				glm::mat4 transform = glm::translate(entity.position.xyz()) * glm::mat4_cast(entity.quat);
+			glm::mat4 transform = glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
-				glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
-				glUniform(shader, transform, uModel);
-				glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
-				entity.isOutlined = false;
-			}
-		// }
+			glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
+			glUniform(shader, transform, uModel);
+			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
