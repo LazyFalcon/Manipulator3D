@@ -5,7 +5,7 @@ class RobotController;
 
 enum CommandType : u32
 {
-	EMPTY, MOVE, WAIT, EXECUTE,
+	EMPTY, SINGLEMOVE, MOVE, WAIT, EXECUTE,
 };
 
 class ICommand
@@ -73,7 +73,28 @@ public:
 private:
 	glm::vec4 previousPoint;
 	std::vector<double> targetJointPosition;
+};
 
+class SingleJointMove : public ICommand
+{
+public:
+	SingleJointMove() : ICommand(SINGLEMOVE){}
+	SingleJointMove(std::vector<double> &v) : ICommand(SINGLEMOVE), targetJointPosition(v){}
+	void init(RobotController &rc);
+	bool update(RobotController &rc, float dt);
+	bool exit(RobotController &rc);
+	void set(std::vector<double> &v){
+		targetJointPosition = v;
+	}
+	vector<glm::vec4>& getPath();
+	vector<glm::vec4>& getPolyline();
+
+	double velocity;
+	double jointVelocityModifier {1.0};
+	double acceleration;
+	shared_ptr<IIK> solver;
+private:
+	std::vector<double> targetJointPosition;
 };
 
 class WaitCommand : public ICommand

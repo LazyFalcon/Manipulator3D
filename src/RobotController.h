@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "IInterpolator.h"
 #include "Robot-Commands.h"
+#include <stack>
 
 #define NAM_END }
 #define NAM_START {
@@ -13,6 +14,14 @@ enum class CommandStatus : int {
 enum class RCStates {
 	Run, Pause, Stop,
 
+};
+
+struct RobotPosition
+{
+	string name;
+	glm::vec4 position;
+	glm::quat quat;
+	vector<double> joints;
 };
 
 class RobotController {
@@ -42,7 +51,7 @@ public:
 		if(commandIter != commands.end())
 			return *commandIter;
 		// else if(!commands.empty())
-		else 
+		else
 			return commands.front();
 	}
 
@@ -52,17 +61,18 @@ public:
 	void next();
 	void prev();
 
-    /// zapisuje aktualną konfigurację robota na stosie
-    void savePosition();
-    /// zdejmuje konfigurację robota ze stosu, defaultowo odpala komendę na dotarcie tam
-    void restorePosition();
+	/// zapisuje aktualną konfigurację robota na stosie
+	void savePosition();
+	/// zdejmuje konfigurację robota ze stosu, defaultowo odpala komendę na dotarcie tam
+	void peekPosition();
+	void popPosition();
+	std::stack<RobotPosition> positionCache;
 
-    /// ---- UTILS ----
-    void grabObject(shared_ptr<Entity> &obj);
-    void releaseObject();
+	/// ---- UTILS ----
+	void grabObject(shared_ptr<Entity> &obj);
+	void releaseObject();
 
-
-    /// ---- UTILS ----
+	/// ---- UTILS ----
 
 	shared_ptr<Robot> robot;
 	std::list<std::shared_ptr<ICommand>> commands;

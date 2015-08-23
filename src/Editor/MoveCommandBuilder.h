@@ -67,6 +67,44 @@ public:
 private:
 };
 
+class SingleJointMoveCommandBuilder
+{
+public:
+	// unique_ptr<ICommand> get(){
+		// return moveCommand.release();
+	// }
+	SingleJointMoveCommandBuilder& init(){
+		moveCommand = make_shared<SingleJointMove>();
+		return *this;
+	}
+	SingleJointMoveCommandBuilder& name(const std::string &s){
+		moveCommand->name = s;
+		return *this;
+	}
+	SingleJointMoveCommandBuilder& set(std::vector<double> &v){
+		moveCommand->set(v);
+		return *this;
+	}
+	SingleJointMoveCommandBuilder& velocity(double value){
+		moveCommand->velocity = value;
+		return *this;
+	}
+	SingleJointMoveCommandBuilder& jointVelocity(double value){
+		moveCommand->jointVelocityModifier = value;
+		return *this;
+	}
+	SingleJointMoveCommandBuilder& acceleration(double value){
+		moveCommand->acceleration = value;
+		return *this;
+	}
+	SingleJointMoveCommandBuilder& finish(shared_ptr<RobotController> RC);
+	SingleJointMoveCommandBuilder& finish(RobotController &RC);
+
+	SingleJointMoveCommandBuilder(){}
+	~SingleJointMoveCommandBuilder(){}
+	shared_ptr<SingleJointMove> moveCommand;
+private:
+};
 
 namespace Editor NAM_START
 

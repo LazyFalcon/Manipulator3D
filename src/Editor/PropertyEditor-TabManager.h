@@ -88,6 +88,9 @@ public:
 	void reset(){
 		interpolator.reset();
 	}
+	~PathEditorTab(){
+		std::cerr<<"delete PathEditorTab"<<std::endl;
+	}
 private:
 	shared_ptr<IInterpolator> interpolator;
 };
@@ -98,6 +101,9 @@ class PathListTab : public ITab
 public:
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
+	~PathListTab(){
+		std::cerr<<"delete PathListTab"<<std::endl;
+	}
 };
 
 /// --------------------------------------------- TAB MANAGER -------

@@ -191,13 +191,14 @@ int main(){
 	glfwShowWindow(window);
 	mainLoop();
 
-	cout<<"One says goodbay!"<<endl;
+	PythonBindings::terminate(RC, scene);
+	Editor::clear();
 	Engine::clear();
 	globalResources.reset();
 	RC.reset();
 	scene.reset();
+	cerr<<"One says goodbye!"<<endl;
 
-	PythonBindings::terminate(RC, scene);
 	return 0;
 }
 

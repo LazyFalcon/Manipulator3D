@@ -64,6 +64,9 @@ public:
 class Robot {
 public:
 	~Robot(){
+		for(auto &it : chain)
+			it.reset();
+		chain.clear();
 		std::cerr<<"delete Robot"<<std::endl;
 	}
 
@@ -82,8 +85,8 @@ public:
 
 	bool isReady { true };
 	Point endEffector;
-
-	std::vector<std::shared_ptr<Module>> chain;
+// private:
+	std::vector<std::unique_ptr<Module>> chain;
 };
 
 /// without orientation

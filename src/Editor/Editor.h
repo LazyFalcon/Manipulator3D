@@ -16,11 +16,6 @@ extern float window_width, window_height;
 extern UI::IMGUI ui;
 
 namespace Editor NAM_START
-// static float pointSize = 16.f;
-// #define NAM_START {
-// #define NAM_END }
-
-extern unique_ptr<TabManager> menuSideBar;
 
 namespace EditorFlags
 {
@@ -225,6 +220,7 @@ public:
 extern PolylineEditor polylineEditor;
 
 void init();
+void clear();
 void update(RobotController &RC);
 void processKeys(int key, int action, int modifier, RobotController &RC);
 void processMouse(int key, int action, int modifier);

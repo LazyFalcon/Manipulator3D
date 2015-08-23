@@ -7,8 +7,8 @@
 #include "IInterpolator.h"
 #include "RobotController.h"
 #include "Robot-Commands.h"
-	vector <glm::vec4> fakePath;
-	u32 globalFlags = 0;
+vector <glm::vec4> fakePath;
+u32 globalFlags = 0;
 
 
 void WaitCommand::init(RobotController &rc){
@@ -99,3 +99,24 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	return false;
 }
 
+void SingleJointMove::init(RobotController &rc){
+	isRuning = true;
+	rc.robot->goTo(targetJointPosition);
+}
+bool SingleJointMove::update(RobotController &rc, float dt){
+	if(not rc.robot->isReady){
+		rc.robot->goTo(dt, jointVelocityModifier);
+		return false;
+	}
+	else return exit(rc);
+}
+bool SingleJointMove::exit(RobotController &rc){
+	isRuning = false;
+	return true;
+}
+vector<glm::vec4>& SingleJointMove::getPath(){
+	return fakePath;
+}
+vector<glm::vec4>& SingleJointMove::getPolyline(){
+	return fakePath;
+}

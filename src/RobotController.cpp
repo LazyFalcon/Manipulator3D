@@ -92,7 +92,7 @@ void RCTest(RobotController &rc){
 }
 
 void RobotController::run(){
-	if (!commands.empty()){
+	if (!commands.empty() && commandIter != commands.end()){
 		state = RCStates::Run;
 		//commandIter = commands.begin();
 		if(!(*commandIter)->isRuning){
@@ -221,6 +221,23 @@ void RobotController::grabObject(shared_ptr<Entity> &obj){
 		})
 		.finish(*this);
 
+}
+
+void RobotController::savePosition(){
+	auto &&vec = robot->getVariables();
+	positionCache.push({"--", robot->endEffector.position, robot->endEffector.quat, robot->getVariables()});
+
+}
+void RobotController::peekPosition(){
+	if(positionCache.empty()) return;
+	SingleJointMoveCommandBuilder sjmcb;
+	sjmcb.init().name("Peek position").set(positionCache.top().joints).jointVelocity(0.6).finish(*this);
+}
+void RobotController::popPosition(){
+	if(positionCache.empty()) return;
+	SingleJointMoveCommandBuilder sjmcb;
+	sjmcb.init().name("Peek position").set(positionCache.top().joints).jointVelocity(0.6).finish(*this);
+	positionCache.pop();
 }
 
 namespace RCUtils NAM_START

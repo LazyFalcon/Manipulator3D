@@ -49,6 +49,20 @@ MoveCommandBuilder& MoveCommandBuilder::finish(RobotController &RC){
 	init();
 	return *this;
 }
+
+SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(shared_ptr<RobotController> RC){
+	moveCommand->solver = make_unique<JT1>();
+	RC->insertCommand(moveCommand);
+	init();
+	return *this;
+}
+SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(RobotController &RC){
+	moveCommand->solver = make_unique<JT1>();
+	RC.insertCommand(moveCommand);
+	init();
+	return *this;
+}
+
 extern UI::IMGUI ui;
 namespace Editor NAM_START
 

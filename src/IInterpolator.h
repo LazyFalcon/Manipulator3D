@@ -58,7 +58,7 @@ public:
 	virtual void reset() = 0;
 	virtual void drawParams() = 0;
 	virtual ~IInterpolator(){
-		std::cerr<<"delete IInterpolator"<<std::endl;
+		std::cerr<<"delete IInterpolator "+name<<std::endl;
 	}
 };
 

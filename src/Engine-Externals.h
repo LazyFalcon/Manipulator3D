@@ -240,7 +240,9 @@ Resources::~Resources(){
 	cerr<<"~Resources"<<endl;
 }
 Scene::~Scene(){
-		std::cerr<<"delete Scene"<<std::endl;
+	units_ptrs.clear();
+	units.clear();
+	std::cerr<<"delete Scene"<<std::endl;
 }
 
 void Graph::draw(){

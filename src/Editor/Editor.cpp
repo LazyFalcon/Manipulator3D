@@ -198,7 +198,10 @@ void init(){
 	tabBar->initTabs();
 	EditorMode |= EditCommand;
 }
-
+void clear(){
+	tabBar.reset();
+	polylineEditor.polyline.reset();
+}
 /**
  *  Inicjalizacja TabBar, przypisanie interpolatora i komendy do edycji(w tabBarze)
  *  polyEditor jest ustawiany chyba przez taba,
