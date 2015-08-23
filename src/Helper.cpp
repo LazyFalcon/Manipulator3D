@@ -23,6 +23,8 @@ extern const float pi;
 
 namespace Helper NAM_START
 
+float cameraStep = 5*pi/180;
+
 int currentModifierKey;
 DataUnderMouse dataUnderMouse;
 glm::vec4 getPositionUnderMouse(){
@@ -39,28 +41,42 @@ shared_ptr<Entity>& getObjectUnderMouse(){
 void moveCameraByKeys(Camera &camera, int key, int action, int mods){
 	currentModifierKey = mods;
 
-	if(action != GLFW_PRESS) return;
+	if(action == GLFW_PRESS || action == GLFW_REPEAT){ /// 2,4,6,8
+		if(key == GLFW_KEY_KP_2){
+			camera.rot_x += cameraStep;
+		}
+		else if(key == GLFW_KEY_KP_4){
+			camera.rot_z += cameraStep;
+		}
+		else if(key == GLFW_KEY_KP_6){
+			camera.rot_z -= cameraStep;
+		}
+		else if(key == GLFW_KEY_KP_8){
+			camera.rot_x -= cameraStep;
+		}
+	}
+	if(action == GLFW_PRESS){ /// 1,3,5,7
+		if(key == GLFW_KEY_KP_1 && mods == GLFW_MOD_CONTROL)
+			camera.setOrientation(pi/2, pi);
+		else if(key == GLFW_KEY_KP_1&& mods != GLFW_MOD_CONTROL)
+			camera.setOrientation(pi/2, 0);
 
-	if(key == GLFW_KEY_KP_1 && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi);
-	else if(key == GLFW_KEY_KP_1&& mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, 0);
+		else if(key == GLFW_KEY_KP_3 && mods == GLFW_MOD_CONTROL)
+			camera.setOrientation(pi/2, pi+pi/2);
+		else if(key == GLFW_KEY_KP_3 && mods != GLFW_MOD_CONTROL)
+			camera.setOrientation(pi/2, pi/2);
 
-	else if(key == GLFW_KEY_KP_3 && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi+pi/2);
-	else if(key == GLFW_KEY_KP_3 && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi/2);
-
-	else if(key == GLFW_KEY_KP_7 && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi, 0);
-	else if(key == GLFW_KEY_KP_7 && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(0, 0);
-	else if(key == GLFW_KEY_KP_5){
-		if(camera.cameraProjection == PERSPECTIVE_PROJECTION)
-				camera.cameraProjection = ORTHO_PROJECTION;
-		else
-			camera.cameraProjection = PERSPECTIVE_PROJECTION;
-		camera.setProjection();
+		else if(key == GLFW_KEY_KP_7 && mods == GLFW_MOD_CONTROL)
+			camera.setOrientation(pi, 0);
+		else if(key == GLFW_KEY_KP_7 && mods != GLFW_MOD_CONTROL)
+			camera.setOrientation(0, 0);
+		else if(key == GLFW_KEY_KP_5){
+			if(camera.cameraProjection == PERSPECTIVE_PROJECTION)
+					camera.cameraProjection = ORTHO_PROJECTION;
+			else
+				camera.cameraProjection = PERSPECTIVE_PROJECTION;
+			camera.setProjection();
+		}
 	}
 }
 void moveCameraByMouse(Camera &camera, int key, int action, int mods){}

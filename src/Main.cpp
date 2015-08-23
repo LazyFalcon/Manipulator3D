@@ -355,6 +355,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			key = GLFW_KEY_ENTER;
 	if(mods == GLFW_MOD_ALT && key == GLFW_KEY_F4)
 		quit = true;
+	Helper::moveCameraByKeys(camera, key, action, mods);
+	Helper::processKeys(key, action, mods);
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
@@ -429,6 +431,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	ui.mouseKeyInput(button, action);
 	Editor::processMouse(button, action, mods);
+	Helper::processMouse(button, action, mods);
     double m_x, m_y;
     glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
