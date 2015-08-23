@@ -334,7 +334,7 @@ void mainLoop(){
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
-			// ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
+			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			// ui.rect().text("ID: " + std::to_string(Helper::getObjectUnderMouse()->ID)).font("ui_12"s)();
 		ui.endTable();

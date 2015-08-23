@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "IInterpolator.h"
 #include "Robot-Commands.h"
+#include "Editor/MoveCommandBuilder.h"
+#include "Editor/WaitCommandBuilder.h"
 #include <stack>
 
 #define NAM_END }
@@ -35,11 +37,8 @@ public:
 
 	bool update(float dt);
 
-	MoveCommand& move(shared_ptr<IInterpolator> interpolator, const std::string &name);
-	WaitCommand& wait(float time);
-	WaitCommand& execute(float time){}
-    void useEffector();
-    void releaseEffector();
+	void useEffector();
+	void releaseEffector();
 
 	void insertCommand(shared_ptr<ICommand> &ptr){
 		commands.push_back(ptr);
@@ -61,6 +60,16 @@ public:
 	void next();
 	void prev();
 
+	WaitCommandBuilder& wait(){
+		return waitCommandBuilder.init();
+	}
+	MoveCommandBuilder& move(){
+		return moveCommandBuilder.init();
+	}
+	SingleJointMoveCommandBuilder& jointMove(){
+		return singleJointMoveCommandBuilder.init();
+	}
+
 	/// zapisuje aktualną konfigurację robota na stosie
 	void savePosition();
 	/// zdejmuje konfigurację robota ze stosu, defaultowo odpala komendę na dotarcie tam
@@ -78,6 +87,10 @@ public:
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
+private:
+	WaitCommandBuilder waitCommandBuilder;
+	MoveCommandBuilder moveCommandBuilder;
+	SingleJointMoveCommandBuilder singleJointMoveCommandBuilder;
 };
 
 void RCTest(RobotController &rc);

@@ -103,6 +103,7 @@ public:
 	~WaitCommand(){
 		std::cerr << "delete Wait command\n";
 	}
+	WaitCommand() : ICommand(WAIT), releaseTime(0){}
 	WaitCommand(float time) : ICommand(WAIT), releaseTime(time){}
 	bool update(RobotController &rc, float dt);
 

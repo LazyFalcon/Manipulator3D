@@ -10,6 +10,7 @@
 #include "Helper.h"
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
+#include "Editor/WaitCommandBuilder.h"
 
 #include <Python.h>
 #include <boost/python.hpp>
@@ -114,7 +115,11 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 	MoveCommandBuilder& (MoveCommandBuilder::*interpolator_ptr)(IInterpolatorContainer&) = &MoveCommandBuilder::interpolator;
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
 	MoveCommandBuilder& (MoveCommandBuilder::*finish_ptr)(shared_ptr<RobotController>) = &MoveCommandBuilder::finish;
+	SingleJointMoveCommandBuilder& (SingleJointMoveCommandBuilder::*singlefinish_ptr)(shared_ptr<RobotController>) = &SingleJointMoveCommandBuilder::finish;
 
+	bpl::class_<std::vector<double>>("doubleVec")
+		.def(bpl::vector_indexing_suite<std::vector<double>>())
+		;
 
 	bpl::class_<MoveCommandBuilder, std::shared_ptr<MoveCommandBuilder>>("MoveCommandBuilder", bpl::init<>())
 		.def_readwrite("moveCommand", &MoveCommandBuilder::moveCommand)
@@ -127,6 +132,23 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("interpolator", interpolator_ptr, bpl::return_internal_reference<>())
 		.def("solver", solver_string, bpl::return_internal_reference<>())
 		.def("finish", finish_ptr, bpl::return_internal_reference<>())
+		;
+	bpl::class_<SingleJointMoveCommandBuilder, std::shared_ptr<SingleJointMoveCommandBuilder>>("SingleJointMoveCommandBuilder", bpl::init<>())
+		.def("init", &SingleJointMoveCommandBuilder::init, bpl::return_internal_reference<>())
+		.def("name", &SingleJointMoveCommandBuilder::name, bpl::return_internal_reference<>())
+		.def("set", &SingleJointMoveCommandBuilder::set, bpl::return_internal_reference<>())
+		.def("velocity", &SingleJointMoveCommandBuilder::velocity, bpl::return_internal_reference<>())
+		.def("jointVelocity", &SingleJointMoveCommandBuilder::jointVelocity, bpl::return_internal_reference<>())
+		.def("acceleration", &SingleJointMoveCommandBuilder::acceleration, bpl::return_internal_reference<>())
+		.def("finish", singlefinish_ptr, bpl::return_internal_reference<>())
+		;
+	WaitCommandBuilder& (WaitCommandBuilder::*waitfinish_ptr)(shared_ptr<RobotController>&) = &WaitCommandBuilder::finish;
+
+	bpl::class_<WaitCommandBuilder, std::shared_ptr<WaitCommandBuilder>>("WaitCommandBuilder", bpl::init<>())
+		.def("init", &WaitCommandBuilder::init, bpl::return_internal_reference<>())
+		.def("name", &WaitCommandBuilder::name, bpl::return_internal_reference<>())
+		.def("time", &WaitCommandBuilder::time, bpl::return_internal_reference<>())
+		.def("finish", waitfinish_ptr, bpl::return_internal_reference<>())
 		;
 
 	bpl::enum_<Interpolator>("Interpolator")
@@ -159,11 +181,6 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 			;
 
 }
-/**
- * raw pointers:
- http://stackoverflow.com/questions/5055443/boost-python-how-to-pass-a-c-class-instance-to-a-python-class/5056462#5056462
- * http://stackoverflow.com/questions/3881457/boostpython-howto-call-a-function-that-expects-a-pointer
- */
 BOOST_PYTHON_MODULE(scene_export){
 	bpl::class_<Entity, std::shared_ptr<Entity>>("Entity")
 		.def_readonly("ID", &Entity::ID)
@@ -201,6 +218,9 @@ BOOST_PYTHON_MODULE(robotController_export){
         .def("peekPosition", &RobotController::peekPosition)
         .def("grabObject", &RobotController::grabObject)
         .def("releaseObject", &RobotController::releaseObject)
+        .def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
+        .def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
+        .def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
         .def_readwrite("robot", &RobotController::robot)
         .def_readwrite("state ", &RobotController::state )
         .def_readwrite("commands", &RobotController::commands)

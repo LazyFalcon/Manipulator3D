@@ -33,6 +33,7 @@ OBJS = \
 ../bin/Graph.o \
 ../bin/MoveCommandBuilder.o \
 ../bin/ExecuteCommandBuilder.o \
+../bin/WaitCommandBuilder.o \
 ../bin/PropertyEditor-TabManager.o \
 ../bin/Robot-Commands.o \
 ../bin/PythonBindings.o \
@@ -59,6 +60,9 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 
 ../bin/ExecuteCommandBuilder.o: $(Editor)/ExecuteCommandBuilder.cpp $(Editor)/ExecuteCommandBuilder.h $(UTIL)/IMGUI_V4.h Widgets.h
 	$(CXX) -c $(CXXFLAGS) -o2 $(Editor)/ExecuteCommandBuilder.cpp -o ../bin/ExecuteCommandBuilder.o
+
+../bin/WaitCommandBuilder.o: $(Editor)/WaitCommandBuilder.cpp $(Editor)/WaitCommandBuilder.h $(UTIL)/IMGUI_V4.h Widgets.h
+	$(CXX) -c $(CXXFLAGS) -o2 $(Editor)/WaitCommandBuilder.cpp -o ../bin/WaitCommandBuilder.o
 
 ../bin/Editor.o: $(Editor)/Editor.cpp $(Editor)/Editor.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  $(Editor)/Editor.cpp -o ../bin/Editor.o

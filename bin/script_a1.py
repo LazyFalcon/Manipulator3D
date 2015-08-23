@@ -13,13 +13,15 @@ def update(RC, scene, dt):
 def init(RC, scene):
 	print 'Hello! This is first entry in this script.'
 	RC.savePosition()
-	moveBuilder = MoveCommandBuilder()
+	# moveBuilder = MoveCommandBuilder()
 	points = Vec4Vec()
 	# points[:] = [vec4(2, 5, 4, 1), vec4(4, 0, 5, 1), vec4(1, -5, 2, 1), vec4(0, -5, 3, 1), vec4(-1, -5, 2, 1),  vec4(-1, -5.3, 1.9, 1),  vec4(-4, -4, 1.9, 1)]
 	points[:] = [vec4(2, 5, 4, 1), vec4(4, 0, 5, 1), vec4(1, -5, 2, 1), vec4(0, -5, 3, 1)]
 
 	path = addInterpolator(Interpolator.HermiteCardinal, points)
-	moveBuilder.init().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
+	# moveBuilder.init().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
+	RC.wait().time(2.0).finish(RC);
+	RC.move().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
 	print 'Now new order is created.'
 	RC.popPosition()
 	RC.savePosition()

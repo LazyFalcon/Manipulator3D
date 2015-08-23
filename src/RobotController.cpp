@@ -125,34 +125,6 @@ void RobotController::prev(){
 
 	}
 }
-MoveCommand& RobotController::move(shared_ptr<IInterpolator> interpolator, const std::string &name){
-	MoveCommand *newCommand = new MoveCommand(interpolator);
-	interpolator->name = name;
-	newCommand->name = name;
-	newCommand->isRuning = false;
-	commands.emplace_back(newCommand);
-
-	if (commandIter == commands.end())
-		commandIter = commands.begin();
-
-	newCommand->velocity = 1.8;
-	newCommand->jointVelocityModifier = 0.5;
-	newCommand->acceleration = 1.8;
-	newCommand->solver = make_unique<JT1>();
-
-	return *newCommand;
-}
-WaitCommand& RobotController::wait(float time){
-	WaitCommand *newCommand = new WaitCommand(time);
-	newCommand->name = "wait: " + std::to_string((int)time/1000)+"s";
-	newCommand->isRuning = false;
-	commands.push_back(std::unique_ptr<ICommand>(newCommand));
-
-	if (commandIter == commands.end())
-		commandIter = commands.begin();
-
-	return *newCommand;
-}
 
 bool RobotController::update(float dt){
 
