@@ -126,6 +126,7 @@ public:
 		init();
 	}
 	MoveCommandBuilderWidget(shared_ptr<ICommand> &ptr){
+        std::cerr<<ptr.get()<<std::endl;
 		moveCommandBuilder = make_unique<MoveCommandBuilder>();
 		moveCommandBuilder->moveCommand = static_pointer_cast<MoveCommand>(ptr);
 	}

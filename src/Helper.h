@@ -1,11 +1,11 @@
 ﻿#pragma once
-#include <Utils/Camera.h>
 
 #define NAM_END }
 #define NAM_START {
 
+struct Point;
+class Camera;
 namespace Helper NAM_START
-
 struct DataUnderMouse
 {
     float depth;
@@ -29,6 +29,7 @@ void deletePoint(Point *p);
 void deletePoint(const std::string &name);
 std::string generatePointName();
 
+std::map<std::string, std::vector<shared_ptr<Entity>>>& listOfGroups();
 std::vector<shared_ptr<Entity>>& getCurrentSelection();
 bool processMouse(int key, int action, int mods);
 bool processKeys(int key, int action, int mods);

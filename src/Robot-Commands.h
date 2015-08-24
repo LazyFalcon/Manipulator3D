@@ -40,7 +40,7 @@ class MoveCommand : public ICommand
 {
 public:
 	MoveCommand() : ICommand(MOVE), interpolator(make_shared<Linear>(std::vector<glm::vec4> {glm::vec4(0,0,0,1)})) {}
-	MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
+	// MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	MoveCommand(shared_ptr<IInterpolator> interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	~MoveCommand(){
 		std::cerr<<"delete MoveCommand: "+name<<std::endl;

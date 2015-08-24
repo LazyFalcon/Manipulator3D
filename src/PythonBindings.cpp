@@ -188,11 +188,11 @@ BOOST_PYTHON_MODULE(scene_export){
 		.def_readwrite("quat", &Entity::quat)
 		// .def("rgBody", &Entity::rgBodyRef, bpl::return_value_policy<bpl::manage_new_object>() )
 		;
-	bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
-		.def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>>())
-		;
 	bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
 		.def("get", &Scene::get, bpl::return_value_policy<bpl::reference_existing_object>())
+		;
+	bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
+		.def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>>())
 		;
 }
 BOOST_PYTHON_MODULE(robotController_export){
@@ -257,13 +257,13 @@ BOOST_PYTHON_MODULE(robotController_export){
 }
 BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;
-	bpl::def("getPositionUnderMouse", &getPositionUnderMouse);
-	bpl::def("getNormalUnderMouse", &getNormalUnderMouse);
-	bpl::def("getObjectUnderMouse", &getObjectUnderMouse, bpl::return_value_policy<bpl::reference_existing_object>());
+	// bpl::def("getPositionUnderMouse", &getPositionUnderMouse);
+	// bpl::def("getNormalUnderMouse", &getNormalUnderMouse);
+	// bpl::def("getObjectUnderMouse", &getObjectUnderMouse, bpl::return_value_policy<bpl::reference_existing_object>());
 
-	bpl::def("savePoint", &savePoint);
+	// bpl::def("savePoint", &savePoint);
 	// bpl::def("getPoint", &getPoint);
-	bpl::def("saveGroup", &saveGroup);
+	// bpl::def("saveGroup", &saveGroup);
 	// bpl::def("getGroup", &getGroup);
 
 }

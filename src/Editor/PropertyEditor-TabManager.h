@@ -106,6 +106,17 @@ public:
 	}
 };
 
+/// --------------------------------------------- GROUP LIST TAB ---------------------------------------------
+class GroupListTab : public ITab
+{
+public:
+	void run(TabManager &TM);
+	void onEnter(TabManager &TM){}
+	~GroupListTab(){
+		std::cerr<<"delete GroupListTab"<<std::endl;
+	}
+};
+
 /// --------------------------------------------- TAB MANAGER -------
 class TabManager
 {
@@ -126,6 +137,7 @@ public:
 		if(!tabs[1]) tabs[1].reset(new CommandListTab());
 		if(!tabs[2]) tabs[2].reset(new PathEditorTab());
 		if(!tabs[3]) tabs[3].reset(new PathListTab());
+		if(!tabs[4]) tabs[4].reset(new GroupListTab());
 	}
 	void setTab(u32 index){
 		currentTab = index;
@@ -140,8 +152,8 @@ public:
 	Type& get();
 
 	// vector<unique_ptr<ITab>> tabs;
-	unique_ptr<ITab> tabs[4];
-	u32 currentTab {0};
+	unique_ptr<ITab> tabs[5];
+	u32 currentTab {3};
 	u32 size {200};
 };
 

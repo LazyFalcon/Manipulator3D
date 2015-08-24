@@ -51,7 +51,8 @@ public:
 			return *commandIter;
 		// else if(!commands.empty())
 		else
-			return commands.front();
+            // return std::shared_ptr<ICommand>(nullptr);
+            return commands.front();
 	}
 
 	void run();

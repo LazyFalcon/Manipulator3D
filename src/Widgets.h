@@ -231,37 +231,40 @@ public:
 
 	}
 	void list(const std::function<void(Type)> &callback){
-			// ui.beginLayer();
-			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
+        cout<<to_string(dropPosition)<<endl;
+        float direction = -1.f;
+        if(widgetAlign == UI::AlignTop){
+            dropPosition.y -= dropPosition.w;
+            direction = -1.f;
+        }
+        ui.beginLayer();
+        ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw)
+            .overridePosition(dropPosition.x, dropPosition.y)
+            // .position(100, 500)
+            ;
 
-			float direction = -1.f;
-			if(widgetAlign == UI::AlignTop){
-				dropPosition.y -= dropPosition.w;
-				direction = -1.f;
-			}
+        // ui.rect(lenght, 2)(UI::Label);
+        for(int i=0; i<options.size(); i++){
+            auto &option = options[i];
+            // ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
+            ui.rect(lenght, 20)
+                .text(option.first)
+                (UI::Hoverable)
+                .switcher(value, option.second)
+                .button(dropped)
+                .onlClick([this, &option, &callback, i]{
+                    selectedOption = i;
+                    callback(option.second);
+                });
+        // ui.rect(lenght, 2)(UI::Label);
 
-			ui.rect(lenght, 2)(UI::Label);
-			for(int i=0; i<options.size(); i++){
-				auto &option = options[i];
-				// ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
-				ui.rect(lenght, 20)
-					.text(option.first)
-					(UI::Hoverable)
-					.switcher(value, option.second)
-					.button(dropped)
-					.onlClick([this, &option, &callback, i]{
-						selectedOption = i;
-						callback(option.second);
-					});
-			ui.rect(lenght, 2)(UI::Label);
+            dropPosition.y -= 20.f;
+        }
+        if(ui.outOfTable())
+            dropped = false;
 
-				dropPosition.y -= 20.f;
-			}
-			if(ui.outOfTable())
-				dropped = false;
-
-			ui.endBox();
-			// ui.endLayer();
+        ui.endBox();
+        ui.endLayer();
 	}
 	const std::string& getSelectedName(){
 		return options[selectedOption].first;

@@ -8,11 +8,12 @@
 #include "../IInterpolator.h"
 #include "../RobotController.h"
 
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
+
 void incr(double &value){value += 0.01;}
 void decr(double &value){value -= 0.01;}
 void incr(float &value){value += 0.01;}
 void decr(float &value){value -= 0.01;}
-
 #define FIELDWITHNAME(name, widget) vertical(ui.rect(120,17).text(name, "ui_10"s)();\
 	horizontal(\
 	ui.border(2);\
@@ -126,8 +127,8 @@ void MoveCommandBuilderWidget::run(){
 	editJointVelocity();
 	editAcceleration();
 	editTime();
-	editInterpolator();
-	editSolver();
+	// editInterpolator();
+	// editSolver();
 	finalize();
 }
 void MoveCommandBuilderWidget::editName(){

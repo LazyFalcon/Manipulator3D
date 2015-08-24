@@ -18,7 +18,7 @@
 
 #include "Helper.h"
 
-extern Scene scene;
+extern shared_ptr<Scene> scene;
 extern const float pi;
 
 namespace Helper NAM_START
@@ -26,7 +26,7 @@ namespace Helper NAM_START
 float cameraStep = 5*pi/180;
 
 int currentModifierKey;
-DataUnderMouse dataUnderMouse;
+DataUnderMouse dataUnderMouse {0.f, {}, {}, 1};
 glm::vec4 getPositionUnderMouse(){
 	return dataUnderMouse.position;
 }
@@ -34,8 +34,8 @@ glm::vec4 getNormalUnderMouse(){
 	return dataUnderMouse.normal;
 }
 shared_ptr<Entity> getObjectUnderMouse(){
-	if(dataUnderMouse.objID == 0 || dataUnderMouse.objID > scene.units_ptrs.size()-1) return shared_ptr<Entity>();
-	return (scene.units_ptrs[dataUnderMouse.objID]);
+	if(dataUnderMouse.objID == 0 || dataUnderMouse.objID > scene->units_ptrs.size()-1) return shared_ptr<Entity>(nullptr);
+	return (scene->units_ptrs[dataUnderMouse.objID]);
 }
 u32 getIDUnderMouse(){
 	return dataUnderMouse.objID;
@@ -107,27 +107,29 @@ std::string generatePointName(){
 	return "Point."s+buff;
 }
 
-
 /// --------------------------------
 std::vector<shared_ptr<Entity>> currentSelection;
 std::map<std::string, std::vector<shared_ptr<Entity>>> groupList;
 u32 groupNameCount;
 
+std::map<std::string, std::vector<shared_ptr<Entity>>>& listOfGroups(){
+    return groupList;
+}
 std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 	return currentSelection;
 }
 bool processMouse(int key, int action, int mods){
 	if((mods & GLFW_MOD_CONTROL) && key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-		// auto &&obj = getObjectUnderMouse();
-		// if(obj)
-			// currentSelection.push_back(obj);
+		auto &&obj = getObjectUnderMouse();
+		if(obj)
+			currentSelection.push_back(obj);
 	}
 	else if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-		// auto &&obj = getObjectUnderMouse();
-		// if(obj){
-			// currentSelection.clear();
-			// currentSelection.push_back(obj);
-		// }
+		auto &&obj = getObjectUnderMouse();
+		if(obj){
+			currentSelection.clear();
+			currentSelection.push_back(obj);
+		}
 	}
 
 }
@@ -146,6 +148,7 @@ std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName(){
 	char buff[4] = "000";
 	sprintf(buff, "%.3u", groupNameCount);
+    groupNameCount++;
 	return "Group."s+buff;
 }
 

@@ -572,14 +572,13 @@ void setup(Scene &scene){
 		glFrontFace(GL_CCW);
 	}
 
-
 	if(true){ /// FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer.ID, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer.ID, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
 			glDrawBuffers(2,&DrawBuffers[0]);
-		glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
+		glClearColor(ctmp.x, ctmp.y, ctmp.z, 0.f);
 		glClearDepth(1);
 		glClearStencil(0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -635,7 +634,8 @@ void renderScene(Scene &scene){
 			transform = glm::translate(entity.second->position.xyz()) * glm::mat4_cast(entity.second->quat);
 
 		glUniform(shader, entity.second->material.color, u_colorPosition);
-		glUniform(shader, u32(entity.second->ID), uID);
+		// glUniform(shader, float(entity.second->ID)/65535.f, uID);
+		glUniform(shader, float(entity.second->ID), uID);
 		glUniform(shader, transform, u_modelPosition);
 		if(globalSettings & MSAA)
 			glUniform(shader, glm::transpose(glm::inverse(transform)), u_NMPosition);
@@ -667,6 +667,7 @@ void drawOutline(Scene &scene){
 	{ // fill stencil
 		// glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
+		glClearStencil(0);
 
 		glDrawBuffers(0,&DrawBuffers[0]);
 		glClear(GL_STENCIL_BUFFER_BIT);
@@ -674,9 +675,9 @@ void drawOutline(Scene &scene){
 		glDisable(GL_BLEND);
 		glDepthMask(GL_TRUE);
 		glDisable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-
+		// glEnable(GL_DEPTH_TEST);
 		glDisable(GL_DEPTH_TEST);
+
 		glEnable(GL_STENCIL_TEST);
 		glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
 		glStencilMask(0x1);
@@ -714,7 +715,7 @@ void drawOutline(Scene &scene){
 		glStencilFunc(GL_NOTEQUAL,0x1,0xFF);
 		// glStencilFunc(GL_EQUAL,0x1,0xFF);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glLineWidth(4);
+		glLineWidth(8);
 		glDisable(GL_LINE_SMOOTH);
 		for(auto &obj : objects){
 			auto &mesh = *(obj->mesh);
@@ -1361,9 +1362,9 @@ void renderGUI(UI::IMGUI &gui){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-	gui.m_UIContainer->draw(gui);
-	for(int layer=0; layer<3; layer++){
+	for(u32 layer=0; layer<3; layer++){
 	{ // text
+        gui.m_UIContainer->draw(gui, layer);
 		GLuint shader = shaders["Text"];
 		glUseProgram(shader);
 

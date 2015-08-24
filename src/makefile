@@ -4,7 +4,7 @@
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -DUSE_BULLET
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
-CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -g -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64
+CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
@@ -45,7 +45,7 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 
 
 ../bin/manipulator: $(OBJS)
-	$(CXX) -g $(OBJS) -o ../bin/manipulator $(LIBS)
+	$(CXX) $(OBJS) -o ../bin/manipulator $(LIBS)
 
 ../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
