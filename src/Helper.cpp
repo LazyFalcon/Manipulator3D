@@ -148,7 +148,7 @@ std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName(){
 	char buff[4] = "000";
 	sprintf(buff, "%.3u", groupNameCount);
-    groupNameCount++;
+	groupNameCount++;
 	return "Group."s+buff;
 }
 

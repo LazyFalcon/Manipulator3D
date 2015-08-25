@@ -291,7 +291,7 @@ void mainLoop(){
 			ui.setMouseRRepeat();
 		}
 		ui.setMouse(mouse_x, mouse_y);
-		ui.updateCounter(dt);
+		// ui.updateCounter(dt);
 		ui.updateCounter(msdt);
 
 		double m_x, m_y;
@@ -335,6 +335,7 @@ void mainLoop(){
 			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
 			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
+			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();
@@ -353,6 +354,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			key = GLFW_KEY_ENTER;
 	if(mods == GLFW_MOD_ALT && key == GLFW_KEY_F4)
 		quit = true;
+
+	ui.keyInput(key, action, mods);
+	if(UI::GetInput) return;
+
 	Helper::moveCameraByKeys(camera, key, action, mods);
 	Helper::processKeys(key, action, mods);
 
@@ -364,7 +369,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	}
 
-	ui.keyInput(key, action, mods);
 	if(key == GLFW_KEY_TAB && action == GLFW_PRESS){
 		// switchEditObjectMode();
 	}
@@ -383,9 +387,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
 		RC->pause();
 	}
-
-	if(UI::GetInput) return;
-
 
 	float targetStep = 0.1;
 	float targetStepPerSec = targetStep/1;
@@ -556,7 +557,7 @@ void initContext(CFG::Node &cfg){
 	ui.m_maxHorizontal = window_width;
 	ui.m_maxVertical = window_height;
 	ui.accu = 0.f;
-	ui.frequency= 5.f;
+	ui.frequency = 5;
 	ui.m_UIContainer = new UIContainer();
 }
 

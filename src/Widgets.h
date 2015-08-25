@@ -231,7 +231,6 @@ public:
 
 	}
 	void list(const std::function<void(Type)> &callback){
-        cout<<to_string(dropPosition)<<endl;
         float direction = -1.f;
         if(widgetAlign == UI::AlignTop){
             dropPosition.y -= dropPosition.w;

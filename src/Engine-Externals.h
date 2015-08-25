@@ -11,6 +11,7 @@
 extern BulletWorld bulletWorld;
 
 void drawBoxes(std::pair<BoxColor, std::string> &data){
+	if(data.first.m_color.size() == 0) return;
 	auto shader = shaders[data.second];
 	glUseProgram(shader);
 	glUniform(shader, window_width,   "uWidth");
@@ -30,7 +31,6 @@ void UIContainer::draw(UI::IMGUI &gui, u32 layer){
 
     drawBoxes(m_bigBoxes[layer]);
     drawBoxes(m_editBoxes[layer]);
-    drawBoxes(m_hovers[layer]);
     drawBoxes(m_labels[layer]);
 
     auto shader = shaders[m_images.second];
@@ -53,8 +53,6 @@ void UIContainer::draw(UI::IMGUI &gui, u32 layer){
 	m_bigBoxes[layer].first.m_color.clear();
 	m_editBoxes[layer].first.m_box.clear();
 	m_editBoxes[layer].first.m_color.clear();
-	m_hovers[layer].first.m_box.clear();
-	m_hovers[layer].first.m_color.clear();
 	m_labels[layer].first.m_box.clear();
 	m_labels[layer].first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -373,13 +371,8 @@ void sampleID(glm::vec2 mouse){
 }
 
 void sampleDataUnderMouse(glm::vec2 mouse){
-    // glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
-
-    // sampleID(mouse);
-    samplePosition(mouse);
-    sampleNormal(mouse);
-
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	samplePosition(mouse);
+	sampleNormal(mouse);
 }
 
 NAM_END
