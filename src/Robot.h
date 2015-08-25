@@ -1,6 +1,6 @@
 #pragma once
+#include <Utils/BaseStructs.h>
 class Robot;
-class Entity;
 enum  JointType{
 	HINGE = 1,
 	PRISMATIC = 2,
@@ -13,7 +13,9 @@ struct Point {
 
 class Module {
 public:
-	virtual ~Module(){}
+	virtual ~Module(){
+		std::cerr<<"delete Module"<<std::endl;
+	}
 	Module(){
 		lastVelocity = 0.0;
 		lastAcceleration = 0.0;
@@ -92,6 +94,9 @@ public:
 /// without orientation
 class JT0 : public IIK {
 public:
+	~JT0(){
+		std::cerr<<"delete JT0"<<std::endl;
+	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot);
 };

@@ -36,7 +36,6 @@ glm::vec4 g_targetPosition;
 
 Graph jacobianIterations("jacobianIterations", Graph::LastX, 0xFFFF00FF, 250);
 Graph jacobianPrecision("jacobianPrecision", Graph::LastX, 0xFF4000FF, 250);
-extern Plot mainPlot;
 
 void cutHigherThanPi(vector <double> &vec){
 	for(auto &v : vec){

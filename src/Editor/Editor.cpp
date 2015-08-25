@@ -180,7 +180,7 @@ glm::vec4 MultiPointController::moveAlongCameraAxes(){
 
 PolylineEditor polylineEditor;
 void set(shared_ptr<ICommand> &command){
-	if(command->type == MOVE){
+	if(command->type == MOVE && tabBar){
 		tabBar->get<PathEditorTab>().reset(static_pointer_cast<MoveCommand>(command)->interpolator);
 		polylineEditor.set(static_pointer_cast<MoveCommand>(command)->interpolator);
 	}

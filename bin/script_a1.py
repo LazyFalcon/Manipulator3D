@@ -20,16 +20,16 @@ def init(RC, scene):
 
 	path = addInterpolator(Interpolator.HermiteCardinal, points)
 	# moveBuilder.init().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
-	# RC.wait().time(2.0).finish(RC);
-	RC.move().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
+	# RC.wait().time().finish();
+	# RC.move().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
 	print 'Now new order is created.'
-	RC.popPosition()
+	RC.peekPosition()
 	RC.savePosition()
 	RC.grabObject(scene.get("Cube.039"))
 	RC.peekPosition()
-	RC.grabObject(scene.get("Cube.038"))
-	RC.grabObject(scene.get("Cube.037"))
-	RC.peekPosition()
+	# RC.grabObject(scene.get("Cube.038"))
+	# RC.grabObject(scene.get("Cube.037"))
+	# RC.peekPosition()
 
 	print 'End.'
 	return True

@@ -104,7 +104,6 @@ namespace Editor
 #include "RobotController.h"
 #include "PathCreator.h"
 #include "SomeTests.h"
-#include "BigSplineTest.h"
 shared_ptr<RobotController> RC; /// only one instace, full time living, initialized before otrer inits
 shared_ptr<Scene> scene;
 shared_ptr<Resources> globalResources;
@@ -173,18 +172,15 @@ int main(){
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 	}
 	camera.init();
-	// camera.camOffset = glm::vec3(0,0,-3);
 	camera.camOffset = glm::vec3(0,0,-0.5);
-	// camera.cameraType = CAMERA_QUATERNION_BASED;
-	BigSplineTest::init();
 	Engine::init(cfg_settings["Graphic"]);
 	Engine::initGrids();
 	reloadWhatIsPossible();
 	ui.m_imageSet = &(globalResources->imageSets["Menu"]);
 	ui.setDefaultFont("ui_12", 12);
 
-	scene->robot->chain[0]->value = 45*toRad;
-	scene->robot->chain[3]->value = 30*toRad;
+	// scene->robot->chain[0]->value = 45*toRad;
+	// scene->robot->chain[3]->value = 30*toRad;
 
 	RC->robot = scene->robot;
 
@@ -206,7 +202,7 @@ void fastLoop(float step){
 	RC->update(step/1000.0f);
 	bulletWorld.update(step/1000.0f);
 	scene->robot->update(step);
-    RCUtils::update();
+	RCUtils::update();
 }
 void renderLoop(){
 	// Engine::plotGraphs();
@@ -232,7 +228,7 @@ void renderLoop(){
 		Engine::drawLineStrip(Editor::polylineEditor.polyline->visualisation, 0xFF6200F0);
 		Engine::drawLineStrip(Editor::polylineEditor.polyline->points, 0xFF620080,1);
 	}
-	Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
+	// Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
  	Engine::finalize(*scene);
 	Engine::renderGUI(ui);
@@ -240,15 +236,14 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
-	RCTest(*RC);
-	Editor::MoveCommandBuilderWidget_inits();
-	Editor::init();
-	jacobianTransposeInitialCall(*(scene->robot));
-	jacobianTransposeInit();
+	// Editor::MoveCommandBuilderWidget_inits();
+	// Editor::init();
+	// jacobianTransposeInitialCall(*(scene->robot));
+	// jacobianTransposeInit();
 	PythonBindings::init(RC, scene);
 }
 void updates(float dt){
-	Editor::update(*RC);
+	// Editor::update(*RC);
 	// PythonBindings::update(RC, scene);
 }
 void mainLoop(){
@@ -270,7 +265,7 @@ void mainLoop(){
 	prerequisites();
 
 	std::string ikTime = "--";
-
+	cout<<"Here we go."<<endl;
 	while(!quit){
 		dt = timer();
 		ddt = dtimer();
@@ -322,17 +317,16 @@ void mainLoop(){
 		lClick = false;
 		rClick = false;
 		MainMenu();
-		Robot &robot = *(scene->robot);
-		std::vector<double> vars = robot.getVariables();
+		// Robot &robot = *(scene->robot);
+		// std::vector<double> vars = robot.getVariables();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			for(auto &it : vars)
-				ui.rect().color(gradientCalc(0x00FF00FF, 0xFF00FFFF, u8(it/6.28*255))).text(to_string(it))();
+			// for(auto &it : vars)
+				// ui.rect().color(gradientCalc(0x00FF00FF, 0xFF00FFFF, u8(it/6.28*255))).text(to_string(it))();
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/20.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
-			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
 			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();

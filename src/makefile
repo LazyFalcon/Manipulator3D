@@ -4,7 +4,7 @@
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -DUSE_BULLET
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
-CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64
+CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64 -g
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
@@ -28,7 +28,6 @@ OBJS = \
 ../bin/RobotController.o \
 ../bin/Widgets.o   \
 ../bin/SomeTests.o  \
-../bin/BigSplineTest.o \
 ../bin/Editor.o  \
 ../bin/Graph.o \
 ../bin/MoveCommandBuilder.o \
@@ -47,7 +46,7 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 ../bin/manipulator: $(OBJS)
 	$(CXX) $(OBJS) -o ../bin/manipulator $(LIBS)
 
-../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h BigSplineTest.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
+../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
 
 #-----------------------------------------------------
@@ -77,9 +76,6 @@ LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 
 ../bin/Graph.o: Graph.cpp Graph.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Graph.cpp -o ../bin/Graph.o
-
-../bin/BigSplineTest.o: BigSplineTest.cpp BigSplineTest.h Widgets.h $(UTIL)/IMGUI_V4.h
-	$(CXX) -c $(CXXFLAGS) -o2  BigSplineTest.cpp -o ../bin/BigSplineTest.o
 
 ../bin/SomeTests.o: SomeTests.cpp SomeTests.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  SomeTests.cpp -o ../bin/SomeTests.o

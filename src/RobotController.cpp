@@ -36,24 +36,24 @@ static const double sqdpi = 3.141592653589793 * 3.141592653589793;
 static const double dpi2 = 2.0 * 3.141592653589793;
 
 Graph var0("var1", Graph::LastX, 0xFF0000FF, 250);
-Graph var1("var1", Graph::LastX, 0x00FF00FF, 250);
-Graph var2("var1", Graph::LastX, 0x0000FFFF, 250);
-Graph var3("var1", Graph::LastX, 0xFFFF00FF, 250);
-Graph var4("var1", Graph::LastX, 0xFF00FFFF, 250);
-Graph var5("var1", Graph::LastX, 0xFFFFFFFF, 250);
-Graph boundUp("var1", Graph::LastX, 0x202020FF, 250);
-Graph boundDown("var1", Graph::LastX, 0x202020FF, 250);
-Graph zero("var1", Graph::LastX, 0x202020FF, 250);
-extern Plot mainPlot;
+// Graph var1("var1", Graph::LastX, 0x00FF00FF, 250);
+// Graph var2("var1", Graph::LastX, 0x0000FFFF, 250);
+// Graph var3("var1", Graph::LastX, 0xFFFF00FF, 250);
+// Graph var4("var1", Graph::LastX, 0xFF00FFFF, 250);
+// Graph var5("var1", Graph::LastX, 0xFFFFFFFF, 250);
+// Graph boundUp("var1", Graph::LastX, 0x202020FF, 250);
+// Graph boundDown("var1", Graph::LastX, 0x202020FF, 250);
+// Graph zero("var1", Graph::LastX, 0x202020FF, 250);
+// Plot mainPlot;
 
 void RCTest(RobotController &rc){
-	glm::vec4 p0(2, 5, 4, 1);
-	glm::vec4 p1(4, 0, 5, 1);
-	glm::vec4 p2(1, -5, 2, 1);
-	glm::vec4 p3(0, -5, 3, 1);
-	glm::vec4 p4(-1, -5, 2, 1);
-	glm::vec4 p5(-1, -5.3, 1.9, 1);
-	glm::vec4 p6(-4, -4, 1.9, 1);
+	// glm::vec4 p0(2, 5, 4, 1);
+	// glm::vec4 p1(4, 0, 5, 1);
+	// glm::vec4 p2(1, -5, 2, 1);
+	// glm::vec4 p3(0, -5, 3, 1);
+	// glm::vec4 p4(-1, -5, 2, 1);
+	// glm::vec4 p5(-1, -5.3, 1.9, 1);
+	// glm::vec4 p6(-4, -4, 1.9, 1);
 
 	// rc.grabObject(scene->get("Cube.039"));
 	// rc.grabObject(scene->get("Cube.038"));
@@ -68,26 +68,26 @@ void RCTest(RobotController &rc){
 	// addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6})->name = "Hermite Closed";
 	// addInterpolator(Interpolator::HermiteCardinal, {p0, p3, p6})->name = "Hermite Cardinal";
 
-	var0.setBouds({0, 250, -pi2, pi2});
-	var1.setBouds({0, 250, -pi2, pi2});
-	var2.setBouds({0, 250, -pi2, pi2});
-	var3.setBouds({0, 250, -pi2, pi2});
-	var4.setBouds({0, 250, -pi2, pi2});
-	var5.setBouds({0, 250, -pi2, pi2});
-	boundUp.setBouds({0, 250, -pi2, pi2});
-	boundDown.setBouds({0, 250, -pi2, pi2});
-	zero.setBouds({0, 250, -pi2, pi2});
-	mainPlot.push(&var0);
-	mainPlot.push(&var1);
-	mainPlot.push(&var2);
-	mainPlot.push(&var3);
-	mainPlot.push(&var4);
-	mainPlot.push(&var5);
-	mainPlot.push(&boundUp);
-	mainPlot.push(&boundDown);
-	mainPlot.push(&zero);
+	// var0.setBouds({0, 250, -pi2, pi2});
+	// var1.setBouds({0, 250, -pi2, pi2});
+	// var2.setBouds({0, 250, -pi2, pi2});
+	// var3.setBouds({0, 250, -pi2, pi2});
+	// var4.setBouds({0, 250, -pi2, pi2});
+	// var5.setBouds({0, 250, -pi2, pi2});
+	// boundUp.setBouds({0, 250, -pi2, pi2});
+	// boundDown.setBouds({0, 250, -pi2, pi2});
+	// zero.setBouds({0, 250, -pi2, pi2});
+	// mainPlot.push(&var0);
+	// mainPlot.push(&var1);
+	// mainPlot.push(&var2);
+	// mainPlot.push(&var3);
+	// mainPlot.push(&var4);
+	// mainPlot.push(&var5);
+	// mainPlot.push(&boundUp);
+	// mainPlot.push(&boundDown);
+	// mainPlot.push(&zero);
 	// mainPlot.push(&jacobianPrecision);
-	plotList.push_front(&mainPlot);
+	// plotList.push_front(&mainPlot);
 
 }
 
@@ -144,10 +144,7 @@ bool RobotController::update(float dt){
 }
 
 void RobotController::releaseObject(){}
-/**
- * http://www.gamedev.net/page/resources/_/technical/apis-and-tools/why-nasa-switched-from-unity-to-blend4web-r4150
- *
-*/
+
 void RobotController::grabObject(shared_ptr<Entity> &obj){
 	MoveCommandBuilder moveBuilder;
 	ExecuteCommandBuilder executeBuilder;
@@ -196,20 +193,29 @@ void RobotController::grabObject(shared_ptr<Entity> &obj){
 }
 
 void RobotController::savePosition(){
-	auto &&vec = robot->getVariables();
-	positionCache.push({"--", robot->endEffector.position, robot->endEffector.quat, robot->getVariables()});
+	exec().name("Save position").onEnter([](RobotController &rc){
+		auto &&vec = rc.robot->getVariables();
+		rc.positionCache.push({"--", rc.robot->endEffector.position, rc.robot->endEffector.quat, rc.robot->getVariables()});
+		return true;
+	}).finish(*this);
 
 }
 void RobotController::peekPosition(){
-	if(positionCache.empty()) return;
-	SingleJointMoveCommandBuilder sjmcb;
-	sjmcb.init().name("Peek position").set(positionCache.top().joints).jointVelocity(0.6).finish(*this);
+	exec().name("Peek position").onEnter([](RobotController &rc){
+		if(rc.positionCache.empty()) return true;
+		SingleJointMoveCommandBuilder sjmcb;
+		sjmcb.init().name("Peek position").set(rc.positionCache.top().joints).jointVelocity(0.6).finish(rc);
+		return true;
+	}).finish(*this);
 }
 void RobotController::popPosition(){
-	if(positionCache.empty()) return;
-	SingleJointMoveCommandBuilder sjmcb;
-	sjmcb.init().name("Peek position").set(positionCache.top().joints).jointVelocity(0.6).finish(*this);
-	positionCache.pop();
+	exec().name("Pop position").onEnter([](RobotController &rc){
+		if(rc.positionCache.empty()) return true;
+		SingleJointMoveCommandBuilder sjmcb;
+		sjmcb.init().name("Peek position").set(rc.positionCache.top().joints).jointVelocity(0.6).finish(rc);
+		rc.positionCache.pop();
+		return true;
+	}).finish(*this);
 }
 
 namespace RCUtils NAM_START

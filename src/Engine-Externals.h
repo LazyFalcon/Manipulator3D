@@ -253,8 +253,8 @@ Resources::~Resources(){
 	cerr<<"~Resources"<<endl;
 }
 Scene::~Scene(){
-	units_ptrs.clear();
-	units.clear();
+	// units_ptrs.clear();
+	// units.clear();
 	std::cerr<<"delete Scene"<<std::endl;
 }
 

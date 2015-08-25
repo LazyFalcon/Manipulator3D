@@ -15,7 +15,6 @@ extern Resources *globalResources;
 extern Camera camera;
 extern Graph mousePositionGraphX;
 extern Graph mousePositionGraphY;
-extern Plot mainPlot;
 extern glm::vec2 screenSize;
 
 HexColor colorTransparent	= 0xff0000ff;
@@ -57,9 +56,6 @@ LineBuffer		g_lines(100);
 
 
 namespace Engine NAM_START
-
-Entity *hoveredObject = nullptr;
-Entity *selectedObject = nullptr;
 
 GLuint b_position;
 GLuint b_uv;

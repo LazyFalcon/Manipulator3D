@@ -3,6 +3,7 @@
 #include "Robot-Commands.h"
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/WaitCommandBuilder.h"
+#include "Editor/ExecuteCommandBuilder.h"
 #include <stack>
 
 #define NAM_END }
@@ -70,6 +71,9 @@ public:
 	SingleJointMoveCommandBuilder& jointMove(){
 		return singleJointMoveCommandBuilder.init();
 	}
+	ExecuteCommandBuilder& exec(){
+		return execBuiilder.init();
+	}
 
 	/// zapisuje aktualną konfigurację robota na stosie
 	void savePosition();
@@ -92,6 +96,7 @@ private:
 	WaitCommandBuilder waitCommandBuilder;
 	MoveCommandBuilder moveCommandBuilder;
 	SingleJointMoveCommandBuilder singleJointMoveCommandBuilder;
+	ExecuteCommandBuilder execBuiilder;
 };
 
 void RCTest(RobotController &rc);

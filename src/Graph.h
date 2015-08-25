@@ -111,6 +111,5 @@ private:
 	bool visible = true;
 };
 
-extern std::list<Plot*> plotList;
 void initPlotList();
 void drawPlotList();
