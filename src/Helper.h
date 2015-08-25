@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "RobotController.h"
 
 #define NAM_END }
 #define NAM_START {
@@ -36,6 +37,17 @@ bool processKeys(int key, int action, int mods);
 void saveGroup(std::vector<shared_ptr<Entity>>&);
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
+
+/// -------------------------------- FILESYSTEM
+/**
+ *  Obejmuje:
+ *  * przeładowanie meshy
+ *  * przeładowanie robota
+ *  * przeładowanie RC
+ *  *
+ *
+ */
+void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, shared_ptr<Scene> &scene, BulletWorld &bulletWorld);
 
 
 NAM_END

@@ -15,6 +15,7 @@
 #include "ResourceLoader.h"
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
+#include "BulletWorld.h"
 
 #include "Helper.h"
 
@@ -152,6 +153,21 @@ std::string generateGroupName(){
 	return "Group."s+buff;
 }
 
+
+/// -------------------------------- FILESYSTEM
+void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, shared_ptr<Scene> &scene, BulletWorld &bulletWorld){
+	bulletWorld.clear();
+
+	scene = make_shared<Scene>();
+	RC = make_shared<RobotController>();
+	bulletWorld.init();
+
+	ResourceLoader loader(scene->resources);
+	auto &&resources = CFG::Load(sceneName);
+	loader.loadScene(*scene, bulletWorld, resources);
+
+	RC->robot = scene->robot;
+}
 
 
 NAM_END

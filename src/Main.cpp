@@ -17,29 +17,29 @@
 extern u32 lastIterationCount;
 
 using namespace std::chrono;
-glm::vec4       viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
-glm::vec3       Z =			glm::vec3(0.f,0.f,1.f);
-glm::vec3       X =			glm::vec3(1.f,0.f,0.f);
-glm::vec3       Y =			glm::vec3(0.f,1.f,0.f);
-glm::vec4       Zz =		glm::vec4(0.f,0.f,1.f,0.f);
-glm::vec4       Xx =		glm::vec4(1.f,0.f,0.f,0.f);
-glm::vec4       Yy =		glm::vec4(0.f,1.f,0.f,0.f);
-glm::vec4       CameraUp;
-glm::vec4       CameraRight;
-glm::vec4       CameraNormal;
-const float     PI = 3.141592f;
-const float     pi = 3.141592f;
-const double    dpi = 3.141592653589793;
-const float     toRad = pi/180;
-const float     toDeg = 180/pi;
-bool 					GUI = true;
-glm::mat4 		identity = glm::mat4(1);
-bool            lClick = false;
-bool            rClick = false;
-float           g_scrollPos = 0;
-float           g_scrollDel = 0;
-float           scrollMov = 0;
-float           mouse_x, mouse_y;
+glm::vec4      viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
+glm::vec3      Z =			glm::vec3(0.f,0.f,1.f);
+glm::vec3      X =			glm::vec3(1.f,0.f,0.f);
+glm::vec3      Y =			glm::vec3(0.f,1.f,0.f);
+glm::vec4      Zz =		glm::vec4(0.f,0.f,1.f,0.f);
+glm::vec4      Xx =		glm::vec4(1.f,0.f,0.f,0.f);
+glm::vec4      Yy =		glm::vec4(0.f,1.f,0.f,0.f);
+glm::vec4      CameraUp;
+glm::vec4      CameraRight;
+glm::vec4      CameraNormal;
+const float    PI = 3.141592f;
+const float    pi = 3.141592f;
+const double   dpi = 3.141592653589793;
+const float    toRad = pi/180;
+const float    toDeg = 180/pi;
+bool 					 GUI = true;
+glm::mat4 		 identity = glm::mat4(1);
+bool           lClick = false;
+bool           rClick = false;
+float          g_scrollPos = 0;
+float          g_scrollDel = 0;
+float          scrollMov = 0;
+float          mouse_x, mouse_y;
 // glm::vec4 		mousePosition(0);
 glm::vec2      mousePosition(700, 350);
 glm::vec2      mouseTranslation(0);
@@ -162,9 +162,21 @@ int main(){
 		loader.loadFonts(resources["Fonts"]);
 	}
 	if(true){ // load def scene
-		ResourceLoader loader(scene->resources);
-		auto &&resources = CFG::Load("../models/stanowisko.yml");
-		loader.loadScene(*scene, resources);
+		// ResourceLoader loader(scene->resources);
+		// auto &&resources = CFG::Load("../models/stanowisko.yml");
+		// loader.loadScene(*scene, bulletWorld, resources);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 	}
 	{ // setup callbacks
 		glfwSetScrollCallback(window, scrollCallback);

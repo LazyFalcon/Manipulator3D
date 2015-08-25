@@ -11,7 +11,6 @@
 #include "BulletWorld.h"
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 u16 objectID = 1;
-extern BulletWorld bulletWorld;
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
 	count = cfg["Shaders"].size() + cfg["Images"].size() + cfg["Meshes"].size();
@@ -269,7 +268,7 @@ bool ResourceLoader::loadImageSet(CFG::Node &cfg){
 	return true;
 }
 
-bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
+bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node &cfg){
 	string dirname = cfg["dirname"].value;
 	meshPath = cfg["dirname"].value+"\\";
 
@@ -278,7 +277,7 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};
-		auto bulletData = buildBulletData(it);
+		auto bulletData = buildBulletData(it, bulletWorld);
 
 		// scene.units.emplace(it["Name"].value, Entity {objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
 		auto en = make_shared<Entity>();
@@ -322,7 +321,7 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 
 	return true;
 }
-btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
+btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bulletWorld){
 
 	// if(!cfg.has("RigidBody")){
 		return nullptr;

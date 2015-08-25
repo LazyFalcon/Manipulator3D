@@ -28,7 +28,14 @@ void BulletWorld::init(){
 	// info.m_erp = 0.8;
   // info.m_globalCfm = 0.1;
 }
-void BulletWorld::clear(){}
+void BulletWorld::clear(){
+	deleteBodies();
+	delete dynamicsWorld;
+	delete solver;
+	delete dispatcher;
+	delete collisionConfiguration;
+	delete broadphase;
+}
 
 btRigidBody* BulletWorld::createRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, float inertiaScalling){
 	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
@@ -86,29 +93,26 @@ void BulletWorld::update(float step){
 }
 
 void BulletWorld::deleteBodies(){
-	// for(int i=0; constraints.size(); i++){
-		// btTypedConstraint *c = constraints[i];
-		// dynamicsWorld->removeConstraint(c);
-		// delete c;
-	// }
-
-	for(int i = dynamicsWorld->getNumConstraints()-1; i >= 0; i--){
-		btTypedConstraint* constraint = dynamicsWorld->getConstraint(i);
-		dynamicsWorld->removeConstraint(constraint);
-		delete constraint;
-	}
-
-	//terrai zostawiamy
+	/// remove rgBodies from world and delete
 	for(int i = dynamicsWorld->getNumCollisionObjects()-1; i >= 1; i--){
 		btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[i];
 		btRigidBody* body = btRigidBody::upcast(obj);
 		if(body && body->getMotionState()){
+			while (body->getNumConstraintRefs()){
+				btTypedConstraint* constraint = body->getConstraintRef(0);
+				dynamicsWorld->removeConstraint(constraint);
+				delete constraint;
+			}
 			delete body->getMotionState();
+			dynamicsWorld->removeRigidBody(body);
 		}
-		dynamicsWorld->removeCollisionObject( obj );
+		else {
+			dynamicsWorld->removeCollisionObject( obj );
+		}
 		delete obj;
 	}
 
+	/// delete cllision shapes
 	for(int j = 0; j < shapes.size(); j++){
 		btCollisionShape* shape = shapes[j];
 		delete shape;

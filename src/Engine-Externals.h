@@ -242,19 +242,20 @@ void ResourceLoader::printShaderInfoLog(GLint shader){
 // should additionally check for OpenGL errors here
 }
 Resources::~Resources(){
-	// glDeleteBuffers(3, VBO);
-	// glDeleteBuffers(1, &IBO);
-	// glDeleteVertexArrays(1, &VAO);
-	// for(auto &it : textures)
-		// glDeleteTextures(1, &it.second);
-	// for(auto &it : textures)
-		// glDeleteTextures(1, &it.second);
+	glDeleteBuffers(3, VBO);
+	glDeleteBuffers(1, &IBO);
+	glDeleteVertexArrays(1, &VAO);
+	for(auto &it : textures)
+		glDeleteTextures(1, &it.second);
+	for(auto &it : textures)
+		glDeleteTextures(1, &it.second);
 
 	cerr<<"~Resources"<<endl;
 }
 Scene::~Scene(){
-	// units_ptrs.clear();
-	// units.clear();
+	units_ptrs.clear();
+	units.clear();
+	pointLamps.clear();
 	std::cerr<<"delete Scene"<<std::endl;
 }
 

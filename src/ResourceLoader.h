@@ -1,6 +1,7 @@
 #pragma once
 #include <Utils/Includes.h>
 #include <Utils/BaseStructs.h>
+class BulletWorld;
 
 struct Resources
 {
@@ -76,8 +77,8 @@ public:
 	void printShaderInfoLog(GLint shader);
 	void fillBuffers();
 
-	bool loadScene(Scene &scene, CFG::Node &cfg);
-	btRigidBody* buildBulletData(CFG::Node &cfg);
+	bool loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node &cfg);
+	btRigidBody* buildBulletData(CFG::Node &cfg, BulletWorld &bulletWorld);
 	bool loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg);
 	GLuint compileShader(const string &shaderName);
 };
