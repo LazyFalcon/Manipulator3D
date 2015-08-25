@@ -66,8 +66,6 @@ GroupListTab& TabManager::get<GroupListTab>(){
 	return static_cast<GroupListTab&>(*tabs[4]);
 }
 
-
-extern PolylineEditor polylineEditor;
 unique_ptr<ICommandBuilderWidget> createWidgetFromCommandType(CommandType type){
 	unique_ptr<ICommandBuilderWidget> out;
 	if(type == MOVE){
@@ -130,7 +128,7 @@ void CommandEditorTab::getTypeWidget(TabManager &TM){
 void CommandEditorTab::applyCommand(){
 	ui.rect(120, 30).text("Apply")(UI::Label)
 		.onlClick([this]{
-			getRC().insertCommand(commandBuilderWidget->getCommand());
+			// getRC().insertCommand(commandBuilderWidget->getCommand());
 			commandBuilderWidget = createWidgetFromCommandType(EMPTY);
 		});
 }

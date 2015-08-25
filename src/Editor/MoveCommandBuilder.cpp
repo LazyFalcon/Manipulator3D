@@ -67,7 +67,7 @@ SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(RobotContro
 extern UI::IMGUI ui;
 namespace Editor NAM_START
 
-extern PolylineEditor polylineEditor;
+extern unique_ptr<PolylineEditor> polylineEditor;
 
 wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1 m/s", 0.1},
@@ -118,7 +118,7 @@ void MoveCommandBuilderWidget_inits(){
 	interpolatorFromList.value = *(getInterpolators().begin());
 }
 void MoveCommandBuilderWidget::enter(){
-	Editor::polylineEditor.set(moveCommandBuilder->moveCommand->interpolator);
+	Editor::polylineEditor->set(moveCommandBuilder->moveCommand->interpolator);
 }
 void MoveCommandBuilderWidget::run(){
 	ui.rect(120, 20).text("Move command editor")();

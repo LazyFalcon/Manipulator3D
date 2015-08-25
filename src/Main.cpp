@@ -96,7 +96,7 @@ BulletWorld bulletWorld;
 #include "Editor/MoveCommandBuilder.h"
 namespace Editor
 {
-	extern PolylineEditor polylineEditor;
+	extern unique_ptr<PolylineEditor> polylineEditor;
 }
 
 #include "JacobianTransposed.h"
@@ -224,9 +224,9 @@ void renderLoop(){
 		Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
 		Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0x73FF0080,1);
 	}
-	if(Editor::polylineEditor.polyline){
-		Engine::drawLineStrip(Editor::polylineEditor.polyline->visualisation, 0xFF6200F0);
-		Engine::drawLineStrip(Editor::polylineEditor.polyline->points, 0xFF620080,1);
+	if(Editor::polylineEditor->polyline){
+		Engine::drawLineStrip(Editor::polylineEditor->polyline->visualisation, 0xFF6200F0);
+		Engine::drawLineStrip(Editor::polylineEditor->polyline->points, 0xFF620080,1);
 	}
 	// Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
@@ -237,13 +237,13 @@ void renderLoop(){
 }
 void prerequisites(){
 	// Editor::MoveCommandBuilderWidget_inits();
-	// Editor::init();
+	Editor::init();
 	// jacobianTransposeInitialCall(*(scene->robot));
 	// jacobianTransposeInit();
 	PythonBindings::init(RC, scene);
 }
 void updates(float dt){
-	// Editor::update(*RC);
+	Editor::update(*RC);
 	// PythonBindings::update(RC, scene);
 }
 void mainLoop(){

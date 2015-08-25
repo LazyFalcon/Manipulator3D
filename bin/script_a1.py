@@ -18,7 +18,7 @@ def init(RC, scene):
 	# points[:] = [vec4(2, 5, 4, 1), vec4(4, 0, 5, 1), vec4(1, -5, 2, 1), vec4(0, -5, 3, 1), vec4(-1, -5, 2, 1),  vec4(-1, -5.3, 1.9, 1),  vec4(-4, -4, 1.9, 1)]
 	points[:] = [vec4(2, 5, 4, 1), vec4(4, 0, 5, 1), vec4(1, -5, 2, 1), vec4(0, -5, 3, 1)]
 
-	path = addInterpolator(Interpolator.HermiteCardinal, points)
+	path = addInterpolator(Interpolator.HermiteCardinal, points, "Python order.")
 	# moveBuilder.init().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
 	# RC.wait().time().finish();
 	# RC.move().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)

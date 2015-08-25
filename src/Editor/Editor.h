@@ -67,7 +67,9 @@ public:
 	glm::vec2 mouseOffset {};
 	glm::vec4 center;
 	int preferedDirection = {0};
-
+	~MultiPointController(){
+		std::cerr<<"deleted MultiPointController"<<std::endl;
+	}
 	MultiPointController() : center(0,0,0,1){}
 
 	void setOffset(const glm::vec2 &mousePos){
@@ -184,6 +186,9 @@ public:
         editorSnapMode(EditorFlags::SnapToGlobal),
 				snapModeDropped(false)
 		{}
+	~PolylineEditor(){
+		std::cerr<<"deleted PolylineEditor"<<std::endl;
+	}
 
 	void set(shared_ptr<IInterpolator> &p){
 		polyline = p;
@@ -217,7 +222,7 @@ public:
 	void processKeys(int key, int action, int modifier);
 };
 
-extern PolylineEditor polylineEditor;
+extern unique_ptr<PolylineEditor> polylineEditor;
 
 void init();
 void clear();
@@ -226,7 +231,6 @@ void processKeys(int key, int action, int modifier, RobotController &RC);
 void processMouse(int key, int action, int modifier);
 void set(shared_ptr<IInterpolator> &p);
 void set(shared_ptr<ICommand> &p);
-RobotController& getRC();
 
 NAM_END
 

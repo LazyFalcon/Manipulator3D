@@ -148,8 +148,8 @@ void RobotController::releaseObject(){}
 void RobotController::grabObject(shared_ptr<Entity> &obj){
 	MoveCommandBuilder moveBuilder;
 	ExecuteCommandBuilder executeBuilder;
-	auto interpolator = addInterpolator(Interpolator::Simple, {obj->position});
-	auto target = addInterpolator(Interpolator::Simple, {glm::rotate(2.f, glm::vec3(0,0,1)) * obj->position});
+	auto interpolator = addInterpolator(Interpolator::Simple, {obj->position}, "Grab");
+	auto target = addInterpolator(Interpolator::Simple, {glm::rotate(2.f, glm::vec3(0,0,1)) * obj->position}, "Grab2");
 	std::cout<<"One wants grab object."<<std::endl;
 	moveBuilder
 		.init()

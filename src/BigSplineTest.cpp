@@ -83,7 +83,7 @@ void BigSplineWidget::doRadioButtons(){
 					.onlClick([&it]{
 						iit = it;
 						itToEdit = it;
-						Editor::polylineEditor.set(*it);
+						Editor::polylineEditor->set(*it);
 						});
 			ui.endBox();
 		ui.endBox();
