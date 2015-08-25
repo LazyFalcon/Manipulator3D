@@ -155,5 +155,6 @@ private:
 };
 
 void MoveCommandBuilderWidget_inits();
+void MoveCommandBuilderWidget_terminate();
 
 NAM_END

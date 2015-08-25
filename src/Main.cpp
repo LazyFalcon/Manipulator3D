@@ -189,6 +189,7 @@ int main(){
 
 	PythonBindings::terminate(RC, scene);
 	Editor::clear();
+	Editor::MoveCommandBuilderWidget_terminate();
 	Engine::clear();
 	globalResources.reset();
 	RC.reset();
@@ -236,7 +237,7 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
-	// Editor::MoveCommandBuilderWidget_inits();
+	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	// jacobianTransposeInitialCall(*(scene->robot));
 	// jacobianTransposeInit();
