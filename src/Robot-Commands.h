@@ -5,7 +5,7 @@ class RobotController;
 
 enum CommandType : u32
 {
-	EMPTY, SINGLEMOVE, MOVE, WAIT, EXECUTE,
+	EMPTY, SINGLEMOVE, MOVE, FOLLOW, WAIT, EXECUTE,
 };
 
 class ICommand
@@ -89,6 +89,33 @@ public:
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
+	double velocity;
+	double jointVelocityModifier {1.0};
+	double acceleration;
+private:
+	std::vector<double> targetJointPosition;
+};
+
+/**
+ *  Na razie ostre skręty, potem wsadźmy do Robot::Module::goTo jakąś interpolację kubiczną dla kilku poprzednich jPunktów, następnego i docelowego, z jakąś predykcją?
+ */
+class FollowObject : public ICommand
+{
+public:
+	FollowObject() : ICommand(FOLLOW), target(nullptr){}
+	FollowObject(std::vector<double> &v) : ICommand(FOLLOW), targetJointPosition(v), target(nullptr){}
+	void init(RobotController &rc);
+	bool update(RobotController &rc, float dt);
+	bool exit(RobotController &rc);
+	void set(glm::vec4 &t){
+		target = &t;
+        pTarget = glm::vec4(0);
+	}
+	vector<glm::vec4>& getPath();
+	vector<glm::vec4>& getPolyline();
+
+    glm::vec4 *target;
+    glm::vec4 pTarget;
 	double velocity;
 	double jointVelocityModifier {1.0};
 	double acceleration;

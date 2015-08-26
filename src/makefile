@@ -39,7 +39,7 @@ OBJS = \
 ../bin/Helper.o \
 ../bin/MAIN.o
 
-LIBS = -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
+LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath \
 -lglew32 -lglfw3 -lgdi32 -lFreeImage -lglu32 -lopengl32 -lboost_python-mgw49-mt-d-1_56 -LC:\Python27\libs -lpython27
 
 

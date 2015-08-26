@@ -17,29 +17,29 @@
 extern u32 lastIterationCount;
 
 using namespace std::chrono;
-glm::vec4       viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
-glm::vec3       Z =			glm::vec3(0.f,0.f,1.f);
-glm::vec3       X =			glm::vec3(1.f,0.f,0.f);
-glm::vec3       Y =			glm::vec3(0.f,1.f,0.f);
-glm::vec4       Zz =		glm::vec4(0.f,0.f,1.f,0.f);
-glm::vec4       Xx =		glm::vec4(1.f,0.f,0.f,0.f);
-glm::vec4       Yy =		glm::vec4(0.f,1.f,0.f,0.f);
-glm::vec4       CameraUp;
-glm::vec4       CameraRight;
-glm::vec4       CameraNormal;
-const float     PI = 3.141592f;
-const float     pi = 3.141592f;
-const double    dpi = 3.141592653589793;
-const float     toRad = pi/180;
-const float     toDeg = 180/pi;
-bool 					GUI = true;
-glm::mat4 		identity = glm::mat4(1);
-bool            lClick = false;
-bool            rClick = false;
-float           g_scrollPos = 0;
-float           g_scrollDel = 0;
-float           scrollMov = 0;
-float           mouse_x, mouse_y;
+glm::vec4      viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
+glm::vec3      Z =			glm::vec3(0.f,0.f,1.f);
+glm::vec3      X =			glm::vec3(1.f,0.f,0.f);
+glm::vec3      Y =			glm::vec3(0.f,1.f,0.f);
+glm::vec4      Zz =		glm::vec4(0.f,0.f,1.f,0.f);
+glm::vec4      Xx =		glm::vec4(1.f,0.f,0.f,0.f);
+glm::vec4      Yy =		glm::vec4(0.f,1.f,0.f,0.f);
+glm::vec4      CameraUp;
+glm::vec4      CameraRight;
+glm::vec4      CameraNormal;
+const float    PI = 3.141592f;
+const float    pi = 3.141592f;
+const double   dpi = 3.141592653589793;
+const float    toRad = pi/180;
+const float    toDeg = 180/pi;
+bool 					 GUI = true;
+glm::mat4 		 identity = glm::mat4(1);
+bool           lClick = false;
+bool           rClick = false;
+float          g_scrollPos = 0;
+float          g_scrollDel = 0;
+float          scrollMov = 0;
+float          mouse_x, mouse_y;
 // glm::vec4 		mousePosition(0);
 glm::vec2      mousePosition(700, 350);
 glm::vec2      mouseTranslation(0);
@@ -87,7 +87,6 @@ int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "BulletWorld.h"
-BulletWorld bulletWorld;
 #include "ResourceLoader.h"
 #include "Scene.h"
 #include "Widgets.h"
@@ -104,7 +103,8 @@ namespace Editor
 #include "RobotController.h"
 #include "PathCreator.h"
 #include "SomeTests.h"
-shared_ptr<RobotController> RC; /// only one instace, full time living, initialized before otrer inits
+BulletWorld bulletWorld;
+shared_ptr<RobotController> RC;
 shared_ptr<Scene> scene;
 shared_ptr<Resources> globalResources;
 #include "Menu.h"
@@ -129,6 +129,8 @@ void BADBADBADRobotIKRealtimeTest(Robot &robot);
 void scrollCallback(GLFWwindow* window, double xOff, double yOff);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void dropCallback(GLFWwindow* window, int count, const char** paths);
+
 void reloadWhatIsPossible();
 void initContext(CFG::Node &cfg);
 
@@ -162,14 +164,13 @@ int main(){
 		loader.loadFonts(resources["Fonts"]);
 	}
 	if(true){ // load def scene
-		ResourceLoader loader(scene->resources);
-		auto &&resources = CFG::Load("../models/stanowisko.yml");
-		loader.loadScene(*scene, resources);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 	}
 	{ // setup callbacks
 		glfwSetScrollCallback(window, scrollCallback);
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
+		glfwSetDropCallback(window, dropCallback);
 	}
 	camera.init();
 	camera.camOffset = glm::vec3(0,0,-0.5);
@@ -328,7 +329,7 @@ void mainLoop(){
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
-			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
+			// ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
 		ui.endTable();
@@ -444,6 +445,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 		RightMousePressed = false;
 	}
 }
+void dropCallback(GLFWwindow* window, int count, const char** paths){
+    Helper::dropCallback(count, paths);
+}
+
 void reloadWhatIsPossible(){
 
 	auto &&styles = CFG::Load("../styles.yml");

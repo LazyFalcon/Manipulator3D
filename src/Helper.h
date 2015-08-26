@@ -1,10 +1,13 @@
 ﻿#pragma once
+#include "RobotController.h"
 
 #define NAM_END }
 #define NAM_START {
 
 struct Point;
 class Camera;
+class Scene;
+class BulletWorld;
 namespace Helper NAM_START
 struct DataUnderMouse
 {
@@ -36,6 +39,21 @@ bool processKeys(int key, int action, int mods);
 void saveGroup(std::vector<shared_ptr<Entity>>&);
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
+
+/// -------------------------------- FILESYSTEM
+/**
+ *  Obejmuje:
+ *  * przeładowanie meshy
+ *  * przeładowanie robota
+ *  * przeładowanie RC
+ *  *
+ *
+ */
+void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, shared_ptr<Scene> &scene, BulletWorld &bulletWorld);
+
+vector<string> listFilesInDirectory(const string &dir, const string &ext);
+std::string getClipboard();
+void dropCallback(int count, const char** paths);
 
 
 NAM_END

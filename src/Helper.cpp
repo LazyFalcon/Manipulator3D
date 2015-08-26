@@ -15,13 +15,18 @@
 #include "ResourceLoader.h"
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
+#include "BulletWorld.h"
+#include <boost/filesystem.hpp>
 
 #include "Helper.h"
 
 extern shared_ptr<Scene> scene;
+extern BulletWorld bulletWorld;
+extern shared_ptr<RobotController> RC;
 extern const float pi;
 
 namespace Helper NAM_START
+using namespace boost::filesystem;
 
 float cameraStep = 5*pi/180;
 
@@ -152,6 +157,62 @@ std::string generateGroupName(){
 	return "Group."s+buff;
 }
 
+
+/// -------------------------------- FILESYSTEM
+void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, shared_ptr<Scene> &scene, BulletWorld &bulletWorld){
+	bulletWorld.clear();
+
+	scene = make_shared<Scene>();
+	RC = make_shared<RobotController>();
+	bulletWorld.init();
+
+	ResourceLoader loader(scene->resources);
+	auto &&resources = CFG::Load(sceneName);
+	loader.loadScene(*scene, bulletWorld, resources);
+
+	RC->robot = scene->robot;
+}
+
+/// http://stackoverflow.com/questions/9285384/how-does-import-work-with-boost-python-from-inside-python-files
+
+vector<string> listFilesInDirectory(const string &dir, const string &ext){
+    vector <string> out;
+    try {
+        path p(dir);
+        if(is_directory(p)){
+            auto dir_it = directory_iterator(p);
+            for(dir_it; dir_it != directory_iterator(); dir_it++){
+                if((*dir_it).path().extension().string() == ext)
+                    out.push_back((*dir_it).path().stem().string());
+            }
+        }
+    }
+    catch (const filesystem_error& ex){
+        cout << ex.what() << '\n';
+    }
+    return out;
+}
+void handleYamlFileDrop(const string &path){
+	auto &&yamlFile = CFG::Load(path);
+	if(yamlFile.has("Robot") && yamlFile.has("Meshes"))
+		reloadScene(path, RC, scene, bulletWorld);
+}
+void handlePythonFileDrop(const string &path){}
+
+void handleDrop(const string &path){
+    boost::filesystem::path p(path);
+    const string ext = p.extension().string();
+    if(ext == ".yml") handleYamlFileDrop(path);
+    else if(ext == ".py") handlePythonFileDrop(path);
+    else cout<<"Unknown file type."<<endl;
+}
+
+std::string getClipboard(){}
+void dropCallback(int count, const char** paths){
+    for(u32 i=0; i<count; i++){
+        handleDrop(paths[i]);
+    }
+}
 
 
 NAM_END
