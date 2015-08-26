@@ -32,11 +32,10 @@ def init(RC, scene):
 def terminate(RC, scene):
 	return False
 
-def action_1(RC, scene):
+def plotData(RC, scene):
+	print 'Hello moroan!'
 	return False
-	# while len(target) > 0:
-		# rc.grab(target[0])
-		# rc.moveTo(vec4(6,3,1,1))
-		# rc.release()
+
+
 
 

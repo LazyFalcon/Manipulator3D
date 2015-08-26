@@ -1,5 +1,6 @@
 #pragma once
 #include <Utils/BaseStructs.h>
+#include "DataRecorder.h"
 class Robot;
 enum  JointType{
 	HINGE = 1,
