@@ -5,9 +5,6 @@ class RobotController;
 class MoveCommandBuilder
 {
 public:
-	// unique_ptr<ICommand> get(){
-		// return moveCommand.release();
-	// }
 	MoveCommandBuilder& init(){
 		moveCommand = make_shared<MoveCommand>();
 		return *this;
@@ -70,9 +67,6 @@ private:
 class SingleJointMoveCommandBuilder
 {
 public:
-	// unique_ptr<ICommand> get(){
-		// return moveCommand.release();
-	// }
 	SingleJointMoveCommandBuilder& init(){
 		moveCommand = make_shared<SingleJointMove>();
 		return *this;
@@ -103,7 +97,45 @@ public:
 	SingleJointMoveCommandBuilder(){}
 	~SingleJointMoveCommandBuilder(){}
 	shared_ptr<SingleJointMove> moveCommand;
-private:
+};
+
+class FollowObjectBuilder
+{
+public:
+	FollowObjectBuilder& init(){
+		moveCommand = make_shared<FollowObject>();
+		return *this;
+	}
+	FollowObjectBuilder& name(const std::string &s){
+		moveCommand->name = s;
+		return *this;
+	}
+	FollowObjectBuilder& target(glm::vec4 &t){
+		moveCommand->set(t);
+		return *this;
+	}
+	FollowObjectBuilder& target(shared_ptr<Entity> &obj){
+		moveCommand->set(obj->position);
+		return *this;
+	}
+	FollowObjectBuilder& velocity(double value){
+		moveCommand->velocity = value;
+		return *this;
+	}
+	FollowObjectBuilder& jointVelocity(double value){
+		moveCommand->jointVelocityModifier = value;
+		return *this;
+	}
+	FollowObjectBuilder& acceleration(double value){
+		moveCommand->acceleration = value;
+		return *this;
+	}
+	FollowObjectBuilder& finish(shared_ptr<RobotController> RC);
+	FollowObjectBuilder& finish(RobotController &RC);
+
+	FollowObjectBuilder(){}
+	~FollowObjectBuilder(){}
+	shared_ptr<FollowObject> moveCommand;
 };
 
 namespace Editor NAM_START

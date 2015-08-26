@@ -74,6 +74,9 @@ public:
 	ExecuteCommandBuilder& exec(){
 		return execBuiilder.init();
 	}
+    FollowObjectBuilder& follow(){
+		return followBuiilder.init();
+	}
 
 	/// zapisuje aktualną konfigurację robota na stosie
 	void savePosition();
@@ -97,6 +100,7 @@ private:
 	MoveCommandBuilder moveCommandBuilder;
 	SingleJointMoveCommandBuilder singleJointMoveCommandBuilder;
 	ExecuteCommandBuilder execBuiilder;
+	FollowObjectBuilder followBuiilder;
 };
 
 void RCTest(RobotController &rc);

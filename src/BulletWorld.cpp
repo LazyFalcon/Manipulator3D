@@ -1,5 +1,6 @@
 #include <Utils/Includes.h>
 #include <Utils/Utils.h>
+#include <Utils/BaseStructs.h>
 
 extern glm::mat4 identity;
 typedef vector<unsigned int> ints;
@@ -109,6 +110,8 @@ void BulletWorld::deleteBodies(){
 		else {
 			dynamicsWorld->removeCollisionObject( obj );
 		}
+		EntityPayload *payload = (EntityPayload*)(obj->getUserPointer());
+		delete payload;
 		delete obj;
 	}
 

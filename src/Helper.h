@@ -6,6 +6,8 @@
 
 struct Point;
 class Camera;
+class Scene;
+class BulletWorld;
 namespace Helper NAM_START
 struct DataUnderMouse
 {
@@ -48,6 +50,10 @@ std::string generateGroupName();
  *
  */
 void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, shared_ptr<Scene> &scene, BulletWorld &bulletWorld);
+
+vector<string> listFilesInDirectory(const string &dir, const string &ext);
+std::string getClipboard();
+void dropCallback(int count, const char** paths);
 
 
 NAM_END

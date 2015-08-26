@@ -250,6 +250,12 @@ Resources::~Resources(){
 	for(auto &it : textures)
 		glDeleteTextures(1, &it.second);
 
+	textures.clear();
+	meshes.clear();
+	images.clear();
+	imageSets.clear();
+	arrayData.clear();
+
 	cerr<<"~Resources"<<endl;
 }
 Scene::~Scene(){

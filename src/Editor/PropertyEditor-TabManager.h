@@ -153,7 +153,7 @@ public:
 
 	// vector<unique_ptr<ITab>> tabs;
 	unique_ptr<ITab> tabs[5];
-	u32 currentTab {3};
+	u32 currentTab {0};
 	u32 size {200};
 };
 

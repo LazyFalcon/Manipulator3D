@@ -110,12 +110,9 @@ public:
 }; */
 
 BOOST_PYTHON_MODULE(commandBuilders_export){
-	// MoveCommandBuilder& (*interpolator_string)(const std::string&) = &MoveCommandBuilder::interpolator;
-	// MoveCommandBuilder& (*interpolator_enum)(Interpolator) = &MoveCommandBuilder::interpolator;
 	MoveCommandBuilder& (MoveCommandBuilder::*interpolator_ptr)(IInterpolatorContainer&) = &MoveCommandBuilder::interpolator;
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
 	MoveCommandBuilder& (MoveCommandBuilder::*finish_ptr)(shared_ptr<RobotController>) = &MoveCommandBuilder::finish;
-	SingleJointMoveCommandBuilder& (SingleJointMoveCommandBuilder::*singlefinish_ptr)(shared_ptr<RobotController>) = &SingleJointMoveCommandBuilder::finish;
 
 	bpl::class_<std::vector<double>>("doubleVec")
 		.def(bpl::vector_indexing_suite<std::vector<double>>())
@@ -133,6 +130,8 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("solver", solver_string, bpl::return_internal_reference<>())
 		.def("finish", finish_ptr, bpl::return_internal_reference<>())
 		;
+
+	SingleJointMoveCommandBuilder& (SingleJointMoveCommandBuilder::*singlefinish_ptr)(shared_ptr<RobotController>) = &SingleJointMoveCommandBuilder::finish;
 	bpl::class_<SingleJointMoveCommandBuilder, std::shared_ptr<SingleJointMoveCommandBuilder>>("SingleJointMoveCommandBuilder", bpl::init<>())
 		.def("init", &SingleJointMoveCommandBuilder::init, bpl::return_internal_reference<>())
 		.def("name", &SingleJointMoveCommandBuilder::name, bpl::return_internal_reference<>())
@@ -142,6 +141,21 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("acceleration", &SingleJointMoveCommandBuilder::acceleration, bpl::return_internal_reference<>())
 		.def("finish", singlefinish_ptr, bpl::return_internal_reference<>())
 		;
+
+    FollowObjectBuilder& (FollowObjectBuilder::*target_1)(glm::vec4 &t) = &FollowObjectBuilder::target;
+    FollowObjectBuilder& (FollowObjectBuilder::*target_2)(shared_ptr<Entity> &obj) = &FollowObjectBuilder::target;
+	FollowObjectBuilder& (FollowObjectBuilder::*followfinish_ptr)(shared_ptr<RobotController>) = &FollowObjectBuilder::finish;
+	bpl::class_<FollowObjectBuilder, std::shared_ptr<FollowObjectBuilder>>("FollowObjectBuilder", bpl::init<>())
+		.def("init", &FollowObjectBuilder::init, bpl::return_internal_reference<>())
+		.def("name", &FollowObjectBuilder::name, bpl::return_internal_reference<>())
+		.def("target", target_1, bpl::return_internal_reference<>())
+		.def("target", target_2, bpl::return_internal_reference<>())
+		.def("velocity", &FollowObjectBuilder::velocity, bpl::return_internal_reference<>())
+		.def("jointVelocity", &FollowObjectBuilder::jointVelocity, bpl::return_internal_reference<>())
+		.def("acceleration", &FollowObjectBuilder::acceleration, bpl::return_internal_reference<>())
+		.def("finish", followfinish_ptr, bpl::return_internal_reference<>())
+		;
+
 	WaitCommandBuilder& (WaitCommandBuilder::*waitfinish_ptr)(shared_ptr<RobotController>&) = &WaitCommandBuilder::finish;
 
 	bpl::class_<WaitCommandBuilder, std::shared_ptr<WaitCommandBuilder>>("WaitCommandBuilder", bpl::init<>())
@@ -196,17 +210,8 @@ BOOST_PYTHON_MODULE(scene_export){
 		;
 }
 BOOST_PYTHON_MODULE(robotController_export){
-    // bpl::enum_<RCStates>("RCStates")
-        // .value("Run", RCStates::Run)
-        // .value("Pause", RCStates::Pause)
-        // .value("Stop", RCStates::Stop)
-        // ;
-
     void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
     bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
-        // .def("move", &RobotController::move)
-        // .def("wait", &RobotController::wait)
-        // .def("execute", &RobotController::execute)
         .def("insertCommand", insertCommand_ptr)
         .def("run", &RobotController::run)
         .def("pause", &RobotController::pause)
@@ -221,39 +226,11 @@ BOOST_PYTHON_MODULE(robotController_export){
         .def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
         .def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
         .def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
+        .def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
         .def_readwrite("robot", &RobotController::robot)
         .def_readwrite("state ", &RobotController::state )
         .def_readwrite("commands", &RobotController::commands)
         ;
-
-
-    // bool (Robot::*goTo_1_ptr)(float, double) = &Robot::goTo;
-    // bool (Robot::*goTo_2_ptr)(const std::vector<double>&) = &Robot::goTo;
-    // bpl::class_<Robot, std::shared_ptr<Robot>>("Robot")
-        // .def("goTo", goTo_1_ptr)
-        // .def("goTo", goTo_2_ptr)
-        // .def_readwrite("chain", &Robot::chain)
-        // ;
-
-    // bpl::class_<Module, std::shared_ptr<Module>>("Module")
-        // .def("getMainAxis", &Module::getMainAxis)
-        // .def("getMainAxis3", &Module::getMainAxis3)
-        // .def_readwrite("axis", &Module::axis)
-        // .def_readwrite("vecToA", &Module::vecToA)
-        // .def_readwrite("vecToB", &Module::vecToB)
-        // .def_readwrite("name", &Module::name)
-        // .def_readwrite("entity", &Module::entity)
-        // .def_readwrite("min", &Module::min)
-        // .def_readwrite("max", &Module::max)
-        // .def_readwrite("value", &Module::value)
-        // .def_readwrite("maxVelocty", &Module::maxVelocty)
-        // .def_readwrite("maxAcceleration", &Module::maxAcceleration)
-        // .def_readwrite("lastVelocity", &Module::lastVelocity)
-        // .def_readwrite("lastAcceleration", &Module::lastAcceleration)
-        // ;
-    // bpl::class_<std::vector<shared_ptr<Module>>>("ModuleVec")
-        // .def(bpl::vector_indexing_suite<std::vector<shared_ptr<Module>>())
-        // ;
 }
 BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;

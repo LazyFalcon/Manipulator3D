@@ -269,6 +269,7 @@ bool ResourceLoader::loadImageSet(CFG::Node &cfg){
 }
 
 bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node &cfg){
+	objectID = 1;
 	string dirname = cfg["dirname"].value;
 	meshPath = cfg["dirname"].value+"\\";
 

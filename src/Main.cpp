@@ -129,6 +129,8 @@ void BADBADBADRobotIKRealtimeTest(Robot &robot);
 void scrollCallback(GLFWwindow* window, double xOff, double yOff);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void dropCallback(GLFWwindow* window, int count, const char** paths);
+
 void reloadWhatIsPossible();
 void initContext(CFG::Node &cfg);
 
@@ -182,6 +184,7 @@ int main(){
 		glfwSetScrollCallback(window, scrollCallback);
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
+		glfwSetDropCallback(window, dropCallback);
 	}
 	camera.init();
 	camera.camOffset = glm::vec3(0,0,-0.5);
@@ -456,6 +459,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 		RightMousePressed = false;
 	}
 }
+void dropCallback(GLFWwindow* window, int count, const char** paths){
+    Helper::dropCallback(count, paths);
+}
+
 void reloadWhatIsPossible(){
 
 	auto &&styles = CFG::Load("../styles.yml");
