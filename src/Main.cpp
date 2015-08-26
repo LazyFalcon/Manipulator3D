@@ -87,7 +87,6 @@ int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "BulletWorld.h"
-BulletWorld bulletWorld;
 #include "ResourceLoader.h"
 #include "Scene.h"
 #include "Widgets.h"
@@ -104,7 +103,8 @@ namespace Editor
 #include "RobotController.h"
 #include "PathCreator.h"
 #include "SomeTests.h"
-shared_ptr<RobotController> RC; /// only one instace, full time living, initialized before otrer inits
+BulletWorld bulletWorld;
+shared_ptr<RobotController> RC;
 shared_ptr<Scene> scene;
 shared_ptr<Resources> globalResources;
 #include "Menu.h"
@@ -164,20 +164,6 @@ int main(){
 		loader.loadFonts(resources["Fonts"]);
 	}
 	if(true){ // load def scene
-		// ResourceLoader loader(scene->resources);
-		// auto &&resources = CFG::Load("../models/stanowisko.yml");
-		// loader.loadScene(*scene, bulletWorld, resources);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 	}
 	{ // setup callbacks
@@ -343,7 +329,7 @@ void mainLoop(){
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
-			ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
+			// ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
 		ui.endTable();

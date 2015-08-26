@@ -21,6 +21,8 @@
 #include "Helper.h"
 
 extern shared_ptr<Scene> scene;
+extern BulletWorld bulletWorld;
+extern shared_ptr<RobotController> RC;
 extern const float pi;
 
 namespace Helper NAM_START
@@ -190,14 +192,18 @@ vector<string> listFilesInDirectory(const string &dir, const string &ext){
     }
     return out;
 }
-void handleYamlFileDrop(const string &path){}
+void handleYamlFileDrop(const string &path){
+	auto &&yamlFile = CFG::Load(path);
+	if(yamlFile.has("Robot") && yamlFile.has("Meshes"))
+		reloadScene(path, RC, scene, bulletWorld);
+}
 void handlePythonFileDrop(const string &path){}
 
 void handleDrop(const string &path){
     boost::filesystem::path p(path);
     const string ext = p.extension().string();
-    if(ext == "yml") handleYamlFileDrop(path);
-    else if(ext == "py") handlePythonFileDrop(path);
+    if(ext == ".yml") handleYamlFileDrop(path);
+    else if(ext == ".py") handlePythonFileDrop(path);
     else cout<<"Unknown file type."<<endl;
 }
 

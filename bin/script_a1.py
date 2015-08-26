@@ -20,25 +20,14 @@ def init(RC, scene):
 
 	path = addInterpolator(Interpolator.HermiteCardinal, points, "--")
 	# RC.wait().time(2.0).finish(RC);
-	RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
+	# RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
 	RC.move().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	# RC.savePosition()
-	RC.grabObject(scene.get("Cube.039"))
-	RC.peekPosition()
-	RC.grabObject(scene.get("Cube.038"))
-	RC.grabObject(scene.get("Cube.037"))
-	RC.peekPosition()
 
 	print 'End.'
 	return True
-	# target[:] = ['brick.001','brick.002','brick.003','brick.004']
-	# target[:] = getSelectedList('itemsToGrab')
-	# for it in target
-		# targetCenter += it.position
-	# targetCenter /= targetCenter.w
-	# newTargetPosition = rotation(-2.0, vec3(0,0,1)) * targetCenter
 
 def terminate(RC, scene):
 	return False

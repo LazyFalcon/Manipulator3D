@@ -214,7 +214,6 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 
 		if (UI::fonts.find(symbolsName) == UI::fonts.end()){
 			UI::Font &symbols = UI::fonts[symbolsName];
-			// symbols.size = -1;
 			success &= loadImage(symbolsName+".png");
 			symbols.texID = resources->textures[symbolsName];
 
@@ -222,11 +221,9 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 			symbols.generator->m_associatedSymbols = symbols.generator;
 			symbols.generator->loadFontInfoFNT(name);
 			symbols.generator->loadFontInfoSYM(symbolsName);
-			// fonts[symbolsName] = symbols;
 		}
 		if (UI::fonts.find(name) == UI::fonts.end()){
 			UI::Font &font = UI::fonts[name];
-			// font.size = -1;
 			success &= loadImage(name+".png");
 			font.texID = resources->textures[name];
 
@@ -234,12 +231,8 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 			font.generator->loadFontInfoFNT(name);
 			font.generator->m_associatedSymbols = UI::fonts[symbolsName].generator;
 
-			// fonts[name] = font;
 		}
 	}
-
-
-
 	return success;
 }
 
@@ -396,13 +389,4 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 	}
 	return true;
 }
-
-
-
-
-
-
-
-
-
 
