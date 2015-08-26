@@ -8,11 +8,12 @@
 #include "../IInterpolator.h"
 #include "../RobotController.h"
 
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
+
 void incr(double &value){value += 0.01;}
 void decr(double &value){value -= 0.01;}
 void incr(float &value){value += 0.01;}
 void decr(float &value){value -= 0.01;}
-
 #define FIELDWITHNAME(name, widget) vertical(ui.rect(120,17).text(name, "ui_10"s)();\
 	horizontal(\
 	ui.border(2);\
@@ -35,8 +36,73 @@ void decr(float &value){value -= 0.01;}
 #define EDIT(value) \
 			ui.rect(120,22).edit(value)(UI::EditBox);
 
+class DropdownListOfInterpolators
+{
+public:
+	void run(const std::function<void(shared_ptr<IInterpolator>)> &callback){
+		ui.box(UI::LayoutHorizontal | UI::AlignLeft );
+		ui.rect(10, 22)
+			// .text(value)
+			.text(dropped ? u"\ue08d":u"\ue00d","sym_12", UI::TextToRight)
+			.getRect(dropPosition)
+			(UI::Hoverable)
+			.button(dropped);
+		ui.endBox();
 
-extern unique_ptr<RobotController> RC;
+		if(dropped) list(callback);
+
+	}
+	void list(const std::function<void(shared_ptr<IInterpolator>)> &callback){
+		ui.beginLayer();
+		ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw)
+			.overridePosition(dropPosition.x, dropPosition.y)
+			;
+		float direction = -1.f;
+		if(widgetAlign == UI::AlignTop){
+			dropPosition.y -= dropPosition.w;
+			direction = -1.f;
+		}
+
+		ui.rect(lenght, 2)(UI::Label);
+		auto &options = getInterpolators();
+		for(auto &it : options){
+			ui.rect(lenght, 20)
+				.text(it->name)
+				(UI::Hoverable)
+				.switcher(value, it)
+				.button(dropped)
+				.onlClick([this, &it, &callback]{
+					callback(it);
+				});
+
+			dropPosition.y -= 20.f;
+		}
+		ui.rect(lenght, 2)(UI::Label);
+		if(ui.outOfTable())
+			dropped = false;
+
+		ui.endBox();
+		ui.endLayer();
+	}
+	const std::string& getSelectedName(){
+		return value->name;
+	}
+
+	DropdownListOfInterpolators(int alignDirection, float l):
+		widgetAlign(alignDirection),
+		lenght(l),
+		dropped(false)
+		{}
+
+	int selectedOption {0};
+	int widgetAlign;
+	shared_ptr<IInterpolator> value;
+	float lenght;
+	bool dropped;
+	std::function<void(shared_ptr<IInterpolator>)> callback;
+	glm::vec4 dropPosition;
+};
+
 
 MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
 	moveCommand->solver = make_unique<JT1>();
@@ -50,10 +116,35 @@ MoveCommandBuilder& MoveCommandBuilder::finish(RobotController &RC){
 	init();
 	return *this;
 }
+
+SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(shared_ptr<RobotController> RC){
+	RC->insertCommand(moveCommand);
+	init();
+	return *this;
+}
+SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(RobotController &RC){
+	RC.insertCommand(moveCommand);
+	init();
+	return *this;
+}
+
+FollowObjectBuilder& FollowObjectBuilder::finish(shared_ptr<RobotController> RC){
+	moveCommand->solver = make_unique<JT1>();
+	RC->insertCommand(moveCommand);
+	init();
+	return *this;
+}
+FollowObjectBuilder& FollowObjectBuilder::finish(RobotController &RC){
+	moveCommand->solver = make_unique<JT1>();
+	RC.insertCommand(moveCommand);
+	init();
+	return *this;
+}
+
 extern UI::IMGUI ui;
 namespace Editor NAM_START
 
-extern PolylineEditor polylineEditor;
+extern unique_ptr<PolylineEditor> polylineEditor;
 
 wxg::DropdownPairWithCallback<double> velocities (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"0.1 m/s", 0.1},
@@ -95,16 +186,18 @@ wxg::DropdownPairWithCallback<double> times (UI::AlignTop, 100, std::vector <pai
 	{"10s", 10000},
 });
 wxg::DropdownPairWithCallback<Interpolator> interpolatorTypes (UI::AlignTop, 100);
-wxg::DropdownListWithCallback<shared_ptr<IInterpolator>> interpolatorFromList (UI::AlignTop, 100);
+DropdownListOfInterpolators interpolatorFromList (UI::AlignTop, 100);
 
 void MoveCommandBuilderWidget_inits(){
 	interpolatorTypes.options = interpolatorEnumWithName;
 	interpolatorTypes.value = interpolatorEnumWithName[0].second;
-	interpolatorFromList.options = &getInterpolators();
-	interpolatorFromList.value = *(getInterpolators().begin());
+	// interpolatorFromList.value = *(getInterpolators().begin());
+}
+void MoveCommandBuilderWidget_terminate(){
+	interpolatorFromList.value.reset();
 }
 void MoveCommandBuilderWidget::enter(){
-	Editor::polylineEditor.set(moveCommandBuilder->moveCommand->interpolator);
+	Editor::polylineEditor->set(moveCommandBuilder->moveCommand->interpolator);
 }
 void MoveCommandBuilderWidget::run(){
 	ui.rect(120, 20).text("Move command editor")();
@@ -113,8 +206,8 @@ void MoveCommandBuilderWidget::run(){
 	editJointVelocity();
 	editAcceleration();
 	editTime();
-	editInterpolator();
-	editSolver();
+	// editInterpolator();
+	// editSolver();
 	finalize();
 }
 void MoveCommandBuilderWidget::editName(){

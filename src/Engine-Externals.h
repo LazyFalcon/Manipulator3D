@@ -6,24 +6,34 @@
 #include <IL/ilut.h>
 #include <glm/gtc/packing.hpp>
 #include "BulletWorld.h"
+#include "Helper.h"
 
 extern BulletWorld bulletWorld;
 
-void UIContainer::draw(UI::IMGUI &gui){
-	auto shader = shaders[m_boxes.second];
+void drawBoxes(std::pair<BoxColor, std::string> &data){
+	if(data.first.m_color.size() == 0) return;
+	auto shader = shaders[data.second];
 	glUseProgram(shader);
 	glUniform(shader, window_width,   "uWidth");
 	glUniform(shader, window_height,  "uHeight");
 
-	updateBuffer(Engine::b_guiRects, m_boxes.first.m_box);
-	updateBuffer(Engine::b_color, m_boxes.first.m_color);
+	updateBuffer(Engine::b_guiRects, data.first.m_box);
+	updateBuffer(Engine::b_color, data.first.m_color);
 		setupBuffer(Engine::quadCorner,0,4,0);
 		setupBuffer(Engine::b_guiRects,1,4,1);
 		setupBuffer(Engine::b_color, 2, 4, 1, GL_UNSIGNED_BYTE, GL_TRUE);
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, m_boxes.first.m_box.size());
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, data.first.m_box.size());
+}
 
-	shader = shaders[m_images.second];
+
+void UIContainer::draw(UI::IMGUI &gui, u32 layer){
+
+    drawBoxes(m_bigBoxes[layer]);
+    drawBoxes(m_editBoxes[layer]);
+    drawBoxes(m_labels[layer]);
+
+    auto shader = shaders[m_images.second];
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gui.m_imageSet->ID);
@@ -39,8 +49,12 @@ void UIContainer::draw(UI::IMGUI &gui){
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 	m_images.first.clear();
-	m_boxes.first.m_box.clear();
-	m_boxes.first.m_color.clear();
+	m_bigBoxes[layer].first.m_box.clear();
+	m_bigBoxes[layer].first.m_color.clear();
+	m_editBoxes[layer].first.m_box.clear();
+	m_editBoxes[layer].first.m_color.clear();
+	m_labels[layer].first.m_box.clear();
+	m_labels[layer].first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -228,18 +242,27 @@ void ResourceLoader::printShaderInfoLog(GLint shader){
 // should additionally check for OpenGL errors here
 }
 Resources::~Resources(){
-	// glDeleteBuffers(3, VBO);
-	// glDeleteBuffers(1, &IBO);
-	// glDeleteVertexArrays(1, &VAO);
-	// for(auto &it : textures)
-		// glDeleteTextures(1, &it.second);
-	// for(auto &it : textures)
-		// glDeleteTextures(1, &it.second);
+	glDeleteBuffers(3, VBO);
+	glDeleteBuffers(1, &IBO);
+	glDeleteVertexArrays(1, &VAO);
+	for(auto &it : textures)
+		glDeleteTextures(1, &it.second);
+	for(auto &it : textures)
+		glDeleteTextures(1, &it.second);
+
+	textures.clear();
+	meshes.clear();
+	images.clear();
+	imageSets.clear();
+	arrayData.clear();
 
 	cerr<<"~Resources"<<endl;
 }
 Scene::~Scene(){
-		std::cerr<<"delete Scene"<<std::endl;
+	units_ptrs.clear();
+	units.clear();
+	pointLamps.clear();
+	std::cerr<<"delete Scene"<<std::endl;
 }
 
 void Graph::draw(){
@@ -318,10 +341,10 @@ void Plot::plot(){
 	Engine::drawTexturedBox(texID, box);
 }
 
+namespace Helper {
+	extern DataUnderMouse dataUnderMouse;
+}
 namespace Engine NAM_START
-
-DataUnderMouse dataUnderMouse;
-
 void samplePosition(glm::vec2 mouse){
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, depthBuffer2.ID, 0);
@@ -335,7 +358,7 @@ void samplePosition(glm::vec2 mouse){
     glm::vec4 worldPos = camera.invPV * viewSpace;
     worldPos /= worldPos.w;
     worldPos.w = 1;
-    dataUnderMouse.position = worldPos;
+    Helper::dataUnderMouse.position = worldPos;
 }
 void sampleNormal(glm::vec2 mouse){
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, normalBuffer.ID, 0);
@@ -343,8 +366,9 @@ void sampleNormal(glm::vec2 mouse){
     uint64_t normal;
     glReadPixels(mouse.x, mouse.y, 1, 1, GL_RGBA, GL_HALF_FLOAT, &normal);
 
-    dataUnderMouse.normal = glm::unpackHalf4x16(normal);
-    dataUnderMouse.objID = dataUnderMouse.normal.w*16384.f;
+    Helper::dataUnderMouse.normal = glm::unpackHalf4x16(normal);
+    // Helper::dataUnderMouse.objID = Helper::dataUnderMouse.normal.w*65535.f;
+    Helper::dataUnderMouse.objID = Helper::dataUnderMouse.normal.w;
 }
 void sampleID(glm::vec2 mouse){
     // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, objectIDTex_R16.ID, 0);
@@ -354,48 +378,8 @@ void sampleID(glm::vec2 mouse){
 }
 
 void sampleDataUnderMouse(glm::vec2 mouse){
-    // glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
-
-    sampleID(mouse);
-    samplePosition(mouse);
-    sampleNormal(mouse);
-
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-
-/// clean in each update
-void hoverObject(Entity *obj){
-    hoveredObject = obj;
-}
-void selectObject(Entity *obj){
-    selectedObject = obj;
-    if(hoveredObject == obj)
-        hoveredObject = nullptr;
-}
-
-Entity* hovered(){
-    return hoveredObject;
-}
-Entity* selected(){
-    return selectedObject;
-}
-
-void processMouse(glm::vec2 mouse, Scene &scene, bool lClick, bool rClick){
-	hoveredObject = nullptr;
-
-	// auto result = bulletWorld.raycast(camera.eyePosition, camera.eyePosition + camera.getMouseRay()*200.f);
-	if(dataUnderMouse.objID > 0 && dataUnderMouse.objID < 0xff00 && scene.units_ptrs[dataUnderMouse.objID] && selectedObject == nullptr){
-		if(lClick){
-			selectObject(scene.units_ptrs[dataUnderMouse.objID]);
-		}
-		else {
-			hoverObject(scene.units_ptrs[dataUnderMouse.objID]);
-		}
-	}
-	else if(rClick){
-		selectObject(nullptr);
-	}
+	samplePosition(mouse);
+	sampleNormal(mouse);
 }
 
 NAM_END

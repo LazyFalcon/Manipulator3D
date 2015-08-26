@@ -3,8 +3,10 @@
 #include <Utils/IMGUI_V4.h>
 #include "../IInterpolator.h"
 #include "../Widgets.h"
+#include "../Helper.h"
 #include "Editor.h"
 #include "PropertyEditor-TabManager.h"
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 // FHDJB-J8KMP-RFV8D-FX3FT-YDBCW
 extern UI::IMGUI ui;
 extern glm::vec2 screenSize;
@@ -28,7 +30,7 @@ void TabManager::drawTabs(){
 	ui.box(UI::LayoutHorizontal);
 
 	// for(u32 i=0; i<tabs.size(); i++){
-	for(u32 i=0; i<4; i++){
+	for(u32 i=0; i<5; i++){
 		glm::vec4 rect;
 		ui.image("Menu-Property-Tab")
 			.switcher(currentTab, i)
@@ -59,9 +61,11 @@ template<>
 PathListTab& TabManager::get<PathListTab>(){
 	return static_cast<PathListTab&>(*tabs[3]);
 }
+template<>
+GroupListTab& TabManager::get<GroupListTab>(){
+	return static_cast<GroupListTab&>(*tabs[4]);
+}
 
-
-extern PolylineEditor polylineEditor;
 unique_ptr<ICommandBuilderWidget> createWidgetFromCommandType(CommandType type){
 	unique_ptr<ICommandBuilderWidget> out;
 	if(type == MOVE){
@@ -124,7 +128,7 @@ void CommandEditorTab::getTypeWidget(TabManager &TM){
 void CommandEditorTab::applyCommand(){
 	ui.rect(120, 30).text("Apply")(UI::Label)
 		.onlClick([this]{
-			getRC().insertCommand(commandBuilderWidget->getCommand());
+			// getRC().insertCommand(commandBuilderWidget->getCommand());
 			commandBuilderWidget = createWidgetFromCommandType(EMPTY);
 		});
 }
@@ -149,9 +153,22 @@ void PathEditorTab::run(TabManager &TM){
 /// ----- PATH LIST TAB ---------------------------------------------
 void PathListTab::run(TabManager &TM){
 	for(auto &it : getInterpolators()){
-		ui.rect(150, 20).text(it->name)();
-		ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label)
+		ui.rect(150, 20).text(it->name)()
 			.onlClick([&TM, &it]{TM.get<PathEditorTab>().reset(it);});
+		ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label);
+	}
+
+}
+
+
+/// ----- GROUP LIST TAB ---------------------------------------------
+void GroupListTab::run(TabManager &TM){
+    auto &list = Helper::listOfGroups();
+	for(auto &it : list){
+        ui.rect(150, 20).text(it.first)();
+        ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label)
+            // .onlClick([&TM, &it]{TM.get<PathEditorTab>().reset(it);})
+            ;
 	}
 
 }

@@ -414,7 +414,11 @@ void addInterpolator(shared_ptr<IInterpolator> &interpolator){
 }
 
 shared_ptr<IInterpolator> addInterpolator(const std::string type, vector<glm::vec4> &points){}
-shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::vec4> &points){
+IInterpolatorContainer addInterpolatorByContainer(Interpolator type, const vector<glm::vec4> &points, const string &name){
+	shared_ptr<IInterpolator> interpolator = addInterpolator(type, points, name);
+	return {interpolator, interpolator->name};
+}
+shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::vec4> &points, const string &name){
 	shared_ptr<IInterpolator> out;
 	if(type == Interpolator::Linear){
 		out = make_shared<Linear>(points);
@@ -442,6 +446,7 @@ shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::v
 	}
 
 	// out.build();
+	out->name = name;
 	addInterpolator(out);
 
 	return out;

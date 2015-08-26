@@ -5,7 +5,7 @@ class RobotController;
 
 enum CommandType : u32
 {
-	EMPTY, MOVE, WAIT, EXECUTE,
+	EMPTY, SINGLEMOVE, MOVE, FOLLOW, WAIT, EXECUTE,
 };
 
 class ICommand
@@ -15,7 +15,6 @@ public:
 	ICommand(CommandType type) : type(type), isRuning(false){}
 	//ICommand(uint32_t f) : flags(f){}
 	virtual void init(RobotController &rc) = 0;
-	virtual bool enter(RobotController &rc) = 0;
 	virtual bool update(RobotController &rc, float dt) = 0;
 	virtual bool exit(RobotController &rc) = 0;
 	virtual vector<glm::vec4>& getPath() = 0;
@@ -41,7 +40,7 @@ class MoveCommand : public ICommand
 {
 public:
 	MoveCommand() : ICommand(MOVE), interpolator(make_shared<Linear>(std::vector<glm::vec4> {glm::vec4(0,0,0,1)})) {}
-	MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
+	// MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	MoveCommand(shared_ptr<IInterpolator> interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	~MoveCommand(){
 		std::cerr<<"delete MoveCommand: "+name<<std::endl;
@@ -55,7 +54,6 @@ public:
 	}
 	void init(RobotController &rc);
 	bool update(RobotController &rc, float dt);
-	bool enter(RobotController &rc){}
 	bool exit(RobotController &rc){}
 	glm::vec4 calculateNextPoint(float dt);
 	double calculateRequiredDistance(float dt);
@@ -75,7 +73,55 @@ public:
 private:
 	glm::vec4 previousPoint;
 	std::vector<double> targetJointPosition;
+};
 
+class SingleJointMove : public ICommand
+{
+public:
+	SingleJointMove() : ICommand(SINGLEMOVE){}
+	SingleJointMove(std::vector<double> &v) : ICommand(SINGLEMOVE), targetJointPosition(v){}
+	void init(RobotController &rc);
+	bool update(RobotController &rc, float dt);
+	bool exit(RobotController &rc);
+	void set(std::vector<double> &v){
+		targetJointPosition = v;
+	}
+	vector<glm::vec4>& getPath();
+	vector<glm::vec4>& getPolyline();
+
+	double velocity;
+	double jointVelocityModifier {1.0};
+	double acceleration;
+private:
+	std::vector<double> targetJointPosition;
+};
+
+/**
+ *  Na razie ostre skręty, potem wsadźmy do Robot::Module::goTo jakąś interpolację kubiczną dla kilku poprzednich jPunktów, następnego i docelowego, z jakąś predykcją?
+ */
+class FollowObject : public ICommand
+{
+public:
+	FollowObject() : ICommand(FOLLOW), target(nullptr){}
+	FollowObject(std::vector<double> &v) : ICommand(FOLLOW), targetJointPosition(v), target(nullptr){}
+	void init(RobotController &rc);
+	bool update(RobotController &rc, float dt);
+	bool exit(RobotController &rc);
+	void set(glm::vec4 &t){
+		target = &t;
+        pTarget = glm::vec4(0);
+	}
+	vector<glm::vec4>& getPath();
+	vector<glm::vec4>& getPolyline();
+
+    glm::vec4 *target;
+    glm::vec4 pTarget;
+	double velocity;
+	double jointVelocityModifier {1.0};
+	double acceleration;
+	shared_ptr<IIK> solver;
+private:
+	std::vector<double> targetJointPosition;
 };
 
 class WaitCommand : public ICommand
@@ -84,11 +130,11 @@ public:
 	~WaitCommand(){
 		std::cerr << "delete Wait command\n";
 	}
+	WaitCommand() : ICommand(WAIT), releaseTime(0){}
 	WaitCommand(float time) : ICommand(WAIT), releaseTime(time){}
 	bool update(RobotController &rc, float dt);
 
 	void init(RobotController &rc);
-	bool enter(RobotController &rc);
 	bool exit(RobotController &rc);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
@@ -102,16 +148,16 @@ public:
 class ExecuteCommand : public ICommand
 {
 public:
+    ExecuteCommand() : ICommand(EXECUTE){}
 	void init(RobotController &rc);
-	bool enter(RobotController &rc);
 	bool update(RobotController &rc, float dt);
 	bool exit(RobotController &rc);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
-	std::function<void(RobotController &rc)> enterCallback;
-	std::function<void(RobotController &rc)> func;
-	std::function<void(RobotController &rc)> exitCallback;
+	std::function<void(RobotController &rc)> onEnter;
+	std::function<void(RobotController &rc)> onUpdate;
+	std::function<void(RobotController &rc)> onExit;
 };
 
 

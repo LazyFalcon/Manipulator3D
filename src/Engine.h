@@ -66,15 +66,6 @@ struct Config
 	} shadows;
 };
 
-struct DataUnderMouse
-{
-    float depth;
-    glm::vec4 position;
-    glm::vec4 normal;
-    u16 objID;
-};
-extern DataUnderMouse dataUnderMouse;
-
 extern GLuint b_position;
 extern GLuint b_uv;
 extern GLuint b_size;
@@ -168,7 +159,7 @@ extern std::vector<shapeInfo> text2D;
 extern std::vector<shapeInfo> pattern2D;
 extern std::vector<lineInfo> 	lines2D;
 
-void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, unique_ptr<Resources> &res);
+void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, shared_ptr<Resources> &res);
 
 /// Debug drawing, push to namespace
 void drawArrow(glm::vec4 vec, HexColor color, std::function<void(float)> callback);
@@ -209,7 +200,6 @@ float sampleDepth();
 glm::vec4 sampleNormal();
 
 void sampleDataUnderMouse(glm::vec2 mouse);
-void processMouse(glm::vec2 mouse, Scene &scene, bool lClick, bool rClick);
 
 bool initGlew();
 

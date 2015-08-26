@@ -1,6 +1,13 @@
 ﻿#pragma once
 #include "IInterpolator.h"
 #include "Robot-Commands.h"
+#include "Editor/MoveCommandBuilder.h"
+#include "Editor/WaitCommandBuilder.h"
+#include "Editor/ExecuteCommandBuilder.h"
+#include <stack>
+
+#define NAM_END }
+#define NAM_START {
 
 enum class CommandStatus : int {
 
@@ -12,24 +19,27 @@ enum class RCStates {
 
 };
 
+struct RobotPosition
+{
+	string name;
+	glm::vec4 position;
+	glm::quat quat;
+	vector<double> joints;
+};
+
 class RobotController {
 public:
 	~RobotController(){
 		std::cerr<<"delete RobotController"<<std::endl;
 	}
-	RobotController() : grabbedObject(nullptr){
+	RobotController() {
 		commandIter = commands.end();
 	}
 
 	bool update(float dt);
 
-	MoveCommand& move(shared_ptr<IInterpolator> interpolator, const std::string &name);
-	WaitCommand& wait(float time);
-	WaitCommand& execute(float time){}
-	void grabObject(Entity *obj);
-	/// znaleźć obiekt, jego orientację, wyrównać robota do osi/płaszczyzny, przypiąć pozycję
-	/// w update przenosić obiekt
-
+	void useEffector();
+	void releaseEffector();
 
 	void insertCommand(shared_ptr<ICommand> &ptr){
 		commands.push_back(ptr);
@@ -38,7 +48,12 @@ public:
 		commands.push_back(ptr);
 	}
 	std::shared_ptr<ICommand>& getCommand(){
-		return *commandIter;
+		if(commandIter != commands.end())
+			return *commandIter;
+		// else if(!commands.empty())
+		else
+            // return std::shared_ptr<ICommand>(nullptr);
+            return commands.front();
 	}
 
 	void run();
@@ -47,13 +62,53 @@ public:
 	void next();
 	void prev();
 
+	WaitCommandBuilder& wait(){
+		return waitCommandBuilder.init();
+	}
+	MoveCommandBuilder& move(){
+		return moveCommandBuilder.init();
+	}
+	SingleJointMoveCommandBuilder& jointMove(){
+		return singleJointMoveCommandBuilder.init();
+	}
+	ExecuteCommandBuilder& exec(){
+		return execBuiilder.init();
+	}
+    FollowObjectBuilder& follow(){
+		return followBuiilder.init();
+	}
+
+	/// zapisuje aktualną konfigurację robota na stosie
+	void savePosition();
+	/// zdejmuje konfigurację robota ze stosu, defaultowo odpala komendę na dotarcie tam
+	void peekPosition();
+	void popPosition();
+	std::stack<RobotPosition> positionCache;
+
+	/// ---- UTILS ----
+	void grabObject(shared_ptr<Entity> &obj);
+	void releaseObject();
+
+	/// ---- UTILS ----
+
 	shared_ptr<Robot> robot;
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
-	Entity *grabbedObject;
+private:
+	WaitCommandBuilder waitCommandBuilder;
+	MoveCommandBuilder moveCommandBuilder;
+	SingleJointMoveCommandBuilder singleJointMoveCommandBuilder;
+	ExecuteCommandBuilder execBuiilder;
+	FollowObjectBuilder followBuiilder;
 };
 
 void RCTest(RobotController &rc);
 
+namespace RCUtils NAM_START
 
+void pinObjectToEffector(shared_ptr<Entity> &obj, shared_ptr<Entity> &effector);
+shared_ptr<Entity>& releaseObjects();
+void update();
+
+NAM_END

@@ -17,29 +17,29 @@
 extern u32 lastIterationCount;
 
 using namespace std::chrono;
-glm::vec4       viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
-glm::vec3       Z =			glm::vec3(0.f,0.f,1.f);
-glm::vec3       X =			glm::vec3(1.f,0.f,0.f);
-glm::vec3       Y =			glm::vec3(0.f,1.f,0.f);
-glm::vec4       Zz =		glm::vec4(0.f,0.f,1.f,0.f);
-glm::vec4       Xx =		glm::vec4(1.f,0.f,0.f,0.f);
-glm::vec4       Yy =		glm::vec4(0.f,1.f,0.f,0.f);
-glm::vec4       CameraUp;
-glm::vec4       CameraRight;
-glm::vec4       CameraNormal;
-const float     PI = 3.141592f;
-const float     pi = 3.141592f;
-const double    dpi = 3.141592653589793;
-const float     toRad = pi/180;
-const float     toDeg = 180/pi;
-bool 					GUI = true;
-glm::mat4 		identity = glm::mat4(1);
-bool            lClick = false;
-bool            rClick = false;
-float           g_scrollPos = 0;
-float           g_scrollDel = 0;
-float           scrollMov = 0;
-float           mouse_x, mouse_y;
+glm::vec4      viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
+glm::vec3      Z =			glm::vec3(0.f,0.f,1.f);
+glm::vec3      X =			glm::vec3(1.f,0.f,0.f);
+glm::vec3      Y =			glm::vec3(0.f,1.f,0.f);
+glm::vec4      Zz =		glm::vec4(0.f,0.f,1.f,0.f);
+glm::vec4      Xx =		glm::vec4(1.f,0.f,0.f,0.f);
+glm::vec4      Yy =		glm::vec4(0.f,1.f,0.f,0.f);
+glm::vec4      CameraUp;
+glm::vec4      CameraRight;
+glm::vec4      CameraNormal;
+const float    PI = 3.141592f;
+const float    pi = 3.141592f;
+const double   dpi = 3.141592653589793;
+const float    toRad = pi/180;
+const float    toDeg = 180/pi;
+bool 					 GUI = true;
+glm::mat4 		 identity = glm::mat4(1);
+bool           lClick = false;
+bool           rClick = false;
+float          g_scrollPos = 0;
+float          g_scrollDel = 0;
+float          scrollMov = 0;
+float          mouse_x, mouse_y;
 // glm::vec4 		mousePosition(0);
 glm::vec2      mousePosition(700, 350);
 glm::vec2      mouseTranslation(0);
@@ -87,7 +87,6 @@ int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "BulletWorld.h"
-BulletWorld bulletWorld;
 #include "ResourceLoader.h"
 #include "Scene.h"
 #include "Widgets.h"
@@ -96,7 +95,7 @@ BulletWorld bulletWorld;
 #include "Editor/MoveCommandBuilder.h"
 namespace Editor
 {
-	extern PolylineEditor polylineEditor;
+	extern unique_ptr<PolylineEditor> polylineEditor;
 }
 
 #include "JacobianTransposed.h"
@@ -104,12 +103,14 @@ namespace Editor
 #include "RobotController.h"
 #include "PathCreator.h"
 #include "SomeTests.h"
-#include "BigSplineTest.h"
-unique_ptr<RobotController> RC; /// only one instace, full time living, initialized before otrer inits
-unique_ptr<Scene> scene;
-unique_ptr<Resources> globalResources;
+BulletWorld bulletWorld;
+shared_ptr<RobotController> RC;
+shared_ptr<Scene> scene;
+shared_ptr<Resources> globalResources;
 #include "Menu.h"
 CFG::Node cfg_settings;
+#include "Helper.h"
+#include "PythonBindings.h"
 
 std::string shadersToReload[] = {
 	"BlurVertical",
@@ -128,6 +129,8 @@ void BADBADBADRobotIKRealtimeTest(Robot &robot);
 void scrollCallback(GLFWwindow* window, double xOff, double yOff);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void dropCallback(GLFWwindow* window, int count, const char** paths);
+
 void reloadWhatIsPossible();
 void initContext(CFG::Node &cfg);
 
@@ -148,9 +151,9 @@ int main(){
 	cfg_settings = CFG::Load("../settings.yml");
 	initContext(cfg_settings["Window"]);
 
-	scene = make_unique<Scene>();
-	RC = make_unique<RobotController>();
-	globalResources = make_unique<Resources>();
+	scene = make_shared<Scene>();
+	RC = make_shared<RobotController>();
+	globalResources = make_shared<Resources>();
 
 	bulletWorld.init();
 
@@ -161,38 +164,39 @@ int main(){
 		loader.loadFonts(resources["Fonts"]);
 	}
 	if(true){ // load def scene
-		ResourceLoader loader(scene->resources);
-		auto &&resources = CFG::Load("../models/stanowisko.yml");
-		loader.loadScene(*scene, resources);
+		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 	}
 	{ // setup callbacks
 		glfwSetScrollCallback(window, scrollCallback);
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
+		glfwSetDropCallback(window, dropCallback);
 	}
 	camera.init();
-	// camera.camOffset = glm::vec3(0,0,-3);
 	camera.camOffset = glm::vec3(0,0,-0.5);
-	// camera.cameraType = CAMERA_QUATERNION_BASED;
-	BigSplineTest::init();
 	Engine::init(cfg_settings["Graphic"]);
 	Engine::initGrids();
 	reloadWhatIsPossible();
 	ui.m_imageSet = &(globalResources->imageSets["Menu"]);
 	ui.setDefaultFont("ui_12", 12);
 
-	scene->robot->chain[0]->value = 45*toRad;
-	scene->robot->chain[3]->value = 30*toRad;
+	// scene->robot->chain[0]->value = 45*toRad;
+	// scene->robot->chain[3]->value = 30*toRad;
 
 	RC->robot = scene->robot;
 
-	RCTest(*RC);
 	glfwShowWindow(window);
 	mainLoop();
+
+	PythonBindings::terminate(RC, scene);
+	Editor::clear();
+	Editor::MoveCommandBuilderWidget_terminate();
 	Engine::clear();
 	globalResources.reset();
 	RC.reset();
 	scene.reset();
+	cerr<<"One says goodbye!"<<endl;
+
 	return 0;
 }
 
@@ -200,6 +204,7 @@ void fastLoop(float step){
 	RC->update(step/1000.0f);
 	bulletWorld.update(step/1000.0f);
 	scene->robot->update(step);
+	RCUtils::update();
 }
 void renderLoop(){
 	// Engine::plotGraphs();
@@ -217,13 +222,15 @@ void renderLoop(){
 	Engine::postprocess(*scene);
 	Engine::drawOutline(*scene);
 
-	Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
-	Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0x73FF0080,1);
-	if(Editor::polylineEditor.polyline){
-		Engine::drawLineStrip(Editor::polylineEditor.polyline->visualisation, 0xFF6200F0);
-		Engine::drawLineStrip(Editor::polylineEditor.polyline->points, 0xFF620080,1);
+	if(!RC->commands.empty()){
+		Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
+		Engine::drawLineStrip(RC->getCommand()->getPolyline(), 0x73FF0080,1);
 	}
-	Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
+	if(Editor::polylineEditor->polyline){
+		Engine::drawLineStrip(Editor::polylineEditor->polyline->visualisation, 0xFF6200F0);
+		Engine::drawLineStrip(Editor::polylineEditor->polyline->points, 0xFF620080,1);
+	}
+	// Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
  	Engine::finalize(*scene);
 	Engine::renderGUI(ui);
@@ -233,12 +240,13 @@ void renderLoop(){
 void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
-	jacobianTransposeInitialCall(*(scene->robot));
-	jacobianTransposeInit();
+	// jacobianTransposeInitialCall(*(scene->robot));
+	// jacobianTransposeInit();
+	PythonBindings::init(RC, scene);
 }
 void updates(float dt){
 	Editor::update(*RC);
-	Engine::processMouse(mousePosition, *scene, lClick, rClick);
+	// PythonBindings::update(RC, scene);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -259,7 +267,7 @@ void mainLoop(){
 	prerequisites();
 
 	std::string ikTime = "--";
-
+	cout<<"Here we go."<<endl;
 	while(!quit){
 		dt = timer();
 		ddt = dtimer();
@@ -280,7 +288,7 @@ void mainLoop(){
 			ui.setMouseRRepeat();
 		}
 		ui.setMouse(mouse_x, mouse_y);
-		ui.updateCounter(dt);
+		// ui.updateCounter(dt);
 		ui.updateCounter(msdt);
 
 		double m_x, m_y;
@@ -308,23 +316,22 @@ void mainLoop(){
 
 		UI::GetInput = ui.textEditor.state();
 		updates(dt);
-        lClick = false;
-        rClick = false;
+		lClick = false;
+		rClick = false;
 		MainMenu();
-		Robot &robot = *(scene->robot);
-		std::vector<double> vars = robot.getVariables();
+		// Robot &robot = *(scene->robot);
+		// std::vector<double> vars = robot.getVariables();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			for(auto &it : vars)
-				ui.rect().text(to_string(it))();
+			// for(auto &it : vars)
+				// ui.rect().color(gradientCalc(0x00FF00FF, 0xFF00FFFF, u8(it/6.28*255))).text(to_string(it))();
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/20.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
-			ui.rect().text("Commands: " + std::to_string(RC->commands.size())).font("ui_12"s)();
+			// ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
-			ui.rect().text("Depth: " + glm::to_string(Engine::dataUnderMouse.normal)).font("ui_12"s)();
-			ui.rect().text("ID: " + std::to_string(Engine::dataUnderMouse.objID)).font("ui_12"s)();
+			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
 		ui.endTable();
 
 		ui.end();
@@ -344,6 +351,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	if(mods == GLFW_MOD_ALT && key == GLFW_KEY_F4)
 		quit = true;
 
+	ui.keyInput(key, action, mods);
+	if(UI::GetInput) return;
+
+	Helper::moveCameraByKeys(camera, key, action, mods);
+	Helper::processKeys(key, action, mods);
+
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
 		for(auto &it : shadersToReload){
@@ -352,7 +365,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	}
 
-	ui.keyInput(key, action, mods);
 	if(key == GLFW_KEY_TAB && action == GLFW_PRESS){
 		// switchEditObjectMode();
 	}
@@ -363,12 +375,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		RC->run();
 	}
 
-	ui.keyInput(key, action, mods);
 	Editor::processKeys(key, action, mods, *RC);
-	if(key == 'G' && action == GLFW_PRESS){
-		RC->grabObject(scene->units_ptrs[Engine::dataUnderMouse.objID]);
-
-	}
 
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
 		RC->run();
@@ -377,12 +384,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		RC->pause();
 	}
 
-	if(UI::GetInput) return;
-
-
 	float targetStep = 0.1;
 	float targetStepPerSec = targetStep/1;
-	{
+	if(false){
 	if(key == GLFW_KEY_UP && action == GLFW_PRESS)
 		robotTarget += glm::vec4(targetStep,0,0,0);
 	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS)
@@ -412,32 +416,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		robotTarget += glm::vec4(0,0,targetStepPerSec,0);
 	if(key == GLFW_KEY_END && action == GLFW_REPEAT)
 		robotTarget += glm::vec4(0,0,-targetStepPerSec,0);
-	if(key == GLFW_KEY_KP_1 && action == GLFW_PRESS && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi);
-	else if(key == GLFW_KEY_KP_1 && action == GLFW_PRESS && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, 0);
 
-	else if(key == GLFW_KEY_KP_3 && action == GLFW_PRESS && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi+pi/2);
-	else if(key == GLFW_KEY_KP_3 && action == GLFW_PRESS && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(pi/2, pi/2);
-
-	else if(key == GLFW_KEY_KP_7 && action == GLFW_PRESS && mods == GLFW_MOD_CONTROL)
-		camera.setOrientation(pi, 0);
-	else if(key == GLFW_KEY_KP_7 && action == GLFW_PRESS && mods != GLFW_MOD_CONTROL)
-		camera.setOrientation(0, 0);
-	else if(key == GLFW_KEY_KP_5 && action == GLFW_PRESS){
-		if(camera.cameraProjection == PERSPECTIVE_PROJECTION)
-				camera.cameraProjection = ORTHO_PROJECTION;
-			else
-				camera.cameraProjection = PERSPECTIVE_PROJECTION;
-		camera.setProjection();
-	}
 	}
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	ui.mouseKeyInput(button, action);
-	Editor::processMouse(button, action, mods);
+	Helper::processMouse(button, action, mods);
     double m_x, m_y;
     glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
@@ -461,6 +445,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 		RightMousePressed = false;
 	}
 }
+void dropCallback(GLFWwindow* window, int count, const char** paths){
+    Helper::dropCallback(count, paths);
+}
+
 void reloadWhatIsPossible(){
 
 	auto &&styles = CFG::Load("../styles.yml");
@@ -569,7 +557,7 @@ void initContext(CFG::Node &cfg){
 	ui.m_maxHorizontal = window_width;
 	ui.m_maxVertical = window_height;
 	ui.accu = 0.f;
-	ui.frequency= 5.f;
+	ui.frequency = 5;
 	ui.m_UIContainer = new UIContainer();
 }
 

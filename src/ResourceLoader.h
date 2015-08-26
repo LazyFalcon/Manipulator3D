@@ -1,6 +1,7 @@
 #pragma once
 #include <Utils/Includes.h>
 #include <Utils/BaseStructs.h>
+class BulletWorld;
 
 struct Resources
 {
@@ -21,23 +22,29 @@ struct Resources
 class Scene
 {
 public:
-	std::unordered_map<std::string, Entity> units;
-	std::vector<Entity*> units_ptrs;
+	std::unordered_map<std::string, shared_ptr<Entity>> units;
+	std::vector<shared_ptr<Entity>> units_ptrs;
 	std::vector<PointLamp> pointLamps;
-	unique_ptr<Resources> resources;
+	shared_ptr<Resources> resources;
 	shared_ptr<Robot> robot;
 
+	/// python binding utils, sorry
+	shared_ptr<Entity>& get(const std::string &name){
+		return units[name];
+	}
+	/// --
+
 	~Scene();
-	Scene() : robot(make_shared<Robot>()), resources(make_unique<Resources>()) {}
+	Scene() : robot(make_shared<Robot>()), resources(make_shared<Resources>()) {}
 };
 
 class ResourceLoader
 {
 public:
 
-	unique_ptr<Resources> &resources;
+	shared_ptr<Resources> &resources;
 
-	ResourceLoader(unique_ptr<Resources> &_resources):resources(_resources){}
+	ResourceLoader(shared_ptr<Resources> &_resources):resources(_resources){}
 	~ResourceLoader(){
 		cerr<<"~ResourceLoader"<<endl;
 	}
@@ -70,8 +77,8 @@ public:
 	void printShaderInfoLog(GLint shader);
 	void fillBuffers();
 
-	bool loadScene(Scene &scene, CFG::Node &cfg);
-	btRigidBody* buildBulletData(CFG::Node &cfg);
+	bool loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node &cfg);
+	btRigidBody* buildBulletData(CFG::Node &cfg, BulletWorld &bulletWorld);
 	bool loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg);
 	GLuint compileShader(const string &shaderName);
 };

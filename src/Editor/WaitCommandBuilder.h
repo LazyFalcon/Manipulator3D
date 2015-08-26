@@ -1,36 +1,36 @@
 #pragma once
 #include "../Robot-Commands.h"
 
-
 class WaitCommandBuilder
 {
 public:
-	// unique_ptr<ICommand> get(){
-		// return moveCommand.release();
-	// }
 	WaitCommandBuilder& init(){
-		moveCommand = make_shared<WaitCommand>();
+		waitCommand = make_shared<WaitCommand>();
+		return *this;
+	}
+	WaitCommandBuilder& name(const std::string &name){
+		waitCommand->name = name;
 		return *this;
 	}
 	WaitCommandBuilder& time(float releaseTime){
 		waitCommand->releaseTime = releaseTime;
 		return *this;
 	}
-	WaitCommandBuilder& time(u32 releaseFlag){
-		waitCommand->releaseFlag = releaseFlag;
-		return *this;
-	}
-	WaitCommandBuilder& time(std::function<bool(RobotController &rc)> releaseFuction){
-		waitCommand->releaseFuction = releaseFuction;
-		return *this;
-	}
-	
-	WaitCommandBuilder& finish();
+	// WaitCommandBuilder& time(u32 releaseFlag){
+		// waitCommand->releaseFlag = releaseFlag;
+		// return *this;
+	// }
+	// WaitCommandBuilder& time(std::function<bool(RobotController &rc)> releaseFuction){
+		// waitCommand->releaseFuction = releaseFuction;
+		// return *this;
+	// }
+
+	WaitCommandBuilder& finish(shared_ptr<RobotController>& RC);
+	WaitCommandBuilder& finish(RobotController &RC);
 
 	WaitCommandBuilder(){}
 	~WaitCommandBuilder(){}
 	shared_ptr<WaitCommand> waitCommand;
-private:
 };
 
 
@@ -39,16 +39,16 @@ namespace Editor NAM_START
 class WaitCommandBuilderWidget : public ICommandBuilderWidget
 {
 public:
-	MoveCommandBuilderWidget(){
+	WaitCommandBuilderWidget(){
 		init();
 	}
-	MoveCommandBuilderWidget(shared_ptr<ICommand> &ptr){
-		moveCommandBuilder = make_unique<MoveCommandBuilder>();
-		moveCommandBuilder->moveCommand = static_pointer_cast<MoveCommand>(ptr);
+	WaitCommandBuilderWidget(shared_ptr<ICommand> &ptr){
+		waitCommandBuilder = make_unique<WaitCommandBuilder>();
+		waitCommandBuilder->waitCommand = static_pointer_cast<WaitCommand>(ptr);
 	}
 	void init(){
-		moveCommandBuilder = make_unique<MoveCommandBuilder>();
-		moveCommandBuilder->init();
+		waitCommandBuilder = make_unique<WaitCommandBuilder>();
+		waitCommandBuilder->init();
 	}
 	void run();
 	void enter();

@@ -11,7 +11,6 @@
 #include "BulletWorld.h"
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 u16 objectID = 1;
-extern BulletWorld bulletWorld;
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
 	count = cfg["Shaders"].size() + cfg["Images"].size() + cfg["Meshes"].size();
@@ -215,7 +214,6 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 
 		if (UI::fonts.find(symbolsName) == UI::fonts.end()){
 			UI::Font &symbols = UI::fonts[symbolsName];
-			// symbols.size = -1;
 			success &= loadImage(symbolsName+".png");
 			symbols.texID = resources->textures[symbolsName];
 
@@ -223,11 +221,9 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 			symbols.generator->m_associatedSymbols = symbols.generator;
 			symbols.generator->loadFontInfoFNT(name);
 			symbols.generator->loadFontInfoSYM(symbolsName);
-			// fonts[symbolsName] = symbols;
 		}
 		if (UI::fonts.find(name) == UI::fonts.end()){
 			UI::Font &font = UI::fonts[name];
-			// font.size = -1;
 			success &= loadImage(name+".png");
 			font.texID = resources->textures[name];
 
@@ -235,12 +231,8 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 			font.generator->loadFontInfoFNT(name);
 			font.generator->m_associatedSymbols = UI::fonts[symbolsName].generator;
 
-			// fonts[name] = font;
 		}
 	}
-
-
-
 	return success;
 }
 
@@ -269,24 +261,32 @@ bool ResourceLoader::loadImageSet(CFG::Node &cfg){
 	return true;
 }
 
-bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
+bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node &cfg){
+	objectID = 1;
 	string dirname = cfg["dirname"].value;
 	meshPath = cfg["dirname"].value+"\\";
 
 	auto &meshes = cfg["Meshes"];
-	scene.units_ptrs.resize(meshes.Vector.size()+5);
+	scene.units_ptrs.resize(meshes.Vector.size()+1);
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};
-		auto bulletData = buildBulletData(it);
+		auto bulletData = buildBulletData(it, bulletWorld);
 
-		scene.units.emplace(it["Name"].value, Entity {objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+		// scene.units.emplace(it["Name"].value, Entity {objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
+		auto en = make_shared<Entity>();
+		en->ID = objectID;
+		en->mesh = &resources->meshes[it["Name"].value];
+		en->material = material;
+		en->position = it["Position"].asVec31();
+		en->quat = it["Quaternion"].asQuat();
+		en->rgBody = bulletData;
+		scene.units[it["Name"].value] = en;
+		scene.units_ptrs[objectID++] = en;
 
-		scene.units_ptrs[objectID++] = &scene.units[it["Name"].value];
-
-		if(scene.units[it["Name"].value].rgBody){
-				EntityPayload *payload = (EntityPayload*)(scene.units[it["Name"].value].rgBody->getUserPointer());
-				payload->backPointer = &scene.units[it["Name"].value];
+		if(en->rgBody){
+				EntityPayload *payload = (EntityPayload*)(en->rgBody->getUserPointer());
+				payload->backPointer = en.get();
 				payload->owner = (void*)payload->backPointer;
 		}
 	}
@@ -315,7 +315,7 @@ bool ResourceLoader::loadScene(Scene &scene, CFG::Node &cfg){
 
 	return true;
 }
-btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg){
+btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bulletWorld){
 
 	// if(!cfg.has("RigidBody")){
 		return nullptr;
@@ -362,6 +362,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 
 
 
+		// auto module = std::make_shared<Module>();
 		auto module = std::make_unique<Module>();
 		cout<<"-- "+it["Name"].value<<endl;
 		module->type = type;
@@ -371,29 +372,21 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->min = it["ParentJoint"]["Min"].asFloat()*toRad;
 		module->max = it["ParentJoint"]["Max"].asFloat()*toRad;
 		module->name = it["Name"].value;
-		module->entity = &scene.units[it["Name"].value];
+		module->entity = scene.units[it["Name"].value];
 		module->maxVelocty = 0.9; /// rad/s
 		module->maxAcceleration = 0.2; /// rad/s^2
 
-        if(module->entity->rgBody){
-            EntityPayload *payload = (EntityPayload*)(module->entity->rgBody->getUserPointer());
-            payload->owner = (void*)(&robot);
-        }
+		if(module->entity->rgBody){
+				EntityPayload *payload = (EntityPayload*)(module->entity->rgBody->getUserPointer());
+				payload->owner = (void*)(&robot);
+		}
 		// module->entity->rgBody->setMassProps(0, btVector3(0,0,0));
 		// module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 
 		robot.chain.push_back(std::move(module));
+		// robot.chain.push_back(module);
 
 	}
 	return true;
 }
-
-
-
-
-
-
-
-
-
 

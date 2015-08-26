@@ -231,37 +231,35 @@ public:
 
 	}
 	void list(const std::function<void(Type)> &callback){
-			// ui.beginLayer();
-			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
+		float direction = -1.f;
+		if(widgetAlign == UI::AlignTop){
+			dropPosition.y -= dropPosition.w;
+			direction = -1.f;
+		}
+		ui.beginLayer();
+		ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw)
+			.overridePosition(dropPosition.x, dropPosition.y)
+			;
 
-			float direction = -1.f;
-			if(widgetAlign == UI::AlignTop){
-				dropPosition.y -= dropPosition.w;
-				direction = -1.f;
-			}
-
-			ui.rect(lenght, 2)(UI::Label);
-			for(int i=0; i<options.size(); i++){
-				auto &option = options[i];
-				// ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
-				ui.rect(lenght, 20)
-					.text(option.first)
-					(UI::Hoverable)
-					.switcher(value, option.second)
-					.button(dropped)
-					.onlClick([this, &option, &callback, i]{
+		for(int i=0; i<options.size(); i++){
+			auto &option = options[i];
+			ui.rect(lenght, 20)
+				.text(option.first)
+				(UI::Hoverable)
+				.switcher(value, option.second)
+				.button(dropped)
+				.onlClick([this, &option, &callback, i]{
 						selectedOption = i;
 						callback(option.second);
-					});
-			ui.rect(lenght, 2)(UI::Label);
+				});
 
-				dropPosition.y -= 20.f;
-			}
-			if(ui.outOfTable())
-				dropped = false;
+			dropPosition.y -= 20.f;
+		}
+		if(ui.outOfTable())
+			dropped = false;
 
-			ui.endBox();
-			// ui.endLayer();
+		ui.endBox();
+		ui.endLayer();
 	}
 	const std::string& getSelectedName(){
 		return options[selectedOption].first;
@@ -308,47 +306,40 @@ public:
 
 	}
 	void list(const std::function<void(Type)> &callback){
-			// ui.beginLayer();
-			ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw);
+		ui.beginLayer();
+		ui.box(UI::LayoutVertical | UI::AlignLeft | widgetAlign | UI::FixedPos | UI::NewLayer | UI::Draw)
+			.overridePosition(dropPosition.x, dropPosition.y)
+			;
+		float direction = -1.f;
+		if(widgetAlign == UI::AlignTop){
+			dropPosition.y -= dropPosition.w;
+			direction = -1.f;
+		}
 
-			float direction = -1.f;
-			if(widgetAlign == UI::AlignTop){
-				dropPosition.y -= dropPosition.w;
-				direction = -1.f;
-			}
+		ui.rect(lenght, 2)(UI::Label);
+		for(auto &it : options){
+			ui.rect(lenght, 20)
+				.text(it->name)
+				(UI::Hoverable)
+				.switcher(value, it)
+				.button(dropped)
+				.onlClick([this, &it, &callback]{
+					callback(it);
+				});
 
-			ui.rect(lenght, 2)(UI::Label);
-			for(auto &it : (*options)){
-				// ui.rect(dropPosition.x, dropPosition.y, lenght, 20)
-				ui.rect(lenght, 20)
-					.text(it->name)
-					(UI::Hoverable)
-					.switcher(value, it)
-					.button(dropped)
-					.onlClick([this, &it, &callback]{
-						callback(it);
-					});
+			dropPosition.y -= 20.f;
+		}
+		ui.rect(lenght, 2)(UI::Label);
+		if(ui.outOfTable())
+			dropped = false;
 
-				dropPosition.y -= 20.f;
-			}
-			ui.rect(lenght, 2)(UI::Label);
-			if(ui.outOfTable())
-				dropped = false;
-
-			ui.endBox();
-			// ui.endLayer();
+		ui.endBox();
+		ui.endLayer();
 	}
 	const std::string& getSelectedName(){
 		return value->name;
 	}
 
-	DropdownListWithCallback(int alignDirection, float l, std::list<Type> &o):
-		widgetAlign(alignDirection),
-		options(&o),
-		value(o.begin()),
-		lenght(l),
-		dropped(false)
-		{}
 	DropdownListWithCallback(int alignDirection, float l):
 		widgetAlign(alignDirection),
 		lenght(l),
@@ -357,7 +348,7 @@ public:
 
 	int selectedOption {0};
 	int widgetAlign;
-	std::list<Type> *options;
+	std::list<Type> options;
 	Type value;
 	float lenght;
 	bool dropped;
@@ -365,8 +356,6 @@ public:
 	glm::vec4 dropPosition;
 };
 
-
-// :P
 class Minimizable {
 public:
 	Minimizable(glm::vec4 &a1) :

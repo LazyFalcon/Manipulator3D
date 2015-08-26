@@ -49,6 +49,7 @@ public:
 	std::string name;
 	std::vector<glm::vec4> points;
 	std::vector<glm::vec4> visualisation; // for draving
+	IInterpolator(){}
 	IInterpolator(const std::vector<glm::vec4> &points, Interpolator type) : type(type), points(points), name("--empty--") {}
 	IInterpolator(const std::vector<glm::vec4> &points, Interpolator type, const std::string &name) : type(type), points(points), name(name) {}
 	virtual glm::vec4 firstPoint(){return points[0];};
@@ -56,9 +57,13 @@ public:
 	virtual void generatePath() = 0;
 	virtual void reset() = 0;
 	virtual void drawParams() = 0;
-	virtual ~IInterpolator(){
-		std::cerr<<"delete IInterpolator"<<std::endl;
-	}
+	virtual ~IInterpolator(){}
+};
+
+struct IInterpolatorContainer
+{
+	shared_ptr<IInterpolator> interpolator;
+	std::string name;
 };
 
 /**
@@ -99,7 +104,9 @@ public:
 	void reset();
 	void drawParams();
 
-	~Linear(){}
+	~Linear(){
+		std::cerr<<"delete Linear "+name<<std::endl;
+	}
 };
 
 class Simple : public IInterpolator
@@ -117,7 +124,9 @@ public:
 	void reset();
 	void drawParams();
 
-	~Simple(){}
+	~Simple(){
+		std::cerr<<"delete Simple "+name<<std::endl;
+	}
 };
 
 /**
@@ -155,7 +164,9 @@ public:
 	void reset();
 	void drawParams();
 
-	~BezierCurve(){}
+	~BezierCurve(){
+		std::cerr<<"delete BezierCurve "+name<<std::endl;
+	}
 };
 
 /**
@@ -212,7 +223,9 @@ public:
 	std::vector<BezierCurve> split();
 
 
-	~BSpline(){}
+	~BSpline(){
+		std::cerr<<"delete BSpline "+name<<std::endl;
+	}
 };
 
 /**
@@ -241,7 +254,9 @@ public:
 	void reset();
 	void drawParams();
 
-	~NURBS(){}
+	~NURBS(){
+		std::cerr<<"delete NURBS "+name<<std::endl;
+	}
 };
 
 /**
@@ -265,7 +280,9 @@ public:
 
 	/// editable params
 	float singleStepLength {0.0001f};
-
+	~HermiteCardinal(){
+		std::cerr<<"delete HermiteCardinal "+name<<std::endl;
+	}
 	HermiteCardinal(const std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteCardinal),
 		numOfSegments(_points.size()-2)
@@ -299,7 +316,9 @@ public:
 
 	/// editable params
 	float singleStepLength {0.0001f};
-
+	~HermiteFiniteDifference(){
+		std::cerr<<"delete HermiteFiniteDifference "+name<<std::endl;
+	}
 	HermiteFiniteDifference(const std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteFiniteDifference),
 		numOfSegments(_points.size()-1)
@@ -333,7 +352,9 @@ public:
 
 	/// editable params
 	float singleStepLength {0.0001f};
-
+	~HermiteFiniteDifferenceClosed(){
+		std::cerr<<"delete HermiteFiniteDifferenceClosed "+name<<std::endl;
+	}
 	HermiteFiniteDifferenceClosed(const std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteFiniteDifferenceClosed),
 		numOfSegments(_points.size())
@@ -351,7 +372,8 @@ public:
 
 void addInterpolator(shared_ptr<IInterpolator>&);
 shared_ptr<IInterpolator> addInterpolator(const std::string type, vector<glm::vec4> &points);
-shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::vec4> &points);
+shared_ptr<IInterpolator> addInterpolator(Interpolator type, const vector<glm::vec4> &points, const string &name);
+IInterpolatorContainer addInterpolatorByContainer(Interpolator type, const vector<glm::vec4> &points, const string &name);
 
 void removeInterpolator(shared_ptr<IInterpolator>&);
 

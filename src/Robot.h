@@ -1,6 +1,6 @@
 #pragma once
+#include <Utils/BaseStructs.h>
 class Robot;
-class Entity;
 enum  JointType{
 	HINGE = 1,
 	PRISMATIC = 2,
@@ -13,7 +13,9 @@ struct Point {
 
 class Module {
 public:
-	virtual ~Module(){}
+	virtual ~Module(){
+		std::cerr<<"delete Module"<<std::endl;
+	}
 	Module(){
 		lastVelocity = 0.0;
 		lastAcceleration = 0.0;
@@ -39,7 +41,7 @@ public:
 	glm::vec4 vecToA;
 	glm::vec4 vecToB;
 	std::string name;
-	Entity *entity;
+	std::shared_ptr<Entity> entity;
 	double min, max;
 	double value;
 	double targetValue;
@@ -64,6 +66,9 @@ public:
 class Robot {
 public:
 	~Robot(){
+		for(auto &it : chain)
+			it.reset();
+		chain.clear();
 		std::cerr<<"delete Robot"<<std::endl;
 	}
 
@@ -82,13 +87,16 @@ public:
 
 	bool isReady { true };
 	Point endEffector;
-
+// private:
 	std::vector<std::unique_ptr<Module>> chain;
 };
 
 /// without orientation
 class JT0 : public IIK {
 public:
+	~JT0(){
+		std::cerr<<"delete JT0"<<std::endl;
+	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot);
 };

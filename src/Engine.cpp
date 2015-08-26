@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "glUtils.h"
 #include "Graph.h"
+#include "Helper.h"
 
 #define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 #define NAM_END }
@@ -14,7 +15,6 @@ extern Resources *globalResources;
 extern Camera camera;
 extern Graph mousePositionGraphX;
 extern Graph mousePositionGraphY;
-extern Plot mainPlot;
 extern glm::vec2 screenSize;
 
 HexColor colorTransparent	= 0xff0000ff;
@@ -56,9 +56,6 @@ LineBuffer		g_lines(100);
 
 
 namespace Engine NAM_START
-
-Entity *hoveredObject = nullptr;
-Entity *selectedObject = nullptr;
 
 GLuint b_position;
 GLuint b_uv;
@@ -129,7 +126,7 @@ vector<std::pair<GLuint, glm::vec4>> texturedBoxes;
 const u32 g_lightsToForward = 2;
 
 
-void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, unique_ptr<Resources> &res){
+void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, shared_ptr<Resources> &res){
 
 	glGenVertexArrays(1, &(res->VAO));
 	glBindVertexArray(res->VAO);
@@ -534,9 +531,9 @@ void generateShadowMap(Scene &scene){
 	// glUniform(shader, camera.ProjectionMatrix*camera.ViewMatrix, "u_PV");
 
 	for(auto &entity : scene.units){
-		auto &mesh = *(entity.second.mesh);
+		auto &mesh = *(entity.second->mesh);
 
-		glm::mat4 transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+		glm::mat4 transform = glm::translate(entity.second->position.xyz()) * glm::mat4_cast(entity.second->quat);
 
 		glUniform(shader, transform, u_modelPosition);
 		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
@@ -571,14 +568,13 @@ void setup(Scene &scene){
 		glFrontFace(GL_CCW);
 	}
 
-
 	if(true){ /// FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer.ID, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer.ID, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
 			glDrawBuffers(2,&DrawBuffers[0]);
-		glClearColor(ctmp.x, ctmp.y, ctmp.z, 1.f);
+		glClearColor(ctmp.x, ctmp.y, ctmp.z, 0.f);
 		glClearDepth(1);
 		glClearStencil(0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -617,24 +613,25 @@ void renderScene(Scene &scene){
 	auto u_NMPosition = glGetUniformLocation(shader, "uNM");
 	auto uID = glGetUniformLocation(shader, "uID");
 	for(auto &entity : scene.units){
-		auto &mesh = *(entity.second.mesh);
+		auto &mesh = *(entity.second->mesh);
 		glm::mat4 transform;
 
 // #ifdef USE_BULLET
-		auto rgBody = entity.second.rgBody;
+		auto rgBody = entity.second->rgBody;
 		if(rgBody && !rgBody->isStaticOrKinematicObject()){
 			auto btPos = rgBody->getCenterOfMassTransform().getOrigin();
-			entity.second.position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
+			entity.second->position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
 			auto btQuat = rgBody->getOrientation();
-			entity.second.quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
+			entity.second->quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
 		else
 // #endif
-			transform = glm::translate(entity.second.position.xyz()) * glm::mat4_cast(entity.second.quat);
+			transform = glm::translate(entity.second->position.xyz()) * glm::mat4_cast(entity.second->quat);
 
-		glUniform(shader, entity.second.material.color, u_colorPosition);
-		glUniform(shader, u32(entity.second.ID), uID);
+		glUniform(shader, entity.second->material.color, u_colorPosition);
+		// glUniform(shader, float(entity.second->ID)/65535.f, uID);
+		glUniform(shader, float(entity.second->ID), uID);
 		glUniform(shader, transform, u_modelPosition);
 		if(globalSettings & MSAA)
 			glUniform(shader, glm::transpose(glm::inverse(transform)), u_NMPosition);
@@ -661,9 +658,12 @@ void drawOutline(Scene &scene){
 	static auto uModel = glGetUniformLocation(shader,"uModel");
 	static auto uColor = glGetUniformLocation(shader,"uColor");
 
+	auto &objects = Helper::getCurrentSelection();
+
 	{ // fill stencil
 		// glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
+		glClearStencil(0);
 
 		glDrawBuffers(0,&DrawBuffers[0]);
 		glClear(GL_STENCIL_BUFFER_BIT);
@@ -671,9 +671,9 @@ void drawOutline(Scene &scene){
 		glDisable(GL_BLEND);
 		glDepthMask(GL_TRUE);
 		glDisable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-
+		// glEnable(GL_DEPTH_TEST);
 		glDisable(GL_DEPTH_TEST);
+
 		glEnable(GL_STENCIL_TEST);
 		glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
 		glStencilMask(0x1);
@@ -683,19 +683,15 @@ void drawOutline(Scene &scene){
 		glUniform(shader, camera.ViewMatrix, uView);
 
 		glBindVertexArray(scene.resources->VAO);
-		// for(auto &entity : scene.units){
-			if(selectedObject){
-            auto entity = *selectedObject;
-				auto &mesh = *(entity.mesh);
+		for(auto &obj : objects){
+			auto &mesh = *(obj->mesh);
 
-				glm::mat4 transform = glm::translate(entity.position.xyz()) * glm::mat4_cast(entity.quat);
+			glm::mat4 transform = glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
-				glUniform(shader, entity.material.color, uColor);
-				glUniform(shader, transform, uModel);
-				glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
-
-			}
-		// }
+			glUniform(shader, obj->material.color, uColor);
+			glUniform(shader, transform, uModel);
+			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+		}
 	}
 	{ // draw outline
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
@@ -715,21 +711,17 @@ void drawOutline(Scene &scene){
 		glStencilFunc(GL_NOTEQUAL,0x1,0xFF);
 		// glStencilFunc(GL_EQUAL,0x1,0xFF);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glLineWidth(4);
+		glLineWidth(8);
 		glDisable(GL_LINE_SMOOTH);
-		// for(auto &entity : scene.units){
-			if(selectedObject){
-				auto entity = *selectedObject;
-				auto &mesh = *(entity.mesh);
+		for(auto &obj : objects){
+			auto &mesh = *(obj->mesh);
 
-				glm::mat4 transform = glm::translate(entity.position.xyz()) * glm::mat4_cast(entity.quat);
+			glm::mat4 transform = glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
-				glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
-				glUniform(shader, transform, uModel);
-				glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
-				entity.isOutlined = false;
-			}
-		// }
+			glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
+			glUniform(shader, transform, uModel);
+			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
@@ -1366,9 +1358,9 @@ void renderGUI(UI::IMGUI &gui){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-	gui.m_UIContainer->draw(gui);
-	for(int layer=0; layer<3; layer++){
+	for(u32 layer=0; layer<3; layer++){
 	{ // text
+        gui.m_UIContainer->draw(gui, layer);
 		GLuint shader = shaders["Text"];
 		glUseProgram(shader);
 

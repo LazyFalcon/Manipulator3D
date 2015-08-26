@@ -1,10 +1,6 @@
 ﻿#define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 #include "Editor.h"
 
-namespace BigSplineTest {
-	extern vector<shared_ptr<IInterpolator>> interpolators;
-}
-
 extern glm::vec2 screenSize;
 extern glm::vec2 mousePosition;
 extern glm::vec2 mouseTranslation;
@@ -12,7 +8,6 @@ extern glm::vec2 mouseMoveVector;
 extern float mouseMoveLen;
 
 extern UI::IMGUI ui;
-extern unique_ptr<RobotController> RC;
 
 /// ---------------------------------------------
 namespace Editor NAM_START
@@ -178,29 +173,30 @@ glm::vec4 MultiPointController::moveAlongCameraAxes(){
 	return finalSlide;
 }
 
-PolylineEditor polylineEditor;
+unique_ptr<PolylineEditor> polylineEditor;
+
 void set(shared_ptr<ICommand> &command){
-	if(command->type == MOVE){
+	if(command->type == MOVE && tabBar){
 		tabBar->get<PathEditorTab>().reset(static_pointer_cast<MoveCommand>(command)->interpolator);
-		polylineEditor.set(static_pointer_cast<MoveCommand>(command)->interpolator);
+		polylineEditor->set(static_pointer_cast<MoveCommand>(command)->interpolator);
 	}
 }
 void set(shared_ptr<IInterpolator> &p){
-	polylineEditor.set(p);
-}
-
-RobotController& getRC(){
-	return *RC;
+	// polylineEditor->set(p);
 }
 
 void init(){
+	polylineEditor = make_unique<PolylineEditor>();
 	tabBar = make_unique<TabManager>();
 	tabBar->initTabs();
 	EditorMode |= EditCommand;
 }
-
+void clear(){
+	tabBar.reset(nullptr);
+	polylineEditor.reset(nullptr);
+}
 /**
- *  Inicjalizacja TabBar, przypisanie interpolatora i komendy do edycji(w tabBarze)
+ *  Inicjalizacja TabBar, przypisanie interpolatora i komendy do edycji(w // tabBarze)
  *  polyEditor jest ustawiany chyba przez taba,
  *
  *  jeśli EditCommand == true
@@ -221,24 +217,24 @@ void EnterEditor(RobotController &RC){
 	}
 }
 void ExitEditor(RobotController &RC){
-		polylineEditor.reset();
+		polylineEditor->reset();
 		tabBar->get<CommandEditorTab>().reset();
 		tabBar->get<PathEditorTab>().reset();
 }
 
 void update(RobotController &RC){
 	if(EditorMode & Enabled){
-		polylineEditor.run();
-		polylineEditor.processAll();
+		polylineEditor->run();
+		polylineEditor->processAll();
 		tabBar->run();
 	}
 }
 
 void processMouse(int button, int action, int modifier){
-	polylineEditor.processMouse(button, action, modifier);
+	polylineEditor->processMouse(button, action, modifier);
 }
 void processKeys(int key, int action, int modifier, RobotController &RC){
-	polylineEditor.processKeys(key, action, modifier);
+	polylineEditor->processKeys(key, action, modifier);
 	if(action == GLFW_PRESS){
 		if(EditorMode & Enabled){
 
@@ -411,8 +407,8 @@ void PolylineEditor::subdivide(){
 	polyline->generatePath();
 }
 void PolylineEditor::cleanUpNodes(){
-    for(auto &it : polyline->points)
-        it.w = 1;
+		for(auto &it : polyline->points)
+				it.w = 1;
 }
 void PolylineEditor::removeSelected(){
 	markedNodes.prepareToDelete();
@@ -427,7 +423,7 @@ void PolylineEditor::removeSelected(){
 	polyline->generatePath();
 }
 void PolylineEditor::undo(){
-    // if(editorState & EditorFlags::MultiSelection)
+		// if(editorState & EditorFlags::MultiSelection)
 
 }
 void PolylineEditor::mergePoints(){
@@ -480,8 +476,8 @@ void PolylineEditor::processKeys(int key, int action, int modifier){
 			extrude();
 		}
 		else if(key == 'Z' and modifier & GLFW_MOD_CONTROL){
-            undo();
-        }
+						undo();
+				}
 		else if(key == 'M' and modifier & GLFW_MOD_ALT){
 			mergePoints();
 		}
