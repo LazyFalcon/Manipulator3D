@@ -240,7 +240,7 @@ void renderLoop(){
 void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
-	// jacobianTransposeInitialCall(*(scene->robot));
+	jacobianTransposeInitialCall(*(scene->robot));
 	// jacobianTransposeInit();
 	PythonBindings::init(RC, scene);
 }

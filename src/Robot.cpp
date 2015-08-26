@@ -53,7 +53,7 @@ void Robot::update(float dt){
 		position += transform*module->vecToB;
 
 	}
-	endEffector = Point {position, glm::angleAxis(0.f,glm::normalize(axis.xyz()))};
+	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 
 	g_robotPositions(position);
 }
@@ -83,7 +83,7 @@ Point Robot::simulate(std::vector<double> &variables){
 		position += transform*module->vecToB;
 
 	}
-	return {position, glm::angleAxis(0.f,glm::normalize(axis.xyz()))};
+	return {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 }
 std::vector<Point> Robot::simulateFullData(std::vector<double> &variables){
 	glm::vec4 position = glm::vec4(0,0,0,1);
