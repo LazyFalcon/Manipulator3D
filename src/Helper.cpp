@@ -143,9 +143,9 @@ bool processMouse(int key, int action, int mods){
 }
 bool processKeys(int key, int action, int mods){
 	if(action == GLFW_PRESS){
-		if(key == 'W' && mods == GLFW_MOD_CONTROL){
-			PythonBindings::mainScript.attr("plotData")(RC, scene);
-		}
+		// if(key == 'W' && mods == GLFW_MOD_CONTROL){
+			// PythonBindings::mainScript.attr("plotData")(RC, scene);
+		// }
 		if((key == GLFW_KEY_KP_ENTER || key == GLFW_KEY_ENTER ) && !currentSelection.empty()){
 			saveGroup(currentSelection);
 		}

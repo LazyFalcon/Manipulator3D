@@ -188,7 +188,7 @@ int main(){
 	glfwShowWindow(window);
 	mainLoop();
 
-	PythonBindings::terminate(RC, scene);
+	PythonBindings::terminate();
 	Editor::clear();
 	Editor::MoveCommandBuilderWidget_terminate();
 	Engine::clear();
@@ -246,7 +246,7 @@ void prerequisites(){
 }
 void updates(float dt){
 	Editor::update(*RC);
-	// PythonBindings::update(RC, scene);
+	PythonBindings::update(RC, scene);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;
@@ -356,29 +356,24 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	Helper::moveCameraByKeys(camera, key, action, mods);
 	Helper::processKeys(key, action, mods);
+	Editor::processKeys(key, action, mods, *RC);
+
+    if(action == GLFW_PRESS)
+        PythonBindings::handleInput(key, mods, RC, scene);
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
 		for(auto &it : shadersToReload){
 			loader.reloadShader(it);
 		}
-
+        reloadWhatIsPossible();
 	}
-
-	if(key == GLFW_KEY_TAB && action == GLFW_PRESS){
-		// switchEditObjectMode();
-	}
-	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){
-		reloadWhatIsPossible();
-	}
-	if(key == 'P' && action == GLFW_PRESS){
-		RC->run();
-	}
-
-	Editor::processKeys(key, action, mods, *RC);
 
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
 		RC->run();
+	}
+	if(action == GLFW_PRESS && key == GLFW_KEY_F8){
+        PythonBindings::reloadMainScript(RC, scene);
 	}
 	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
 		RC->pause();
@@ -504,7 +499,7 @@ void initContext(CFG::Node &cfg){
 	glfwWindowHint(GLFW_DECORATED, GL_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);//albo CORE, ale wtedy nie dziaÂ³a devil
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);//albo CORE, ale wtedy nie dzia³a devil
 
 	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 

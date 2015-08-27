@@ -12,8 +12,11 @@ extern bpl::object global;
 extern bpl::object mainScript;
 
 void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
-void terminate(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+void terminate();
+
+void handleInput(int key, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 
 std::vector<std::string> getScriptList();
 bpl::object loadFile(std::string);

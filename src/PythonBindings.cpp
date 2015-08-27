@@ -229,6 +229,7 @@ BOOST_PYTHON_MODULE(robotController_export){
 		.def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("getRobotRecords", &RobotController::getRobotRecords, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("getRobotJ", &RobotController::getRobotJ)
 		.def_readwrite("robot", &RobotController::robot)
 		.def_readwrite("state ", &RobotController::state )
 		.def_readwrite("commands", &RobotController::commands)
@@ -245,9 +246,9 @@ BOOST_PYTHON_MODULE(robotController_export){
 	// bpl::class_<DataRecorder<double>, std::shared_ptr<DataRecorder<double>>>("DataRecorder")
 		// .def_readwrite("dataset", &DataRecorder<double>::dataset)
 		// ;
-	// bpl::class_<Robot, std::shared_ptr<Robot>>("Robot")
-		// .def_readwrite("recorder", &Robot::recorder)
-		// ;
+	bpl::class_<std::shared_ptr<Robot>>("Robot")
+		.def("getVariables", &Robot::getVariables)
+		;
 }
 BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;
@@ -259,13 +260,44 @@ BOOST_PYTHON_MODULE(helper_export){
 	// bpl::def("getPoint", &getPoint);
 	// bpl::def("saveGroup", &saveGroup);
 	// bpl::def("getGroup", &getGroup);
-
+    bpl::scope().attr("Pause") = GLFW_KEY_PAUSE ;
+    bpl::scope().attr("Enter") = GLFW_KEY_ENTER;
+    bpl::scope().attr("Esc") = GLFW_KEY_ESCAPE;
+    bpl::scope().attr("Ctrl") = GLFW_MOD_CONTROL;
+    bpl::scope().attr("Shift") = GLFW_MOD_SHIFT;
+    bpl::scope().attr("Alt") = GLFW_MOD_ALT;
+    bpl::scope().attr("F1") = GLFW_KEY_F1;
+    bpl::scope().attr("F2") = GLFW_KEY_F2;
+    bpl::scope().attr("F3") = GLFW_KEY_F3;
+    bpl::scope().attr("F4") = GLFW_KEY_F4;
+    bpl::scope().attr("F5") = GLFW_KEY_F5;
+    bpl::scope().attr("F6") = GLFW_KEY_F6;
+    bpl::scope().attr("F7") = GLFW_KEY_F7;
+    // bpl::scope().attr("F8") = GLFW_KEY_F8;
+    bpl::scope().attr("F9") = GLFW_KEY_F9;
+    bpl::scope().attr("F10") = GLFW_KEY_F10;
+    bpl::scope().attr("F11") = GLFW_KEY_F11;
+    bpl::scope().attr("F12") = GLFW_KEY_F12;
 }
 
+std::unordered_map<std::string, int> keyMaps = {
+    {}
+
+};
 
 bpl::object main;
 bpl::object global;
 bpl::object mainScript;
+
+void handleInput(int key, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScript.attr("handleInput")(key, mod, rc, scene);
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+        std::cin.ignore();
+	}
+}
 
 void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	Py_Initialize();
@@ -291,6 +323,18 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
+        terminate();
+	}
+}
+
+void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScript = bpl::import("script_a1");
+		mainScript.attr("init")(rc, scene);
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+        terminate();
 	}
 }
 
@@ -300,10 +344,11 @@ void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
+        std::cin.ignore();
 	}
 }
 
-void terminate(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+void terminate(){
 	Py_Finalize();
 }
 

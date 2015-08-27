@@ -95,6 +95,9 @@ public:
 		cout<<"asf "<<robot->recorder.dataset[recordName].data.size()<<endl;
 		return robot->recorder.dataset[recordName].data;
 	}
+	std::vector<double> getRobotJ(){
+		return robot->getVariables();
+	}
 
 	shared_ptr<Robot> robot;
 	std::list<std::shared_ptr<ICommand>> commands;
