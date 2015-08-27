@@ -71,6 +71,9 @@ double MoveCommand::calculateRequiredDistance(float dt){
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
 	requiredDistance += calculateRequiredDistance(dt);
 
+	if(requiredDistance <= 0.0)
+		cout<<"!!!"<<endl;
+
 	glm::vec4 newTarget;
 
 	while(requiredDistance > 0.0 && (not interpolator->finished)){

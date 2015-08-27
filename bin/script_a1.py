@@ -94,12 +94,12 @@ def init(RC, scene):
 	RC.savePosition()
 	# moveBuilder = MoveCommandBuilder()
 	points = Vec4Vec()
-	points[:] = [vec4(2, 5, 4, 1), vec4(4, 0, 5, 1), vec4(1, -5, 2, 1), vec4(0, -5, 3, 1)]
+	points[:] = [vec4(0, -5, 3, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1)]
 
 	path = addInterpolator(Interpolator.HermiteFiniteDifference, points, "--")
 	# RC.wait().time(2.0).finish(RC);
 	# RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
-	RC.move().name("Order from python").interpolator(path).velocity(1.5).jointVelocity(0.4).finish(RC)
+	RC.move().name("Order from python").interpolator(path).velocity(1.5).jointVelocity(0.1).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	RC.savePosition()
@@ -113,9 +113,9 @@ def terminate(RC, scene):
 def plotData(RC, scene):
 	print 'Hello moron!'
 
-	dataCollector.plotJoints()
+	# dataCollector.plotJoints()
 	dataCollector.plotVelocity()
-	dataCollector.plotAcceleration()
+	# dataCollector.plotAcceleration()
 	plt.show()
 
 	print 'Bye moron!'
