@@ -53,6 +53,7 @@ vector<glm::vec4>& ExecuteCommand::getPolyline(){
 }
 
 void MoveCommand::init(RobotController &rc){
+	requiredDistance = 0;
 	isRuning = true;
 	solver->solve(Point{ interpolator->firstPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
@@ -68,7 +69,7 @@ double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
-	requiredDistance = calculateRequiredDistance(dt);
+	requiredDistance += calculateRequiredDistance(dt);
 
 	glm::vec4 newTarget;
 

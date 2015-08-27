@@ -144,9 +144,9 @@ void BezierCurve::reset(){
 	position = 0;
 }
 void BezierCurve::drawParams(){
-	wxg::editBox("step: ", singleStepLength, 160);
-	for(u32 i=0; i<weights.size(); i++)
-		wxg::editBox("weight "+std::to_string(i)+": ", weights[i], 160);
+	// wxg::editBox("step: ", singleStepLength, 160);
+	// for(u32 i=0; i<weights.size(); i++)
+		// wxg::editBox("weight "+std::to_string(i)+": ", weights[i], 160);
 }
 
 /// -------------------------------- BSPLINE --------------------------------

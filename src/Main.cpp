@@ -57,7 +57,7 @@ glm::vec2      screenSize;
 bool           quit = false;
 bool           UI::GetInput = false;
 int64_t        globalSettings;
-float          g_timeStep = 3.f;
+float          g_timeStep = 5.f;
 u32            RedC = 0xFF000000;
 u32            GreenC = 0x00FF0000;
 u32            BlueC = 0x0000FF00;
@@ -202,9 +202,10 @@ int main(){
 
 void fastLoop(float step){
 	RC->update(step/1000.0f);
-	bulletWorld.update(step/1000.0f);
-	scene->robot->update(step);
+	scene->robot->update(step/1000.0f);
 	RCUtils::update();
+	bulletWorld.update(step/1000.0f);
+	PythonBindings::update(RC, scene);
 }
 void renderLoop(){
 	// Engine::plotGraphs();
@@ -245,7 +246,7 @@ void prerequisites(){
 }
 void updates(float dt){
 	Editor::update(*RC);
-	PythonBindings::update(RC, scene);
+	// PythonBindings::update(RC, scene);
 }
 void mainLoop(){
 	Timer<float, std::ratio<1,1000>,30> timer;

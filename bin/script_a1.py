@@ -78,8 +78,8 @@ class DataCollector:
 		if self.enableCollecting:
 			for i in range(self.js):
 				self.jointPosList[i].append(RC.getRobot().module(i).value)
-				self.effectorAcceleration.append(RC.getRobot().acceleration*1000.0)
-				self.effectorVelocity.append(RC.getRobot().velocity*1000.0)
+				self.effectorAcceleration.append(RC.getRobot().acceleration)
+				self.effectorVelocity.append(RC.getRobot().velocity)
 				self.time.append(self.time[-1] + dt)
 
 dataCollector = DataCollector()
@@ -115,6 +115,7 @@ def plotData(RC, scene):
 
 	dataCollector.plotJoints()
 	dataCollector.plotVelocity()
+	dataCollector.plotAcceleration()
 	plt.show()
 
 	print 'Bye moron!'
