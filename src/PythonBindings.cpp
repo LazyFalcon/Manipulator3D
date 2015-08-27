@@ -224,6 +224,7 @@ BOOST_PYTHON_MODULE(robotController_export){
 		.def("peekPosition", &RobotController::peekPosition)
 		.def("grabObject", &RobotController::grabObject)
 		.def("releaseObject", &RobotController::releaseObject)
+		.def("clean", &RobotController::clean)
 		.def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
@@ -288,6 +289,7 @@ std::unordered_map<std::string, int> keyMaps = {
 bpl::object main;
 bpl::object global;
 bpl::object mainScript;
+std::string mainScriptName;
 
 void handleInput(int key, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
@@ -299,7 +301,7 @@ void handleInput(int key, int mod, shared_ptr<RobotController> &rc, shared_ptr<S
 	}
 }
 
-void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::string &name){
 	Py_Initialize();
 	try {
 		initglm_export();
@@ -316,8 +318,8 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 				% bpl::str("module")
 				);
 		bpl::object result = bpl::exec(script, global, global);
-		// mainScript = bpl::import("../python/script_a1");
-		mainScript = bpl::import("script_a1");
+		mainScriptName = name;
+		mainScript = bpl::import(mainScriptName.c_str());
 		mainScript.attr("init")(rc, scene);
 
 	}
@@ -327,14 +329,36 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	}
 }
 
-void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+void loadMainScript(const string &name, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
-		mainScript = bpl::import("script_a1");
+		mainScriptName = name;
+		mainScript = bpl::import(name.c_str());
 		mainScript.attr("init")(rc, scene);
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
+				terminate();
+	}
+}
+
+void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScript = bpl::import(mainScriptName.c_str());
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
         terminate();
+	}
+}
+
+void reloadAndInitMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScript = bpl::import(mainScriptName.c_str());
+		mainScript.attr("init")(rc, scene);
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+				terminate();
 	}
 }
 

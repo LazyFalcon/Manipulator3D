@@ -203,14 +203,18 @@ void handleYamlFileDrop(const string &path){
 	if(yamlFile.has("Robot") && yamlFile.has("Meshes"))
 		reloadScene(path, RC, scene, bulletWorld);
 }
-void handlePythonFileDrop(const string &path){}
+void handlePythonFileDrop(const string &path){
+	boost::filesystem::path p(path);
+	std::string s = p.stem().string();
+	PythonBindings::loadMainScript(s.c_str(), RC, scene);
+}
 
 void handleDrop(const string &path){
-    boost::filesystem::path p(path);
-    const string ext = p.extension().string();
-    if(ext == ".yml") handleYamlFileDrop(path);
-    else if(ext == ".py") handlePythonFileDrop(path);
-    else cout<<"Unknown file type."<<endl;
+	boost::filesystem::path p(path);
+	const string ext = p.extension().string();
+	if(ext == ".yml") handleYamlFileDrop(path);
+	else if(ext == ".py") handlePythonFileDrop(path);
+	else cout<<"Unknown file type."<<endl;
 }
 
 std::string getClipboard(){}

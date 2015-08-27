@@ -79,6 +79,16 @@ public:
 		return followBuiilder.init();
 	}
 
+	std::string getComandName() const {
+		if(commandIter != commands.end())
+			return (*commandIter)->name;
+		return "--";
+	}
+	void clean(){
+		commands.clear();
+		commandIter = commands.end();
+	}
+
 	/// zapisuje aktualną konfigurację robota na stosie
 	void savePosition();
 	/// zdejmuje konfigurację robota ze stosu, defaultowo odpala komendę na dotarcie tam
