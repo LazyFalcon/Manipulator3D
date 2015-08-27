@@ -385,7 +385,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 
 		robot.chain.push_back(std::move(module));
 		// robot.chain.push_back(module);
-
+		robot.setRecords();
 	}
 	return true;
 }

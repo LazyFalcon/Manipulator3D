@@ -27,7 +27,8 @@ struct RobotPosition
 	vector<double> joints;
 };
 
-class RobotController {
+class RobotController
+{
 public:
 	~RobotController(){
 		std::cerr<<"delete RobotController"<<std::endl;
@@ -74,7 +75,7 @@ public:
 	ExecuteCommandBuilder& exec(){
 		return execBuiilder.init();
 	}
-    FollowObjectBuilder& follow(){
+	FollowObjectBuilder& follow(){
 		return followBuiilder.init();
 	}
 
@@ -90,6 +91,10 @@ public:
 	void releaseObject();
 
 	/// ---- UTILS ----
+	std::vector<double>& getRobotRecords(const std::string &recordName){
+		cout<<"asf "<<robot->recorder.dataset[recordName].data.size()<<endl;
+		return robot->recorder.dataset[recordName].data;
+	}
 
 	shared_ptr<Robot> robot;
 	std::list<std::shared_ptr<ICommand>> commands;

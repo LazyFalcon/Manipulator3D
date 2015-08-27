@@ -137,6 +137,7 @@ bool Robot::goTo(float dt, double jVelocityModifier){
 	for(auto &module : chain){
 		isReady &= module->goTo(dt, jVelocityModifier);
 	}
+	recorder.up();
 }
 
 double Module::computeMaxStep(float dt, double jVelocityModifier){

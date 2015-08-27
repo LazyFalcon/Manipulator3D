@@ -1,9 +1,10 @@
-﻿
+﻿#pragma once
 template <typename T>
 struct DataCell
 {
 	void up(){
-		data.push_back(*ptr);
+		if(ptr)
+			data.push_back(*ptr);
 	}
 
 	std::string name;
@@ -16,11 +17,12 @@ class DataRecorder
 {
 public:
 	void up(){
-
+		for(auto &it : dataset)
+			it.second.up();
 	}
-	void set(T &p){
-
+	void set(const std::string &name, T &p){
+		dataset[name] = DataCell<double> {name, &p};
 	}
 
-	std::vector
+	std::unordered_map<std::string, DataCell<T>> dataset;
 };

@@ -4,6 +4,9 @@ from scene_export import *
 from robotController_export import *
 from helper_export import *
 
+import matplotlib.pyplot as plt
+
+
 # target = EntityVector()
 # targetCenter = vec4(0,0,0,0)
 # newTargetPosition = vec4()
@@ -21,7 +24,7 @@ def init(RC, scene):
 	path = addInterpolator(Interpolator.HermiteCardinal, points, "--")
 	# RC.wait().time(2.0).finish(RC);
 	# RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
-	# RC.move().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
+	RC.move().name("Order from python").interpolator(path).velocity(4.5).jointVelocity(1.2).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	# RC.savePosition()
@@ -33,7 +36,12 @@ def terminate(RC, scene):
 	return False
 
 def plotData(RC, scene):
-	print 'Hello moroan!'
+	print 'Hello moron!'
+	record = RC.getRobotRecords("3")
+	print len(record)
+	plt.plot()
+	plt.ylabel('some numbers')
+	plt.show()
 	return False
 
 

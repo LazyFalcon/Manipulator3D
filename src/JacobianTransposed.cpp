@@ -263,13 +263,13 @@ void test(Robot &robot){
 }
 
 void jacobianTransposeInitialCall(Robot &robot){
-	robot.update(0.1);
-	auto solver = make_unique<JT1>();
+	// robot.update(0.1);
+	// auto solver = make_unique<JT1>();
 
-	Point target = {glm::vec4(4, 1, 4, 1), glm::angleAxis(1.f, glm::vec3(1,0,-1))};
+	// Point target = {glm::vec4(4, 1, 4, 1), glm::angleAxis(1.f, glm::vec3(1,0,-1))};
 	// Point target = {robot.endEffector.position, glm::angleAxis(1.f, glm::vec3(0,1,0))};
 
-	solver->solve(target, robot);
-	robot.insertVariables(solver->result);
+	// solver->solve(target, robot);
+	// robot.insertVariables(solver->result);
 }
 

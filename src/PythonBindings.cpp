@@ -11,6 +11,7 @@
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
 #include "Editor/WaitCommandBuilder.h"
+#include "DataRecorder.h"
 
 #include <Python.h>
 #include <boost/python.hpp>
@@ -114,9 +115,9 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
 	MoveCommandBuilder& (MoveCommandBuilder::*finish_ptr)(shared_ptr<RobotController>) = &MoveCommandBuilder::finish;
 
-	bpl::class_<std::vector<double>>("doubleVec")
-		.def(bpl::vector_indexing_suite<std::vector<double>>())
-		;
+	// bpl::class_<std::vector<double>>("doubleVec")
+		// .def(bpl::vector_indexing_suite<std::vector<double>>())
+		// ;
 
 	bpl::class_<MoveCommandBuilder, std::shared_ptr<MoveCommandBuilder>>("MoveCommandBuilder", bpl::init<>())
 		.def_readwrite("moveCommand", &MoveCommandBuilder::moveCommand)
@@ -210,27 +211,43 @@ BOOST_PYTHON_MODULE(scene_export){
 		;
 }
 BOOST_PYTHON_MODULE(robotController_export){
-    void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
-    bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
-        .def("insertCommand", insertCommand_ptr)
-        .def("run", &RobotController::run)
-        .def("pause", &RobotController::pause)
-        .def("stop", &RobotController::stop)
-        .def("next", &RobotController::next)
-        .def("prev", &RobotController::prev)
-        .def("savePosition", &RobotController::savePosition)
-        .def("popPosition", &RobotController::popPosition)
-        .def("peekPosition", &RobotController::peekPosition)
-        .def("grabObject", &RobotController::grabObject)
-        .def("releaseObject", &RobotController::releaseObject)
-        .def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def_readwrite("robot", &RobotController::robot)
-        .def_readwrite("state ", &RobotController::state )
-        .def_readwrite("commands", &RobotController::commands)
-        ;
+	void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
+	bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
+		.def("insertCommand", insertCommand_ptr)
+		.def("run", &RobotController::run)
+		.def("pause", &RobotController::pause)
+		.def("stop", &RobotController::stop)
+		.def("next", &RobotController::next)
+		.def("prev", &RobotController::prev)
+		.def("savePosition", &RobotController::savePosition)
+		.def("popPosition", &RobotController::popPosition)
+		.def("peekPosition", &RobotController::peekPosition)
+		.def("grabObject", &RobotController::grabObject)
+		.def("releaseObject", &RobotController::releaseObject)
+		.def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("getRobotRecords", &RobotController::getRobotRecords, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def_readwrite("robot", &RobotController::robot)
+		.def_readwrite("state ", &RobotController::state )
+		.def_readwrite("commands", &RobotController::commands)
+		;
+	// bpl::class_<DataCell<double>, std::shared_ptr<DataCell<double>>>("DataCell")
+		// .def_readwrite("data", &DataCell<double>::data)
+		// ;
+	// bpl::class_<std::vector<DataCell<double>>>("DataCellVec")
+		// .def(bpl::vector_indexing_suite<std::vector<DataCell<double>>>())
+		// ;
+	bpl::class_<std::vector<double>>("DoubleVec")
+		.def(bpl::vector_indexing_suite<std::vector<double>>())
+		;
+	// bpl::class_<DataRecorder<double>, std::shared_ptr<DataRecorder<double>>>("DataRecorder")
+		// .def_readwrite("dataset", &DataRecorder<double>::dataset)
+		// ;
+	// bpl::class_<Robot, std::shared_ptr<Robot>>("Robot")
+		// .def_readwrite("recorder", &Robot::recorder)
+		// ;
 }
 BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;

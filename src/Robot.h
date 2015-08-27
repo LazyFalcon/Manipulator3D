@@ -73,8 +73,8 @@ public:
 		std::cerr<<"delete Robot"<<std::endl;
 	}
 
-	std::vector<glm::vec4> forward(); // punkt ze wspó³¿êdnych
-	void inverse(); // wspó³¿êdne z punktu
+	std::vector<glm::vec4> forward();
+	void inverse();
 	void update(float dt);
 	std::vector<double> getVariables();
 	bool goTo(float dt, double jVelocityModifier);
@@ -85,11 +85,19 @@ public:
 	glm::vec4 insertVariables(std::vector<double> &vec);
 	int getSize(){return chain.size();}
 	void reset();
+	void setRecords(){
+		u32 i = 0;
+		for(auto &c : chain){
+			recorder.set(std::to_string(i++), c->value);
+		}
+	}
 
 	bool isReady { true };
 	Point endEffector;
-// private:
+
 	std::vector<std::unique_ptr<Module>> chain;
+
+	DataRecorder <double> recorder;
 };
 
 /// without orientation
