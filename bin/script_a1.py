@@ -51,7 +51,7 @@ class DataCollector:
 
 	def plotVelocity(self):
 		plt.figure(1)
-		plt.plot(self.time, self.effectorVelocity)
+		plt.plot(self.effectorVelocity, 'ro')
 		plt.xlabel('time')
 		plt.ylabel('velocity')
 

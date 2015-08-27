@@ -71,9 +71,6 @@ double MoveCommand::calculateRequiredDistance(float dt){
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
 	requiredDistance += calculateRequiredDistance(dt);
 
-	if(requiredDistance <= 0.0)
-		cout<<"!!!"<<endl;
-
 	glm::vec4 newTarget;
 
 	while(requiredDistance > 0.0 && (not interpolator->finished)){
@@ -100,6 +97,8 @@ bool MoveCommand::update(RobotController &rc, float dt){
 	solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
 	rc.robot->goTo(targetJointPosition);
+	rc.robot->goTo(dt, jointVelocityModifier);
+	previousPoint = rc.robot->endEffector.position;
 
 	return false;
 }
