@@ -229,27 +229,32 @@ BOOST_PYTHON_MODULE(robotController_export){
 		.def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
-		.def("getRobotRecords", &RobotController::getRobotRecords, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("getRobot", &RobotController::getRobot, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("getRobotJ", &RobotController::getRobotJ)
-		.def_readwrite("robot", &RobotController::robot)
+		.def_readonly("robot", &RobotController::robot)
 		.def_readwrite("state ", &RobotController::state )
 		.def_readwrite("commands", &RobotController::commands)
 		;
-	// bpl::class_<DataCell<double>, std::shared_ptr<DataCell<double>>>("DataCell")
-		// .def_readwrite("data", &DataCell<double>::data)
-		// ;
-	// bpl::class_<std::vector<DataCell<double>>>("DataCellVec")
-		// .def(bpl::vector_indexing_suite<std::vector<DataCell<double>>>())
-		// ;
 	bpl::class_<std::vector<double>>("DoubleVec")
 		.def(bpl::vector_indexing_suite<std::vector<double>>())
 		;
-	// bpl::class_<DataRecorder<double>, std::shared_ptr<DataRecorder<double>>>("DataRecorder")
-		// .def_readwrite("dataset", &DataRecorder<double>::dataset)
-		// ;
-	bpl::class_<std::shared_ptr<Robot>>("Robot")
-		.def("getVariables", &Robot::getVariables)
+	bpl::class_<Robot, std::shared_ptr<Robot>, boost::noncopyable>("Robot")
+		.def("getModuleCount", &Robot::getModuleCount)
+		.def("module", &Robot::module, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def_readonly("velocity", &Robot::endEffectorVelocity)
+		.def_readonly("acceleration", &Robot::endEffectorAcceleration)
 		;
+	bpl::class_<Module, boost::noncopyable>("Module")
+		.def_readwrite("value", &Module::value)
+		.def_readwrite("targetValue", &Module::targetValue)
+		.def_readwrite("maxVelocty", &Module::maxVelocty)
+		.def_readwrite("maxAcceleration", &Module::maxAcceleration)
+		.def_readwrite("lastVelocity", &Module::lastVelocity)
+		.def_readwrite("lastAcceleration", &Module::lastAcceleration)
+		.def_readwrite("axis", &Module::axis)
+		;
+
+
 }
 BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;

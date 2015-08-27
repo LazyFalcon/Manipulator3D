@@ -384,8 +384,6 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		// module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 
 		robot.chain.push_back(std::move(module));
-		// robot.chain.push_back(module);
-		robot.setRecords();
 	}
 	return true;
 }

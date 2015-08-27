@@ -101,14 +101,12 @@ public:
 	void releaseObject();
 
 	/// ---- UTILS ----
-	std::vector<double>& getRobotRecords(const std::string &recordName){
-		cout<<"asf "<<robot->recorder.dataset[recordName].data.size()<<endl;
-		return robot->recorder.dataset[recordName].data;
-	}
 	std::vector<double> getRobotJ(){
 		return robot->getVariables();
 	}
-
+	Robot& getRobot(){
+		return *robot;
+	}
 	shared_ptr<Robot> robot;
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;

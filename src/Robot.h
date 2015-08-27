@@ -1,6 +1,5 @@
 #pragma once
 #include <Utils/BaseStructs.h>
-#include "DataRecorder.h"
 class Robot;
 enum  JointType{
 	HINGE = 1,
@@ -85,21 +84,20 @@ public:
 	glm::vec4 insertVariables(std::vector<double> &vec);
 	int getSize(){return chain.size();}
 	void reset();
-	void setRecords(){
-		u32 i = 0;
-		for(auto &c : chain){
-			recorder.set(std::to_string(i++), c->value);
-		}
+	Module& module(int i){
+		return *chain[i];
 	}
+	int getModuleCount(){
+		return chain.size();
+	}
+
 
 	bool isReady { true };
 	Point endEffector;
-
-
+	double endEffectorVelocity;
+	double endEffectorAcceleration;
 
 	std::vector<std::unique_ptr<Module>> chain;
-
-	DataRecorder <double> recorder;
 };
 
 /// without orientation

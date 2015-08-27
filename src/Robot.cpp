@@ -53,9 +53,12 @@ void Robot::update(float dt){
 		position += transform*module->vecToB;
 
 	}
+
+	auto positionShift = glm::distance(position, endEffector.position);
 	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 
-	g_robotPositions(position);
+	endEffectorAcceleration = (positionShift/dt - endEffectorVelocity)/dt;
+	endEffectorVelocity = positionShift/dt;
 }
 
 std::vector<double> Robot::getVariables(){
@@ -153,6 +156,10 @@ bool Module::goTo(float dt, double jVelocityModifier){
 	auto step = glm::clamp(targetValue, -maxStep, maxStep);
 	value += step;
 	targetValue -= step;
+
+	auto lVel = lastVelocity;
+	lastVelocity = step/dt;
+	lastAcceleration = (lastVelocity - lVel)/dt;
 
 	return false;
 }
