@@ -15,6 +15,8 @@
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 extern u32 lastIterationCount;
+extern u32 lastPathIterationCount;
+extern float lastPathIterationdistance;
 
 using namespace std::chrono;
 glm::vec4      viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
@@ -326,6 +328,8 @@ void mainLoop(){
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
 			ui.rect().text("Current: " + RC->getComandName()).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
+			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
+			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
 			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
 		ui.endTable();
 

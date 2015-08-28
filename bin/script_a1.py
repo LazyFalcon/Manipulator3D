@@ -51,7 +51,8 @@ class DataCollector:
 
 	def plotVelocity(self):
 		plt.figure(1)
-		plt.plot(self.effectorVelocity, 'ro')
+		# plt.plot(self.effectorVelocity[10:-1], 'ro')
+		plt.plot(self.effectorVelocity[10:-1])
 		plt.xlabel('time')
 		plt.ylabel('velocity')
 
@@ -78,9 +79,9 @@ class DataCollector:
 		if self.enableCollecting:
 			for i in range(self.js):
 				self.jointPosList[i].append(RC.getRobot().module(i).value)
-				self.effectorAcceleration.append(RC.getRobot().acceleration)
-				self.effectorVelocity.append(RC.getRobot().velocity)
-				self.time.append(self.time[-1] + dt)
+			self.effectorAcceleration.append(RC.getRobot().acceleration)
+			self.effectorVelocity.append(RC.getRobot().velocity)
+			self.time.append(self.time[-1] + dt)
 
 dataCollector = DataCollector()
 
@@ -99,7 +100,7 @@ def init(RC, scene):
 	path = addInterpolator(Interpolator.HermiteFiniteDifference, points, "--")
 	# RC.wait().time(2.0).finish(RC);
 	# RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
-	RC.move().name("Order from python").interpolator(path).velocity(1.5).jointVelocity(0.1).finish(RC)
+	RC.move().name("Order from python").interpolator(path).velocity(1.0).jointVelocity(1.5).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	RC.savePosition()

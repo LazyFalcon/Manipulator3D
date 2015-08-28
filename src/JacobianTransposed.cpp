@@ -74,14 +74,14 @@ bool JT0::solve(Point target, Robot &robot){
 		currentPosition = subTargetOnSphere;
         robot.insertVariables(result);
 	}
-	performIK({currentPosition, robot.endEffector.quat}, target, robot);
+	performIK({currentPosition, robot.endEffector.quat}, target, robot, 0.0001);
 
     robot.insertVariables(tmpJoints);
 	return glm::distance(endPosition, target.position) < 0.005;
 }
-bool JT0::performIK(Point start, Point target, Robot &robot){
+bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 	int iterationLimit = 2000;
-	float minError = 0.001f;
+	float minError = precision;
 
 	auto endEffector = start;
 	auto force = Matrix(6,1);
@@ -163,9 +163,9 @@ bool JT1::solve(Point target, Robot &robot){
     robot.insertVariables(tmpJoints);
 	return glm::distance(endPosition, target.position) < 0.005;
 }
-bool JT1::performIK(Point start, Point target, Robot &robot){
+bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
 	int iterationLimit = 2000;
-	float minError = 0.001f;
+	float minError = precision;
 
 	auto endEffector = start;
 	auto force = Matrix(6,1);

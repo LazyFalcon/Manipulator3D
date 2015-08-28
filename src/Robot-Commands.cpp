@@ -9,6 +9,8 @@
 #include "Robot-Commands.h"
 vector <glm::vec4> fakePath;
 u32 globalFlags = 0;
+u32 lastPathIterationCount;
+float lastPathIterationdistance;
 
 
 void WaitCommand::init(RobotController &rc){
@@ -58,49 +60,53 @@ void MoveCommand::init(RobotController &rc){
 	solver->solve(Point{ interpolator->firstPoint(), glm::quat(0, 0, 0, 1) }, *rc.robot);
 	targetJointPosition = solver->result;
 	rc.robot->isReady = false;
-	rc.robot->goTo(targetJointPosition);
+	// rc.robot->goTo(targetJointPosition);
 	std::cout<<"Init command"<<std::endl;
 
 	previousPoint = rc.robot->endEffector.position;
-	// rc.robot->insertVariables(targetJointPosition);
-	// rc.pause();
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	return dt*velocity;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
-	requiredDistance += calculateRequiredDistance(dt);
-
+	requiredDistance = calculateRequiredDistance(dt);
 	glm::vec4 newTarget;
-
+	glm::vec4 oldTarget = previousPoint;
+    u32 i = 0;
 	while(requiredDistance > 0.0 && (not interpolator->finished)){
+        i++;
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);
 		previousPoint = newTarget;
 	}
+    lastPathIterationdistance = glm::distance(previousPoint, oldTarget);
+    lastPathIterationCount = i;
 
 	return newTarget;
 }
 bool MoveCommand::update(RobotController &rc, float dt){
-
+    // rc.robot->endEffectorVelocity = lastPathIterationdistance;
+    // rc.robot->isReady = true;
 	if(not rc.robot->isReady){
 		rc.robot->goTo(dt, jointVelocityModifier);
 		previousPoint = rc.robot->endEffector.position;
-		return false;
 	}
-	if(rc.robot->isReady && interpolator->finished){
+    if(rc.robot->isReady && interpolator->finished){
 		interpolator->reset();
 		return true;
 	}
-	glm::vec4 newTarget = calculateNextPoint(dt);
+    else if(rc.robot->isReady){
+        glm::vec4 newTarget = calculateNextPoint(dt);
 
-	solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
-	targetJointPosition = solver->result;
-	rc.robot->goTo(targetJointPosition);
-	rc.robot->goTo(dt, jointVelocityModifier);
-	previousPoint = rc.robot->endEffector.position;
-
-	return false;
+        solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
+        targetJointPosition = solver->result;
+        rc.robot->insertVariables(targetJointPosition);
+        rc.robot->goTo(targetJointPosition);
+        rc.robot->goTo(dt, jointVelocityModifier);
+        previousPoint = rc.robot->endEffector.position;
+        return false;
+    }
+    return false;
 }
 
 void SingleJointMove::init(RobotController &rc){

@@ -58,7 +58,7 @@ void Robot::update(float dt){
 	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 
 	endEffectorAcceleration = (positionShift/dt - endEffectorVelocity)/dt;
-	endEffectorVelocity = positionShift/dt;
+	endEffectorVelocity = positionShift;
 }
 
 std::vector<double> Robot::getVariables(){
@@ -140,7 +140,6 @@ bool Robot::goTo(float dt, double jVelocityModifier){
 	for(auto &module : chain){
 		isReady &= module->goTo(dt, jVelocityModifier);
 	}
-	// recorder.up();
 }
 
 double Module::computeMaxStep(float dt, double jVelocityModifier){
@@ -160,6 +159,10 @@ bool Module::goTo(float dt, double jVelocityModifier){
 	auto lVel = lastVelocity;
 	lastVelocity = step/dt;
 	lastAcceleration = (lastVelocity - lVel)/dt;
+
+	if(glm::epsilonEqual(targetValue, 0.0, jointEpsilon)){
+		return true;
+	}
 
 	return false;
 }

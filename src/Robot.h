@@ -59,7 +59,7 @@ public:
 	bool succes = false;
 
 	virtual bool solve(Point target, Robot &robot) = 0;
-	virtual bool performIK(Point start, Point target, Robot &robot)=0;
+	virtual bool performIK(Point start, Point target, Robot &robot, double precision = 0.001)=0;
 	virtual ~IIK(){}
 };
 
@@ -107,7 +107,7 @@ public:
 		std::cerr<<"delete JT0"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
 };
 /// with orientation
 class JT1 : public IIK {
@@ -116,7 +116,7 @@ public:
 		std::cerr<<"delete JT1"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
 };
 
 void robotTestInit(Robot &robot);
