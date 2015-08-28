@@ -7,6 +7,7 @@
 #include <Utils/Utils.h>
 #include <Utils/BaseStructs.h>
 #include <Utils/Camera.h>
+#include <Utils/IMGUI_V4.h>
 #include "IInterpolator.h"
 #include "Robot.h"
 #include "Robot-Commands.h"
@@ -20,11 +21,15 @@
 #include <boost/filesystem.hpp>
 
 #include "Helper.h"
-
+extern UI::IMGUI ui;
 extern shared_ptr<Scene> scene;
 extern BulletWorld bulletWorld;
 extern shared_ptr<RobotController> RC;
 extern const float pi;
+extern glm::vec2 screenSize;
+extern glm::vec3 camPosition;
+extern GLFWwindow *window;
+
 namespace PythonBindings {
 extern boost::python::object mainScript;
 }
@@ -35,6 +40,7 @@ float cameraStep = 5*pi/180;
 
 int currentModifierKey;
 DataUnderMouse dataUnderMouse {0.f, {}, {}, 1};
+DataUnderMouse oldDataUnderMouse {0.f, {}, {}, 1};
 glm::vec4 getPositionUnderMouse(){
 	return dataUnderMouse.position;
 }
@@ -47,6 +53,19 @@ shared_ptr<Entity> getObjectUnderMouse(){
 }
 u32 getIDUnderMouse(){
 	return dataUnderMouse.objID;
+}
+
+bool pinCursorToScreen(glm::vec2 screen, glm::vec2 &mouse){
+	bool b = false;
+	if(mouse.x >= screen.x){b = true; mouse.x = 0;}
+	else if(mouse.x <= 0.f){b = true; mouse.x = screen.x;}
+	if(mouse.y >= screen.y){b = true; mouse.y = 0;}
+	else if(mouse.y <= 0.f){b = true; mouse.y = screen.y;}
+
+	if(b)
+		glfwSetCursorPos(window, mouse.x, mouse.y);
+
+	return b;
 }
 
 void moveCameraByKeys(Camera &camera, int key, int action, int mods){
@@ -90,7 +109,33 @@ void moveCameraByKeys(Camera &camera, int key, int action, int mods){
 		}
 	}
 }
-void moveCameraByMouse(Camera &camera, int key, int action, int mods){}
+void moveCameraByMouse(Camera &camera, glm::vec2 mousePos, glm::vec2 mouseMov, bool pressed){
+	if(not pressed) return;
+	if(currentModifierKey & (GLFW_MOD_SHIFT | GLFW_MOD_CONTROL)){
+		camPosition -= camera.Normal.xyz()*mouseMov.y/screenSize.y*10.f;
+	}
+	else if(currentModifierKey & GLFW_MOD_SHIFT){
+		glm::vec3 up = camera.Up.xyz();
+		glm::vec3 right = camera.Right.xyz();
+		glm::vec3 &pos = camPosition;
+
+		if(pinCursorToScreen(screenSize, mousePos)) return;
+
+		mouseMov = mouseMov/screenSize*30.f;
+		pos += up*mouseMov.y + right*mouseMov.x;
+
+	}
+	else if(currentModifierKey & GLFW_MOD_CONTROL){
+		camera.zoomStep(-mouseMov.y/screenSize.y*15.f);
+	}
+	else {
+		if(ui.hasHover(glm::vec4(0,0,screenSize.x, screenSize.y))){
+			float dx = mouseMov.x/screenSize.x*1.3f;
+			float dy = mouseMov.y/screenSize.y*1.3f;
+			camera.setMouseMov(dx, -dy);
+	}
+	}
+}
 
 /// shift przesuwa w poziomie do przodu kamery, ctrl w bok(center kamery)
 void moveCameraByScroll(Camera &camera, double xOff, double yOff){
@@ -114,6 +159,13 @@ std::string generatePointName(){
 	sprintf(buff, "%.3u", groupPointCount);
 	return "Point."s+buff;
 }
+/// -------------------------------- CURSOR
+
+glm::vec4 cursor;
+
+glm::vec4 getCursor(){
+	return cursor;
+}
 
 /// --------------------------------
 std::vector<shared_ptr<Entity>> currentSelection;
@@ -127,12 +179,12 @@ std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 	return currentSelection;
 }
 bool processMouse(int key, int action, int mods){
-	if((mods & GLFW_MOD_CONTROL) && key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+	if((mods & GLFW_MOD_CONTROL) && key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
 		auto &&obj = getObjectUnderMouse();
 		if(obj)
 			currentSelection.push_back(obj);
 	}
-	else if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+	else if(key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
 		auto &&obj = getObjectUnderMouse();
 		if(obj){
 			currentSelection.clear();

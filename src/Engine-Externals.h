@@ -343,6 +343,7 @@ void Plot::plot(){
 
 namespace Helper {
 	extern DataUnderMouse dataUnderMouse;
+	extern DataUnderMouse oldDataUnderMouse;
 }
 namespace Engine NAM_START
 void samplePosition(glm::vec2 mouse){
@@ -378,6 +379,8 @@ void sampleID(glm::vec2 mouse){
 }
 
 void sampleDataUnderMouse(glm::vec2 mouse){
+	Helper::dataUnderMouse.uv = mouse;
+	Helper::oldDataUnderMouse = Helper::dataUnderMouse;
 	samplePosition(mouse);
 	sampleNormal(mouse);
 }

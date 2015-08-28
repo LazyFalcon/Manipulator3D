@@ -51,6 +51,7 @@ glm::vec2      mouserClick(0);
 float          mouseMoveLen(0);
 bool           LeftMousePressed = false;
 bool           RightMousePressed = false;
+bool           MiddleMousePressed = false;
 bool           signal10ms = false;
 glm::mat4      orthoMatrix;
 GLFWwindow     *window;
@@ -333,8 +334,12 @@ void mainLoop(){
 			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
 		ui.endTable();
 
+
 		ui.end();
 		renderLoop();
+
+		Helper::moveCameraByMouse(camera, mousePosition, mouseTranslation, MiddleMousePressed);
+
 		g_scrollDel = 0.0;
 		glfwPollEvents();
 	}
@@ -416,20 +421,20 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	ui.mouseKeyInput(button, action);
 	Helper::processMouse(button, action, mods);
-    double m_x, m_y;
-    glfwGetCursorPos(window, &m_x, &m_y);
+	double m_x, m_y;
+	glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
 		glfwPollEvents();
-        mouselClick = glm::vec2(m_x, m_y);
+		mouselClick = glm::vec2(m_x, m_y);
 		ui.setlClick(true);
 		LeftMousePressed = true;
-        lClick = true;
+		lClick = true;
 	}
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_RELEASE){
 		LeftMousePressed = false;
 	}
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_PRESS){
-        mouserClick = glm::vec2(m_x, m_y);
+		mouserClick = glm::vec2(m_x, m_y);
 		rClick = !rClick;
 		ui.setrClick(true);
 		RightMousePressed = true;
@@ -437,6 +442,13 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	}
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_RELEASE){
 		RightMousePressed = false;
+	}
+
+	if(button == GLFW_MOUSE_BUTTON_MIDDLE and action == GLFW_PRESS){
+		MiddleMousePressed = true;
+	}
+	if(button == GLFW_MOUSE_BUTTON_MIDDLE and action == GLFW_RELEASE){
+		MiddleMousePressed = false;
 	}
 }
 void dropCallback(GLFWwindow* window, int count, const char** paths){

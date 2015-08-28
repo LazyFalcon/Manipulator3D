@@ -292,14 +292,14 @@ void MainMenu(){
 	sideBarPoints();
 	steeringConsole();
 
-		if(ui.hasHover(glm::vec4(0,0,window_width, window_height)) &&	ui.lRepeat()){
-				float dx = (mouse_x - cacheMx)/window_width*2;
-				float dy = (cacheMy - mouse_y)/window_height*2;
-				camera.setMouseMov(dx, dy);
-				enableCameraZoom = true;
-			}
-	cacheMx = mouse_x;
-	cacheMy = mouse_y;
+	// if(ui.hasHover(glm::vec4(0,0,window_width, window_height)) &&	ui.lRepeat()){
+		// float dx = (mouse_x - cacheMx)/window_width*2;
+		// float dy = (cacheMy - mouse_y)/window_height*2;
+		// camera.setMouseMov(dx, dy);
+		// enableCameraZoom = true;
+	// }
+	// cacheMx = mouse_x;
+	// cacheMy = mouse_y;
 
 
 }
