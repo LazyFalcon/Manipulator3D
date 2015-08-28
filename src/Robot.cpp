@@ -58,7 +58,7 @@ void Robot::update(float dt){
 	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 
 	endEffectorAcceleration = (positionShift/dt - endEffectorVelocity)/dt;
-	endEffectorVelocity = positionShift;
+	endEffectorVelocity = positionShift/dt;
 }
 
 std::vector<double> Robot::getVariables(){

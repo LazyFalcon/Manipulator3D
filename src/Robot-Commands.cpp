@@ -85,7 +85,6 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 	return newTarget;
 }
 bool MoveCommand::update(RobotController &rc, float dt){
-    // rc.robot->endEffectorVelocity = lastPathIterationdistance;
     // rc.robot->isReady = true;
 	if(not rc.robot->isReady){
 		rc.robot->goTo(dt, jointVelocityModifier);
@@ -95,17 +94,19 @@ bool MoveCommand::update(RobotController &rc, float dt){
 		interpolator->reset();
 		return true;
 	}
-    else if(rc.robot->isReady){
-        glm::vec4 newTarget = calculateNextPoint(dt);
+	else if(rc.robot->isReady){
+		glm::vec4 newTarget = calculateNextPoint(dt);
 
-        solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
-        targetJointPosition = solver->result;
-        rc.robot->insertVariables(targetJointPosition);
-        rc.robot->goTo(targetJointPosition);
-        rc.robot->goTo(dt, jointVelocityModifier);
-        previousPoint = rc.robot->endEffector.position;
-        return false;
-    }
+		solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
+		targetJointPosition = solver->result;
+		rc.robot->insertVariables(targetJointPosition);
+		rc.robot->goTo(targetJointPosition);
+		rc.robot->goTo(dt, jointVelocityModifier);
+		auto pp = previousPoint;
+		// previousPoint = rc.robot->endEffector.position;
+		previousPoint = newTarget;
+		return false;
+	}
     return false;
 }
 
