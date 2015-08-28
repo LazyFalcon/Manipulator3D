@@ -111,7 +111,7 @@ void moveCameraByKeys(Camera &camera, int key, int action, int mods){
 }
 void moveCameraByMouse(Camera &camera, glm::vec2 mousePos, glm::vec2 mouseMov, bool pressed){
 	if(not pressed) return;
-	if(currentModifierKey & (GLFW_MOD_SHIFT | GLFW_MOD_CONTROL)){
+	if(currentModifierKey&GLFW_MOD_SHIFT && currentModifierKey&GLFW_MOD_CONTROL){
 		camPosition -= camera.Normal.xyz()*mouseMov.y/screenSize.y*10.f;
 	}
 	else if(currentModifierKey & GLFW_MOD_SHIFT){
@@ -161,10 +161,20 @@ std::string generatePointName(){
 }
 /// -------------------------------- CURSOR
 
-glm::vec4 cursor;
+glm::vec4 cursor(0,0,0,1);
 
-glm::vec4 getCursor(){
+glm::vec4& getCursor(){
 	return cursor;
+}
+glm::vec2 getScreenCursor(Camera &camera){
+	auto pos = glm::project(cursor.xyz(), camera.ViewMatrix, camera.ProjectionMatrix, glm::vec4(0,0,camera.m_width, camera.m_height));
+	return glm::ceil(pos.xy() - glm::vec2(15,15));
+}
+void setCursor(glm::vec4 v){
+	cursor = v;
+}
+void moveCursor(glm::vec4 v){
+	cursor = v;
 }
 
 /// --------------------------------
@@ -179,10 +189,14 @@ std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 	return currentSelection;
 }
 bool processMouse(int key, int action, int mods){
+	if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+		setCursor(dataUnderMouse.position);
+	}
 	if((mods & GLFW_MOD_CONTROL) && key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
 		auto &&obj = getObjectUnderMouse();
 		if(obj)
 			currentSelection.push_back(obj);
+		std::cout<<"Marked!"<<std::endl;
 	}
 	else if(key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
 		auto &&obj = getObjectUnderMouse();

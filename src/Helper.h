@@ -40,6 +40,10 @@ bool processKeys(int key, int action, int mods);
 void saveGroup(std::vector<shared_ptr<Entity>>&);
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
+///
+
+glm::vec4& getCursor();
+glm::vec2 getScreenCursor(Camera &camera);
 
 /// -------------------------------- FILESYSTEM
 /**

@@ -30,6 +30,7 @@ in vec2 vUV;
 void main(void){
 	vec4 color = texture(uTexture, vUV);
 	outColor = vec4(uColor.rgb, color.a*uColor.a);
+	outColor = vec4(color * uColor);
 }
 
 #endif

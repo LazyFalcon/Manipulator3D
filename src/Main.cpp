@@ -331,9 +331,10 @@ void mainLoop(){
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
-			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
+			ui.rect().text("Selected: " + std::to_string(Helper::getCurrentSelection().size())).font("ui_12"s)();
 		ui.endTable();
 
+		ui.image(Helper::getScreenCursor(camera), "Cursor").color(0xFFFFFFFF)();
 
 		ui.end();
 		renderLoop();
@@ -419,8 +420,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
-	ui.mouseKeyInput(button, action);
 	Helper::processMouse(button, action, mods);
+	ui.mouseKeyInput(button, action);
 	double m_x, m_y;
 	glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){

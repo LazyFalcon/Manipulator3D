@@ -42,6 +42,8 @@ root:
  - name: Point
    rect: [13, 146, 5, 5 ]
  - name: Circle30
-   rect: [0, 159, 31, 31 ]
+   rect: [0, 191, 31, 31 ]
+ - name: Cursor
+   rect: [0, 223, 31, 31 ]
  - name: Menu-Property-Tab
    rect: [975, 25, 25, 25]

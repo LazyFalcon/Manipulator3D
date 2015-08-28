@@ -153,7 +153,6 @@ void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vecto
 	glBindVertexArray(0);
 }
 void drawPattern2D(glm::vec2 position, glm::vec2 info, string name, HexColor color){
-	// rysowane s¹ wycentrowane, potrzebne s¹ pozycja i wymiar, ufa³ki s¹ [0,1]
 	shapeInfo sinfo;
 	auto image = globalResources->images[name];
 
