@@ -47,12 +47,12 @@ public:
 	}
 	MoveCommandBuilder& solver(const std::string& name){
 		// moveCommand->solver = value;
-		moveCommand->solver = make_unique<JT1>();
+		moveCommand->solver = make_unique<JT0>();
 		return *this;
 	}
 	MoveCommandBuilder& solver(IIK *value){
 		// moveCommand->solver = value;
-		moveCommand->solver = make_unique<JT1>();
+		moveCommand->solver = make_unique<JT0>();
 		return *this;
 	}
 	MoveCommandBuilder& finish(shared_ptr<RobotController> RC);

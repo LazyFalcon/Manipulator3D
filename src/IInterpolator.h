@@ -139,7 +139,7 @@ class BezierCurve : public IInterpolator
 {
 public:
 	/// editable params
-	float singleStepLength {0.0001f};
+	double singleStepLength {0.00001};
 
 	///
 
@@ -204,7 +204,7 @@ public:
 	int numOfBeziers;
 
 	/// editable params
-	float singleStepLength {0.0001f};
+	double singleStepLength {0.00001};
 
 	BSpline(const std::vector<glm::vec4> &points) : IInterpolator(points, Interpolator::BSpline) {
 		generatePath();
@@ -240,7 +240,7 @@ public:
 	double length {0};
 
 	/// editable params
-	float singleStepLength {0.0001f};
+	double singleStepLength {0.00001};
 
 	NURBS(const std::vector<glm::vec4> &points, const std::vector<float> &weights) : IInterpolator(points, Interpolator::NURBS), weights(weights){
 		generatePath();
@@ -279,7 +279,7 @@ public:
 	void drawParams();
 
 	/// editable params
-	float singleStepLength {0.0001f};
+	double singleStepLength {0.00001};
 	~HermiteCardinal(){
 		std::cerr<<"delete HermiteCardinal "+name<<std::endl;
 	}
@@ -315,7 +315,7 @@ public:
 	void drawParams();
 
 	/// editable params
-	float singleStepLength {0.0001f};
+	double singleStepLength {0.00001};
 	~HermiteFiniteDifference(){
 		std::cerr<<"delete HermiteFiniteDifference "+name<<std::endl;
 	}
@@ -351,7 +351,7 @@ public:
 	void drawParams();
 
 	/// editable params
-	float singleStepLength {0.0001f};
+	double singleStepLength {0.00001};
 	~HermiteFiniteDifferenceClosed(){
 		std::cerr<<"delete HermiteFiniteDifferenceClosed "+name<<std::endl;
 	}

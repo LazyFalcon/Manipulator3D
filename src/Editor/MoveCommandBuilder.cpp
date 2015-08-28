@@ -105,13 +105,13 @@ public:
 
 
 MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
-	moveCommand->solver = make_unique<JT1>();
+	moveCommand->solver = make_unique<JT0>();
 	RC->insertCommand(moveCommand);
 	init();
 	return *this;
 }
 MoveCommandBuilder& MoveCommandBuilder::finish(RobotController &RC){
-	moveCommand->solver = make_unique<JT1>();
+	moveCommand->solver = make_unique<JT0>();
 	RC.insertCommand(moveCommand);
 	init();
 	return *this;
@@ -129,13 +129,13 @@ SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(RobotContro
 }
 
 FollowObjectBuilder& FollowObjectBuilder::finish(shared_ptr<RobotController> RC){
-	moveCommand->solver = make_unique<JT1>();
+	moveCommand->solver = make_unique<JT0>();
 	RC->insertCommand(moveCommand);
 	init();
 	return *this;
 }
 FollowObjectBuilder& FollowObjectBuilder::finish(RobotController &RC){
-	moveCommand->solver = make_unique<JT1>();
+	moveCommand->solver = make_unique<JT0>();
 	RC.insertCommand(moveCommand);
 	init();
 	return *this;

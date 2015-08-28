@@ -63,62 +63,56 @@ bool JT0::solve(Point target, Robot &robot){
     u32 iterations = 0;
 	while(distance >= maxDistanceInSingleStep){
 		iterations++;
-        distance -= maxDistanceInSingleStep;
+		distance -= maxDistanceInSingleStep;
 		auto param = distance/totalDistance;
 		subTarget += vecToTarget * maxDistanceInSingleStep;
 
-        auto subTargetOnSphere = glm::normalize(subTarget - glm::vec4(0,0,0,1)) * std::max(glm::length(subTarget), minR);
-        subTargetOnSphere.w = 1;
+		auto subTargetOnSphere = glm::normalize(subTarget - glm::vec4(0,0,0,1)) * std::max(glm::length(subTarget), minR);
+		subTargetOnSphere.w = 1;
 
 		performIK({currentPosition, robot.endEffector.quat} , {subTargetOnSphere, target.quat}, robot);
 		currentPosition = subTargetOnSphere;
-        robot.insertVariables(result);
+		robot.insertVariables(result);
 	}
-	performIK({currentPosition, robot.endEffector.quat}, target, robot);
 
-    robot.insertVariables(tmpJoints);
+	performIK({currentPosition, robot.endEffector.quat}, target, robot, 0.0001);
+
+	robot.insertVariables(tmpJoints);
 	return glm::distance(endPosition, target.position) < 0.005;
 }
-bool JT0::performIK(Point start, Point target, Robot &robot){
+bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 	int iterationLimit = 2000;
-	float minError = 0.001f;
+	float minError = precision;
 
-	auto endEffector = robot.endEffector;
+	auto endEffector = start;
 	auto force = Matrix(6,1);
 	Matrix variables(robot.getSize(), 1);
 	Matrix enhancement(robot.getSize(), 1);
 
-	float positionError = glm::distance(target.position, robot.endEffector.position);
-	double i = 0.2;
-
-	// double i = 1.5;
+	// double i = 0.2;
+	double i = 1.5;
 	// for(auto &it : variables.getVector()){
 		// it = 0.0;
 	// }
 	for(auto &it : enhancement.getVector()){
-		// it = i;
-		it = 1;
-		// i -= 0.2;
-		i += 0.9;
+		it = i;
+		// it = 1;
+		i -= 0.2;
+		// i += 0.9;
 	}
-
+	// enhancement(3) *= 15;
 	variables.insertColumn(0, robot.getVariables());
 
-
-	g_mousePositions(target.position);
-	// if(positionError > 0.1)
-		// target.position = robot.endEffector.position + (target.position - robot.endEffector.position)*0.1f;
-
+	float positionError = glm::distance(target.position, endEffector.position);
+    float quatError = 1;
 	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iterations = 0;
-	for(; positionError > minError && iterations<iterationLimit; iterations++){
+	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
+		auto positionDelta = (target.position - endEffector.position);
+        auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat))*0.f;
 
-
-		auto positionDelta  = (target.position - endEffector.position);
-		// auto axisDelta  = glm::cross(glm::axis(endEffector.quat), glm::axis(target.quat));
-
-		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z,0, 0, 0});
+        force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x, axisDelta.y, axisDelta.z});
 
 		auto a = dot(jjp*force, force);
 		a = a/dot(jjp*force, jjp*force);
@@ -130,12 +124,13 @@ bool JT0::performIK(Point start, Point target, Robot &robot){
 		endEffector = robot.simulate(variables.getVector());
 		g_targetPosition = endEffector.position;
 		positionError = glm::distance(endEffector.position, target.position);
+        quatError = glm::length(axisDelta);
 	}
+    // cout<<iterations<<" << "<<quatError<<endl;
 	endPosition = endEffector.position;
 	result = variables.getVector();
 	succes = positionError < minError;
-    lastIterationCount = iterations;
-
+	lastIterationCount = iterations;
 	return succes;
 }
 
@@ -169,85 +164,25 @@ bool JT1::solve(Point target, Robot &robot){
     robot.insertVariables(tmpJoints);
 	return glm::distance(endPosition, target.position) < 0.005;
 }
-bool JT1::performIK(Point start, Point target, Robot &robot){
-	/* int iterationLimit = 2000;
-	float minError = 0.001f;
-	// double minError = 0.01f;
-
-	auto endEffector = robot.endEffector;
-	auto force = Matrix(6,1);
-	Matrix variables(robot.getSize(), 1);
-	Matrix enhancement(robot.getSize(), 1);
-
-	double i = 0.2;
-	for(auto &it : enhancement.getVector()){
-		it = i;
-		// it = 1;
-		// i -= 0.2;
-		i += 0.9;
-	}
-
-	variables.insertColumn(0, robot.getVariables());
-
-	double positionError = glm::distance(target.position, robot.endEffector.position);
-
-	u32 iterations = 0;
-
-	glm::vec4 vecToTarget = glm::normalize(target.position - robot.endEffector.position);
-	glm::vec4 semiTarget = robot.endEffector.position;
-	while(positionError > minError){
-		double semiPositionError = glm::clamp(positionError, 0.0, 0.10);
-		semiTarget += vecToTarget*glm::clamp(float(semiPositionError), 0.f, 0.1f);
-		iterations = 0;
-
-		cutHigherThanPi(variables.getVector());
-
-		auto jacobian = buildJacobian(robot, variables.getVector(), endEffector);
-		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
-
-		for(; semiPositionError > minError && iterations<iterationLimit; iterations++){
-			auto positionDelta  = (semiTarget - endEffector.position);
-			auto axisDelta  = glm::cross(glm::axis(endEffector.quat), glm::axis(target.quat));
-
-			// force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x, axisDelta.y, axisDelta.z});
-			force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z,0,0,0});
-
-			auto a = dot(jjp*force, force);
-			a = a/dot(jjp*force, jjp*force);
-			auto gradient = jacobian*force*a;
-			gradient = mul(gradient, enhancement);
-
-			variables = gradient + variables;
-			endEffector = robot.simulate(variables.getVector());
-			g_targetPosition = endEffector.position;
-			semiPositionError = glm::distance(endEffector.position, semiTarget);
-		}
-
-		positionError = glm::distance(endEffector.position, target.position);
-	}
-	endPosition = endEffector.position;
-	result = variables.getVector();
-	succes = positionError < minError;
-
-	return succes; */
+bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
 	int iterationLimit = 2000;
-	float minError = 0.001f;
+	float minError = precision;
 
 	auto endEffector = start;
 	auto force = Matrix(6,1);
 	Matrix variables(robot.getSize(), 1);
 	Matrix enhancement(robot.getSize(), 1);
 
-	double i = 0.2;
-	// double i = 1.5;
+	// double i = 0.2;
+	double i = 1.5;
 	// for(auto &it : variables.getVector()){
 		// it = 0.0;
 	// }
 	for(auto &it : enhancement.getVector()){
-		// it = i;
-		it = 1;
-		// i -= 0.2;
-		i += 0.9;
+		it = i;
+		// it = 1;
+		i -= 0.2;
+		// i += 0.9;
 	}
 	// enhancement(3) *= 15;
 	variables.insertColumn(0, robot.getVariables());
@@ -259,7 +194,7 @@ bool JT1::performIK(Point start, Point target, Robot &robot){
 	u32 iterations = 0;
 	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
 		auto positionDelta = (target.position - endEffector.position);
-        auto axisDelta = glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat))*10.f;
+        auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat));
 
         force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x, axisDelta.y, axisDelta.z});
 
@@ -324,10 +259,11 @@ void test(Robot &robot){
 }
 
 void jacobianTransposeInitialCall(Robot &robot){
-    robot.update(0.1);
-	auto solver = make_unique<JT1>();
+	// robot.update(0.1);
+	// auto solver = make_unique<JT1>();
 
-	Point target = {glm::vec4(2, 5, 4, 1), glm::angleAxis(1.f, glm::vec3(1,1,0))};
+	// Point target = {glm::vec4(4, 1, 4, 1), glm::angleAxis(1.f, glm::vec3(1,0,-1))};
+	// Point target = {robot.endEffector.position, glm::angleAxis(1.f, glm::vec3(0,1,0))};
 
 	// solver->solve(target, robot);
 	// robot.insertVariables(solver->result);

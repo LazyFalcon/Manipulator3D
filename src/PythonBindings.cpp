@@ -11,6 +11,7 @@
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
 #include "Editor/WaitCommandBuilder.h"
+#include "DataRecorder.h"
 
 #include <Python.h>
 #include <boost/python.hpp>
@@ -114,9 +115,9 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
 	MoveCommandBuilder& (MoveCommandBuilder::*finish_ptr)(shared_ptr<RobotController>) = &MoveCommandBuilder::finish;
 
-	bpl::class_<std::vector<double>>("doubleVec")
-		.def(bpl::vector_indexing_suite<std::vector<double>>())
-		;
+	// bpl::class_<std::vector<double>>("doubleVec")
+		// .def(bpl::vector_indexing_suite<std::vector<double>>())
+		// ;
 
 	bpl::class_<MoveCommandBuilder, std::shared_ptr<MoveCommandBuilder>>("MoveCommandBuilder", bpl::init<>())
 		.def_readwrite("moveCommand", &MoveCommandBuilder::moveCommand)
@@ -210,27 +211,50 @@ BOOST_PYTHON_MODULE(scene_export){
 		;
 }
 BOOST_PYTHON_MODULE(robotController_export){
-    void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
-    bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
-        .def("insertCommand", insertCommand_ptr)
-        .def("run", &RobotController::run)
-        .def("pause", &RobotController::pause)
-        .def("stop", &RobotController::stop)
-        .def("next", &RobotController::next)
-        .def("prev", &RobotController::prev)
-        .def("savePosition", &RobotController::savePosition)
-        .def("popPosition", &RobotController::popPosition)
-        .def("peekPosition", &RobotController::peekPosition)
-        .def("grabObject", &RobotController::grabObject)
-        .def("releaseObject", &RobotController::releaseObject)
-        .def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
-        .def_readwrite("robot", &RobotController::robot)
-        .def_readwrite("state ", &RobotController::state )
-        .def_readwrite("commands", &RobotController::commands)
-        ;
+	void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
+	bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
+		.def("insertCommand", insertCommand_ptr)
+		.def("run", &RobotController::run)
+		.def("pause", &RobotController::pause)
+		.def("stop", &RobotController::stop)
+		.def("next", &RobotController::next)
+		.def("prev", &RobotController::prev)
+		.def("savePosition", &RobotController::savePosition)
+		.def("popPosition", &RobotController::popPosition)
+		.def("peekPosition", &RobotController::peekPosition)
+		.def("grabObject", &RobotController::grabObject)
+		.def("releaseObject", &RobotController::releaseObject)
+		.def("clean", &RobotController::clean)
+		.def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("getRobot", &RobotController::getRobot, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("getRobotJ", &RobotController::getRobotJ)
+		.def_readonly("robot", &RobotController::robot)
+		.def_readwrite("state ", &RobotController::state )
+		.def_readwrite("commands", &RobotController::commands)
+		;
+	bpl::class_<std::vector<double>>("DoubleVec")
+		.def(bpl::vector_indexing_suite<std::vector<double>>())
+		;
+	bpl::class_<Robot, std::shared_ptr<Robot>, boost::noncopyable>("Robot")
+		.def("getModuleCount", &Robot::getModuleCount)
+		.def("module", &Robot::module, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def_readonly("velocity", &Robot::endEffectorVelocity)
+		.def_readonly("acceleration", &Robot::endEffectorAcceleration)
+		;
+	bpl::class_<Module, boost::noncopyable>("Module")
+		.def_readwrite("value", &Module::value)
+		.def_readwrite("targetValue", &Module::targetValue)
+		.def_readwrite("maxVelocty", &Module::maxVelocty)
+		.def_readwrite("maxAcceleration", &Module::maxAcceleration)
+		.def_readwrite("lastVelocity", &Module::lastVelocity)
+		.def_readwrite("lastAcceleration", &Module::lastAcceleration)
+		.def_readwrite("axis", &Module::axis)
+		;
+
+
 }
 BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;
@@ -242,15 +266,47 @@ BOOST_PYTHON_MODULE(helper_export){
 	// bpl::def("getPoint", &getPoint);
 	// bpl::def("saveGroup", &saveGroup);
 	// bpl::def("getGroup", &getGroup);
-
+    bpl::scope().attr("Pause") = GLFW_KEY_PAUSE ;
+    bpl::scope().attr("Enter") = GLFW_KEY_ENTER;
+    bpl::scope().attr("Esc") = GLFW_KEY_ESCAPE;
+    bpl::scope().attr("Ctrl") = GLFW_MOD_CONTROL;
+    bpl::scope().attr("Shift") = GLFW_MOD_SHIFT;
+    bpl::scope().attr("Alt") = GLFW_MOD_ALT;
+    bpl::scope().attr("F1") = GLFW_KEY_F1;
+    bpl::scope().attr("F2") = GLFW_KEY_F2;
+    bpl::scope().attr("F3") = GLFW_KEY_F3;
+    bpl::scope().attr("F4") = GLFW_KEY_F4;
+    bpl::scope().attr("F5") = GLFW_KEY_F5;
+    bpl::scope().attr("F6") = GLFW_KEY_F6;
+    bpl::scope().attr("F7") = GLFW_KEY_F7;
+    // bpl::scope().attr("F8") = GLFW_KEY_F8;
+    bpl::scope().attr("F9") = GLFW_KEY_F9;
+    bpl::scope().attr("F10") = GLFW_KEY_F10;
+    bpl::scope().attr("F11") = GLFW_KEY_F11;
+    bpl::scope().attr("F12") = GLFW_KEY_F12;
 }
 
+std::unordered_map<std::string, int> keyMaps = {
+    {}
+
+};
 
 bpl::object main;
 bpl::object global;
 bpl::object mainScript;
+std::string mainScriptName;
 
-void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+void handleInput(int key, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScript.attr("handleInput")(key, mod, rc, scene);
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+        std::cin.ignore();
+	}
+}
+
+void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::string &name){
 	Py_Initialize();
 	try {
 		initglm_export();
@@ -267,13 +323,47 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 				% bpl::str("module")
 				);
 		bpl::object result = bpl::exec(script, global, global);
-		// mainScript = bpl::import("../python/script_a1");
-		mainScript = bpl::import("script_a1");
+		mainScriptName = name;
+		mainScript = bpl::import(mainScriptName.c_str());
 		mainScript.attr("init")(rc, scene);
 
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
+        terminate();
+	}
+}
+
+void loadMainScript(const string &name, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScriptName = name;
+		mainScript = bpl::import(name.c_str());
+		mainScript.attr("init")(rc, scene);
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+				terminate();
+	}
+}
+
+void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScript = bpl::import(mainScriptName.c_str());
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+        terminate();
+	}
+}
+
+void reloadAndInitMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	try {
+		mainScript = bpl::import(mainScriptName.c_str());
+		mainScript.attr("init")(rc, scene);
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+				terminate();
 	}
 }
 
@@ -283,10 +373,11 @@ void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
+        std::cin.ignore();
 	}
 }
 
-void terminate(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+void terminate(){
 	Py_Finalize();
 }
 

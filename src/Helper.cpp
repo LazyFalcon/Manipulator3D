@@ -16,6 +16,7 @@
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
 #include "BulletWorld.h"
+#include "PythonBindings.h"
 #include <boost/filesystem.hpp>
 
 #include "Helper.h"
@@ -24,7 +25,9 @@ extern shared_ptr<Scene> scene;
 extern BulletWorld bulletWorld;
 extern shared_ptr<RobotController> RC;
 extern const float pi;
-
+namespace PythonBindings {
+extern boost::python::object mainScript;
+}
 namespace Helper NAM_START
 using namespace boost::filesystem;
 
@@ -140,6 +143,9 @@ bool processMouse(int key, int action, int mods){
 }
 bool processKeys(int key, int action, int mods){
 	if(action == GLFW_PRESS){
+		// if(key == 'W' && mods == GLFW_MOD_CONTROL){
+			// PythonBindings::mainScript.attr("plotData")(RC, scene);
+		// }
 		if((key == GLFW_KEY_KP_ENTER || key == GLFW_KEY_ENTER ) && !currentSelection.empty()){
 			saveGroup(currentSelection);
 		}
@@ -197,14 +203,18 @@ void handleYamlFileDrop(const string &path){
 	if(yamlFile.has("Robot") && yamlFile.has("Meshes"))
 		reloadScene(path, RC, scene, bulletWorld);
 }
-void handlePythonFileDrop(const string &path){}
+void handlePythonFileDrop(const string &path){
+	boost::filesystem::path p(path);
+	std::string s = p.stem().string();
+	PythonBindings::loadMainScript(s.c_str(), RC, scene);
+}
 
 void handleDrop(const string &path){
-    boost::filesystem::path p(path);
-    const string ext = p.extension().string();
-    if(ext == ".yml") handleYamlFileDrop(path);
-    else if(ext == ".py") handlePythonFileDrop(path);
-    else cout<<"Unknown file type."<<endl;
+	boost::filesystem::path p(path);
+	const string ext = p.extension().string();
+	if(ext == ".yml") handleYamlFileDrop(path);
+	else if(ext == ".py") handlePythonFileDrop(path);
+	else cout<<"Unknown file type."<<endl;
 }
 
 std::string getClipboard(){}

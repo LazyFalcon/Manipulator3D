@@ -14,50 +14,51 @@ Robot:
    Type: hinge
    ParentJoint: 
      Name: Robot-Base.001
-     Vec: [0.0000, -0.7211, 1.4961]
+     Vec: [0.0000, -0.7362, 1.4887]
      Axis: [-1.0000, -0.0000, -0.0000]
      Min: -45
      Max: 90
    ChildJoint: 
-     Vec: [-0.0000, -0.1964, 1.6182]
+     Vec: [-0.0000, -0.2128, 1.6161]
  - Name: Robot_3
    Type: hinge
    ParentJoint: 
      Name: Robot-Base.002
-     Vec: [-0.0001, 1.2193, 0.0973]
-     Axis: [-1.0000, -0.0000, 0.0000]
+     Vec: [-0.0001, 1.2180, 0.1118]
+     Axis: [-1.0000, 0.0000, 0.0000]
      Min: 120
      Max: 90
    ChildJoint: 
-     Vec: [0.0001, 2.0640, 0.0344]
+     Vec: [0.0001, 2.0634, 0.0590]
  - Name: Robot_4
    Type: hinge
    ParentJoint: 
      Name: Robot-Base.003
-     Vec: [0.0005, -2.4634, -0.0337]
-     Axis: [-0.0002, 1.0000, -0.0000]
+     Vec: [-0.0001, -2.4627, -0.0673]
+     Axis: [0.0000, 1.0000, 0.0017]
      Min: -370
      Max: 370
    ChildJoint: 
-     Vec: [0.0005, 3.2169, 0.0575]
+     Vec: [0.0012, 3.2158, 0.1013]
  - Name: Robot_5
    Type: hinge
    ParentJoint: 
      Name: Robot-Base.004
-     Vec: [-0.0007, 0.0063, -0.0170]
+     Vec: [-0.0007, 0.0066, -0.0169]
      Axis: [-1.0000, 0.0000, -0.0000]
      Min: -120
      Max: 120
    ChildJoint: 
-     Vec: [-0.0005, 0.3187, -0.0019]
- - Name: FakeGripper
+     Vec: [-0.0004, 0.3187, 0.0024]
+ - Name: Robot_Gripper
    Type: hinge
    ParentJoint: 
      Name: Robot-Base.005
-     Vec: [-5.5555, -4.9338, -3.4109]
+     Vec: [0.0005, -0.3187, -0.0024]
      Axis: [-0.0001, 1.0000, -0.0000]
      Min: -370
-     Max: 370   ChildJoint: 
+     Max: 370
+   ChildJoint: 
      Vec: [-0.0003, 0.9222, 0.0096]
 Meshes:
  - Name: Barrier

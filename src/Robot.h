@@ -59,7 +59,7 @@ public:
 	bool succes = false;
 
 	virtual bool solve(Point target, Robot &robot) = 0;
-	virtual bool performIK(Point start, Point target, Robot &robot)=0;
+	virtual bool performIK(Point start, Point target, Robot &robot, double precision = 0.001)=0;
 	virtual ~IIK(){}
 };
 
@@ -72,8 +72,8 @@ public:
 		std::cerr<<"delete Robot"<<std::endl;
 	}
 
-	std::vector<glm::vec4> forward(); // punkt ze wspó³¿êdnych
-	void inverse(); // wspó³¿êdne z punktu
+	std::vector<glm::vec4> forward();
+	void inverse();
 	void update(float dt);
 	std::vector<double> getVariables();
 	bool goTo(float dt, double jVelocityModifier);
@@ -84,10 +84,19 @@ public:
 	glm::vec4 insertVariables(std::vector<double> &vec);
 	int getSize(){return chain.size();}
 	void reset();
+	Module& module(int i){
+		return *chain[i];
+	}
+	int getModuleCount(){
+		return chain.size();
+	}
+
 
 	bool isReady { true };
 	Point endEffector;
-// private:
+	double endEffectorVelocity;
+	double endEffectorAcceleration;
+
 	std::vector<std::unique_ptr<Module>> chain;
 };
 
@@ -98,7 +107,7 @@ public:
 		std::cerr<<"delete JT0"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
 };
 /// with orientation
 class JT1 : public IIK {
@@ -107,7 +116,7 @@ public:
 		std::cerr<<"delete JT1"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
 };
 
 void robotTestInit(Robot &robot);

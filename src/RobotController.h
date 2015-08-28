@@ -27,7 +27,8 @@ struct RobotPosition
 	vector<double> joints;
 };
 
-class RobotController {
+class RobotController
+{
 public:
 	~RobotController(){
 		std::cerr<<"delete RobotController"<<std::endl;
@@ -74,8 +75,18 @@ public:
 	ExecuteCommandBuilder& exec(){
 		return execBuiilder.init();
 	}
-    FollowObjectBuilder& follow(){
+	FollowObjectBuilder& follow(){
 		return followBuiilder.init();
+	}
+
+	std::string getComandName() const {
+		if(commandIter != commands.end())
+			return (*commandIter)->name;
+		return "--";
+	}
+	void clean(){
+		commands.clear();
+		commandIter = commands.end();
 	}
 
 	/// zapisuje aktualną konfigurację robota na stosie
@@ -90,7 +101,12 @@ public:
 	void releaseObject();
 
 	/// ---- UTILS ----
-
+	std::vector<double> getRobotJ(){
+		return robot->getVariables();
+	}
+	Robot& getRobot(){
+		return *robot;
+	}
 	shared_ptr<Robot> robot;
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;

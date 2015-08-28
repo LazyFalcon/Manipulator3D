@@ -15,6 +15,8 @@
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 extern u32 lastIterationCount;
+extern u32 lastPathIterationCount;
+extern float lastPathIterationdistance;
 
 using namespace std::chrono;
 glm::vec4      viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
@@ -57,7 +59,7 @@ glm::vec2      screenSize;
 bool           quit = false;
 bool           UI::GetInput = false;
 int64_t        globalSettings;
-float          g_timeStep = 3.f;
+float          g_timeStep = 5.f;
 u32            RedC = 0xFF000000;
 u32            GreenC = 0x00FF0000;
 u32            BlueC = 0x0000FF00;
@@ -188,7 +190,7 @@ int main(){
 	glfwShowWindow(window);
 	mainLoop();
 
-	PythonBindings::terminate(RC, scene);
+	PythonBindings::terminate();
 	Editor::clear();
 	Editor::MoveCommandBuilderWidget_terminate();
 	Engine::clear();
@@ -202,9 +204,10 @@ int main(){
 
 void fastLoop(float step){
 	RC->update(step/1000.0f);
-	bulletWorld.update(step/1000.0f);
-	scene->robot->update(step);
+	scene->robot->update(step/1000.0f);
 	RCUtils::update();
+	bulletWorld.update(step/1000.0f);
+	PythonBindings::update(RC, scene);
 }
 void renderLoop(){
 	// Engine::plotGraphs();
@@ -240,9 +243,8 @@ void renderLoop(){
 void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
-	// jacobianTransposeInitialCall(*(scene->robot));
-	// jacobianTransposeInit();
-	PythonBindings::init(RC, scene);
+	jacobianTransposeInitialCall(*(scene->robot));
+	PythonBindings::init(RC, scene, "script_a1.");
 }
 void updates(float dt){
 	Editor::update(*RC);
@@ -301,14 +303,14 @@ void mainLoop(){
 		mouseMoveLen = glm::length(mouseTranslation);
 		mousePosition = glm::vec2(mouse_x, mouse_y);
 
-		precisetimer();
 		while(timeAccumulator >= step && !quit){ // fixed step loop
+			precisetimer();
 			timeAccumulator -= step;
 			fastLoop(step);
+			precisetimer();
 		}
+		ikTime = precisetimer.getString();
 
-		if(precisetimer() > 0.0001)
-			ikTime = precisetimer.getString();
 
 		camera.setCamPosition(camPosition);
 		camera.setMatrices();
@@ -319,18 +321,15 @@ void mainLoop(){
 		lClick = false;
 		rClick = false;
 		MainMenu();
-		// Robot &robot = *(scene->robot);
-		// std::vector<double> vars = robot.getVariables();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			// for(auto &it : vars)
-				// ui.rect().color(gradientCalc(0x00FF00FF, 0xFF00FFFF, u8(it/6.28*255))).text(to_string(it))();
-			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/20.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
+			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/25.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
-			ui.rect().text("pos "+glm::to_string(camera.eyePosition)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();
-			// ui.rect().text("Current: " + RC->getCommand()->name).font("ui_12"s)();
+			ui.rect().text("Current: " + RC->getComandName()).font("ui_12"s)();
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
+			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
+			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
 			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
 		ui.endTable();
 
@@ -356,29 +355,24 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 	Helper::moveCameraByKeys(camera, key, action, mods);
 	Helper::processKeys(key, action, mods);
+	Editor::processKeys(key, action, mods, *RC);
+
+    if(action == GLFW_PRESS)
+        PythonBindings::handleInput(key, mods, RC, scene);
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
 		for(auto &it : shadersToReload){
 			loader.reloadShader(it);
 		}
-
+        reloadWhatIsPossible();
 	}
-
-	if(key == GLFW_KEY_TAB && action == GLFW_PRESS){
-		// switchEditObjectMode();
-	}
-	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){
-		reloadWhatIsPossible();
-	}
-	if(key == 'P' && action == GLFW_PRESS){
-		RC->run();
-	}
-
-	Editor::processKeys(key, action, mods, *RC);
 
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
 		RC->run();
+	}
+	if(action == GLFW_PRESS && key == GLFW_KEY_F8){
+        PythonBindings::reloadMainScript(RC, scene);
 	}
 	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
 		RC->pause();
@@ -504,7 +498,7 @@ void initContext(CFG::Node &cfg){
 	glfwWindowHint(GLFW_DECORATED, GL_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);//albo CORE, ale wtedy nie dziaÂ³a devil
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);//albo CORE, ale wtedy nie dzia³a devil
 
 	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
