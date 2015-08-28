@@ -63,7 +63,7 @@ bool JT0::solve(Point target, Robot &robot){
     u32 iterations = 0;
 	while(distance >= maxDistanceInSingleStep){
 		iterations++;
-        distance -= maxDistanceInSingleStep;
+		distance -= maxDistanceInSingleStep;
 		auto param = distance/totalDistance;
 		subTarget += vecToTarget * maxDistanceInSingleStep;
 
@@ -72,11 +72,12 @@ bool JT0::solve(Point target, Robot &robot){
 
 		performIK({currentPosition, robot.endEffector.quat} , {subTargetOnSphere, target.quat}, robot);
 		currentPosition = subTargetOnSphere;
-        robot.insertVariables(result);
+		robot.insertVariables(result);
 	}
+
 	performIK({currentPosition, robot.endEffector.quat}, target, robot, 0.0001);
 
-    robot.insertVariables(tmpJoints);
+	robot.insertVariables(tmpJoints);
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
@@ -129,7 +130,7 @@ bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 	endPosition = endEffector.position;
 	result = variables.getVector();
 	succes = positionError < minError;
-    lastIterationCount = iterations;
+	lastIterationCount = iterations;
 	return succes;
 }
 

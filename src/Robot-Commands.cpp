@@ -99,10 +99,9 @@ bool MoveCommand::update(RobotController &rc, float dt){
 
 		solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *rc.robot);
 		targetJointPosition = solver->result;
-		rc.robot->insertVariables(targetJointPosition);
+		// rc.robot->insertVariables(targetJointPosition);
 		rc.robot->goTo(targetJointPosition);
 		rc.robot->goTo(dt, jointVelocityModifier);
-		auto pp = previousPoint;
 		// previousPoint = rc.robot->endEffector.position;
 		previousPoint = newTarget;
 		return false;

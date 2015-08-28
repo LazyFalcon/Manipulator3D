@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from numpy import arange, sin, pi
 import numpy as np
 
+# from scipy.signal import savgol_filter
+
 # data to collect:
 #   robot: joint positions, effector velocity, acceleration
 #   jacobian transpose: iterations, internal joint positions, precision, errors
@@ -52,7 +54,9 @@ class DataCollector:
 	def plotVelocity(self):
 		plt.figure(1)
 		# plt.plot(self.effectorVelocity[10:-1], 'ro')
-		plt.plot(self.effectorVelocity[10:-1])
+
+		# vv = savgol_filter(self.effectorVelocity, 101, 3)
+		plt.plot(self.effectorVelocity[100:-1])
 		plt.xlabel('time')
 		plt.ylabel('velocity')
 
@@ -95,12 +99,12 @@ def init(RC, scene):
 	RC.savePosition()
 	# moveBuilder = MoveCommandBuilder()
 	points = Vec4Vec()
-	points[:] = [vec4(0, -5, 3, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1)]
+	points[:] = [vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1)]
 
-	path = addInterpolator(Interpolator.HermiteFiniteDifference, points, "--")
+	path = addInterpolator(Interpolator.HermiteFiniteDifferenceClosed, points, "--")
 	# RC.wait().time(2.0).finish(RC);
 	# RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
-	RC.move().name("Order from python").interpolator(path).velocity(1.0).jointVelocity(1.5).finish(RC)
+	RC.move().name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	RC.savePosition()
