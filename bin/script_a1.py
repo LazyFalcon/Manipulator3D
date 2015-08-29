@@ -18,15 +18,16 @@ import numpy as np
 #   interpolators: paths
 
 
-def handleInput(key, mod, RC, scene):
-	if key == ord('W') and mod == Ctrl:
-		plotData(RC, scene)
-	elif key == F5:
-		RC.run()
-	elif key == Esc:
-		RC.stop()
-	elif key == Pause:
-		RC.pause()
+def handleInput(key, action, mod, RC, scene):
+	if action == Press:
+		if key == ord('W') and mod&Ctrl == Ctrl:
+			plotData(RC, scene)
+		elif key == F5:
+			RC.run()
+		elif key == Esc:
+			RC.stop()
+		elif key == Pause:
+			RC.pause()
 
 class DataCollector:
 	js = 0
@@ -99,12 +100,16 @@ def init(RC, scene):
 	RC.savePosition()
 	# moveBuilder = MoveCommandBuilder()
 	points = Vec4Vec()
-	points[:] = [vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1)]
-
-	path = addInterpolator(Interpolator.HermiteFiniteDifferenceClosed, points, "--")
+	circle = Vec4Vec()
+	points[:] = [vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1), vec4(-1, -3.5, 4, 1)]
+	circle[:] = [vec4(-4,0,3,1), vec4(0,4,3,1), vec4(4,0,3,1), vec4(0,-4,3,1)]
+	# circlePath = addInterpolator(Interpolator.HermiteFiniteDifferenceClosed, points, "--")
+	circlePath = addInterpolator(Interpolator.HermiteFiniteDifferenceClosed, circle, "--")
+	path = addInterpolator(Interpolator.BSpline, points, "--")
 	# RC.wait().time(2.0).finish(RC);
 	# RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
 	RC.move().name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
+	RC.move().name("Circle!").interpolator(circlePath).velocity(1.0).jointVelocity(0.5).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	RC.savePosition()

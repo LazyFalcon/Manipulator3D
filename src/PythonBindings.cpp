@@ -266,7 +266,10 @@ BOOST_PYTHON_MODULE(helper_export){
 	// bpl::def("getPoint", &getPoint);
 	// bpl::def("saveGroup", &saveGroup);
 	// bpl::def("getGroup", &getGroup);
-    bpl::scope().attr("Pause") = GLFW_KEY_PAUSE ;
+    bpl::scope().attr("Press") = GLFW_PRESS;
+    bpl::scope().attr("Release") = GLFW_RELEASE;
+    bpl::scope().attr("Repeat") = GLFW_REPEAT;
+    bpl::scope().attr("Pause") = GLFW_KEY_PAUSE;
     bpl::scope().attr("Enter") = GLFW_KEY_ENTER;
     bpl::scope().attr("Esc") = GLFW_KEY_ESCAPE;
     bpl::scope().attr("Ctrl") = GLFW_MOD_CONTROL;
@@ -296,9 +299,9 @@ bpl::object global;
 bpl::object mainScript;
 std::string mainScriptName;
 
-void handleInput(int key, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+void handleInput(int key, int action, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
-		mainScript.attr("handleInput")(key, mod, rc, scene);
+		mainScript.attr("handleInput")(key, action, mod, rc, scene);
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();

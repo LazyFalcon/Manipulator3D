@@ -188,7 +188,6 @@ int main(){
 
 	RC->robot = scene->robot;
 
-	glfwShowWindow(window);
 	mainLoop();
 
 	PythonBindings::terminate();
@@ -215,7 +214,6 @@ void renderLoop(){
 	// Engine::generateShadowMap(*scene);
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
-	Engine::copyDepth(*scene);
 	Engine::sampleDataUnderMouse(mousePosition);
 	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
 	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
@@ -246,6 +244,7 @@ void prerequisites(){
 	Editor::init();
 	jacobianTransposeInitialCall(*(scene->robot));
 	PythonBindings::init(RC, scene, "script_a1.");
+	glfwShowWindow(window);
 }
 void updates(float dt){
 	Editor::update(*RC);
@@ -364,8 +363,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	Helper::processKeys(key, action, mods);
 	Editor::processKeys(key, action, mods, *RC);
 
-    if(action == GLFW_PRESS)
-        PythonBindings::handleInput(key, mods, RC, scene);
+	PythonBindings::handleInput(key, action,  mods, RC, scene);
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
@@ -385,40 +383,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		RC->pause();
 	}
 
-	float targetStep = 0.1;
-	float targetStepPerSec = targetStep/1;
-	if(false){
-	if(key == GLFW_KEY_UP && action == GLFW_PRESS)
-		robotTarget += glm::vec4(targetStep,0,0,0);
-	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-		robotTarget += glm::vec4(-targetStep,0,0,0);
-
-	if(key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,targetStep,0,0);
-	if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,-targetStep,0,0);
-
-	if(key == GLFW_KEY_HOME && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,0,targetStep,0);
-	if(key == GLFW_KEY_END && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,0,-targetStep,0);
-
-	if(key == GLFW_KEY_UP && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(targetStepPerSec,0,0,0);
-	if(key == GLFW_KEY_DOWN && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(-targetStepPerSec,0,0,0);
-
-	if(key == GLFW_KEY_LEFT && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,targetStepPerSec,0,0);
-	if(key == GLFW_KEY_RIGHT && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,-targetStepPerSec,0,0);
-
-	if(key == GLFW_KEY_HOME && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,0,targetStepPerSec,0);
-	if(key == GLFW_KEY_END && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,0,-targetStepPerSec,0);
-
-	}
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	Helper::processMouse(button, action, mods);

@@ -648,6 +648,7 @@ void renderScene(Scene &scene){
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, 0, 0);
 	glBindVertexArray(0);
+	copyDepth(scene);
 }
 void drawOutline(Scene &scene){
 
@@ -711,7 +712,8 @@ void drawOutline(Scene &scene){
 
 			glm::mat4 transform = camera.ProjectionMatrix*camera.ViewMatrix*glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
-			glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
+			// glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
+			glUniform(shader, colorHex(0x9CFF4CFF), uColor);
 			// glUniform(shader, transform*glm::scale(glm::vec3(1.01)), uModel);
 			glUniform(shader, transform, uModel);
 			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
