@@ -1,13 +1,11 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec3 mVertex;
+layout(location=0)in vec4 mVertex;
 
-uniform mat4 uPV;
-uniform mat4 uView;
 uniform mat4 uModel;
 
 void main(){
-	gl_Position = uPV*uView*uModel*(vec4(mVertex,1))*1.1;
+	gl_Position = uModel*mVertex;
 }
 
 #endif

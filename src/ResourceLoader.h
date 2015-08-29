@@ -64,6 +64,7 @@ public:
 
 	void loadResources(CFG::Node &cfg);
 	void reloadShader(const string &shaderName);
+	bool loadShaders();
 	bool loadShader(CFG::Node &cfg);
 	bool loadMesh(string meshName);
 	bool loadMesh(CFG::Node &cfg);

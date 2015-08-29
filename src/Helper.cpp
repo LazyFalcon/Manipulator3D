@@ -191,14 +191,15 @@ std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 bool processMouse(int key, int action, int mods){
 	if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 		setCursor(dataUnderMouse.position);
+		std::cout<<"Cursor!"<<std::endl;
 	}
 	if((mods & GLFW_MOD_CONTROL) && key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
 		auto &&obj = getObjectUnderMouse();
 		if(obj)
 			currentSelection.push_back(obj);
-		std::cout<<"Marked!"<<std::endl;
 	}
 	else if(key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
+		std::cout<<"Marked!"<<std::endl;
 		auto &&obj = getObjectUnderMouse();
 		if(obj){
 			currentSelection.clear();

@@ -3,6 +3,7 @@
 #include <Utils/MeshInfo.h>
 #include <Utils/Camera.h>
 #include <Utils/IMGUI_V4.h>
+#include <boost/filesystem.hpp>
 #include "Common.h"
 #include "Robot.h"
 #include "CFGParser.h"
@@ -14,10 +15,10 @@ u16 objectID = 1;
 std::unordered_map<string, GLuint>	shaders;
 void ResourceLoader::loadResources(CFG::Node &cfg){
 	count = cfg["Shaders"].size() + cfg["Images"].size() + cfg["Meshes"].size();
-
-	for(int i=0; i<cfg["Shaders"].size(); i++){
-		loadShader(cfg["Shaders"][i]);
-	}
+	loadShaders();
+	// for(int i=0; i<cfg["Shaders"].size(); i++){
+		// loadShader(cfg["Shaders"][i]);
+	// }
 	for(int i=0; i<cfg["Images"].size(); i++){
 		loadImage(cfg["Images"][i]);
 	}
@@ -31,6 +32,26 @@ void ResourceLoader::loadResources(CFG::Node &cfg){
 	Engine::genVao(model_vertices, model_coords, model_normals, model_indices, resources);
 }
 
+bool ResourceLoader::loadShaders(){
+	using namespace boost::filesystem;
+	try {
+		path p(shaderPath);
+		auto dir_it = directory_iterator(p);
+		for(dir_it; dir_it != directory_iterator(); dir_it++){
+			auto shaderName = (*dir_it).path().stem().string();
+
+			if(shaders.find(shaderName) == shaders.end()){
+				cout<<"shader: "<<shaderName<<endl;
+				shaders[shaderName] = compileShader(shaderName + ".glsl");
+			}
+		}
+	return true;
+	}
+	catch (const filesystem_error& ex){
+		cout << ex.what() << '\n';
+	}
+	return false;
+}
 bool ResourceLoader::loadShader(CFG::Node &cfg){
 
 	string shaderName = cfg.value;

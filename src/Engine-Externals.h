@@ -368,7 +368,6 @@ void sampleNormal(glm::vec2 mouse){
     glReadPixels(mouse.x, mouse.y, 1, 1, GL_RGBA, GL_HALF_FLOAT, &normal);
 
     Helper::dataUnderMouse.normal = glm::unpackHalf4x16(normal);
-    // Helper::dataUnderMouse.objID = Helper::dataUnderMouse.normal.w*65535.f;
     Helper::dataUnderMouse.objID = Helper::dataUnderMouse.normal.w;
 }
 void sampleID(glm::vec2 mouse){

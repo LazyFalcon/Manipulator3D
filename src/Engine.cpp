@@ -571,7 +571,8 @@ void setup(Scene &scene){
 		glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer.ID, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer.ID, 0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
+		// glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
 			glDrawBuffers(2,&DrawBuffers[0]);
 		glClearColor(ctmp.x, ctmp.y, ctmp.z, 0.f);
 		glClearDepth(1);
@@ -652,8 +653,6 @@ void drawOutline(Scene &scene){
 
 	auto shader = shaders["SceneOutline"];
 	glUseProgram(shader);
-	static auto uPV = glGetUniformLocation(shader,"uPV");
-	static auto uView = glGetUniformLocation(shader,"uView");
 	static auto uModel = glGetUniformLocation(shader,"uModel");
 	static auto uColor = glGetUniformLocation(shader,"uColor");
 
@@ -662,13 +661,16 @@ void drawOutline(Scene &scene){
 	{ // fill stencil
 		// glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
+		glDrawBuffers(0,&DrawBuffers[0]);
+		glClear(GL_STENCIL_BUFFER_BIT);
 		glClearStencil(0);
 
 		glDrawBuffers(0,&DrawBuffers[0]);
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glDepthFunc(GL_LEQUAL);
 		glDisable(GL_BLEND);
-		glDepthMask(GL_TRUE);
+		// glDepthMask(GL_TRUE);
+		glDepthMask(GL_FALSE);
 		glDisable(GL_CULL_FACE);
 		// glEnable(GL_DEPTH_TEST);
 		glDisable(GL_DEPTH_TEST);
@@ -678,16 +680,13 @@ void drawOutline(Scene &scene){
 		glStencilMask(0x1);
 		glStencilFunc(GL_ALWAYS,0x1,0xFF);
 
-		glUniform(shader, camera.ProjectionMatrix, uPV);
-		glUniform(shader, camera.ViewMatrix, uView);
-
 		glBindVertexArray(scene.resources->VAO);
 		for(auto &obj : objects){
 			auto &mesh = *(obj->mesh);
 
-			glm::mat4 transform = glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
+			glm::mat4 transform = camera.ProjectionMatrix*camera.ViewMatrix*glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
-			glUniform(shader, obj->material.color, uColor);
+			glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
 			glUniform(shader, transform, uModel);
 			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 		}
@@ -697,33 +696,30 @@ void drawOutline(Scene &scene){
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthBuffer.ID, 0);
 		glDrawBuffers(1,&DrawBuffers[0]);
 
-		// auto shader = shaders["EnviroDefOutlining"];
-		// glUseProgram(shader);
-
-		glUniform(shader, camera.ProjectionMatrix, uPV);
-		glUniform(shader, camera.ViewMatrix, uView);
-
-		glDisable(GL_DEPTH_TEST);
-		// glEnable(GL_DEPTH_TEST);
+		// glDisable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
 		glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 		glStencilMask(0x00);
 		glStencilFunc(GL_NOTEQUAL,0x1,0xFF);
+		// glStencilFunc(GL_ALWAYS,0x1,0xFF);
 		// glStencilFunc(GL_EQUAL,0x1,0xFF);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glLineWidth(8);
+		glLineWidth(2);
 		glDisable(GL_LINE_SMOOTH);
 		for(auto &obj : objects){
 			auto &mesh = *(obj->mesh);
 
-			glm::mat4 transform = glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
+			glm::mat4 transform = camera.ProjectionMatrix*camera.ViewMatrix*glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
 			glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
+			// glUniform(shader, transform*glm::scale(glm::vec3(1.01)), uModel);
 			glUniform(shader, transform, uModel);
 			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
+	glStencilMask(0xff);
 	glDisable(GL_STENCIL_TEST);
 	glBindVertexArray(0);
 }
@@ -923,8 +919,8 @@ void blurDownsampledWithBlendToColor(Texture &source, Texture &target){ /// zakÅ
     - ssao do fullSize i blur
 */
 void SSAO(){
-	bool depthOnlySSAO = false;
-	bool SSAOWithDownsample = true;
+	bool depthOnlySSAO = true;
+	bool SSAOWithDownsample = false;
 	if(depthOnlySSAO){
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
 			glEnable(GL_BLEND);
@@ -939,9 +935,10 @@ void SSAO(){
 			auto uNear = glGetUniformLocation(shader,"uNear");
 			auto uFar = glGetUniformLocation(shader,"uFar");
 
-			depthBuffer2.bind(0);
+			depthBuffer2.bind(GL_TEXTURE0, uDepthBuffer);
 
 			glActiveTexture(GL_TEXTURE1);
+			glUniform1i(u_SSAORandom, 1);
 			glBindTexture(GL_TEXTURE_2D, globalResources->textures["SSAORandom"]);
 
 			glUniform(shader, camera.m_near, uNear);

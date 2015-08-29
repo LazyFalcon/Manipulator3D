@@ -1,8 +1,8 @@
 #ifdef COMPILING_VERTEX_SHADER
 
-layout(location=0)in vec3 mVertex;
+layout(location=0)in vec4 mVertex;
 layout(location=1)in vec2 mUV;
-layout(location=2)in vec3 mNormal;
+layout(location=2)in vec4 mNormal;
 
 uniform mat4 uPV;
 uniform mat4 uView;
@@ -16,9 +16,9 @@ out vec4 vVertex;
 out vec4 vVertexInShadow;
 
 void main(){
-	vNormal = uNM*(vec4(mNormal,0));
+	vNormal = uNM*(vec4(mNormal.xyz,0));
 	// vNormal = model*(vec4(Normal,0));
-	vVertex = uModel*(vec4(mVertex,1));
+	vVertex = uModel*mVertex;
 
 	vUV = mUV;
 	gl_Position = uPV*uView*vVertex;
@@ -31,7 +31,7 @@ void main(){
 
 uniform sampler2D uMetalTex;
 
-uniform uint uID;
+uniform float uID;
 uniform vec4 uColor;
 
 in vec2 vUV;
@@ -43,7 +43,7 @@ void main(void){
 	vec4 N = normalize(vNormal);
 
 	gl_FragData[0] = uColor;
-	gl_FragData[1] = vec4(N.xyz, uID/16384.f);
+	gl_FragData[1] = vec4(N.xyz, uID);
 }
 
 #endif

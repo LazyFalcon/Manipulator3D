@@ -216,15 +216,15 @@ void renderLoop(){
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
 	Engine::copyDepth(*scene);
-    Engine::sampleDataUnderMouse(mousePosition);
+	Engine::sampleDataUnderMouse(mousePosition);
 	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
 	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
 	if(globalSettings & SOBEL)Engine::Sobel();
 	if(globalSettings & HDR)Engine::HDR(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
+	Engine::drawOutline(*scene);
 	// Engine::postprocess(*scene);
 	Engine::postprocess(*scene);
-	Engine::drawOutline(*scene);
 
 	if(!RC->commands.empty()){
 		Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
@@ -332,8 +332,9 @@ void mainLoop(){
 			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
 			ui.rect().text("Selected: " + std::to_string(Helper::getCurrentSelection().size())).font("ui_12"s)();
+			ui.rect().text("ID: " + std::to_string(Helper::getIDUnderMouse())).font("ui_12"s)();
 		ui.endTable();
-
+		ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
 		ui.image(Helper::getScreenCursor(camera), "Cursor").color(0xFFFFFFFF)();
 
 		ui.end();
