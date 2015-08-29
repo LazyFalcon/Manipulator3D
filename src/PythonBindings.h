@@ -20,7 +20,7 @@ void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)
 void reloadAndInitMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 
 
-void handleInput(int key, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+void handleInput(int key, int action, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 
 std::vector<std::string> getScriptList();
 bpl::object loadFile(std::string);

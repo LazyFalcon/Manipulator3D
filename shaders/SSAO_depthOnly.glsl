@@ -17,12 +17,8 @@ void main(){
 #ifdef COMPILING_FRAGMENT_SHADER
 out vec4 outAO;
 
-uniform sampler2D uNormalBuffer;
 uniform sampler2D uDepthBuffer;
-uniform sampler2D uSSAORandom;
-
-uniform mat4 uInvPV;
-uniform mat4 uView;
+// uniform sampler2D uSSAORandom;
 
 in vec2 vUV;
 
@@ -33,9 +29,9 @@ float ph = 1.0/720.0*0.5;
 const vec2 screen = vec2(1400, 720);
 
 float readDepth(in vec2 coord){
-	if (coord.x<0||coord.y<0) return 1.0;
+	// if (coord.x<0||coord.y<0) return 1.0;
 	float nearZ = camerarange.x;
-	float farZ =camerarange.y;
+	float farZ = camerarange.y;
 	float posZ = texture(uDepthBuffer, coord).x;
 	return (2.0 * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));
 }
@@ -60,55 +56,55 @@ vec4 calAO(float depth, vec2 uv,  float dw, float dh, inout float ao){
 	float coordw = vUV.x + (uv.x + dw)/depth*0.5;
 	float coordh = vUV.y + (uv.y + dh)/depth*0.5;
 
-	if (coordw  < 1.0 && coordw  > 0.0 && coordh < 1.0 && coordh  > 0.0){
+	// if (coordw  < 1.0 && coordw  > 0.0 && coordh < 1.0 && coordh  > 0.0){
 
 	vec2 coord = vec2(coordw , coordh);
 	temp = compareDepths(depth, readDepth(coord));
 
-	}
-	ao += temp;
+	// }
+	ao += temp*1.3;
 	return temp*bleed;
 }
 const vec2 kernel[16] = vec2[]
 (
-	vec2(  0.5244396,  0.6552907 ),
-	vec2(  0.7802591,  0.1212579 ),
-	vec2( -0.1709561,  0.9723814 ),
-	vec2(  0.08371004, 0.3698372 ),
-	vec2(  0.1981699, -0.0234299 ),
-	vec2( -0.2241783, -0.4910517 ),
-	vec2(  0.615613,  -0.6265193 ),
-	vec2( -0.5282364,  0.02899032 ),
-	vec2(  0.9069752, -0.2703182 ),
-	vec2( -0.3698249,  0.3978794 ),
-	vec2( -0.7183862, -0.6849706 ),
-	vec2( -0.7184948,  0.6608582 ),
-	vec2( -0.0925712, -0.9822884 ),
-	vec2(  0.20099,   -0.4438035 ),
-	vec2( -0.9637656,  0.1957591 ),
-	vec2( -0.8576232, -0.262913 )
-	// vec2( -0.94201624,  -0.39906216 ),
-	// vec2(  0.94558609,  -0.76890725 ),
-	// vec2( -0.094184101, -0.92938870 ),
-	// vec2(  0.34495938,   0.29387760 ),
-	// vec2( -0.91588581,   0.45771432 ),
-	// vec2( -0.81544232,  -0.87912464 ),
-	// vec2( -0.38277543,   0.27676845 ),
-	// vec2(  0.97484398,   0.75648379 ),
-	// vec2(  0.44323325,  -0.97511554 ),
-	// vec2(  0.53742981,  -0.47373420 ),
-	// vec2( -0.26496911,  -0.41893023 ),
-	// vec2(  0.79197514,   0.19090188 ),
-	// vec2( -0.24188840,   0.99706507 ),
-	// vec2( -0.81409955,   0.91437590 ),
-	// vec2(  0.19984126,   0.78641367 ),
-	// vec2(  0.14383161,  -0.14100790 )
+	// vec2(  0.5244396,  0.6552907 ),
+	// vec2(  0.7802591,  0.1212579 ),
+	// vec2( -0.1709561,  0.9723814 ),
+	// vec2(  0.08371004, 0.3698372 ),
+	// vec2(  0.1981699, -0.0234299 ),
+	// vec2( -0.2241783, -0.4910517 ),
+	// vec2(  0.615613,  -0.6265193 ),
+	// vec2( -0.5282364,  0.02899032 ),
+	// vec2(  0.9069752, -0.2703182 ),
+	// vec2( -0.3698249,  0.3978794 ),
+	// vec2( -0.7183862, -0.6849706 ),
+	// vec2( -0.7184948,  0.6608582 ),
+	// vec2( -0.0925712, -0.9822884 ),
+	// vec2(  0.20099,   -0.4438035 ),
+	// vec2( -0.9637656,  0.1957591 ),
+	// vec2( -0.8576232, -0.262913 )
+	vec2( -0.94201624,  -0.39906216 ),
+	vec2(  0.94558609,  -0.76890725 ),
+	vec2( -0.094184101, -0.92938870 ),
+	vec2(  0.34495938,   0.29387760 ),
+	vec2( -0.91588581,   0.45771432 ),
+	vec2( -0.81544232,  -0.87912464 ),
+	vec2( -0.38277543,   0.27676845 ),
+	vec2(  0.97484398,   0.75648379 ),
+	vec2(  0.44323325,  -0.97511554 ),
+	vec2(  0.53742981,  -0.47373420 ),
+	vec2( -0.26496911,  -0.41893023 ),
+	vec2(  0.79197514,   0.19090188 ),
+	vec2( -0.24188840,   0.99706507 ),
+	vec2( -0.81409955,   0.91437590 ),
+	vec2(  0.19984126,   0.78641367 ),
+	vec2(  0.14383161,  -0.14100790 )
 );
 void main(void){
  //randomization texture:
- vec2 fres = vec2(20);
- vec4 random = texture(uSSAORandom, vUV*fres.xy);
- random = random*2.0-vec4(1.0);
+ // vec2 fres = vec2(20);
+ // vec4 random = texture(uSSAORandom, vUV*fres.xy);
+ // random = random*2.0-vec4(1.0);
 
  //initialize stuff:
  float depth = readDepth(vUV);
@@ -117,12 +113,16 @@ void main(void){
 
  	const int iterations = 8;
 	for(int i=0; i<iterations; ++i){
-	 gi += calAO(depth,kernel[i]/screen, pw, ph,ao);
-	 gi += calAO(depth,kernel[i]/screen, pw, -ph,ao);
-	 gi += calAO(depth,kernel[i]/screen, -pw, ph,ao);
-	 gi += calAO(depth,kernel[i]/screen, -pw, -ph,ao);
+	 // gi += calAO(depth,kernel[i]/screen, pw, ph, ao);
+	 // gi += calAO(depth,kernel[i]/screen, pw, -ph, ao);
+	 // gi += calAO(depth,kernel[i]/screen, -pw, ph, ao);
+	 // gi += calAO(depth,kernel[i]/screen, -pw, -ph, ao);
+	 gi += calAO(depth,vec2(0),  pw, ph,ao);
+	 gi += calAO(depth,vec2(0),  pw, -ph,ao);
+	 gi += calAO(depth,vec2(0),  -pw, ph,ao);
+	 gi += calAO(depth,vec2(0),  -pw, -ph,ao);
 
-	 //sample jittering:
+	 // sample jittering:
 	 // pw += random.x*0.0005;
 	 // ph += random.y*0.0005;
 
@@ -131,28 +131,10 @@ void main(void){
 	 ph *= 1.4;
 
 	}
-/*
- for(int i=0; i<8; ++i){
-	 //calculate color bleeding and ao:
-	 gi += calAO(depth,vec2(0),  pw, ph,ao);
-	 gi += calAO(depth,vec2(0),  pw, -ph,ao);
-	 gi += calAO(depth,vec2(0),  -pw, ph,ao);
-	 gi += calAO(depth,vec2(0),  -pw, -ph,ao);
+	vec4 finalAO = vec4(1.0-(ao/32.0));
+	vec4 finalGI = (gi/32)*0.6;
 
-	 //sample jittering:
-	 // pw += random.x*0.0005;
-	 // ph += random.y*0.0005;
-
-	 //increase sampling area:
-	 pw *= 1.4;
-	 ph *= 1.4;
- }
-*/
- //final values, some adjusting:
- vec4 finalAO = vec4(1.0-(ao/32.0));
- vec4 finalGI = (gi/32)*0.6;
-
- outAO = vec4(finalAO+finalGI);
+	outAO = vec4(finalAO+finalGI);
 }
 
 

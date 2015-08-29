@@ -258,7 +258,9 @@ glm::vec4 HermiteCardinal::nextPoint(){
 	finished = position == (double)(numOfSegments);
 	return eval(position);
 }
-void HermiteCardinal::reset(){}
+void HermiteCardinal::reset(){
+	position = 0;
+}
 void HermiteCardinal::generatePath(){
     numOfSegments = points.size()-2;
 
@@ -305,7 +307,9 @@ glm::vec4 HermiteFiniteDifference::nextPoint(){
 	finished = position == (double)(numOfSegments);
 	return eval(position);
 }
-void HermiteFiniteDifference::reset(){}
+void HermiteFiniteDifference::reset(){
+	position = 0;
+}
 void HermiteFiniteDifference::generatePath(){
     numOfSegments = points.size()-1;
 
@@ -361,7 +365,9 @@ glm::vec4 HermiteFiniteDifferenceClosed::nextPoint(){
 	finished = position == (double)(numOfSegments);
 	return eval(position);
 }
-void HermiteFiniteDifferenceClosed::reset(){}
+void HermiteFiniteDifferenceClosed::reset(){
+	position = 0;
+}
 void HermiteFiniteDifferenceClosed::generatePath(){
     numOfSegments = points.size();
 

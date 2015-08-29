@@ -51,6 +51,7 @@ glm::vec2      mouserClick(0);
 float          mouseMoveLen(0);
 bool           LeftMousePressed = false;
 bool           RightMousePressed = false;
+bool           MiddleMousePressed = false;
 bool           signal10ms = false;
 glm::mat4      orthoMatrix;
 GLFWwindow     *window;
@@ -187,7 +188,6 @@ int main(){
 
 	RC->robot = scene->robot;
 
-	glfwShowWindow(window);
 	mainLoop();
 
 	PythonBindings::terminate();
@@ -214,16 +214,15 @@ void renderLoop(){
 	// Engine::generateShadowMap(*scene);
 	Engine::setup(*scene);
 	Engine::renderScene(*scene);
-	Engine::copyDepth(*scene);
-    Engine::sampleDataUnderMouse(mousePosition);
+	Engine::sampleDataUnderMouse(mousePosition);
 	// if(globalSettings & LIGHTS)Engine::renderLights(*scene);
 	// if(globalSettings & LIGHTS)Engine::applyLights(*scene);
 	if(globalSettings & SOBEL)Engine::Sobel();
 	if(globalSettings & HDR)Engine::HDR(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
+	Engine::drawOutline(*scene);
 	// Engine::postprocess(*scene);
 	Engine::postprocess(*scene);
-	Engine::drawOutline(*scene);
 
 	if(!RC->commands.empty()){
 		Engine::drawLineStrip(RC->getCommand()->getPath(), 0xFFB300F0);
@@ -245,6 +244,7 @@ void prerequisites(){
 	Editor::init();
 	jacobianTransposeInitialCall(*(scene->robot));
 	PythonBindings::init(RC, scene, "script_a1.");
+	glfwShowWindow(window);
 }
 void updates(float dt){
 	Editor::update(*RC);
@@ -330,11 +330,17 @@ void mainLoop(){
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
-			ui.rect().text("Caret: " + std::to_string(ui.textEditor.caretPosition())).font("ui_12"s)();
+			ui.rect().text("Selected: " + std::to_string(Helper::getCurrentSelection().size())).font("ui_12"s)();
+			ui.rect().text("ID: " + std::to_string(Helper::getIDUnderMouse())).font("ui_12"s)();
 		ui.endTable();
+		ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
+		ui.image(Helper::getScreenCursor(camera), "Cursor").color(0xFFFFFFFF)();
 
 		ui.end();
 		renderLoop();
+
+		Helper::moveCameraByMouse(camera, mousePosition, mouseTranslation, MiddleMousePressed);
+
 		g_scrollDel = 0.0;
 		glfwPollEvents();
 	}
@@ -357,8 +363,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	Helper::processKeys(key, action, mods);
 	Editor::processKeys(key, action, mods, *RC);
 
-    if(action == GLFW_PRESS)
-        PythonBindings::handleInput(key, mods, RC, scene);
+	PythonBindings::handleInput(key, action,  mods, RC, scene);
 
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
@@ -378,58 +383,24 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		RC->pause();
 	}
 
-	float targetStep = 0.1;
-	float targetStepPerSec = targetStep/1;
-	if(false){
-	if(key == GLFW_KEY_UP && action == GLFW_PRESS)
-		robotTarget += glm::vec4(targetStep,0,0,0);
-	if(key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-		robotTarget += glm::vec4(-targetStep,0,0,0);
-
-	if(key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,targetStep,0,0);
-	if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,-targetStep,0,0);
-
-	if(key == GLFW_KEY_HOME && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,0,targetStep,0);
-	if(key == GLFW_KEY_END && action == GLFW_PRESS)
-		robotTarget += glm::vec4(0,0,-targetStep,0);
-
-	if(key == GLFW_KEY_UP && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(targetStepPerSec,0,0,0);
-	if(key == GLFW_KEY_DOWN && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(-targetStepPerSec,0,0,0);
-
-	if(key == GLFW_KEY_LEFT && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,targetStepPerSec,0,0);
-	if(key == GLFW_KEY_RIGHT && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,-targetStepPerSec,0,0);
-
-	if(key == GLFW_KEY_HOME && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,0,targetStepPerSec,0);
-	if(key == GLFW_KEY_END && action == GLFW_REPEAT)
-		robotTarget += glm::vec4(0,0,-targetStepPerSec,0);
-
-	}
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
-	ui.mouseKeyInput(button, action);
 	Helper::processMouse(button, action, mods);
-    double m_x, m_y;
-    glfwGetCursorPos(window, &m_x, &m_y);
+	ui.mouseKeyInput(button, action);
+	double m_x, m_y;
+	glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
 		glfwPollEvents();
-        mouselClick = glm::vec2(m_x, m_y);
+		mouselClick = glm::vec2(m_x, m_y);
 		ui.setlClick(true);
 		LeftMousePressed = true;
-        lClick = true;
+		lClick = true;
 	}
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_RELEASE){
 		LeftMousePressed = false;
 	}
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_PRESS){
-        mouserClick = glm::vec2(m_x, m_y);
+		mouserClick = glm::vec2(m_x, m_y);
 		rClick = !rClick;
 		ui.setrClick(true);
 		RightMousePressed = true;
@@ -437,6 +408,13 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	}
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_RELEASE){
 		RightMousePressed = false;
+	}
+
+	if(button == GLFW_MOUSE_BUTTON_MIDDLE and action == GLFW_PRESS){
+		MiddleMousePressed = true;
+	}
+	if(button == GLFW_MOUSE_BUTTON_MIDDLE and action == GLFW_RELEASE){
+		MiddleMousePressed = false;
 	}
 }
 void dropCallback(GLFWwindow* window, int count, const char** paths){

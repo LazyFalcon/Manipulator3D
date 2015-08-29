@@ -5,7 +5,7 @@ class RobotController;
 
 enum CommandType : u32
 {
-	EMPTY, SINGLEMOVE, MOVE, FOLLOW, WAIT, EXECUTE,
+	EMPTY, SINGLEMOVE, MOVE, FOLLOW, WAIT, EXECUTE, EXECUTE_PY
 };
 
 class ICommand
@@ -149,6 +149,21 @@ class ExecuteCommand : public ICommand
 {
 public:
     ExecuteCommand() : ICommand(EXECUTE){}
+	void init(RobotController &rc);
+	bool update(RobotController &rc, float dt);
+	bool exit(RobotController &rc);
+	vector<glm::vec4>& getPath();
+	vector<glm::vec4>& getPolyline();
+
+	std::function<void(RobotController &rc)> onEnter;
+	std::function<void(RobotController &rc)> onUpdate;
+	std::function<void(RobotController &rc)> onExit;
+};
+
+class ExecutePythonCommand : public ICommand
+{
+public:
+	ExecutePythonCommand() : ICommand(EXECUTE_PY){}
 	void init(RobotController &rc);
 	bool update(RobotController &rc, float dt);
 	bool exit(RobotController &rc);
