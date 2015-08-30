@@ -8,6 +8,12 @@
 #include "IInterpolator.h"
 #include "RobotController.h"
 #include "Robot-Commands.h"
+#include "PythonBindings.h"
+#include <boost/python/call.hpp>
+
+namespace PythonBindings {
+extern bpl::object mainScript;
+}
 vector <glm::vec4> fakePath;
 u32 globalFlags = 0;
 u32 lastPathIterationCount;
@@ -39,7 +45,7 @@ void ExecuteCommand::init(shared_ptr<RobotController> &rc){
 	if(onEnter) onEnter(rc);
 };
 bool ExecuteCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
-	if(onUpdate) onUpdate(rc, scene, dt);
+	if(onUpdate && onUpdate(rc, scene, dt)) return true;
     else return exit(rc, scene);
     return false;
 }
@@ -57,16 +63,31 @@ vector<glm::vec4>& ExecuteCommand::getPolyline(){
 
 void ExecutePythonCommand::init(shared_ptr<RobotController> &rc){
 	isRuning = true;
-	if(initIsSet) onEnter(rc);
+	try {
+		callback.attr("enter")(rc);
+	}
+	catch (boost::python::error_already_set) {
+		PyErr_Print();
+	}
 };
 bool ExecutePythonCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
-	if(updateIsSet) onUpdate(rc, scene, dt);
-	else return exit(rc, scene);
-	return false;
+	try {
+		return boost::python::extract<bool>(callback.attr("update")(rc, scene, dt));
+	}
+	catch (boost::python::error_already_set) {
+		PyErr_Print();
+		return true;
+	}
 }
+
 bool ExecutePythonCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	isRuning = false;
-	if(exitIsSet) onExit(rc, scene);
+	try {
+		callback.attr("exit")(rc, scene);
+	}
+	catch (boost::python::error_already_set) {
+		PyErr_Print();
+	}
 	return true;
 }
 vector<glm::vec4>& ExecutePythonCommand::getPath(){

@@ -162,9 +162,7 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 	bpl::class_<ExecutePythonCommandBuilder, std::shared_ptr<ExecutePythonCommandBuilder>>("ExecutePythonCommandBuilder", bpl::init<>())
 		.def("init", &ExecutePythonCommandBuilder::init, bpl::return_internal_reference<>())
 		.def("name", &ExecutePythonCommandBuilder::name, bpl::return_internal_reference<>())
-		.def("onEnter", &ExecutePythonCommandBuilder::onEnter, bpl::return_internal_reference<>())
-		.def("onUpdate", &ExecutePythonCommandBuilder::onUpdate, bpl::return_internal_reference<>())
-		.def("onExit", &ExecutePythonCommandBuilder::onExit, bpl::return_internal_reference<>())
+		.def("callback", &ExecutePythonCommandBuilder::callback, bpl::return_internal_reference<>())
 		.def("finish", &ExecutePythonCommandBuilder::finish, bpl::return_internal_reference<>())
 		;
 	bpl::class_<WaitCommandBuilder, std::shared_ptr<WaitCommandBuilder>>("WaitCommandBuilder", bpl::init<>())

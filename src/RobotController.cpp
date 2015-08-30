@@ -143,7 +143,6 @@ void RobotController::savePosition(){
 	exec().name("Save position").onEnter([](shared_ptr<RobotController> &rc){
 		auto &&vec = rc->robot->getVariables();
 		rc->positionCache.push({"--", rc->robot->endEffector.position, rc->robot->endEffector.quat, rc->robot->getVariables()});
-		return true;
 	}).finish(RC);
 
 }
@@ -152,7 +151,6 @@ void RobotController::peekPosition(){
 		if(rc->positionCache.empty()) return true;
 		SingleJointMoveCommandBuilder sjmcb;
 		sjmcb.init().name("Peek position").set(rc->positionCache.top().joints).jointVelocity(0.6).finish(rc);
-		return true;
 	}).finish(RC);
 }
 void RobotController::popPosition(){
@@ -161,7 +159,6 @@ void RobotController::popPosition(){
 		SingleJointMoveCommandBuilder sjmcb;
 		sjmcb.init().name("Peek position").set(rc->positionCache.top().joints).jointVelocity(0.6).finish(rc);
 		rc->positionCache.pop();
-		return true;
 	}).finish(RC);
 }
 

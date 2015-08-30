@@ -98,19 +98,31 @@ def c_init(RC):
 	print 'Hello from pyton callback!'
 	return True
 
-def c_update(RC, scene,  dt):
-	print 'Hue hue, krhhh!'
-	return True
+c_count = 10
+
+def uppa(x):
+	c_count = c_count -1
+	print x*30
+
+class c_update:
+	count = 0
+	def __init__(self, c):
+		self.count = c
+
+	def update(self, RC, scene,  dt):
+		for i in range(20):
+			if self.count >= 0:
+				print 'Hue hue, krhhh!'
+				self.count -= 1
+				return False
+		return True
 
 def c_exit(RC, scene):
 	return True
 
-def uppa(x):
-	print x*30
 def uppka(fun):
 	fun(2)
 # ---------------------------
-
 def init(RC, scene):
 	print 'Hello! This is first entry in this script.'
 	dataCollector.initialize(RC)
@@ -128,7 +140,10 @@ def init(RC, scene):
 	# RC.wait().time(2.0).finish(RC);
 	# RC.follow().name("Follow").target(scene.get("Cube.040")).jointVelocity(0.4).finish(RC)
 
-	RC.pyExec().name("Exec from py").onEnter(c_init).onUpdate(c_update).onExit(c_exit).finish(RC)
+	# RC.pyExec().name("Exec from py").onEnter(c_init).onUpdate(c_update).onExit(c_exit).finish(RC)
+
+	foo = c_update(10)
+	RC.pyExec().name("Exec from py").callback(foo).finish(RC)
 	RC.move().name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
 	RC.move().name("Circle!").interpolator(circlePath).velocity(1.0).jointVelocity(0.5).finish(RC)
 	print 'Now new order is created.'

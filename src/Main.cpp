@@ -190,7 +190,6 @@ int main(){
 
 	mainLoop();
 
-	PythonBindings::terminate();
 	Editor::clear();
 	Editor::MoveCommandBuilderWidget_terminate();
 	Engine::clear();
@@ -198,6 +197,7 @@ int main(){
 	RC.reset();
 	scene.reset();
 	cerr<<"One says goodbye!"<<endl;
+	PythonBindings::terminate();
 
 	return 0;
 }

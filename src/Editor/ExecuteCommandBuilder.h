@@ -13,7 +13,7 @@ public:
 		execCommand->name = s;
 		return *this;
     }
-    ExecuteCommandBuilder& onEnter(std::function<bool(shared_ptr<RobotController> &rc)> fun){
+    ExecuteCommandBuilder& onEnter(std::function<void(shared_ptr<RobotController> &rc)> fun){
 		execCommand->onEnter = fun;
 		return *this;
 	}
@@ -21,7 +21,7 @@ public:
 		execCommand->onUpdate = fun;
 		return *this;
 	}
-    ExecuteCommandBuilder& onExit(std::function<bool(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)> fun){
+    ExecuteCommandBuilder& onExit(std::function<void(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)> fun){
 		execCommand->onExit = fun;
 		return *this;
 	}
@@ -42,23 +42,12 @@ public:
 		execCommand = make_shared<ExecutePythonCommand>();
 		return *this;
 	}
-    ExecutePythonCommandBuilder& name(const std::string s){
+	ExecutePythonCommandBuilder& name(const std::string s){
 		execCommand->name = s;
 		return *this;
-    }
-    ExecutePythonCommandBuilder& onEnter(boost::python::object fun){
-		execCommand->initIsSet = true;
-		execCommand->onEnter = fun;
-		return *this;
 	}
-    ExecutePythonCommandBuilder& onUpdate(boost::python::object fun){
-		execCommand->updateIsSet = true;
-		execCommand->onUpdate = fun;
-		return *this;
-	}
-    ExecutePythonCommandBuilder& onExit(boost::python::object fun){
-		execCommand->exitIsSet = true;
-		execCommand->onExit = fun;
+	ExecutePythonCommandBuilder& callback(boost::python::object &fun){
+		execCommand->callback = fun;
 		return *this;
 	}
 

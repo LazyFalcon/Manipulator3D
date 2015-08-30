@@ -158,7 +158,7 @@ public:
 	vector<glm::vec4>& getPolyline();
 
 	std::function<void(shared_ptr<RobotController> &rc)> onEnter;
-	std::function<void(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt)> onUpdate;
+	std::function<bool(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt)> onUpdate;
 	std::function<void(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)> onExit;
 };
 
@@ -166,19 +166,16 @@ class ExecutePythonCommand : public ICommand
 {
 public:
 	ExecutePythonCommand() : ICommand(EXECUTE_PY){}
+	~ExecutePythonCommand(){
+		std::cerr<<"delete py callback"<<std::endl;
+	}
 	void init(shared_ptr<RobotController> &rc);
 	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
 	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
-	bool initIsSet = false;
-	bool updateIsSet = false;
-	bool exitIsSet = false;
-
-	boost::python::object onEnter;
-	boost::python::object onUpdate;
-	boost::python::object onExit;
+	boost::python::object callback;
 };
 
 
