@@ -17,7 +17,8 @@
 #define NAM_START {
 
 extern UI::IMGUI ui;
-extern unique_ptr<Scene> scene;
+extern shared_ptr<RobotController> RC;
+// extern shared_ptr<Scene> scene;
 /*
 	Robot ma w IK wbudowane sledzenie punktu z okresloną predkością, nie udaje się do zadanego punktu od razu. wiec jak interpolator wypluje kolejny punkt robot dojedzie do niego
 	- ze "stałą" prędkością(po prostej)
@@ -35,68 +36,14 @@ static const double hdpi = 0.5 * 3.141592653589793;
 static const double sqdpi = 3.141592653589793 * 3.141592653589793;
 static const double dpi2 = 2.0 * 3.141592653589793;
 
-Graph var0("var1", Graph::LastX, 0xFF0000FF, 250);
-// Graph var1("var1", Graph::LastX, 0x00FF00FF, 250);
-// Graph var2("var1", Graph::LastX, 0x0000FFFF, 250);
-// Graph var3("var1", Graph::LastX, 0xFFFF00FF, 250);
-// Graph var4("var1", Graph::LastX, 0xFF00FFFF, 250);
-// Graph var5("var1", Graph::LastX, 0xFFFFFFFF, 250);
-// Graph boundUp("var1", Graph::LastX, 0x202020FF, 250);
-// Graph boundDown("var1", Graph::LastX, 0x202020FF, 250);
-// Graph zero("var1", Graph::LastX, 0x202020FF, 250);
-// Plot mainPlot;
-
-void RCTest(RobotController &rc){
-	// glm::vec4 p0(2, 5, 4, 1);
-	// glm::vec4 p1(4, 0, 5, 1);
-	// glm::vec4 p2(1, -5, 2, 1);
-	// glm::vec4 p3(0, -5, 3, 1);
-	// glm::vec4 p4(-1, -5, 2, 1);
-	// glm::vec4 p5(-1, -5.3, 1.9, 1);
-	// glm::vec4 p6(-4, -4, 1.9, 1);
-
-	// rc.grabObject(scene->get("Cube.039"));
-	// rc.grabObject(scene->get("Cube.038"));
-	// rc.grabObject(scene->get("Cube.037"));
-
-	// std::cout<<"Start test"<<std::endl;
-	// rc.move(new HermiteFiniteDifference({p0, p1, p2, p3, p4, p5, p6}), "move 4");
-	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p1, p2, p3, p4, p5, p6}), "First move");
-	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifference, {p0, p1, p2, p3, p4, p5, p6}), "First move");
-	// rc.move(addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6, p1, p4, p5, p2}), "Second move");
-	// rc.wait(20);
-	// addInterpolator(Interpolator::HermiteFiniteDifferenceClosed, {p0, p3, p6})->name = "Hermite Closed";
-	// addInterpolator(Interpolator::HermiteCardinal, {p0, p3, p6})->name = "Hermite Cardinal";
-
-	// var0.setBouds({0, 250, -pi2, pi2});
-	// var1.setBouds({0, 250, -pi2, pi2});
-	// var2.setBouds({0, 250, -pi2, pi2});
-	// var3.setBouds({0, 250, -pi2, pi2});
-	// var4.setBouds({0, 250, -pi2, pi2});
-	// var5.setBouds({0, 250, -pi2, pi2});
-	// boundUp.setBouds({0, 250, -pi2, pi2});
-	// boundDown.setBouds({0, 250, -pi2, pi2});
-	// zero.setBouds({0, 250, -pi2, pi2});
-	// mainPlot.push(&var0);
-	// mainPlot.push(&var1);
-	// mainPlot.push(&var2);
-	// mainPlot.push(&var3);
-	// mainPlot.push(&var4);
-	// mainPlot.push(&var5);
-	// mainPlot.push(&boundUp);
-	// mainPlot.push(&boundDown);
-	// mainPlot.push(&zero);
-	// mainPlot.push(&jacobianPrecision);
-	// plotList.push_front(&mainPlot);
-
-}
+void RCTest(RobotController &rc){}
 
 void RobotController::run(){
 	if (!commands.empty() && commandIter != commands.end()){
 		state = RCStates::Run;
 		//commandIter = commands.begin();
 		if(!(*commandIter)->isRuning){
-			(*commandIter)->init(*this);
+			(*commandIter)->init(RC);
 		}
 	}
 }
@@ -116,7 +63,7 @@ void RobotController::next(){
 	}
 	else {
 		Editor::set(*commandIter);
-		(*commandIter)->init(*this);
+		(*commandIter)->init(RC);
 	}
 }
 void RobotController::prev(){
@@ -126,7 +73,7 @@ void RobotController::prev(){
 	}
 }
 
-bool RobotController::update(float dt){
+bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
 
 	if(commandIter == commands.end()){
 		stop();
@@ -135,7 +82,7 @@ bool RobotController::update(float dt){
 	if(state == RCStates::Pause)
 		return false;
 
-	if((*commandIter)->update(*this, dt)){
+	if((*commandIter)->update(rc, scene, dt)){
 		std::cout<<"Starting new job."<<endl;
 		next();
 		return true;
@@ -164,12 +111,12 @@ void RobotController::grabObject(shared_ptr<Entity> &obj){
 	executeBuilder
         .init()
         .name("Grab target")
-		.onEnter([&obj, this](RobotController &rc){
+		.onEnter([&obj, this](shared_ptr<RobotController> &rc){
 			// RCUtils::pinObjectToEffector(obj, rc.robot->chain.back()->entity);
-			RCUtils::pinObjectToEffector(obj, rc.robot->chain.back()->entity);
+			RCUtils::pinObjectToEffector(obj, rc->robot->chain.back()->entity);
             return true;
 		})
-		.finish(*this);
+		.finish(RC);
 
 	moveBuilder
 		.init()
@@ -184,38 +131,38 @@ void RobotController::grabObject(shared_ptr<Entity> &obj){
     executeBuilder
         .init()
         .name("Release target")
-		.onEnter([obj](RobotController &rc){
+		.onEnter([obj](shared_ptr<RobotController> &rc){
 			RCUtils::releaseObjects();
             return true;
 		})
-		.finish(*this);
+		.finish(RC);
 
 }
 
 void RobotController::savePosition(){
-	exec().name("Save position").onEnter([](RobotController &rc){
-		auto &&vec = rc.robot->getVariables();
-		rc.positionCache.push({"--", rc.robot->endEffector.position, rc.robot->endEffector.quat, rc.robot->getVariables()});
+	exec().name("Save position").onEnter([](shared_ptr<RobotController> &rc){
+		auto &&vec = rc->robot->getVariables();
+		rc->positionCache.push({"--", rc->robot->endEffector.position, rc->robot->endEffector.quat, rc->robot->getVariables()});
 		return true;
-	}).finish(*this);
+	}).finish(RC);
 
 }
 void RobotController::peekPosition(){
-	exec().name("Peek position").onEnter([](RobotController &rc){
-		if(rc.positionCache.empty()) return true;
+	exec().name("Peek position").onEnter([](shared_ptr<RobotController> &rc){
+		if(rc->positionCache.empty()) return true;
 		SingleJointMoveCommandBuilder sjmcb;
-		sjmcb.init().name("Peek position").set(rc.positionCache.top().joints).jointVelocity(0.6).finish(rc);
+		sjmcb.init().name("Peek position").set(rc->positionCache.top().joints).jointVelocity(0.6).finish(rc);
 		return true;
-	}).finish(*this);
+	}).finish(RC);
 }
 void RobotController::popPosition(){
-	exec().name("Pop position").onEnter([](RobotController &rc){
-		if(rc.positionCache.empty()) return true;
+	exec().name("Pop position").onEnter([](shared_ptr<RobotController> &rc){
+		if(rc->positionCache.empty()) return true;
 		SingleJointMoveCommandBuilder sjmcb;
-		sjmcb.init().name("Peek position").set(rc.positionCache.top().joints).jointVelocity(0.6).finish(rc);
-		rc.positionCache.pop();
+		sjmcb.init().name("Peek position").set(rc->positionCache.top().joints).jointVelocity(0.6).finish(rc);
+		rc->positionCache.pop();
 		return true;
-	}).finish(*this);
+	}).finish(RC);
 }
 
 namespace RCUtils NAM_START

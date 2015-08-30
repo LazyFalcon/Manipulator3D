@@ -203,7 +203,7 @@ int main(){
 }
 
 void fastLoop(float step){
-	RC->update(step/1000.0f);
+	RC->update(RC, scene, step/1000.0f);
 	scene->robot->update(step/1000.0f);
 	RCUtils::update();
 	bulletWorld.update(step/1000.0f);

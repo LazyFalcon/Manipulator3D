@@ -1,7 +1,9 @@
 ﻿#pragma once
+#include <boost/python/object.hpp>
 #include "IInterpolator.h"
 #include "JacobianTransposed.h"
 class RobotController;
+class Scene;
 
 enum CommandType : u32
 {
@@ -14,9 +16,9 @@ class ICommand
 public:
 	ICommand(CommandType type) : type(type), isRuning(false){}
 	//ICommand(uint32_t f) : flags(f){}
-	virtual void init(RobotController &rc) = 0;
-	virtual bool update(RobotController &rc, float dt) = 0;
-	virtual bool exit(RobotController &rc) = 0;
+	virtual void init(shared_ptr<RobotController> &rc) = 0;
+	virtual bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt) = 0;
+	virtual bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene) = 0;
 	virtual vector<glm::vec4>& getPath() = 0;
 	virtual vector<glm::vec4>& getPolyline() = 0;
 	virtual ~ICommand(){}
@@ -52,9 +54,9 @@ public:
 	vector<glm::vec4>& getPolyline(){
 		return interpolator->points;
 	}
-	void init(RobotController &rc);
-	bool update(RobotController &rc, float dt);
-	bool exit(RobotController &rc){}
+	void init(shared_ptr<RobotController> &rc);
+	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){}
 	glm::vec4 calculateNextPoint(float dt);
 	double calculateRequiredDistance(float dt);
 
@@ -80,9 +82,9 @@ class SingleJointMove : public ICommand
 public:
 	SingleJointMove() : ICommand(SINGLEMOVE){}
 	SingleJointMove(std::vector<double> &v) : ICommand(SINGLEMOVE), targetJointPosition(v){}
-	void init(RobotController &rc);
-	bool update(RobotController &rc, float dt);
-	bool exit(RobotController &rc);
+	void init(shared_ptr<RobotController> &rc);
+	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	void set(std::vector<double> &v){
 		targetJointPosition = v;
 	}
@@ -104,9 +106,9 @@ class FollowObject : public ICommand
 public:
 	FollowObject() : ICommand(FOLLOW), target(nullptr){}
 	FollowObject(std::vector<double> &v) : ICommand(FOLLOW), targetJointPosition(v), target(nullptr){}
-	void init(RobotController &rc);
-	bool update(RobotController &rc, float dt);
-	bool exit(RobotController &rc);
+	void init(shared_ptr<RobotController> &rc);
+	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	void set(glm::vec4 &t){
 		target = &t;
         pTarget = glm::vec4(0);
@@ -132,47 +134,51 @@ public:
 	}
 	WaitCommand() : ICommand(WAIT), releaseTime(0){}
 	WaitCommand(float time) : ICommand(WAIT), releaseTime(time){}
-	bool update(RobotController &rc, float dt);
+	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
 
-	void init(RobotController &rc);
-	bool exit(RobotController &rc);
+	void init(shared_ptr<RobotController> &rc);
+	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
 	float time = 0.f;
 	float releaseTime = 0.f;
 	u32 releaseFlag {0};
-	std::function<bool(RobotController &rc)> releaseFuction;
+	std::function<bool(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)> releaseFuction;
 };
 
 class ExecuteCommand : public ICommand
 {
 public:
     ExecuteCommand() : ICommand(EXECUTE){}
-	void init(RobotController &rc);
-	bool update(RobotController &rc, float dt);
-	bool exit(RobotController &rc);
+	void init(shared_ptr<RobotController> &rc);
+	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
-	std::function<void(RobotController &rc)> onEnter;
-	std::function<void(RobotController &rc)> onUpdate;
-	std::function<void(RobotController &rc)> onExit;
+	std::function<void(shared_ptr<RobotController> &rc)> onEnter;
+	std::function<void(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt)> onUpdate;
+	std::function<void(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)> onExit;
 };
 
 class ExecutePythonCommand : public ICommand
 {
 public:
 	ExecutePythonCommand() : ICommand(EXECUTE_PY){}
-	void init(RobotController &rc);
-	bool update(RobotController &rc, float dt);
-	bool exit(RobotController &rc);
+	void init(shared_ptr<RobotController> &rc);
+	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
-	std::function<void(RobotController &rc)> onEnter;
-	std::function<void(RobotController &rc)> onUpdate;
-	std::function<void(RobotController &rc)> onExit;
+	bool initIsSet = false;
+	bool updateIsSet = false;
+	bool exitIsSet = false;
+
+	boost::python::object onEnter;
+	boost::python::object onUpdate;
+	boost::python::object onExit;
 };
 
 

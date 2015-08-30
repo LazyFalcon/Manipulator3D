@@ -159,6 +159,14 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 
 	WaitCommandBuilder& (WaitCommandBuilder::*waitfinish_ptr)(shared_ptr<RobotController>&) = &WaitCommandBuilder::finish;
 
+	bpl::class_<ExecutePythonCommandBuilder, std::shared_ptr<ExecutePythonCommandBuilder>>("ExecutePythonCommandBuilder", bpl::init<>())
+		.def("init", &ExecutePythonCommandBuilder::init, bpl::return_internal_reference<>())
+		.def("name", &ExecutePythonCommandBuilder::name, bpl::return_internal_reference<>())
+		.def("onEnter", &ExecutePythonCommandBuilder::onEnter, bpl::return_internal_reference<>())
+		.def("onUpdate", &ExecutePythonCommandBuilder::onUpdate, bpl::return_internal_reference<>())
+		.def("onExit", &ExecutePythonCommandBuilder::onExit, bpl::return_internal_reference<>())
+		.def("finish", &ExecutePythonCommandBuilder::finish, bpl::return_internal_reference<>())
+		;
 	bpl::class_<WaitCommandBuilder, std::shared_ptr<WaitCommandBuilder>>("WaitCommandBuilder", bpl::init<>())
 		.def("init", &WaitCommandBuilder::init, bpl::return_internal_reference<>())
 		.def("name", &WaitCommandBuilder::name, bpl::return_internal_reference<>())
@@ -227,6 +235,7 @@ BOOST_PYTHON_MODULE(robotController_export){
 		.def("clean", &RobotController::clean)
 		.def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("pyExec", &RobotController::pyExec, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("jointMove", &RobotController::jointMove, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("follow", &RobotController::follow, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("getRobot", &RobotController::getRobot, bpl::return_value_policy<bpl::reference_existing_object>())

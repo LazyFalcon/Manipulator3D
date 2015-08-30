@@ -37,7 +37,7 @@ public:
 		commandIter = commands.end();
 	}
 
-	bool update(float dt);
+	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
 
 	void useEffector();
 	void releaseEffector();
@@ -74,6 +74,9 @@ public:
 	}
 	ExecuteCommandBuilder& exec(){
 		return execBuiilder.init();
+	}
+	ExecutePythonCommandBuilder& pyExec(){
+		return pyExecBuiilder.init();
 	}
 	FollowObjectBuilder& follow(){
 		return followBuiilder.init();
@@ -116,6 +119,7 @@ private:
 	MoveCommandBuilder moveCommandBuilder;
 	SingleJointMoveCommandBuilder singleJointMoveCommandBuilder;
 	ExecuteCommandBuilder execBuiilder;
+	ExecutePythonCommandBuilder pyExecBuiilder;
 	FollowObjectBuilder followBuiilder;
 };
 
