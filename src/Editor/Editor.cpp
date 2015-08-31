@@ -331,6 +331,7 @@ void PolylineEditor::processPoints(){
 void PolylineEditor::processControls(){
 	if(markedNodes.points.size() == 0)
 		return;
+	ui.mouseOverButton = editorState & EditorFlags::PinSelectedToMouse;
 	for(auto it : markedNodes.points){
 		auto r = project(*it);
 		ui.image(r.x-2.f, r.y-2.f, "Point")

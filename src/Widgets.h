@@ -189,7 +189,7 @@ public:
 
 				dropPosition.y -= 20.f;
 			}
-			if(ui.outOfTable())
+			if(ui.lClick() && ui.outOfTable())
 				dropped = false;
 
 			ui.endBox();
@@ -255,7 +255,7 @@ public:
 
 			dropPosition.y -= 20.f;
 		}
-		if(ui.outOfTable())
+		if(ui.lClick() && ui.outOfTable())
 			dropped = false;
 
 		ui.endBox();
@@ -330,7 +330,7 @@ public:
 			dropPosition.y -= 20.f;
 		}
 		ui.rect(lenght, 2)(UI::Label);
-		if(ui.outOfTable())
+		if(ui.lClick() && ui.outOfTable())
 			dropped = false;
 
 		ui.endBox();

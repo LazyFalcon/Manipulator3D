@@ -9,6 +9,9 @@
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 // FHDJB-J8KMP-RFV8D-FX3FT-YDBCW
 extern UI::IMGUI ui;
+namespace UI {
+extern int g_UILayer;
+};
 extern glm::vec2 screenSize;
 namespace Editor NAM_START
 
@@ -188,9 +191,9 @@ void PointListTab::run(TabManager &TM){
 					v.y -= 20;
 					v.z = 120;
 
-					ui.beginLayer();
+					UI::g_UILayer++;
 					ui.rect(v, 0xFF8080FF).text(to_string(it->second))(UI::Label);
-					ui.endLayer();
+					UI::g_UILayer--;
 				})
 				;
 			ui.rect(20, 20).text(">")(UI::CaptureMouse).onlClick([&it]{ Helper::setCursor(it->second); });
