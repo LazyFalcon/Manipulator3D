@@ -148,7 +148,6 @@ void moveCameraByScroll(Camera &camera, double xOff, double yOff){
 }
 
 /// --------------------------------
-std::map<std::string, Point> pointList;
 u32 groupPointCount;
 void savePoint(){}
 void getPoint(const std::string &name){}
@@ -161,6 +160,7 @@ std::string generatePointName(){
 }
 /// -------------------------------- CURSOR
 
+std::map<std::string, glm::vec4> g_pointList;
 glm::vec4 cursor(0,0,0,1);
 
 glm::vec4& getCursor(){
@@ -176,18 +176,26 @@ void setCursor(glm::vec4 v){
 void moveCursor(glm::vec4 v){
 	cursor = v;
 }
+void restoreCursorPos(const std::string &name){
+	setCursor(g_pointList[name]);
+}
+std::map<std::string, glm::vec4>& pointList(){
+	return g_pointList;
+}
+
 
 /// --------------------------------
-std::vector<shared_ptr<Entity>> currentSelection;
-std::map<std::string, std::vector<shared_ptr<Entity>>> groupList;
+std::vector<shared_ptr<Entity>> g_currentSelection;
+std::map<std::string, std::vector<shared_ptr<Entity>>> g_groupList;
 u32 groupNameCount;
 
-std::map<std::string, std::vector<shared_ptr<Entity>>>& listOfGroups(){
-    return groupList;
+std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList(){
+	return g_groupList;
 }
 std::vector<shared_ptr<Entity>>& getCurrentSelection(){
-	return currentSelection;
+	return g_currentSelection;
 }
+void restoreSelection(){}
 bool processMouse(int key, int action, int mods){
 	if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 		setCursor(dataUnderMouse.position);
@@ -195,15 +203,24 @@ bool processMouse(int key, int action, int mods){
 	}
 	if((mods & GLFW_MOD_CONTROL) && key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
 		auto &&obj = getObjectUnderMouse();
-		if(obj)
-			currentSelection.push_back(obj);
+		if(obj){
+			for(u32 i=0; i<g_currentSelection.size(); i++){
+				if(g_currentSelection[i]->ID == obj->ID){
+					g_currentSelection[i] = g_currentSelection.back();
+					g_currentSelection.pop_back();
+					return false;
+				}
+
+			}
+			g_currentSelection.push_back(obj);
+		}
 	}
 	else if(key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS){
 		std::cout<<"Marked!"<<std::endl;
 		auto &&obj = getObjectUnderMouse();
 		if(obj){
-			currentSelection.clear();
-			currentSelection.push_back(obj);
+			g_currentSelection.clear();
+			g_currentSelection.push_back(obj);
 		}
 	}
 
@@ -213,13 +230,13 @@ bool processKeys(int key, int action, int mods){
 		// if(key == 'W' && mods == GLFW_MOD_CONTROL){
 			// PythonBindings::mainScript.attr("plotData")(RC, scene);
 		// }
-		if((key == GLFW_KEY_KP_ENTER || key == GLFW_KEY_ENTER ) && !currentSelection.empty()){
-			saveGroup(currentSelection);
+		if((key == GLFW_KEY_KP_ENTER || key == GLFW_KEY_ENTER ) && !g_currentSelection.empty()){
+			saveGroup(g_currentSelection);
 		}
 	}
 }
 void saveGroup(std::vector<shared_ptr<Entity>> &s){
-	groupList[generateGroupName()] = s;
+	g_groupList[generateGroupName()] = s;
 	s.clear();
 }
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
@@ -249,21 +266,21 @@ void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, 
 /// http://stackoverflow.com/questions/9285384/how-does-import-work-with-boost-python-from-inside-python-files
 
 vector<string> listFilesInDirectory(const string &dir, const string &ext){
-    vector <string> out;
-    try {
-        path p(dir);
-        if(is_directory(p)){
-            auto dir_it = directory_iterator(p);
-            for(dir_it; dir_it != directory_iterator(); dir_it++){
-                if((*dir_it).path().extension().string() == ext)
-                    out.push_back((*dir_it).path().stem().string());
-            }
-        }
-    }
-    catch (const filesystem_error& ex){
-        cout << ex.what() << '\n';
-    }
-    return out;
+	vector <string> out;
+	try {
+		path p(dir);
+		if(is_directory(p)){
+			auto dir_it = directory_iterator(p);
+			for(dir_it; dir_it != directory_iterator(); dir_it++){
+				if((*dir_it).path().extension().string() == ext)
+					out.push_back((*dir_it).path().stem().string());
+			}
+		}
+	}
+	catch (const filesystem_error& ex){
+		cout << ex.what() << '\n';
+	}
+	return out;
 }
 void handleYamlFileDrop(const string &path){
 	auto &&yamlFile = CFG::Load(path);
@@ -286,9 +303,9 @@ void handleDrop(const string &path){
 
 std::string getClipboard(){}
 void dropCallback(int count, const char** paths){
-    for(u32 i=0; i<count; i++){
-        handleDrop(paths[i]);
-    }
+	for(u32 i=0; i<count; i++){
+		handleDrop(paths[i]);
+	}
 }
 
 

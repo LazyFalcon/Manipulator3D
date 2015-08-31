@@ -183,11 +183,6 @@ int main(){
 	ui.m_imageSet = &(globalResources->imageSets["Menu"]);
 	ui.setDefaultFont("ui_12", 12);
 
-	// scene->robot->chain[0]->value = 45*toRad;
-	// scene->robot->chain[3]->value = 30*toRad;
-
-	RC->robot = scene->robot;
-
 	mainLoop();
 
 	Editor::clear();
@@ -234,7 +229,7 @@ void renderLoop(){
 	}
 	// Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
- 	Engine::finalize(*scene);
+	Engine::finalize(*scene);
 	Engine::renderGUI(ui);
 	Engine::renderShapes();
 	glfwSwapBuffers(window);
@@ -243,7 +238,7 @@ void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	jacobianTransposeInitialCall(*(scene->robot));
-	PythonBindings::init(RC, scene, "script_a1.");
+	PythonBindings::init(RC, scene, "BaseScript");
 	glfwShowWindow(window);
 }
 void updates(float dt){
@@ -370,14 +365,14 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		for(auto &it : shadersToReload){
 			loader.reloadShader(it);
 		}
-        reloadWhatIsPossible();
+		reloadWhatIsPossible();
 	}
 
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
 		RC->run();
 	}
 	if(action == GLFW_PRESS && key == GLFW_KEY_F8){
-        PythonBindings::reloadMainScript(RC, scene);
+		PythonBindings::reloadMainScript(RC, scene);
 	}
 	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
 		RC->pause();
@@ -404,7 +399,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 		rClick = !rClick;
 		ui.setrClick(true);
 		RightMousePressed = true;
-        rClick = true;
+		rClick = true;
 	}
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_RELEASE){
 		RightMousePressed = false;
@@ -418,7 +413,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	}
 }
 void dropCallback(GLFWwindow* window, int count, const char** paths){
-    Helper::dropCallback(count, paths);
+	Helper::dropCallback(count, paths);
 }
 
 void reloadWhatIsPossible(){

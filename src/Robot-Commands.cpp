@@ -131,9 +131,9 @@ bool MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &sce
     // rc->robot->isReady = true;
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
-		previousPoint = rc->robot->endEffector.position;
+		// previousPoint = rc->robot->endEffector.position;
 	}
-    if(rc->robot->isReady && interpolator->finished){
+	if(rc->robot->isReady && interpolator->finished){
 		interpolator->reset();
 		return true;
 	}

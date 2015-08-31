@@ -33,7 +33,7 @@ void deletePoint(Point *p);
 void deletePoint(const std::string &name);
 std::string generatePointName();
 
-std::map<std::string, std::vector<shared_ptr<Entity>>>& listOfGroups();
+std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList();
 std::vector<shared_ptr<Entity>>& getCurrentSelection();
 bool processMouse(int key, int action, int mods);
 bool processKeys(int key, int action, int mods);

@@ -163,7 +163,7 @@ void PathListTab::run(TabManager &TM){
 
 /// ----- GROUP LIST TAB ---------------------------------------------
 void GroupListTab::run(TabManager &TM){
-    auto &list = Helper::listOfGroups();
+    auto &list = Helper::groupList();
 	for(auto &it : list){
         ui.rect(150, 20).text(it.first)();
         ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label)

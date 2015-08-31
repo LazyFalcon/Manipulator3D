@@ -38,8 +38,8 @@ public:
 
 	int type;
 	glm::vec4 axis;
-	glm::vec4 vecToA;
-	glm::vec4 vecToB;
+	glm::vec4 vecToA; /// wektor ze œrodka do zamocowania cz³onu
+	glm::vec4 vecToB; /// wektor do wyjœcia z cz³onu
 	std::string name;
 	std::shared_ptr<Entity> entity;
 	double min, max;

@@ -351,7 +351,7 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bullet
     vector<float> &floatArr = rgData["BBox"].cacheFloat;
 	btConvexHullShape *convex = new btConvexHullShape();
 	for(u32 i = 0; i<8; i++){
-		convex->addPoint(btVector3(floatArr[i*3+0], floatArr[i*3+1], floatArr[i*3+2]));
+		convex->addPoint(btVector3(floatArr[i*3+0]*0.5, floatArr[i*3+1]*0.5, floatArr[i*3+2]*0.5));
 	}
 
 	btTransform tr;
