@@ -44,6 +44,7 @@ std::string generateGroupName();
 
 glm::vec4& getCursor();
 glm::vec2 getScreenCursor(Camera &camera);
+void cursorVidgetHorizontal(glm::vec2 pos);
 
 /// -------------------------------- FILESYSTEM
 /**

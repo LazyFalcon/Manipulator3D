@@ -20,6 +20,7 @@
 #include "PythonBindings.h"
 #include <boost/filesystem.hpp>
 
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 #include "Helper.h"
 extern UI::IMGUI ui;
 extern shared_ptr<Scene> scene;
@@ -182,7 +183,11 @@ void restoreCursorPos(const std::string &name){
 std::map<std::string, glm::vec4>& pointList(){
 	return g_pointList;
 }
-
+void cursorVidgetHorizontal(glm::vec2 pos){
+	ui.rect(pos.x-100, pos.y, 100, 20).font("ui_12"s).edit(cursor.x)(UI::CaptureMouse);
+	ui.rect(pos.x, pos.y, 100, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
+	ui.rect(pos.x+100, pos.y, 100, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
+}
 
 /// --------------------------------
 std::vector<shared_ptr<Entity>> g_currentSelection;
@@ -197,6 +202,7 @@ std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 }
 void restoreSelection(){}
 bool processMouse(int key, int action, int mods){
+	if(ui.mouseOverButton) return false;
 	if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
 		setCursor(dataUnderMouse.position);
 		std::cout<<"Cursor!"<<std::endl;

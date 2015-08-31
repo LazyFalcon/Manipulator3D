@@ -277,6 +277,8 @@ void mainLoop(){
 			signal10ms = true;
 		}
 
+		glfwPollEvents();
+
 		ui.begin();
 		if(LeftMousePressed){
 			ui.setMouseLRepeat();
@@ -285,7 +287,6 @@ void mainLoop(){
 			ui.setMouseRRepeat();
 		}
 		ui.setMouse(mouse_x, mouse_y);
-		// ui.updateCounter(dt);
 		ui.updateCounter(msdt);
 
 		double m_x, m_y;
@@ -305,7 +306,7 @@ void mainLoop(){
 			precisetimer();
 		}
 		ikTime = precisetimer.getString();
-
+		if(ui.captureMouse) _DebugLine_
 
 		camera.setCamPosition(camPosition);
 		camera.setMatrices();
@@ -328,7 +329,8 @@ void mainLoop(){
 			ui.rect().text("Selected: " + std::to_string(Helper::getCurrentSelection().size())).font("ui_12"s)();
 			ui.rect().text("ID: " + std::to_string(Helper::getIDUnderMouse())).font("ui_12"s)();
 		ui.endTable();
-		ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
+		// ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
+		Helper::cursorVidgetHorizontal({window_width*0.5-50, 2});
 		ui.image(Helper::getScreenCursor(camera), "Cursor").color(0xFFFFFFFF)();
 
 		ui.end();
@@ -337,7 +339,6 @@ void mainLoop(){
 		Helper::moveCameraByMouse(camera, mousePosition, mouseTranslation, MiddleMousePressed);
 
 		g_scrollDel = 0.0;
-		glfwPollEvents();
 	}
 }
 void scrollCallback(GLFWwindow* window, double xOff, double yOff){
@@ -385,7 +386,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 	double m_x, m_y;
 	glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
-		glfwPollEvents();
 		mouselClick = glm::vec2(m_x, m_y);
 		ui.setlClick(true);
 		LeftMousePressed = true;
