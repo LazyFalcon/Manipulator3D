@@ -183,7 +183,6 @@ void showPopups(){
 		ui.endBox();
 		ui.endLayer();
 
-		// if(ui.hasHover(glm::vec4(screenSize.x / 2 - 100, screenSize.y / 2, 200, 100))) ui.mouseOverButton = true;
 	}
 }
 

@@ -29,9 +29,9 @@ in vec4 vInfo;
 in vec2 vPosition;
 
 void main(void){
-	if(vPosition.x >= 0 && vPosition.x <= 1 || vPosition.y >= 0 && vPosition.y <= 1 || vPosition.x >= 0 && vPosition.x <= 1 || vPosition.y >= 0 && vPosition.y <= 1)
-		outColor = vColor*0.5;
-	else
+	// if(vPosition.x >= 0 && vPosition.x <= 1 || vPosition.y >= 0 && vPosition.y <= 1 || vPosition.x >= 0 && vPosition.x <= 1 || vPosition.y >= 0 && vPosition.y <= 1)
+		// outColor = vColor*0.5;
+	// else
 		outColor = vColor;
 }
 
