@@ -245,13 +245,15 @@ void processKeys(int key, int action, int modifier, RobotController &RC){
 		}
 		else {
 			if(key == GLFW_KEY_TAB){
-				cout<<"key: "<<key<<endl;
 				EditorMode |= Enabled;
 				EnterEditor(RC);
 
 			}
 		}
 	}
+}
+PolylineEditor& getPolyline(){
+    return *polylineEditor;
 }
 
 /// ------- POLYLINE EDITOR ---------------------------------------------
@@ -362,6 +364,9 @@ void PolylineEditor::processControls(){
 	}
 }
 
+void PolylineEditor::insertAtEnd(glm::vec4 p){
+    polyline->points.push_back(p);
+}
 void PolylineEditor::extrude(){
 	if(markedNodes.points.empty()) return;
 	for(u32 i=0; i<polyline->points.size(); ++i){

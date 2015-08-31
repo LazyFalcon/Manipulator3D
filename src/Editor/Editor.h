@@ -211,6 +211,7 @@ public:
 	void processPoints();
 	void processControls();
 
+	void insertAtEnd(glm::vec4 p);
 	void extrude();
 	void slide();
 	void subdivide();
@@ -223,7 +224,7 @@ public:
 };
 
 extern unique_ptr<PolylineEditor> polylineEditor;
-
+PolylineEditor& getPolyline();
 void init();
 void clear();
 void update(RobotController &RC);

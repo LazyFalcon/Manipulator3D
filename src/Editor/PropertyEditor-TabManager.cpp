@@ -176,13 +176,27 @@ void GroupListTab::run(TabManager &TM){
 	}
 
 }
+
 /// ----- POINT LIST TAB ---------------------------------------------
 void PointListTab::run(TabManager &TM){
 	auto &list = Helper::pointList();
 	for(auto it = list.begin(); it!=list.end(); it++){
 		horizontal(
-			ui.rect(150, 20).text(it->first)(UI::CaptureMouse);
+			ui.rect(120, 20).text(it->first)(UI::CaptureMouse)
+                .onHover([&it](glm::vec4 v){
+                    v.x += 10;
+                    v.y -= 20;
+                    v.z = 100;
+                    ui.rect(v).text(to_string(it->second))(UI::Label);
+                })
+                ;
 			ui.rect(20, 20).text(">")(UI::CaptureMouse).onlClick([&it]{ Helper::setCursor(it->second); });
+			ui.rect(20, 20).text(">>")(UI::CaptureMouse).onlClick([&it, &TM]{
+                if(TM.get<CommandEditorTab>().getCommand()->type == MOVE){
+                    Editor::getPolyline().insertAtEnd(it->second);
+                    Editor::getPolyline().polyline->generatePath();
+                }
+            });
 			ui.rect(20, 20).text("X")(UI::CaptureMouse).onlClick([&it]{ Helper::deletePoint(it->first); });
 			);
 		// ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label);
