@@ -282,7 +282,7 @@ void MainMenu(){
 			quit = true;
 			})
 		.onHover([](glm::vec4 r){
-			ui.rect(r.x-10, r.y-20, 150,20).text("exit")();
+			ui.rect(r.x-10, r.y-20, 150,20).text("exit")(UI::CaptureMouse);
 		});
 	ui.endTable();
 

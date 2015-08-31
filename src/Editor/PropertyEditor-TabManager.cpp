@@ -20,9 +20,9 @@ void TabManager::run(){
 		.position(screenSize.x-size, screenSize.y-32)
 		.size(size, -screenSize.y+32);
 	drawTabs();
-
+	ui.rect(10, 20).text(tabs[currentTab]->name)();
 	tabs[currentTab]->run(*this);
-
+	if(!ui.outOfTable()) ui.mouseOverButton = true;
 	ui.endTable();
 }
 
@@ -30,7 +30,7 @@ void TabManager::drawTabs(){
 	ui.box(UI::LayoutHorizontal);
 
 	// for(u32 i=0; i<tabs.size(); i++){
-	for(u32 i=0; i<5; i++){
+	for(u32 i=0; i<6; i++){
 		glm::vec4 rect;
 		ui.image("Menu-Property-Tab")
 			.switcher(currentTab, i)
@@ -64,6 +64,10 @@ PathListTab& TabManager::get<PathListTab>(){
 template<>
 GroupListTab& TabManager::get<GroupListTab>(){
 	return static_cast<GroupListTab&>(*tabs[4]);
+}
+template<>
+PointListTab& TabManager::get<PointListTab>(){
+	return static_cast<PointListTab&>(*tabs[5]);
 }
 
 unique_ptr<ICommandBuilderWidget> createWidgetFromCommandType(CommandType type){
@@ -163,12 +167,25 @@ void PathListTab::run(TabManager &TM){
 
 /// ----- GROUP LIST TAB ---------------------------------------------
 void GroupListTab::run(TabManager &TM){
-    auto &list = Helper::groupList();
+	auto &list = Helper::groupList();
 	for(auto &it : list){
-        ui.rect(150, 20).text(it.first)();
-        ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label)
-            // .onlClick([&TM, &it]{TM.get<PathEditorTab>().reset(it);})
-            ;
+		ui.rect(150, 20).text(it.first)();
+		ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label)
+			// .onlClick([&TM, &it]{TM.get<PathEditorTab>().reset(it);})
+			;
+	}
+
+}
+/// ----- POINT LIST TAB ---------------------------------------------
+void PointListTab::run(TabManager &TM){
+	auto &list = Helper::pointList();
+	for(auto it = list.begin(); it!=list.end(); it++){
+		horizontal(
+			ui.rect(150, 20).text(it->first)(UI::CaptureMouse);
+			ui.rect(20, 20).text(">")(UI::CaptureMouse).onlClick([&it]{ Helper::setCursor(it->second); });
+			ui.rect(20, 20).text("X")(UI::CaptureMouse).onlClick([&it]{ Helper::deletePoint(it->first); });
+			);
+		// ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label);
 	}
 
 }

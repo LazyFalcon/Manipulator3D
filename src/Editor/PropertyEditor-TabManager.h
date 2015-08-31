@@ -9,9 +9,12 @@ class TabManager;
 class ITab
 {
 public:
+	ITab(const std::string &s) : name(s){}
 	virtual ~ITab(){};
 	virtual void run(TabManager &tabManager) = 0;
 	virtual void onEnter(TabManager &tabManager) = 0;
+
+	std::string name;
 };
 
 /**
@@ -28,8 +31,7 @@ public:
 class CommandEditorTab : public ITab
 {
 public:
-	CommandEditorTab(){
-		// reset();
+	CommandEditorTab() : ITab("COMMAND EDITOR"){
 	}
 	~CommandEditorTab(){
 		std::cerr<<"delete CommandEditorTab"<<std::endl;
@@ -63,6 +65,7 @@ private:
 class CommandListTab : public ITab
 {
 public:
+	CommandListTab() : ITab("COMMAND LIST"){}
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	~CommandListTab(){
@@ -74,6 +77,7 @@ public:
 class PathEditorTab : public ITab
 {
 public:
+	PathEditorTab() : ITab("PATH EDITOR"){}
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	void reset(shared_ptr<ICommand> &ptr){
@@ -99,6 +103,7 @@ private:
 class PathListTab : public ITab
 {
 public:
+	PathListTab() : ITab("PATH LIST"){}
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	~PathListTab(){
@@ -110,10 +115,23 @@ public:
 class GroupListTab : public ITab
 {
 public:
+	GroupListTab() : ITab("GROUP LIST"){}
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	~GroupListTab(){
 		std::cerr<<"delete GroupListTab"<<std::endl;
+	}
+};
+
+/// --------------------------------------------- POINT LIST TAB ---------------------------------------------
+class PointListTab : public ITab
+{
+public:
+	PointListTab() : ITab("POINT LIST"){}
+	void run(TabManager &TM);
+	void onEnter(TabManager &TM){}
+	~PointListTab(){
+		std::cerr<<"delete PointListTab"<<std::endl;
 	}
 };
 
@@ -130,14 +148,12 @@ public:
 		initTabs();
 	}
 	void initTabs(){
-		// if(tabs.size() < 4){
-			// tabs.resize(4);
-		// }
 		if(!tabs[0]) tabs[0].reset(new CommandEditorTab());
 		if(!tabs[1]) tabs[1].reset(new CommandListTab());
 		if(!tabs[2]) tabs[2].reset(new PathEditorTab());
 		if(!tabs[3]) tabs[3].reset(new PathListTab());
 		if(!tabs[4]) tabs[4].reset(new GroupListTab());
+		if(!tabs[5]) tabs[5].reset(new PointListTab());
 	}
 	void setTab(u32 index){
 		currentTab = index;
@@ -152,7 +168,7 @@ public:
 	Type& get();
 
 	// vector<unique_ptr<ITab>> tabs;
-	unique_ptr<ITab> tabs[5];
+	unique_ptr<ITab> tabs[6];
 	u32 currentTab {0};
 	u32 size {200};
 };

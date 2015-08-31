@@ -11,10 +11,10 @@ class BulletWorld;
 namespace Helper NAM_START
 struct DataUnderMouse
 {
-    float depth;
-    glm::vec4 position;
-    glm::vec4 normal;
-    u16 objID;
+	float depth;
+	glm::vec4 position;
+	glm::vec4 normal;
+	u16 objID;
 		glm::vec2 uv;
 };
 
@@ -42,6 +42,15 @@ std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
 ///
 
+void showPopups();
+
+///
+std::map<std::string, glm::vec4>& pointList();
+void setCursor(glm::vec4 v);
+void moveCursor(glm::vec4 v);
+void restoreCursorPos(const std::string &name);
+void deletePoint(Point *p);
+void deletePoint(const std::string &name);
 glm::vec4& getCursor();
 glm::vec2 getScreenCursor(Camera &camera);
 void cursorVidgetHorizontal(glm::vec2 pos);

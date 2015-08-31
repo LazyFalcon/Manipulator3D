@@ -149,20 +149,65 @@ void moveCameraByScroll(Camera &camera, double xOff, double yOff){
 }
 
 /// --------------------------------
-u32 groupPointCount;
-void savePoint(){}
-void getPoint(const std::string &name){}
-void deletePoint(Point *p){}
-void deletePoint(const std::string &name){}
-std::string generatePointName(){
-	char buff[4] = "000";
-	sprintf(buff, "%.3u", groupPointCount);
-	return "Point."s+buff;
+
+/// -------------------------------- POPUPS
+struct Popup
+{
+	std::string title;
+	std::function<bool(void)> fun;
+};
+
+std::vector<Popup> g_popups;
+
+void popup(const Popup &p){
+	g_popups.push_back(p);
 }
+void showPopups(){
+	if(g_popups.size() > 0){
+		auto pop = g_popups.back();
+		ui.beginLayer();
+		ui.box(UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::FixedPos | UI::NewLayer | UI::Draw)
+			.overridePosition(screenSize.x / 2 - 100, screenSize.y / 2);
+
+		ui.rect(200, 50).text(pop.title, "ui_14"s, UI::CenterText)(UI::CaptureMouse);
+		if(pop.fun()){
+			g_popups.pop_back();
+
+		}
+
+		ui.mouseOverButton = true;
+		// if(ui.outOfTable()) ui.mouseOverButton = true;
+		if(ui.lClick() && ui.outOfTable()) {
+			g_popups.pop_back();
+		}
+		ui.endBox();
+		ui.endLayer();
+
+		// if(ui.hasHover(glm::vec4(screenSize.x / 2 - 100, screenSize.y / 2, 200, 100))) ui.mouseOverButton = true;
+	}
+}
+
+
 /// -------------------------------- CURSOR
 
 std::map<std::string, glm::vec4> g_pointList;
+std::string newPointName = "";
 glm::vec4 cursor(0,0,0,1);
+
+u32 groupPointCount;
+void savePoint(const std::string &s, const glm::vec4 &p){
+	g_pointList[s] = p;
+}
+void getPoint(const std::string &name){}
+void deletePoint(Point *p){}
+void deletePoint(const std::string &name){
+	g_pointList.erase(name);
+}
+std::string generatePointName(){
+	char buff[4] = "000";
+	sprintf(buff, "%.3u", groupPointCount++);
+	return "Point."s+buff;
+}
 
 glm::vec4& getCursor(){
 	return cursor;
@@ -184,9 +229,19 @@ std::map<std::string, glm::vec4>& pointList(){
 	return g_pointList;
 }
 void cursorVidgetHorizontal(glm::vec2 pos){
-	ui.rect(pos.x-100, pos.y, 100, 20).font("ui_12"s).edit(cursor.x)(UI::CaptureMouse);
-	ui.rect(pos.x, pos.y, 100, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
-	ui.rect(pos.x+100, pos.y, 100, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
+	ui.rect(pos.x-70, pos.y, 70, 20).font("ui_12"s).edit(cursor.x)(UI::CaptureMouse);
+	ui.rect(pos.x, pos.y, 70, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
+	ui.rect(pos.x+70, pos.y, 70, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
+	ui.rect(pos.x+140, pos.y, 70, 20).font("ui_12"s).text("save")(UI::Button).onlClick([]{
+		newPointName = generatePointName();
+		popup({"Set name", []()->bool{
+			bool out = false;
+			auto fun = [&out]{out = true; savePoint(newPointName, cursor); std::cout<<"Point " +newPointName+ " saved"<<std::endl;};
+			ui.rect(200,30).edit(newPointName, fun)(UI::CaptureMouse);
+			ui.onEnter(fun);
+			return out;
+		}});
+	});
 }
 
 /// --------------------------------

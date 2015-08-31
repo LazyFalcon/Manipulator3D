@@ -316,6 +316,7 @@ void mainLoop(){
 		updates(dt);
 		lClick = false;
 		rClick = false;
+        Helper::showPopups();
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/25.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
