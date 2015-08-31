@@ -215,6 +215,7 @@ glm::vec2 getScreenCursor(Camera &camera){
 	auto pos = glm::project(cursor.xyz(), camera.ViewMatrix, camera.ProjectionMatrix, glm::vec4(0,0,camera.m_width, camera.m_height));
 	return glm::ceil(pos.xy() - glm::vec2(15,15));
 }
+
 void setCursor(glm::vec4 v){
 	cursor = v;
 }
@@ -243,10 +244,12 @@ void cursorVidgetHorizontal(glm::vec2 pos){
 	});
 }
 
-/// --------------------------------
+/// -------------------------------- SELECTION
 std::vector<shared_ptr<Entity>> g_currentSelection;
 std::map<std::string, std::vector<shared_ptr<Entity>>> g_groupList;
 u32 groupNameCount;
+bool existing = false;
+std::string existingName;
 
 std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList(){
 	return g_groupList;
@@ -254,7 +257,11 @@ std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList(){
 std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 	return g_currentSelection;
 }
-void restoreSelection(){}
+void restoreSelection(const std::string &name){
+	existing = true;
+	existingName = name;
+	g_currentSelection = g_groupList[name];
+}
 bool processMouse(int key, int action, int mods){
 	if(ui.mouseOverButton) return false;
 	if(key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
@@ -287,9 +294,9 @@ bool processMouse(int key, int action, int mods){
 }
 bool processKeys(int key, int action, int mods){
 	if(action == GLFW_PRESS){
-		// if(key == 'W' && mods == GLFW_MOD_CONTROL){
-			// PythonBindings::mainScript.attr("plotData")(RC, scene);
-		// }
+		if(key == 'S' && mods == GLFW_MOD_CONTROL){
+			saveGroup(g_currentSelection);
+		}
 		if((key == GLFW_KEY_KP_ENTER || key == GLFW_KEY_ENTER ) && !g_currentSelection.empty()){
 			saveGroup(g_currentSelection);
 		}

@@ -184,8 +184,8 @@ void BSpline::makeNurbs(){
 		g[i] = (points[i+1] + 2.f*points[i+2])/3.f;
 	}
 
-	f[0] = points[0];
-	g[0] = (points[0] + points[2])/2.f;
+	f[0] = points[1];
+	g[0] = (points[1] + points[2])/2.f;
 	f[m-1] = (points[m] + points[m+1])/2.f;
 	g[m-1] = points[m+1];
 

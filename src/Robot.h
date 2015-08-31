@@ -1,7 +1,7 @@
 #pragma once
 #include <Utils/BaseStructs.h>
 class Robot;
-enum  JointType{
+enum JointType {
 	HINGE = 1,
 	PRISMATIC = 2,
 };
