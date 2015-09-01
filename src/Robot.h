@@ -19,7 +19,6 @@ struct SystemSettings
 	bool enableColisions;
 };
 
-
 struct Point {
 	glm::vec4 position;
 	glm::quat quat;

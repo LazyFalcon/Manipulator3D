@@ -24,6 +24,10 @@
 
 namespace PythonBindings NAM_START
 
+glm::quat glm_angleAxis(float angle, glm::vec3 axis){
+	return glm::quat(cos(angle*0.5f), glm::normalize(axis));
+}
+
 BOOST_PYTHON_MODULE(glm_export){
 
 	bpl::class_<std::vector<glm::vec4>>("Vec4Vec")
@@ -46,7 +50,6 @@ BOOST_PYTHON_MODULE(glm_export){
 
 	float (*cpp_pitch)(const glm::quat&) = &glm::pitch;
 	glm::vec3 (*cpp_eulerAngles)(const glm::quat&) = &glm::eulerAngles;
-	// glm::quat (*cpp_angleAxis)(float, const glm::vec3&) = &glm::angleAxis;
 
 	bpl::def("translate", cpp_translate);
 	bpl::def("rotate", cpp_rotate);
@@ -60,7 +63,7 @@ BOOST_PYTHON_MODULE(glm_export){
 	bpl::def("length", cpp_len3);
 
 	bpl::def("eulerAngles", cpp_eulerAngles);
-	// bpl::def("angleAxis", cpp_angleAxis);
+	bpl::def("angleAxis", glm_angleAxis);
 
 	bpl::class_<glm::mat4>("mat4", bpl::init<float>())
 		.def(bpl::init<float>())
@@ -72,6 +75,7 @@ BOOST_PYTHON_MODULE(glm_export){
 		;
 	bpl::class_<glm::quat>("quat", bpl::init<float, float, float, float>())
 		.def(bpl::init<float, glm::vec3>())
+		.def(bpl::init<glm::vec3>())
 		.def_readwrite("x", &glm::quat::x)
 		.def_readwrite("y", &glm::quat::y)
 		.def_readwrite("z", &glm::quat::z)
@@ -122,6 +126,7 @@ public:
 BOOST_PYTHON_MODULE(commandBuilders_export){
 	MoveCommandBuilder& (MoveCommandBuilder::*interpolator_ptr)(IInterpolatorContainer&) = &MoveCommandBuilder::interpolator;
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
+	MoveCommandBuilder& (MoveCommandBuilder::*solver_enum)(SolverType) = &MoveCommandBuilder::solver;
 	MoveCommandBuilder& (MoveCommandBuilder::*finish_ptr)(shared_ptr<RobotController>) = &MoveCommandBuilder::finish;
 
 	// bpl::class_<std::vector<double>>("doubleVec")
@@ -140,6 +145,7 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("time", &MoveCommandBuilder::time, bpl::return_internal_reference<>())
 		.def("interpolator", interpolator_ptr, bpl::return_internal_reference<>())
 		.def("solver", solver_string, bpl::return_internal_reference<>())
+		.def("solver", solver_enum, bpl::return_internal_reference<>())
 		.def("finish", finish_ptr, bpl::return_internal_reference<>())
 		;
 
