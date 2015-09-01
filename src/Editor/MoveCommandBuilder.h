@@ -7,6 +7,7 @@ class MoveCommandBuilder
 public:
 	MoveCommandBuilder& init(){
 		moveCommand = make_shared<MoveCommand>();
+		moveCommand->solver = make_shared<JT0>();
 		return *this;
 	}
 	MoveCommandBuilder& name(const std::string &s){
@@ -15,6 +16,16 @@ public:
 	}
 	MoveCommandBuilder& velocity(double value){
 		moveCommand->velocity = value;
+		return *this;
+	}
+	MoveCommandBuilder& startO(glm::quat value){
+		moveCommand->startOrientationEnabled = true;
+		moveCommand->startOrientation = value;
+		return *this;
+	}
+	MoveCommandBuilder& endO(glm::quat value){
+		moveCommand->endOrientationEnabled = true;
+		moveCommand->endOrientation = value;
 		return *this;
 	}
 	MoveCommandBuilder& jointVelocity(double value){
@@ -46,13 +57,15 @@ public:
 		return *this;
 	}
 	MoveCommandBuilder& solver(const std::string& name){
-		// moveCommand->solver = value;
-		moveCommand->solver = make_unique<JT0>();
+		if(name == "JT0") moveCommand->solver = make_shared<JT0>();
+		else if(name == "JT1") moveCommand->solver = make_shared<JT1>();
+		else if(name == "JT2") moveCommand->solver = make_shared<JT2>();
 		return *this;
 	}
-	MoveCommandBuilder& solver(IIK *value){
-		// moveCommand->solver = value;
-		moveCommand->solver = make_unique<JT0>();
+	MoveCommandBuilder& solver(SolverType value){
+		if(value == SolverType::JT0) moveCommand->solver = make_shared<JT0>();
+		else if(value == SolverType::JT1) moveCommand->solver = make_shared<JT1>();
+		else if(value == SolverType::JT2) moveCommand->solver = make_shared<JT2>();
 		return *this;
 	}
 	MoveCommandBuilder& finish(shared_ptr<RobotController> RC);

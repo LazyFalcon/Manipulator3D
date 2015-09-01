@@ -60,6 +60,11 @@ public:
 	glm::vec4 calculateNextPoint(float dt);
 	double calculateRequiredDistance(float dt);
 
+	glm::quat startOrientation;
+	glm::quat endOrientation;
+	bool startOrientationEnabled;
+	bool endOrientationEnabled;
+
 	double velocity;
 	double jointVelocityModifier {1.0};
 	double acceleration;

@@ -57,6 +57,7 @@ public:
 	virtual void generatePath() = 0;
 	virtual void reset() = 0;
 	virtual void drawParams() = 0;
+	virtual float getNormalizedPosition() const  = 0;
 	virtual ~IInterpolator(){}
 };
 
@@ -103,6 +104,7 @@ public:
 	glm::vec4 nextPoint();
 	void reset();
 	void drawParams();
+	float getNormalizedPosition() const {return position;}
 
 	~Linear(){
 		std::cerr<<"delete Linear "+name<<std::endl;
@@ -123,6 +125,7 @@ public:
 	glm::vec4 nextPoint();
 	void reset();
 	void drawParams();
+	float getNormalizedPosition() const {return 0;}
 
 	~Simple(){
 		std::cerr<<"delete Simple "+name<<std::endl;
@@ -163,6 +166,7 @@ public:
 	void generatePath();
 	void reset();
 	void drawParams();
+	float getNormalizedPosition() const {return position;}
 
 	~BezierCurve(){
 		std::cerr<<"delete BezierCurve "+name<<std::endl;
@@ -220,6 +224,7 @@ public:
 	void generatePath();
 	void reset();
 	void drawParams();
+	float getNormalizedPosition() const {return position/numOfBeziers;}
 	std::vector<BezierCurve> split();
 
 
@@ -253,6 +258,7 @@ public:
 	void generatePath();
 	void reset();
 	void drawParams();
+	float getNormalizedPosition() const {return position;}
 
 	~NURBS(){
 		std::cerr<<"delete NURBS "+name<<std::endl;
@@ -277,6 +283,7 @@ public:
 	void calculateLength();
 	glm::vec4 eval(double);
 	void drawParams();
+	float getNormalizedPosition() const {return position/numOfSegments;}
 
 	/// editable params
 	double singleStepLength {0.00001};
@@ -313,6 +320,7 @@ public:
 	void calculateLength();
 	glm::vec4 eval(double);
 	void drawParams();
+	float getNormalizedPosition() const {return position/numOfSegments;}
 
 	/// editable params
 	double singleStepLength {0.00001};
@@ -349,6 +357,7 @@ public:
 	void calculateLength();
 	glm::vec4 eval(double);
 	void drawParams();
+	float getNormalizedPosition() const {return position/numOfSegments;}
 
 	/// editable params
 	double singleStepLength {0.00001};

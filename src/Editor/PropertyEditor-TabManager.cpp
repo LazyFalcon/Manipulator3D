@@ -32,7 +32,6 @@ void TabManager::run(){
 void TabManager::drawTabs(){
 	ui.box(UI::LayoutHorizontal);
 
-	// for(u32 i=0; i<tabs.size(); i++){
 	for(u32 i=0; i<6; i++){
 		glm::vec4 rect;
 		ui.image("Menu-Property-Tab")
@@ -171,13 +170,14 @@ void PathListTab::run(TabManager &TM){
 /// ----- GROUP LIST TAB ---------------------------------------------
 void GroupListTab::run(TabManager &TM){
 	auto &list = Helper::groupList();
-	for(auto &it : list){
-		ui.rect(150, 20).text(it.first)();
-		ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label)
-			// .onlClick([&TM, &it]{TM.get<PathEditorTab>().reset(it);})
-			;
+	for(auto it = list.begin(); it!=list.end(); it++){
+		horizontal(
+			ui.rect(120, 20).text(it->first)(UI::CaptureMouse);
+			ui.rect(20, 20).text(">")(UI::CaptureMouse).onlClick([&it]{ Helper::restoreSelection(it->first); });
+			ui.rect(20, 20).text(">>")(UI::CaptureMouse).onlClick([&it, &TM]{ Helper::appendToSelection(it->first); });
+			ui.rect(20, 20).text("X")(UI::CaptureMouse).onlClick([&it]{ Helper::deleteGroup(it->first); });
+			);
 	}
-
 }
 
 /// ----- POINT LIST TAB ---------------------------------------------
@@ -205,7 +205,6 @@ void PointListTab::run(TabManager &TM){
 			});
 			ui.rect(20, 20).text("X")(UI::CaptureMouse).onlClick([&it]{ Helper::deletePoint(it->first); });
 			);
-		// ui.rect(150, 1).color(0xFFFFFFFF)(UI::Label);
 	}
 
 }

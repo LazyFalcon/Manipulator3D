@@ -38,6 +38,9 @@ std::vector<shared_ptr<Entity>>& getCurrentSelection();
 bool processMouse(int key, int action, int mods);
 bool processKeys(int key, int action, int mods);
 void saveGroup(std::vector<shared_ptr<Entity>>&);
+void restoreSelection(const std::string &name);
+void deleteGroup(const std::string &name);
+void appendToSelection(const std::string &name);
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
 ///
@@ -54,6 +57,8 @@ void deletePoint(const std::string &name);
 glm::vec4& getCursor();
 glm::vec2 getScreenCursor(Camera &camera);
 void cursorVidgetHorizontal(glm::vec2 pos);
+
+
 
 /// -------------------------------- FILESYSTEM
 /**

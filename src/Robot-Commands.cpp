@@ -140,9 +140,11 @@ bool MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &sce
 	else if(rc->robot->isReady){
 		glm::vec4 newTarget = calculateNextPoint(dt);
 
-		solver->solve(Point{ newTarget, glm::quat(0, 0, 0, 1) }, *(rc->robot));
+		auto newO = glm::slerp(startOrientation, endOrientation, interpolator->getNormalizedPosition());
+
+		solver->solve(Point{ newTarget, newO }, *(rc->robot));
 		targetJointPosition = solver->result;
-		// rc->robot->insertVariables(targetJointPosition);
+		rc->robot->insertVariables(targetJointPosition);
 		rc->robot->goTo(targetJointPosition);
 		rc->robot->goTo(dt, jointVelocityModifier);
 		// previousPoint = rc->robot->endEffector.position;

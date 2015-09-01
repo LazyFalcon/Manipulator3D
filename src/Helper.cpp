@@ -248,7 +248,7 @@ void cursorVidgetHorizontal(glm::vec2 pos){
 std::vector<shared_ptr<Entity>> g_currentSelection;
 std::map<std::string, std::vector<shared_ptr<Entity>>> g_groupList;
 u32 groupNameCount;
-bool existing = false;
+bool modifyingExistingGroup = false;
 std::string existingName;
 
 std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList(){
@@ -257,8 +257,14 @@ std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList(){
 std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 	return g_currentSelection;
 }
+void deleteGroup(const std::string &name){
+	g_groupList.erase(name);
+}
+void appendToSelection(const std::string &name){
+	g_currentSelection.insert(g_currentSelection.end(), g_groupList[name].begin(), g_groupList[name].end());
+}
 void restoreSelection(const std::string &name){
-	existing = true;
+	modifyingExistingGroup = true;
 	existingName = name;
 	g_currentSelection = g_groupList[name];
 }
@@ -294,16 +300,25 @@ bool processMouse(int key, int action, int mods){
 }
 bool processKeys(int key, int action, int mods){
 	if(action == GLFW_PRESS){
-		if(key == 'S' && mods == GLFW_MOD_CONTROL){
-			saveGroup(g_currentSelection);
-		}
-		if((key == GLFW_KEY_KP_ENTER || key == GLFW_KEY_ENTER ) && !g_currentSelection.empty()){
-			saveGroup(g_currentSelection);
+		if(key == 'S' && mods == GLFW_MOD_CONTROL && !g_currentSelection.empty()){
+			newPointName = generatePointName();
+			popup({"Set name", []()->bool{
+				bool out = false;
+				auto fun = [&out]{out = true; saveGroup(g_currentSelection); std::cout<<"Group " +newPointName+ " saved"<<std::endl;};
+				ui.rect(200,30).edit(newPointName, fun)(UI::CaptureMouse);
+				ui.onEnter(fun);
+				return out;
+			}});
 		}
 	}
 }
 void saveGroup(std::vector<shared_ptr<Entity>> &s){
-	g_groupList[generateGroupName()] = s;
+	if(modifyingExistingGroup){
+		g_groupList[existingName] = s;
+		modifyingExistingGroup = false;
+	}
+	else
+		g_groupList[generateGroupName()] = s;
 	s.clear();
 }
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);

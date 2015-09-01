@@ -6,6 +6,20 @@ enum JointType {
 	PRISMATIC = 2,
 };
 
+enum class SolverType : int {
+	JT0, JT1, JT2, CCD
+};
+
+struct SystemSettings
+{
+	double positionPrecision;
+	double orientationPrecision;
+	u32 solverIterationLimit;
+	bool useRobotConstraints;
+	bool enableColisions;
+};
+
+
 struct Point {
 	glm::vec4 position;
 	glm::quat quat;
@@ -114,6 +128,15 @@ class JT1 : public IIK {
 public:
 	~JT1(){
 		std::cerr<<"delete JT1"<<std::endl;
+	}
+	bool solve(Point aim, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
+};
+/// with orientation
+class JT2 : public IIK {
+public:
+	~JT2(){
+		std::cerr<<"delete JT2"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);

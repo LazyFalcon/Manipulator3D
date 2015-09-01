@@ -44,6 +44,10 @@ BOOST_PYTHON_MODULE(glm_export){
 	float (*cpp_len4)(const glm::vec4&) = &glm::length;
 	float (*cpp_len3)(const glm::vec3&) = &glm::length;
 
+	float (*cpp_pitch)(const glm::quat&) = &glm::pitch;
+	glm::vec3 (*cpp_eulerAngles)(const glm::quat&) = &glm::eulerAngles;
+	// glm::quat (*cpp_angleAxis)(float, const glm::vec3&) = &glm::angleAxis;
+
 	bpl::def("translate", cpp_translate);
 	bpl::def("rotate", cpp_rotate);
 	bpl::def("normalize", cpp_normalize3);
@@ -55,6 +59,9 @@ BOOST_PYTHON_MODULE(glm_export){
 	bpl::def("length", cpp_len4);
 	bpl::def("length", cpp_len3);
 
+	bpl::def("eulerAngles", cpp_eulerAngles);
+	// bpl::def("angleAxis", cpp_angleAxis);
+
 	bpl::class_<glm::mat4>("mat4", bpl::init<float>())
 		.def(bpl::init<float>())
 		.def(bpl::self + glm::mat4())
@@ -64,6 +71,7 @@ BOOST_PYTHON_MODULE(glm_export){
 		.def(bpl::self * float())
 		;
 	bpl::class_<glm::quat>("quat", bpl::init<float, float, float, float>())
+		.def(bpl::init<float, glm::vec3>())
 		.def_readwrite("x", &glm::quat::x)
 		.def_readwrite("y", &glm::quat::y)
 		.def_readwrite("z", &glm::quat::z)
@@ -83,6 +91,7 @@ BOOST_PYTHON_MODULE(glm_export){
 		.def(bpl::self - glm::vec4())
 		.def(bpl::self * glm::vec4())
 		.def(bpl::self / glm::vec4())
+		.def(bpl::self / float())
 		.def(bpl::self * float())
 		.def("__str__", to_string_vec4)
 		;
@@ -124,6 +133,8 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("init", &MoveCommandBuilder::init, bpl::return_internal_reference<>())
 		.def("name", &MoveCommandBuilder::name, bpl::return_internal_reference<>())
 		.def("velocity", &MoveCommandBuilder::velocity, bpl::return_internal_reference<>())
+		.def("startO", &MoveCommandBuilder::startO, bpl::return_internal_reference<>())
+		.def("endO", &MoveCommandBuilder::endO, bpl::return_internal_reference<>())
 		.def("jointVelocity", &MoveCommandBuilder::jointVelocity, bpl::return_internal_reference<>())
 		.def("acceleration", &MoveCommandBuilder::acceleration, bpl::return_internal_reference<>())
 		.def("time", &MoveCommandBuilder::time, bpl::return_internal_reference<>())
@@ -172,6 +183,12 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("finish", waitfinish_ptr, bpl::return_internal_reference<>())
 		;
 
+	bpl::enum_<SolverType>("SolverType")
+		.value("JT0", SolverType::JT0)
+		.value("JT1", SolverType::JT1)
+		.value("JT2", SolverType::JT2)
+		.value("CCD", SolverType::CCD)
+		;
 	bpl::enum_<Interpolator>("Interpolator")
 		.value("Empty", Interpolator::Empty)
 		.value("Open", Interpolator::Open)
