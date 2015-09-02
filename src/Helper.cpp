@@ -148,8 +148,42 @@ void moveCameraByScroll(Camera &camera, double xOff, double yOff){
 
 }
 
-/// --------------------------------
+/// -------------------------------- ALERTS
+class Alert
+{
+	bool active = false;
+	string text = "";
+public:
+	~Alert(){
+		// cerr<<"~Alert"<<endl;
+	}
+	void operator()(const std::string &s){
+		active = true;
+		text = s;
+	}
+	bool show(){
+		if(!active)
+			return false;
+        ui.beginLayer();
+		ui.box(UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::FixedPos | UI::NewLayer | UI::Draw)
+            .overridePosition(screenSize.x / 2 - 100, screenSize.y / 2);
+			ui.rect(200, 30).color(0xFF2020FF).text("Warning!", "ui_14"s, UI::CenterText)();
+			ui.rect(200, 100).text(text, "ui_12"s, UI::CenterText)();
+			ui.rect(200, 30).text("OK", "ui_14"s, UI::CenterText).button(active)(UI::Hoverable);
 
+        if(ui.lClick() && ui.outOfTable()){
+			active = false;
+		}
+		ui.endBox();
+        ui.endLayer();
+        return true;
+	}
+
+} g_alert;
+
+void alert(const std::string &s){
+    g_alert(s);
+}
 /// -------------------------------- POPUPS
 struct Popup
 {
@@ -163,6 +197,7 @@ void popup(const Popup &p){
 	g_popups.push_back(p);
 }
 void showPopups(){
+    if(g_alert.show()) return;
 	if(g_popups.size() > 0){
 		auto pop = g_popups.back();
 		ui.beginLayer();
@@ -177,7 +212,7 @@ void showPopups(){
 
 		ui.mouseOverButton = true;
 		// if(ui.outOfTable()) ui.mouseOverButton = true;
-		if(ui.lClick() && ui.outOfTable()) {
+		if(ui.lClick() && ui.outOfTable()){
 			g_popups.pop_back();
 		}
 		ui.endBox();

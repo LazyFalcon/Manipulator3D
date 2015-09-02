@@ -1,5 +1,6 @@
 ﻿#define _DebugLine_  std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 #include "Editor.h"
+#include "../Helper.h"
 
 extern glm::vec2 screenSize;
 extern glm::vec2 mousePosition;
@@ -8,6 +9,9 @@ extern glm::vec2 mouseMoveVector;
 extern float mouseMoveLen;
 
 extern UI::IMGUI ui;
+namespace UI {
+extern int g_UILayer;
+};
 
 /// ---------------------------------------------
 namespace Editor NAM_START
@@ -87,10 +91,9 @@ glm::vec4 MultiPointController::moveAlongGlobalAxes(){
 
 	auto newCenter = camera.eyePlaneIntersection(camera.surfaceNormalToCamera(center), -mouseOffset);
 
-	auto delta = newCenter - center;
+	auto delta = glm::clamp(newCenter - center, -1.f, 1.f);
 	float deltaLen = glm::length(delta);
 	delta /= deltaLen;
-
 
 	if(preferedDirection == 0){
 		float d1 = abs(glm::dot(delta, globalAxes[0]));
@@ -253,10 +256,11 @@ void processKeys(int key, int action, int modifier, RobotController &RC){
 	}
 }
 PolylineEditor& getPolyline(){
-    return *polylineEditor;
+	return *polylineEditor;
 }
 
 /// ------- POLYLINE EDITOR ---------------------------------------------
+
 void PolylineEditor::mainBody(){
 	if(not polyline) return;
 	ui.image("Refresh").onlClick([this]{polyline->generatePath();})();
@@ -276,23 +280,21 @@ void PolylineEditor::snapModeDropDown(){
 	ui.endBox();
 
 	if(snapModeDropped){
-			ui.beginLayer();
-			ui.box(UI::LayoutVertical | UI::AlignLeft | UI::FixedPos | UI::NewLayer | UI::Draw);
-			// ui.box(UI::LayoutVertical | UI::AlignLeft | UI::Draw)
-				// .position(listStart);
+        ui.beginLayer();
+        ui.box(UI::LayoutVertical | UI::AlignLeft | UI::FixedPos | UI::NewLayer | UI::Draw);
 
-			for(int i=0; i<4; i++){
-				ui.rect((lenght*4)/5, 20)
-					.text(EditorFlags::SnapModeNames[i])
-					(UI::Hoverable)
-					.switcher(editorSnapMode, EditorFlags::SnapModes[i])
-					.button(snapModeDropped);
-			}
-			if(ui.outOfTable())
-				snapModeDropped = false;
+        for(int i=0; i<4; i++){
+            ui.rect((lenght*4)/5, 20)
+                .text(EditorFlags::SnapModeNames[i])
+                (UI::Hoverable)
+                .switcher(editorSnapMode, EditorFlags::SnapModes[i])
+                .button(snapModeDropped);
+        }
+        if(ui.lClick() && ui.outOfTable())
+            snapModeDropped = false;
 
-			ui.endBox();
-			ui.endLayer();
+        ui.endBox();
+        ui.endLayer();
 	}
 }
 
@@ -306,6 +308,12 @@ void PolylineEditor::processAll(){
 		markedNodes.preferedDirection = 0;
 	}
 	processPoints();
+    for(auto it : markedNodes.points){
+		auto r = project(*it);
+		ui.image(r.x-2.f, r.y-2.f, "Point")
+			.color(0xFFFFFFFF)
+			();
+	}
 	processControls();
 }
 void PolylineEditor::processPoints(){
@@ -332,12 +340,6 @@ void PolylineEditor::processControls(){
 	if(markedNodes.points.size() == 0)
 		return;
 	ui.mouseOverButton = editorState & EditorFlags::PinSelectedToMouse;
-	for(auto it : markedNodes.points){
-		auto r = project(*it);
-		ui.image(r.x-2.f, r.y-2.f, "Point")
-			.color(0xFFFFFFFF)
-			();
-	}
 
 	if(editorState & EditorFlags::Slide and editorState & EditorFlags::PinSelectedToMouse){
 		markedNodes.slide();
@@ -366,14 +368,15 @@ void PolylineEditor::processControls(){
 }
 
 void PolylineEditor::insertAtEnd(glm::vec4 p){
-    polyline->points.push_back(p);
+	polyline->points.push_back(p);
 }
 void PolylineEditor::extrude(){
-	if(markedNodes.points.empty()) return;
+    polylineEditor->save();
+	if(markedNodes.points.size() != 1) return;
 	for(u32 i=0; i<polyline->points.size(); ++i){
 		if(&polyline->points[i] == *markedNodes.points.begin()){
 			markedNodes.clear();
-			auto inserted = polyline->points.insert(polyline->points.begin()+i, polyline->points[i]);
+			auto inserted = polyline->points.insert(polyline->points.begin()+i+1, polyline->points[i]);
 			markedNodes.push(*inserted);
 		}
 	}
@@ -382,6 +385,7 @@ void PolylineEditor::extrude(){
 	markedNodes.setOffset(mousePosition - r);
 }
 void PolylineEditor::slide(){
+    polylineEditor->save();
 	if(markedNodes.points.empty()) return;
 
 	editorState |= EditorFlags::PinSelectedToMouse; /// removed on rClick on empty or esc
@@ -396,6 +400,7 @@ void PolylineEditor::slide(){
 
 }
 void PolylineEditor::subdivide(){
+    polylineEditor->save();
 	if(markedNodes.points.empty()) return;
 	markedNodes.prepareToDelete();
 	markedNodes.clear();
@@ -416,7 +421,7 @@ void PolylineEditor::cleanUpNodes(){
 		for(auto &it : polyline->points)
 				it.w = 1;
 }
-void PolylineEditor::removeSelected(){
+void PolylineEditor::removeMarked(){
 	markedNodes.prepareToDelete();
 
 	for(auto it = polyline->points.begin(); it != polyline->points.end(); ){
@@ -428,48 +433,58 @@ void PolylineEditor::removeSelected(){
 	markedNodes.clear();
 	polyline->generatePath();
 }
-void PolylineEditor::undo(){
-		// if(editorState & EditorFlags::MultiSelection)
+void PolylineEditor::removeWhenWlowerThanZero(){
 
+	for(auto it = polyline->points.begin(); it != polyline->points.end(); ){
+		if(it->w < 0.f)
+			it = polyline->points.erase(it);
+		else
+			it++;
+	}
+	markedNodes.clear();
+	if(not polyline->generatePath()){
+        undo();
+        // Helper::alert("Zbyt malo punktow");
+    }
 }
 void PolylineEditor::mergePoints(){
+    polylineEditor->save();
 	markedNodes.prepareToDelete();
-	glm::vec4 newPoint;
+	glm::vec4 newPoint(0,0,0,0);
 	int firstIdx = -1;
-	for(u32 i=0; i<polyline->points.size(); i++){
-		if(polyline->points[i].w == -1){
-			newPoint += polyline->points[i];
 
+	for(u32 i=0; i<polyline->points.size(); i++){
+		if(polyline->points[i].w == -1.f){
+			newPoint += polyline->points[i];
 			if(firstIdx == -1)
-				firstIdx = i;
+                firstIdx = i;
 		}
 	}
-	newPoint /= newPoint.w;
-	glm::vec4 *o = *(markedNodes.points.begin());
-	markedNodes.points.erase(o);
+	newPoint /= abs(newPoint.w);
+    newPoint.w = 1.f;
+	polyline->points[firstIdx] = newPoint;
 
-	removeSelected();
-
-	*o = newPoint;
+	removeWhenWlowerThanZero();
 }
 
 void PolylineEditor::processMouse(int button, int action, int modifier){
 	if(button == GLFW_MOUSE_BUTTON_RIGHT and action == GLFW_RELEASE){
 		editorState &= ~EditorFlags::PinSelectedToMouse;
+        markedNodes.setOffset({0,0});
 	}
 }
 void PolylineEditor::processKeys(int key, int action, int modifier){
 	if(not polyline) return;
 	if(action == GLFW_PRESS){
-		if(key == 'C'){
+		if(key == 'C' and (editorState & EditorFlags::PinSelectedToMouse) != EditorFlags::PinSelectedToMouse){
 			markedNodes.preferedDirection = 0;
 			editorState |= EditorFlags::SnapToAxes;
 		}
-		else if(modifier & GLFW_MOD_SHIFT){
+		else if(modifier & GLFW_MOD_CONTROL){
 			editorState |= EditorFlags::MultiSelection;
 		}
 		else if(key == GLFW_KEY_DELETE){
-			removeSelected();
+			removeMarked();
 		}
 		else if(key == 'W'){
 			subdivide();
@@ -482,42 +497,46 @@ void PolylineEditor::processKeys(int key, int action, int modifier){
 			extrude();
 		}
 		else if(key == 'Z' and modifier & GLFW_MOD_CONTROL){
-						undo();
-				}
+            polylineEditor->undoAndClearSelection();
+        }
 		else if(key == 'M' and modifier & GLFW_MOD_ALT){
 			mergePoints();
 		}
-		else if(key == 'X'){
+		else if(key == 'X' and (editorState & EditorFlags::PinSelectedToMouse) != EditorFlags::PinSelectedToMouse){
 			markedNodes.preferedDirection = 1;
 			editorState |= EditorFlags::SnapToAxes;
 		}
-		else if(key == 'Y'){
+		else if(key == 'Y' and (editorState & EditorFlags::PinSelectedToMouse) != EditorFlags::PinSelectedToMouse){
 			markedNodes.preferedDirection = 2;
 			editorState |= EditorFlags::SnapToAxes;
 		}
-		else if(key == 'Z'){
+		else if(key == 'Z' and (editorState & EditorFlags::PinSelectedToMouse) != EditorFlags::PinSelectedToMouse){
 			markedNodes.preferedDirection = 3;
 			editorState |= EditorFlags::SnapToAxes;
 		}
 	}
 	if(action == GLFW_RELEASE){
 		if(key == 'C'){
+            editorState &= ~EditorFlags::PinSelectedToMouse;
 			markedNodes.preferedDirection = 0;
 			editorState &= ~EditorFlags::SnapToAxes;
 		}
 		else if(key == 'X'){
+            editorState &= ~EditorFlags::PinSelectedToMouse;
 			markedNodes.preferedDirection = 0;
 			editorState &= ~EditorFlags::SnapToAxes;
 		}
 		else if(key == 'Y'){
+            editorState &= ~EditorFlags::PinSelectedToMouse;
 			markedNodes.preferedDirection = 0;
 			editorState &= ~EditorFlags::SnapToAxes;
 		}
 		else if(key == 'Z'){
+            editorState &= ~EditorFlags::PinSelectedToMouse;
 			markedNodes.preferedDirection = 0;
 			editorState &= ~EditorFlags::SnapToAxes;
 		}
-		else if(not (modifier & GLFW_MOD_SHIFT)){
+		else if(not (modifier & GLFW_MOD_CONTROL)){
 			editorState &= ~EditorFlags::MultiSelection;
 		}
 

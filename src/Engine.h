@@ -171,7 +171,9 @@ void drawBBox();
 glm::vec4 perpendicular(glm::vec4 v);
 glm::mat4 perpendicularTransform(glm::vec4 v, glm::vec4 p);
 void init(CFG::Node &cfg);
+void resize();
 void clear();
+void clearScreenBuffers();
 
 /// Drawing things
 void plotGraphs();

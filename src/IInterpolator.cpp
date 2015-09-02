@@ -34,7 +34,8 @@ void Linear::nextSection(){
 	sectionMaxSteps = glm::length(sectionStep)/singleStepLength;
 	sectionStep /= sectionMaxSteps;
 }
-void Linear::generatePath(){
+bool Linear::generatePath(){
+    if(points.size() < 2) return false;
 	visualisation.clear();
 	visualisation.reserve(100);
 	auto singleStepLengthTmp = singleStepLength;
@@ -45,13 +46,12 @@ void Linear::generatePath(){
 	nextSection();
 	finished = false;
 
-
-
 	while(!finished){
 		visualisation.push_back(nextPoint());
 	}
 
 	singleStepLength = singleStepLengthTmp;
+    return true;
 }
 void Linear::reset(){
 	finished = false;
@@ -81,7 +81,8 @@ glm::vec4 Simple::nextPoint(){
 	}
 	return points[currentPoint++];
 }
-void Simple::generatePath(){
+bool Simple::generatePath(){
+    return true;
 }
 void Simple::reset(){
 	finished = false;
@@ -131,14 +132,16 @@ float BezierCurve::factorial(int k){
 	}
 }
 void BezierCurve::calculateLength(){}
-void BezierCurve::generatePath(){
+bool BezierCurve::generatePath(){
 	visualisation.clear();
+    if(points.size() < 3) return false;
 	auto singleStepLengthTmp = singleStepLength;
 	singleStepLength = 0.01;
 	for(float k=0.f; k<=1; k+=0.01f){
 		visualisation.push_back(eval(k));
 	}
 	singleStepLength = singleStepLengthTmp;
+    return true;
 }
 void BezierCurve::reset(){
 	position = 0;
@@ -157,8 +160,9 @@ glm::vec4 BSpline::nextPoint(){
 }
 void BSpline::calculateLength(){}
 /// daloby sie to wyliczac w runtime? bez cachowania bezierów?
-void BSpline::generatePath(){
+bool BSpline::generatePath(){
 	makeNurbs();
+    if(points.size() < 4) return false;
 	visualisation.clear();
 	auto singleStepLengthTmp = singleStepLength;
 	singleStepLength = 0.01;
@@ -166,6 +170,7 @@ void BSpline::generatePath(){
 		visualisation.push_back(eval(k));
 	}
 	singleStepLength = singleStepLengthTmp;
+    return true;
 }
 void BSpline::makeNurbs(){
 	beziers.clear();
@@ -261,8 +266,9 @@ glm::vec4 HermiteCardinal::nextPoint(){
 void HermiteCardinal::reset(){
 	position = 0;
 }
-void HermiteCardinal::generatePath(){
+bool HermiteCardinal::generatePath(){
     numOfSegments = points.size()-2;
+    if(numOfSegments < 4) return false;
 
 	visualisation.clear();
 	visualisation.reserve(numOfSegments*100);
@@ -275,7 +281,7 @@ void HermiteCardinal::generatePath(){
 	}
 
 	singleStepLength = singleStepLengthTmp;
-
+    return true;
 }
 void HermiteCardinal::calculateLength(){}
 /// tension/weight proporcjonalny do odleglosci?
@@ -310,8 +316,9 @@ glm::vec4 HermiteFiniteDifference::nextPoint(){
 void HermiteFiniteDifference::reset(){
 	position = 0;
 }
-void HermiteFiniteDifference::generatePath(){
+bool HermiteFiniteDifference::generatePath(){
     numOfSegments = points.size()-1;
+    if(numOfSegments < 4) return false;
 
 	visualisation.clear();
 	visualisation.reserve(numOfSegments*100);
@@ -324,7 +331,7 @@ void HermiteFiniteDifference::generatePath(){
 	}
 
 	singleStepLength = singleStepLengthTmp;
-
+    return true;
 }
 void HermiteFiniteDifference::calculateLength(){}
 glm::vec4 HermiteFiniteDifference::eval(double param){
@@ -368,8 +375,9 @@ glm::vec4 HermiteFiniteDifferenceClosed::nextPoint(){
 void HermiteFiniteDifferenceClosed::reset(){
 	position = 0;
 }
-void HermiteFiniteDifferenceClosed::generatePath(){
+bool HermiteFiniteDifferenceClosed::generatePath(){
     numOfSegments = points.size();
+    if(numOfSegments < 4) return false;
 
 	visualisation.clear();
 	visualisation.reserve(numOfSegments*100);
@@ -383,7 +391,7 @@ void HermiteFiniteDifferenceClosed::generatePath(){
 	}
 
 	singleStepLength = singleStepLengthTmp;
-
+    return true;
 }
 void HermiteFiniteDifferenceClosed::calculateLength(){}
 glm::vec4 HermiteFiniteDifferenceClosed::eval(double param){

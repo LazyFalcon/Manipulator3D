@@ -36,7 +36,7 @@ void Robot::update(float dt){
 			position += transform*module->vecToA;
 		}
 		else if(module->type == PRISMATIC){
-			// position += transform*(module->vecToA + module->axis*module->value);
+			position += transform*(module->vecToA + module->axis*float(module->value));
 		}
 		module->entity->quat = transform;
 		module->entity->position = position;
@@ -61,12 +61,6 @@ void Robot::update(float dt){
 	endEffectorVelocity = positionShift/dt;
 }
 
-std::vector<double> Robot::getVariables(){
-	std::vector<double> out(getSize());
-	for(int i=0; i<getSize(); i++)
-		out[i] = chain[i]->value;
-	return out;
-}
 Point Robot::simulate(std::vector<double> &variables){
 	glm::vec4 position = glm::vec4(0,0,0,1);
 	glm::vec3 axis = chain[0]->axis.xyz();
@@ -88,6 +82,14 @@ Point Robot::simulate(std::vector<double> &variables){
 	}
 	return {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 }
+
+std::vector<double> Robot::getVariables(){
+	std::vector<double> out(getSize());
+	for(int i=0; i<getSize(); i++)
+		out[i] = chain[i]->value;
+	return out;
+}
+
 std::vector<Point> Robot::simulateFullData(std::vector<double> &variables){
 	glm::vec4 position = glm::vec4(0,0,0,1);
 	glm::vec3 axis = chain[0]->axis.xyz();

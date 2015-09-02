@@ -109,8 +109,8 @@ public:
 					*it += transform;
 	}
 	void prepareToDelete(){
-			for(auto &it : points)
-			(*it).w = -1;
+        for(auto &it : points)
+			(*it).w = -1.f;
 	}
 
 };
@@ -179,6 +179,7 @@ public:
 	uint32_t editorState;
 	uint32_t editorSnapMode;
 	bool snapModeDropped;
+    std::list <std::vector<glm::vec4>> history;
 
 	PolylineEditor() :
 		MainEditorWidget(glm::vec4(0,600,0,0), 150.f, 150.f, "Line"),
@@ -211,13 +212,32 @@ public:
 	void processPoints();
 	void processControls();
 
+    void save(){
+        history.push_back(polyline->points);
+        if(history.size() > 64)
+            history.pop_front();
+    }
+    void undoAndClearSelection(){
+        if(not history.empty()){
+            polyline->points = history.back();
+            history.pop_back();
+            markedNodes.clear();
+        }
+    }
+    void undo(){
+        if(not history.empty()){
+            polyline->points = history.back();
+            history.pop_back();
+        }
+    }
+
 	void insertAtEnd(glm::vec4 p);
 	void extrude();
 	void slide();
 	void subdivide();
 	void cleanUpNodes();
-	void removeSelected();
-	void undo();
+	void removeMarked();
+	void removeWhenWlowerThanZero();
 	void mergePoints();
 	void processMouse(int key, int action, int modifier);
 	void processKeys(int key, int action, int modifier);

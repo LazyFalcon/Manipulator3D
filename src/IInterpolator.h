@@ -54,7 +54,7 @@ public:
 	IInterpolator(const std::vector<glm::vec4> &points, Interpolator type, const std::string &name) : type(type), points(points), name(name) {}
 	virtual glm::vec4 firstPoint(){return points[0];};
 	virtual glm::vec4 nextPoint() = 0;
-	virtual void generatePath() = 0;
+	virtual bool generatePath() = 0;
 	virtual void reset() = 0;
 	virtual void drawParams() = 0;
 	virtual float getNormalizedPosition() const  = 0;
@@ -98,7 +98,7 @@ public:
 			generatePath();
 		}
 	}
-	void generatePath();
+	bool generatePath();
 	void genNextStep();
 	void nextSection();
 	glm::vec4 nextPoint();
@@ -121,7 +121,7 @@ public:
 		maxPoints = points.size() - 1;
 		currentPoint = 0;
 	}
-	void generatePath();
+	bool generatePath();
 	glm::vec4 nextPoint();
 	void reset();
 	void drawParams();
@@ -163,7 +163,7 @@ public:
 	float factorial(int k);
 
 	void calculateLength();
-	void generatePath();
+	bool generatePath();
 	void reset();
 	void drawParams();
 	float getNormalizedPosition() const {return position;}
@@ -185,7 +185,7 @@ class BezierSpline : public IInterpolator
 	float factorial(int k);
 
 	void calculateLength();
-	void generatePath();
+	bool generatePath();
 	void reset();
 
 	~BezierCurve(){}
@@ -221,7 +221,7 @@ public:
 	float Berenstein(float t, int n, int i);
 	float factorial(int k);
 	void calculateLength();
-	void generatePath();
+	bool generatePath();
 	void reset();
 	void drawParams();
 	float getNormalizedPosition() const {return position/numOfBeziers;}
@@ -255,7 +255,7 @@ public:
 	glm::vec4 currPoint();
 	void makeNurbs();
 	void calculateLength();
-	void generatePath();
+	bool generatePath();
 	void reset();
 	void drawParams();
 	float getNormalizedPosition() const {return position;}
@@ -279,7 +279,7 @@ public:
 
 	glm::vec4 nextPoint();
 	void reset();
-	void generatePath();
+	bool generatePath();
 	void calculateLength();
 	glm::vec4 eval(double);
 	void drawParams();
@@ -316,7 +316,7 @@ public:
 
 	glm::vec4 nextPoint();
 	void reset();
-	void generatePath();
+	bool generatePath();
 	void calculateLength();
 	glm::vec4 eval(double);
 	void drawParams();
@@ -353,7 +353,7 @@ public:
 
 	glm::vec4 nextPoint();
 	void reset();
-	void generatePath();
+	bool generatePath();
 	void calculateLength();
 	glm::vec4 eval(double);
 	void drawParams();

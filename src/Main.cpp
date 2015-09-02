@@ -129,11 +129,6 @@ void shutDown(int returnCode);
 
 void BADBADBADRobotIKRealtimeTest(Robot &robot);
 
-void scrollCallback(GLFWwindow* window, double xOff, double yOff);
-void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-void dropCallback(GLFWwindow* window, int count, const char** paths);
-
 void reloadWhatIsPossible();
 void initContext(CFG::Node &cfg);
 
@@ -160,7 +155,7 @@ int main(){
 
 	bulletWorld.init();
 
-  { // load res
+    { // load res
 		auto &&resources = CFG::Load("../resources.yml");
 		ResourceLoader loader(globalResources);
 		loader.loadResources(resources["Main"]);
@@ -169,12 +164,7 @@ int main(){
 	if(true){ // load def scene
 		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 	}
-	{ // setup callbacks
-		glfwSetScrollCallback(window, scrollCallback);
-		glfwSetKeyCallback(window, keyCallback);
-		glfwSetMouseButtonCallback(window, mouseButtonCallback);
-		glfwSetDropCallback(window, dropCallback);
-	}
+
 	camera.init();
 	camera.camOffset = glm::vec3(0,0,-0.5);
 	Engine::init(cfg_settings["Graphic"]);
@@ -240,6 +230,7 @@ void prerequisites(){
 	jacobianTransposeInitialCall(*(scene->robot));
 	PythonBindings::init(RC, scene, "BaseScript");
 	glfwShowWindow(window);
+    Helper::alert("dupa!");
 }
 void updates(float dt){
 	Editor::update(*RC);
@@ -342,12 +333,12 @@ void mainLoop(){
 		g_scrollDel = 0.0;
 	}
 }
-void scrollCallback(GLFWwindow* window, double xOff, double yOff){
+void scrollCallback(GLFWwindow *window, double xOff, double yOff){
 	g_scrollDel = yOff;
 	g_scrollPos += yOff;
 	camera.zoomStep(-yOff*0.4);
 }
-void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods){
 	if(key == GLFW_KEY_KP_ENTER)
 			key = GLFW_KEY_ENTER;
 	if(mods == GLFW_MOD_ALT && key == GLFW_KEY_F4)
@@ -381,9 +372,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 
 }
-void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
+void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods){
 	Helper::processMouse(button, action, mods);
 	ui.mouseKeyInput(button, action);
+	Editor::processMouse(button, action, mods);
 	double m_x, m_y;
 	glfwGetCursorPos(window, &m_x, &m_y);
 	if(button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS){
@@ -413,8 +405,28 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
 		MiddleMousePressed = false;
 	}
 }
-void dropCallback(GLFWwindow* window, int count, const char** paths){
+void dropCallback(GLFWwindow *window, int count, const char** paths){
 	Helper::dropCallback(count, paths);
+}
+void resizeCallback(GLFWwindow *window, int width, int height){
+    window_width = width;
+    window_height = height;
+	screenSize = glm::vec2(window_width, window_height);
+	camera.m_aspect = ((float)window_width)/window_height;
+	camera.m_width = window_width;
+	camera.m_height = window_height;
+	camera.setProjection();
+	orthoMatrix = glm::ortho(0.f, window_width*1.f, 0.f, window_height*1.f);
+	viewCenter = glm::vec4(window_width/2.f, window_height/2.f,0,0);
+
+	ui.m_maxHorizontal = window_width;
+	ui.m_maxVertical = window_height;
+
+    Engine::clearScreenBuffers();
+    Engine::resize();
+}
+void exitCallback(GLFWwindow *window){
+    quit = true;
 }
 
 void reloadWhatIsPossible(){
@@ -469,7 +481,7 @@ void initContext(CFG::Node &cfg){
 		Shut_Down(1);
 
 	// glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+	// glfwWindowHint(GLFW_DECORATED, GL_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);//albo CORE, ale wtedy nie dzia³a devil
@@ -514,10 +526,14 @@ void initContext(CFG::Node &cfg){
 	orthoMatrix = glm::ortho(0.f, window_width*1.f, 0.f, window_height*1.f);
 	viewCenter = glm::vec4(window_width/2.f, window_height/2.f,0,0);
 
-	// glfwSetKeyCallback(window, keyCallback);
-	// glfwSetMouseButtonCallback(window, mouseButtonCallback);
-	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
+	{ // setup callbacks
+		glfwSetScrollCallback(window, scrollCallback);
+		glfwSetKeyCallback(window, keyCallback);
+		glfwSetMouseButtonCallback(window, mouseButtonCallback);
+		glfwSetDropCallback(window, dropCallback);
+        glfwSetWindowCloseCallback(window, exitCallback);
+        glfwSetWindowSizeCallback(window, resizeCallback);
+	}
 
 	if(Engine::initGlew())
 		Shut_Down(1);

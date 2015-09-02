@@ -223,87 +223,7 @@ glm::mat4 perpendicularTransform(glm::vec4 v, glm::vec4 p){
 	return glm::mat4(V, cross(V, v), v, p);
 }
 
-void init(CFG::Node &cfg){
-{
-		// genVoidBuffer(linesVBO, 3*1024);
-		genVoidBuffer(b_position, 2*4096);
-		genVoidBuffer(b_size, 2*4096);
-		genVoidBuffer(b_color, 4*4096);
-		genVoidBuffer(b_uv, 4*4096);
-		genVoidBuffer(b_guiRects, 512*4);
-		genVoidBuffer(b_robotPath, 512*4);
-		genVoidBuffer(b_tmp, 512*4);
-		b_universalVec4.init(16384*4);
-		b_universalLong.init(32768*4);
-		b_vec2_16k.init(0xFFFF*2);
-	}
-{ /// VBOs
-		float point[] = {
-					0.0f, 0.0f, 0.5f, 1.f,
-					};
-		float quad_centered[] = {
-					-0.5f, -0.5f, 0.0f, 1.f,
-					-0.5f, 0.5f, 0.0f, 1.f,
-					0.5f, -0.5f, 0.0f, 1.f,
-					0.5f, 0.5f, 0.0f, 1.f,
-			};
-		float quad_corner[] = {
-					0.f, 0.f, 0.5f, 1.f,
-					0.f, 1.f, 0.5f, 1.f,
-					1.f, 0.f, 0.5f, 1.f,
-					1.f, 1.f, 0.5f, 1.f,
-			};
-		float fullScreenQuad[] = {
-				-1.f, -1.f,0.f, 0.f,
-				-1.f, 1.f, 0.f, 1.f,
-				1.f, -1.f, 1.f, 0.f,
-				1.f, 1.f,  1.f, 1.f,
-			};
-		float quadUV[] = {
-				0.f, 0.f,
-				0.f, 1.f,
-				1.f, 0.f,
-				1.f, 1.f,
-			};
-		float quad_v1[] = {
-					0.0f, 0.25f, 0.0f, 1.f,
-					0.0f, -0.25f, 0.0f, 1.f,
-					0.5f, 0.25f, 0.0f, 1.f,
-					0.5f, -0.25f, 0.0f, 1.f,
-			};
-		float quad_x_long[] = {
-					0.0f, 0.5f, 0.0f, 1.f,
-					0.0f, -0.5f, 0.0f, 1.f,
-					1.0f, 0.5f, 0.0f, 1.f,
-					1.0f, -0.5f, 0.0f, 1.f,
-			};
-		glGenBuffers(1, &point_VBO);
-			glBindBuffer(GL_ARRAY_BUFFER, point_VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*4, point, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &quadCentered);
-			glBindBuffer(GL_ARRAY_BUFFER, quadCentered);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_centered, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &quadCorner);
-			glBindBuffer(GL_ARRAY_BUFFER, quadCorner);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_corner, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &screenQuad);
-			glBindBuffer(GL_ARRAY_BUFFER, screenQuad);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, fullScreenQuad, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &XLongQuad);
-			glBindBuffer(GL_ARRAY_BUFFER, XLongQuad);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_v1, GL_STATIC_DRAW);
-		glGenBuffers(1, &XLongQuad2);
-			glBindBuffer(GL_ARRAY_BUFFER, XLongQuad2);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_x_long, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &quadUV_VBO);
-			glBindBuffer(GL_ARRAY_BUFFER, quadUV_VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*8, quadUV, GL_STATIC_DRAW);
-}
+void resize(){
 { /// textures
 	/// buffers
 	objectIDTex_R16 = Texture {GL_R16, window_width, window_height, GL_RED, GL_UNSIGNED_SHORT, GL_NEAREST, 0};
@@ -411,14 +331,14 @@ void init(CFG::Node &cfg){
 		FBstatus();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glGenFramebuffers(1, &shadowMapFbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFbo);
-		glViewport(0, 0, shadowMapSize, shadowMapSize);
-		glDrawBuffers(0, DrawBuffers);
-		glEnable(GL_DEPTH_TEST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer.ID, 0);
-		FBstatus();
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// glGenFramebuffers(1, &shadowMapFbo);
+		// glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFbo);
+		// glViewport(0, 0, shadowMapSize, shadowMapSize);
+		// glDrawBuffers(0, DrawBuffers);
+		// glEnable(GL_DEPTH_TEST);
+		// glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, shadowMapBuffer.ID, 0);
+		// FBstatus();
+		// glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glGenFramebuffers(1, &halfFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, halfFBO);
@@ -438,9 +358,89 @@ void init(CFG::Node &cfg){
 	if(error != GL_NO_ERROR)
 		std::cout<<__LINE__<<""<<error<<endl;
 }
+}
+void init(CFG::Node &cfg){
+{
+		// genVoidBuffer(linesVBO, 3*1024);
+		genVoidBuffer(b_position, 2*4096);
+		genVoidBuffer(b_size, 2*4096);
+		genVoidBuffer(b_color, 4*4096);
+		genVoidBuffer(b_uv, 4*4096);
+		genVoidBuffer(b_guiRects, 512*4);
+		genVoidBuffer(b_robotPath, 512*4);
+		genVoidBuffer(b_tmp, 512*4);
+		b_universalVec4.init(16384*4);
+		b_universalLong.init(32768*4);
+		b_vec2_16k.init(0xFFFF*2);
+	}
+{ /// VBOs
+		float point[] = {
+					0.0f, 0.0f, 0.5f, 1.f,
+					};
+		float quad_centered[] = {
+					-0.5f, -0.5f, 0.0f, 1.f,
+					-0.5f, 0.5f, 0.0f, 1.f,
+					0.5f, -0.5f, 0.0f, 1.f,
+					0.5f, 0.5f, 0.0f, 1.f,
+			};
+		float quad_corner[] = {
+					0.f, 0.f, 0.5f, 1.f,
+					0.f, 1.f, 0.5f, 1.f,
+					1.f, 0.f, 0.5f, 1.f,
+					1.f, 1.f, 0.5f, 1.f,
+			};
+		float fullScreenQuad[] = {
+				-1.f, -1.f,0.f, 0.f,
+				-1.f, 1.f, 0.f, 1.f,
+				1.f, -1.f, 1.f, 0.f,
+				1.f, 1.f,  1.f, 1.f,
+			};
+		float quadUV[] = {
+				0.f, 0.f,
+				0.f, 1.f,
+				1.f, 0.f,
+				1.f, 1.f,
+			};
+		float quad_v1[] = {
+					0.0f, 0.25f, 0.0f, 1.f,
+					0.0f, -0.25f, 0.0f, 1.f,
+					0.5f, 0.25f, 0.0f, 1.f,
+					0.5f, -0.25f, 0.0f, 1.f,
+			};
+		float quad_x_long[] = {
+					0.0f, 0.5f, 0.0f, 1.f,
+					0.0f, -0.5f, 0.0f, 1.f,
+					1.0f, 0.5f, 0.0f, 1.f,
+					1.0f, -0.5f, 0.0f, 1.f,
+			};
+		glGenBuffers(1, &point_VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, point_VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*4, point, GL_STATIC_DRAW);
 
+		glGenBuffers(1, &quadCentered);
+			glBindBuffer(GL_ARRAY_BUFFER, quadCentered);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_centered, GL_STATIC_DRAW);
 
+		glGenBuffers(1, &quadCorner);
+			glBindBuffer(GL_ARRAY_BUFFER, quadCorner);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_corner, GL_STATIC_DRAW);
 
+		glGenBuffers(1, &screenQuad);
+			glBindBuffer(GL_ARRAY_BUFFER, screenQuad);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, fullScreenQuad, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &XLongQuad);
+			glBindBuffer(GL_ARRAY_BUFFER, XLongQuad);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_v1, GL_STATIC_DRAW);
+		glGenBuffers(1, &XLongQuad2);
+			glBindBuffer(GL_ARRAY_BUFFER, XLongQuad2);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, quad_x_long, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &quadUV_VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, quadUV_VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*8, quadUV, GL_STATIC_DRAW);
+}
+    resize();
 }
 void clear(){
 	glDeleteBuffers(1, &b_position);
@@ -464,6 +464,25 @@ void clear(){
 
 	for(auto &it : shaders)
 		glDeleteShader(it.second);
+}
+void clearScreenBuffers(){
+	glDeleteFramebuffers(1, &fullFBO);
+	glDeleteFramebuffers(1, &halfFBO);
+	glDeleteTextures(1, &full_R8.ID);
+	glDeleteTextures(1, &full_R8_2.ID);
+	glDeleteTextures(1, &half_R8.ID);
+	glDeleteTextures(1, &full_RGBA8.ID);
+	glDeleteTextures(1, &half_R8_2.ID);
+	glDeleteTextures(1, &full_RGBA8_2.ID);
+	glDeleteTextures(1, &half_RGBA8.ID);
+	glDeleteTextures(1, &half_RGBA8_2.ID);
+
+	glDeleteTextures(1, &full_RGBA16F.ID);
+	glDeleteTextures(1, &normalBuffer.ID);
+	glDeleteTextures(1, &colorBuffer.ID);
+	glDeleteTextures(1, &depthBuffer.ID);
+	glDeleteTextures(1, &depthBuffer2.ID);
+
 }
 
 void plotGraphs(){

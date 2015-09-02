@@ -144,7 +144,7 @@ def init(RC, scene):
 
 	foo = c_update(10)
 	RC.pyExec().name("Exec from py").callback(foo).finish(RC)
-	RC.move().name("Circle!").startO(angleAxis(1,vec3(0.2,0.2,-1))).endO(angleAxis(1,vec3(-0.2,0.3,-1))).interpolator(circlePath).velocity(1.0).jointVelocity(0.5).solver(SolverType.JT2).finish(RC)
+	RC.move().name("Circle!").startO(angleAxis(1,vec3(0.2,0.2,-1))).endO(angleAxis(1,vec3(-0.2,0.3,-1))).interpolator(circlePath).velocity(1.0).jointVelocity(0.5).solver(SolverType.JT0).finish(RC)
 	RC.move().name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()

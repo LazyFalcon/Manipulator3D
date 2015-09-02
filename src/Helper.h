@@ -44,7 +44,7 @@ void appendToSelection(const std::string &name);
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
 ///
-
+void alert(const std::string &s);
 void showPopups();
 
 ///

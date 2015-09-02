@@ -3,32 +3,6 @@ float cacheMx = 0.f;
 float cacheMy = 0.f;
 bool enableCameraZoom = false;
 
-class Alert {
-	bool active = false;
-	string text = "";
-public:
-	~Alert(){
-		// cerr<<"~Alert"<<endl;
-	}
-	void operator()(string _text){
-		active = true;
-		text = _text;
-	}
-	void show(){
-		if(!active)
-			return;
-		ui.table(glm::vec4(window_width / 2 - 100, window_height / 2, 200, -100), UI::LayoutVertical | UI::AlignTop | UI::AlignLeft | UI::FixedSize | UI::FixedPos);
-			ui.border(0);
-			ui.rect(200, 50).text(text, "weblysleekB17"s, UI::CenterText)();
-			ui.beginLayer();
-			ui.rect(200, 50).text("OK", "weblysleekB17"s, UI::CenterText).button(active)(UI::Hoverable);
-			ui.endLayer();
-
-		ui.endTable();
-	}
-
-}alert;
-
 class Button {
 public:
 	string name;
@@ -93,7 +67,7 @@ Button TopBar {"","",colorWhite, []{}, std::vector<Button>{
 			Button {"Sobel","",  colorWhite, []{globalSettings ^=  SOBEL;}},
 			Button {"Blur","",  colorWhite, []{globalSettings ^=  BLUR;}},
 			Button {"Use downsample","",  colorWhite, []{globalSettings ^=  BLUR_WITH_DOWNSAMPLE;}},
-			Button {"Graphic","", colorWhite, []{alert("graphic settings"s);}},
+			Button {"Graphic","", colorWhite, []{}},
 			Button {"Lights","",  colorWhite, []{globalSettings ^= LIGHTS;}},
 			Button {"Wireframe","",  colorWhite, []{}},
 			Button {"Shadows","",  colorWhite, []{}},
@@ -288,7 +262,7 @@ void MainMenu(){
 
 	// zrobic z tego scrollListę!
 
-	alert.show();
+	// alert.show();
 	sideBarPoints();
 	steeringConsole();
 
