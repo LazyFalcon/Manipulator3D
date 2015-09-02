@@ -31,7 +31,7 @@ static const double sqdpi = 3.141592653589793 * 3.141592653589793;
 static const double dpi2 = 2.0 * 3.141592653589793;
 
 u32 lastIterationCount;
-
+double lastSolverError;
 glm::vec4 g_targetPosition;
 
 Graph jacobianIterations("jacobianIterations", Graph::LastX, 0xFFFF00FF, 250);
@@ -269,7 +269,7 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iterations = 0;
-	for(; (positionError > minError || quatError > minError) && iterations<iterationLimit; iterations++){
+	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
 		auto positionDelta = (target.position - endEffector.position);
 		glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
 		glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
@@ -293,8 +293,10 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	// cout<<iterations<<" << "<<quatError<<endl;
 	endPosition = endEffector.position;
 	result = variables.getVector();
-	succes = positionError < minError && quatError < minError;
+	// succes = positionError < minError && quatError < minError*10;
+	succes = positionError < minError;
 	lastIterationCount = iterations;
+	lastSolverError = positionError;
 	return succes;
 }
 

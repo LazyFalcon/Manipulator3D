@@ -16,6 +16,7 @@
 
 extern u32 lastIterationCount;
 extern u32 lastPathIterationCount;
+extern double lastSolverError;
 extern float lastPathIterationdistance;
 
 using namespace std::chrono;
@@ -318,6 +319,7 @@ void mainLoop(){
 			ui.rect().text("Iterations: " + std::to_string(lastIterationCount)).font("ui_12"s)();
 			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
+			ui.rect().text("LastError: " + std::to_string(lastSolverError)).font("ui_12"s)();
 			ui.rect().text("Selected: " + std::to_string(Helper::getCurrentSelection().size())).font("ui_12"s)();
 			ui.rect().text("ID: " + std::to_string(Helper::getIDUnderMouse())).font("ui_12"s)();
 			ui.rect().text("Angle: " + std::to_string(camera.m_angle)).font("ui_12"s)();

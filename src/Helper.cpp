@@ -458,14 +458,14 @@ public:
 
 	void extendedEditButton(float &v, float incrVal = 0.01f){
 		ui.rect(70, 20).font("ui_12"s);
-		if(currentModifierKey == GLFW_MOD_CONTROL){
+		// if(currentModifierKey == GLFW_MOD_CONTROL){
 			ui.text(to_string(v))(UI::Hoverable)
 			.onlPressed([&v, incrVal]{v += incrVal;})
 			.onrPressed([&v, incrVal]{v-= incrVal;});
-		}
-		else {
-			ui.edit(v)(UI::Hoverable);
-		}
+		// }
+		// else {
+			// ui.edit(v)(UI::Hoverable);
+		// }
 	}
 	void extendedEditButton(double &v, double incrVal = 0.01){
 		ui.rect(70, 20).font("ui_12"s);
@@ -483,20 +483,24 @@ public:
 			JT0 solver;
 			solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
 			if(solver.succes) RC.robot->insertVariables(solver.result);
-			else alert("Solver failed");
+			// else alert("Solver failed");
 		}
 		else if(solverTarget == OnlyOrientation){
 			JT2 solver;
 			solver.solve(Point{ RC.robot->endEffector.position, glm::quat(eulerAngles) }, *(RC.robot));
 			if(solver.succes) RC.robot->insertVariables(solver.result);
-			else alert("Solver failed");
+			// else alert("Solver failed");
 		}
 		else {
 			JT2 solver;
 			solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
 			if(solver.succes) RC.robot->insertVariables(solver.result);
-			else alert("Solver failed");
+			// else alert("Solver failed");
 		}
+		position = RC.robot->endEffector.position;
+		auto q = RC.robot->endEffector.quat;
+		axis = glm::axis(q);
+		eulerAngles = glm::eulerAngles(q);
 	}
 	void run(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom )
@@ -544,6 +548,10 @@ public:
 				);
 				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
 					pushCanges(RC);
+					/// update rest of..
+					auto q = RC.robot->endEffector.quat;
+					axis = glm::axis(q);
+					eulerAngles = glm::eulerAngles(q);
 				}
 				ui.rect(70, 15).font("ui_10"s).text("Position:")(UI::CaptureMouse);
 				horizontal(
@@ -552,7 +560,9 @@ public:
 					extendedEditButton(axis.z);
 				);
 				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
+					axis = glm::normalize(axis);
 					pushCanges(RC);
+					eulerAngles = glm::eulerAngles(glm::quat(1, axis));
 				}
 				ui.rect(70, 15).font("ui_10"s).text("Axis:")(UI::CaptureMouse);
 				horizontal(
@@ -562,6 +572,7 @@ public:
 				);
 				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
 					pushCanges(RC);
+					axis = glm::axis(glm::quat(eulerAngles));
 				}
 				ui.rect(70, 15).font("ui_10"s).text("Euler:")(UI::CaptureMouse);
 
