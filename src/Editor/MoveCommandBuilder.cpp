@@ -22,7 +22,7 @@ void decr(float &value){value -= 0.01;}
    )
 
 #define INCR(value) \
-			ui.rect(15, 22).text("-", UI::CenterText)\
+			ui.rect(15, 22).text("+", UI::CenterText)\
 				.onRepeat([this]{incr(value);}, 25u)\
 				.onlClick([this]{incr(value);})\
 				(UI::Button);

@@ -23,6 +23,10 @@
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 #include "Helper.h"
 extern UI::IMGUI ui;
+namespace UI {
+extern int g_UILayer;
+};
+
 extern shared_ptr<Scene> scene;
 extern BulletWorld bulletWorld;
 extern shared_ptr<RobotController> RC;
@@ -148,7 +152,7 @@ void moveCameraByScroll(Camera &camera, double xOff, double yOff){
 
 }
 
-/// -------------------------------- ALERTS
+/// ----------------------------------------------------- ALERTS
 class Alert
 {
 	bool active = false;
@@ -184,7 +188,7 @@ public:
 void alert(const std::string &s){
     g_alert(s);
 }
-/// -------------------------------- POPUPS
+/// ----------------------------------------------------- POPUPS
 struct Popup
 {
 	std::string title;
@@ -222,7 +226,7 @@ void showPopups(){
 }
 
 
-/// -------------------------------- CURSOR
+/// ----------------------------------------------------- CURSOR
 
 std::map<std::string, glm::vec4> g_pointList;
 std::string newPointName = "";
@@ -263,11 +267,16 @@ void restoreCursorPos(const std::string &name){
 std::map<std::string, glm::vec4>& pointList(){
 	return g_pointList;
 }
-void cursorVidgetHorizontal(glm::vec2 pos){
-	ui.rect(pos.x-70, pos.y, 70, 20).font("ui_12"s).edit(cursor.x)(UI::CaptureMouse);
-	ui.rect(pos.x, pos.y, 70, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
-	ui.rect(pos.x+70, pos.y, 70, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
-	ui.rect(pos.x+140, pos.y, 70, 20).font("ui_12"s).text("save")(UI::Button).onlClick([]{
+void cursorWidgetHorizontal(glm::vec2 pos){
+	ui.box(UI::LayoutHorizontal);
+	// ui.rect(pos.x-70, pos.y, 70, 20).font("ui_12"s).edit(cursor.x)(UI::CaptureMouse);
+	// ui.rect(pos.x, pos.y, 70, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
+	// ui.rect(pos.x+70, pos.y, 70, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
+	// ui.rect(pos.x+140, pos.y, 70, 20).font("ui_12"s).text("save")(UI::Button).onlClick([]{
+	ui.rect(70, 20).font("ui_12"s).edit(cursor.x)(UI::CaptureMouse);
+	ui.rect(70, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
+	ui.rect(70, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
+	ui.rect(70, 20).font("ui_12"s).text("save")(UI::Button).onlClick([]{
 		newPointName = generatePointName();
 		popup({"Set name", []()->bool{
 			bool out = false;
@@ -277,9 +286,10 @@ void cursorVidgetHorizontal(glm::vec2 pos){
 			return out;
 		}});
 	});
+	ui.endBox();
 }
 
-/// -------------------------------- SELECTION
+/// ----------------------------------------------------- SELECTION
 std::vector<shared_ptr<Entity>> g_currentSelection;
 std::map<std::string, std::vector<shared_ptr<Entity>>> g_groupList;
 u32 groupNameCount;
@@ -365,7 +375,7 @@ std::string generateGroupName(){
 }
 
 
-/// -------------------------------- FILESYSTEM
+/// ----------------------------------------------------- FILESYSTEM
 void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, shared_ptr<Scene> &scene, BulletWorld &bulletWorld){
 	bulletWorld.clear();
 
@@ -424,6 +434,78 @@ void dropCallback(int count, const char** paths){
 		handleDrop(paths[i]);
 	}
 }
+
+/// ----------------------------------------------------- DIRECT ROBOT CONTROL
+
+i32 moduleUnderEdition;
+bool directControlEnabled = true;
+enum ControlType : u32 {
+	None = 0, Joint, Cartesian
+} controlType;
+i32 getMarkedModule(){
+	return moduleUnderEdition;
+}
+
+void directControlWidget(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
+	ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom )
+		.overridePosition(x, y);
+
+		cursorWidgetHorizontal({x,y});
+
+		if(not directControlEnabled) { ui.rect(200, 20).text("Show panel").button(directControlEnabled)(); ui.endTable(); return;}
+
+		ui.box(UI::LayoutHorizontal);
+			ui.rect(100, 20).color(controlType == Joint?0xFFA000FF : 0xA0A0A0FF).text("Joint control").radio(controlType, Joint)(UI::CaptureMouse);
+			ui.rect(100, 20).color(controlType == Cartesian?0xFFA000FF : 0xA0A0A0FF).text("Cartesian control").radio(controlType, Cartesian)(UI::CaptureMouse);
+		ui.endBox();
+		if(controlType == Joint){
+			for(i32 i=0; i<RC.robot->chain.size(); ++i){
+
+				auto &module = *RC.robot->chain[i];
+
+				horizontal(
+					ui.rect(15, 22).text("-", UI::CenterText)
+						// .onRepeat([&module]{module.decr();}, 5u)
+						.onRepeat([&module]{module.decr();})
+						.onlClick([&module]{module.decr();}) (UI::Button);
+					ui.rect(120,22).edit(module.value)(UI::EditBox);
+					ui.rect(15, 22).text("+", UI::CenterText)
+						.onRepeat([&module]{module.incr();})
+						.onlClick([&module]{module.incr();}) (UI::Button);
+				);
+				if(not ui.outOfTable()){
+					moduleUnderEdition = i;
+					UI::g_UILayer++;
+					ui.rect(glm::vec4(mousePos+glm::vec2(-5, -15), 100, 20)).text(module.name)(UI::Label);
+					UI::g_UILayer--;
+				}
+			}
+		}
+		else {}
+
+
+
+
+
+
+
+
+	ui.endTable();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 NAM_END

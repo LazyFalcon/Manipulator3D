@@ -710,6 +710,18 @@ void drawOutline(Scene &scene){
 			glUniform(shader, transform, uModel);
 			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 		}
+
+		if(Helper::getMarkedModule()>=0){
+			glStencilMask(0x2);
+			glStencilFunc(GL_ALWAYS,0x2,0x2);
+			auto &mesh = *(scene.robot->chain[Helper::getMarkedModule()]->entity->mesh);
+
+			glm::mat4 transform = camera.ProjectionMatrix*camera.ViewMatrix*glm::translate(scene.robot->chain[Helper::getMarkedModule()]->entity->position.xyz()) * glm::mat4_cast(scene.robot->chain[Helper::getMarkedModule()]->entity->quat);
+
+			glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
+			glUniform(shader, transform, uModel);
+			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+		}
 	}
 	{ // draw outline
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
@@ -720,7 +732,7 @@ void drawOutline(Scene &scene){
 		glEnable(GL_DEPTH_TEST);
 		glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 		glStencilMask(0x00);
-		glStencilFunc(GL_NOTEQUAL,0x1,0xFF);
+		glStencilFunc(GL_NOTEQUAL,0x1,0x1);
 		// glStencilFunc(GL_ALWAYS,0x1,0xFF);
 		// glStencilFunc(GL_EQUAL,0x1,0xFF);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -731,12 +743,21 @@ void drawOutline(Scene &scene){
 
 			glm::mat4 transform = camera.ProjectionMatrix*camera.ViewMatrix*glm::translate(obj->position.xyz()) * glm::mat4_cast(obj->quat);
 
-			// glUniform(shader, glm::vec4(1,1,0.4  ,1), uColor);
 			glUniform(shader, colorHex(0x9CFF4CFF), uColor);
-			// glUniform(shader, transform*glm::scale(glm::vec3(1.01)), uModel);
 			glUniform(shader, transform, uModel);
 			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 		}
+		if(Helper::getMarkedModule()>=0){
+			glStencilFunc(GL_NOTEQUAL,0x2,0x2);
+			auto &mesh = *(scene.robot->chain[Helper::getMarkedModule()]->entity->mesh);
+
+			glm::mat4 transform = camera.ProjectionMatrix*camera.ViewMatrix*glm::translate(scene.robot->chain[Helper::getMarkedModule()]->entity->position.xyz()) * glm::mat4_cast(scene.robot->chain[Helper::getMarkedModule()]->entity->quat);
+
+			glUniform(shader, colorHex(0xFFDE4CFF), uColor);
+			glUniform(shader, transform, uModel);
+			glDrawRangeElements(GL_TRIANGLES, mesh.begin, mesh.end, mesh.count, GL_UNSIGNED_INT, mesh.offset);
+		}
+
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}

@@ -49,6 +49,11 @@ public:
 		targetValue = 0;
 	}
 
+	void incr(){value += incrValue;}
+	void decr(){value -= incrValue;}
+
+	double incrValue = 0.01;
+
 	int type;
 	glm::vec4 axis;
 	glm::vec4 vecToA; /// wektor ze œrodka do zamocowania cz³onu

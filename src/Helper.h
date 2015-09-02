@@ -75,5 +75,7 @@ vector<string> listFilesInDirectory(const string &dir, const string &ext);
 std::string getClipboard();
 void dropCallback(int count, const char** paths);
 
+i32 getMarkedModule();
+void directControlWidget(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC);
 
 NAM_END

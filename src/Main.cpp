@@ -323,7 +323,8 @@ void mainLoop(){
 			ui.rect().text("Angle: " + std::to_string(camera.m_angle)).font("ui_12"s)();
 		ui.endTable();
 		// ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
-		Helper::cursorVidgetHorizontal({window_width*0.5-50, 2});
+		if(RC) Helper::directControlWidget(window_width-300, 2, mousePosition, *RC);
+		// Helper::cursorVidgetHorizontal({window_width*0.5-50, 2});
 		ui.image(Helper::getScreenCursor(camera), "Cursor").color(0xFFFFFFFF)();
 
 		ui.end();
