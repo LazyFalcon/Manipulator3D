@@ -65,7 +65,7 @@ u32            RedC = 0xFF000000;
 u32            GreenC = 0x00FF0000;
 u32            BlueC = 0x0000FF00;
 u32            AlphaC = 0x000000FF;
-
+float          defaultAngle;
 std::unordered_map<string, UI::Font>	UI::fonts;
 std::list <Statement> statements;
 std::default_random_engine randEngine(156);
@@ -320,6 +320,7 @@ void mainLoop(){
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
 			ui.rect().text("Selected: " + std::to_string(Helper::getCurrentSelection().size())).font("ui_12"s)();
 			ui.rect().text("ID: " + std::to_string(Helper::getIDUnderMouse())).font("ui_12"s)();
+			ui.rect().text("Angle: " + std::to_string(camera.m_angle)).font("ui_12"s)();
 		ui.endTable();
 		// ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
 		Helper::cursorVidgetHorizontal({window_width*0.5-50, 2});
@@ -409,12 +410,14 @@ void dropCallback(GLFWwindow *window, int count, const char** paths){
 	Helper::dropCallback(count, paths);
 }
 void resizeCallback(GLFWwindow *window, int width, int height){
-    window_width = width;
-    window_height = height;
+	window_width = width;
+	window_height = height;
 	screenSize = glm::vec2(window_width, window_height);
 	camera.m_aspect = ((float)window_width)/window_height;
 	camera.m_width = window_width;
 	camera.m_height = window_height;
+	camera.m_angle = defaultAngle*camera.m_aspect*9.f/16.f;
+
 	camera.setProjection();
 	orthoMatrix = glm::ortho(0.f, window_width*1.f, 0.f, window_height*1.f);
 	viewCenter = glm::vec4(window_width/2.f, window_height/2.f,0,0);
@@ -422,11 +425,11 @@ void resizeCallback(GLFWwindow *window, int width, int height){
 	ui.m_maxHorizontal = window_width;
 	ui.m_maxVertical = window_height;
 
-    Engine::clearScreenBuffers();
-    Engine::resize();
+	Engine::clearScreenBuffers();
+	Engine::resize();
 }
 void exitCallback(GLFWwindow *window){
-    quit = true;
+	quit = true;
 }
 
 void reloadWhatIsPossible(){
@@ -515,7 +518,7 @@ void initContext(CFG::Node &cfg){
 	glfwMakeContextCurrent(window);
 
 	camera.m_aspect = ((float)window_width)/window_height;
-	camera.m_angle = cfg["angle"].asFloat();
+	defaultAngle = camera.m_angle = cfg["angle"].asFloat();
 	camera.m_width = window_width;
 	camera.m_height = window_height;
 	// camera.m_far = 200.f;

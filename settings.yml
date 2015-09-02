@@ -103,7 +103,7 @@ Graphic:
       -  yes
       -  no
 Window:
-  angle: 100
+  angle: 80
   fullscreen:
     @default: no
     options:
