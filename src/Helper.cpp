@@ -456,11 +456,48 @@ public:
 	glm::vec3 axis;
 	glm::vec4 position;
 
-	void extendedEditButton(float &v, float incrVal){
-
-
+	void extendedEditButton(float &v, float incrVal = 0.01f){
+		ui.rect(70, 20).font("ui_12"s);
+		if(currentModifierKey == GLFW_MOD_CONTROL){
+			ui.text(to_string(v))(UI::Hoverable)
+			.onlPressed([&v, incrVal]{v += incrVal;})
+			.onrPressed([&v, incrVal]{v-= incrVal;});
+		}
+		else {
+			ui.edit(v)(UI::Hoverable);
+		}
 	}
-
+	void extendedEditButton(double &v, double incrVal = 0.01){
+		ui.rect(70, 20).font("ui_12"s);
+		if(currentModifierKey == GLFW_MOD_CONTROL){
+			ui.text(to_string(v))(UI::Hoverable)
+			.onlPressed([&v, incrVal]{v += incrVal;})
+			.onrPressed([&v, incrVal]{v-= incrVal;});
+		}
+		else {
+			ui.edit(v)(UI::Hoverable);
+		}
+	}
+	void pushCanges(RobotController &RC){
+		if(solverTarget == OnlyPosition){
+			JT0 solver;
+			solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
+			if(solver.succes) RC.robot->insertVariables(solver.result);
+			else alert("Solver failed");
+		}
+		else if(solverTarget == OnlyOrientation){
+			JT2 solver;
+			solver.solve(Point{ RC.robot->endEffector.position, glm::quat(eulerAngles) }, *(RC.robot));
+			if(solver.succes) RC.robot->insertVariables(solver.result);
+			else alert("Solver failed");
+		}
+		else {
+			JT2 solver;
+			solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
+			if(solver.succes) RC.robot->insertVariables(solver.result);
+			else alert("Solver failed");
+		}
+	}
 	void run(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom )
 			.overridePosition(x, y);
@@ -483,7 +520,10 @@ public:
 							// .onlPressed([&module]{module.decr();}, 5u)
 							.onlPressed([&module]{module.decr();})
 							.onlClick([&module]{module.decr();}) (UI::Button);
-						ui.rect(150,22).edit(module.value)(UI::Hoverable);
+						// ui.rect(150,22).edit(module.value)(UI::Hoverable);
+
+						extendedEditButton(module.value);
+
 						ui.rect(25, 22).text("+", "ui_17", UI::CenterText)
 							.onlPressed([&module]{module.incr();})
 							.onlClick([&module]{module.incr();}) (UI::Button);
@@ -498,33 +538,39 @@ public:
 			}
 			else if(controlType == Cartesian){
 				horizontal(
-						ui.rect(70, 20).font("ui_12"s)
-							// .edit(position.x)
-							.text(to_string(position.x))
-							(UI::Hoverable)
-							.onlPressed([this]{position.x += 0.01f;})
-							.onrPressed([this]{position.x-= 0.01f;})
-							;
-						ui.rect(70, 20).font("ui_12"s).edit(position.y)(UI::Hoverable);
-						ui.rect(70, 20).font("ui_12"s).edit(position.z)(UI::Hoverable);
+					extendedEditButton(position.x);
+					extendedEditButton(position.y);
+					extendedEditButton(position.z);
 				);
+				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
+					pushCanges(RC);
+				}
 				ui.rect(70, 15).font("ui_10"s).text("Position:")(UI::CaptureMouse);
 				horizontal(
-						ui.rect(70, 20).font("ui_12"s).edit(axis.x)(UI::Hoverable);
-						ui.rect(70, 20).font("ui_12"s).edit(axis.y)(UI::Hoverable);
-						ui.rect(70, 20).font("ui_12"s).edit(axis.z)(UI::Hoverable);
+					extendedEditButton(axis.x);
+					extendedEditButton(axis.y);
+					extendedEditButton(axis.z);
 				);
+				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
+					pushCanges(RC);
+				}
 				ui.rect(70, 15).font("ui_10"s).text("Axis:")(UI::CaptureMouse);
 				horizontal(
-						ui.rect(70, 20).font("ui_12"s).edit(eulerAngles.x)(UI::Hoverable);
-						ui.rect(70, 20).font("ui_12"s).edit(eulerAngles.y)(UI::Hoverable);
-						ui.rect(70, 20).font("ui_12"s).edit(eulerAngles.z)(UI::Hoverable);
+					extendedEditButton(eulerAngles.x);
+					extendedEditButton(eulerAngles.y);
+					extendedEditButton(eulerAngles.z);
 				);
+				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
+					pushCanges(RC);
+				}
 				ui.rect(70, 15).font("ui_10"s).text("Euler:")(UI::CaptureMouse);
+
+
+
 				horizontal(
-						ui.rect(70, 20).color(solverTarget == OnlyPosition?0xFFA000FF : 0xA0A0A0FF).text("Position").radio(solverTarget, OnlyPosition)(UI::Hoverable);
-						ui.rect(70, 20).color(solverTarget == OnlyOrientation?0xFFA000FF : 0xA0A0A0FF).text("Orientation").radio(solverTarget, OnlyOrientation)(UI::Hoverable);
-						ui.rect(70, 20).color(solverTarget == PositionAndOrientation?0xFFA000FF : 0xA0A0A0FF).text("Both").radio(solverTarget, PositionAndOrientation)(UI::Hoverable);
+					ui.rect(70, 20).color(solverTarget == OnlyPosition?0xFFA000FF : 0xA0A0A0FF).text("Position").radio(solverTarget, OnlyPosition)(UI::Hoverable);
+					ui.rect(70, 20).color(solverTarget == OnlyOrientation?0xFFA000FF : 0xA0A0A0FF).text("Orientation").radio(solverTarget, OnlyOrientation)(UI::Hoverable);
+					ui.rect(70, 20).color(solverTarget == PositionAndOrientation?0xFFA000FF : 0xA0A0A0FF).text("Both").radio(solverTarget, PositionAndOrientation)(UI::Hoverable);
 				);
 				ui.rect(70, 15).font("ui_10"s).text("Insert:")(UI::CaptureMouse);
 
@@ -538,22 +584,8 @@ public:
 						});
 					ui.rect(100, 20).color(0xA0A0A0FF).text("To robot")(UI::Hoverable)
 						.onlClick([&RC, this]{
-							if(solverTarget == OnlyPosition){
-								JT0 solver;
-								solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
-								RC.robot->insertVariables(solver.result);
-							}
-							else if(solverTarget == OnlyOrientation){
-								JT2 solver;
-								solver.solve(Point{ RC.robot->endEffector.position, glm::quat(eulerAngles) }, *(RC.robot));
-								RC.robot->insertVariables(solver.result);
-							}
-							else {
-								JT2 solver;
-								solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
-								RC.robot->insertVariables(solver.result);
-							}
-						});
+							pushCanges(RC);
+							});
 					);
 			}
 			ui.endTable();

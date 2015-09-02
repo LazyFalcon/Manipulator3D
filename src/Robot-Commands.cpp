@@ -144,9 +144,9 @@ bool MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &sce
 
 		solver->solve(Point{ newTarget, newO }, *(rc->robot));
 		targetJointPosition = solver->result;
-		rc->robot->insertVariables(targetJointPosition);
-		rc->robot->goTo(targetJointPosition);
-		rc->robot->goTo(dt, jointVelocityModifier);
+		if(solver->succes) rc->robot->insertVariables(targetJointPosition);
+		if(solver->succes) rc->robot->goTo(targetJointPosition);
+		if(solver->succes) rc->robot->goTo(dt, jointVelocityModifier);
 		// previousPoint = rc->robot->endEffector.position;
 		previousPoint = newTarget;
 		return false;
