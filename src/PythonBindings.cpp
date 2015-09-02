@@ -327,6 +327,7 @@ std::unordered_map<std::string, int> keyMaps = {
 bpl::object main;
 bpl::object global;
 bpl::object mainScript;
+bpl::object subScript;
 std::string mainScriptName;
 
 void handleInput(int key, int action, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
@@ -412,6 +413,11 @@ void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 
 void terminate(){
 	Py_Finalize();
+}
+
+void executeSubScript(const std::string &name, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+
+
 }
 
 NAM_END

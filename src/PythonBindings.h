@@ -15,6 +15,8 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::
 void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 void terminate();
 
+void executeSubScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+
 void loadMainScript(const string &name, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 void reloadAndInitMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
