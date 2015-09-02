@@ -17,13 +17,13 @@
 
 #define INCR(value) \
 			ui.rect(15, 22).text("-", UI::CenterText)\
-				.onRepeat([this]{incr(value);}, 25u)\
+				.onlPressed([this]{incr(value);}, 25u)\
 				.onlClick([this]{incr(value);})\
 				(UI::Button);
 
 #define DECR(value) \
 			ui.rect(15, 22).text("-", UI::CenterText)\
-				.onRepeat([this]{decr(value);}, 25u)\
+				.onlPressed([this]{decr(value);}, 25u)\
 				.onlClick([this]{decr(value);})\
 				(UI::Button);
 

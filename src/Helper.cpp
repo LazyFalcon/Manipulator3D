@@ -273,9 +273,9 @@ void cursorWidgetHorizontal(glm::vec2 pos){
 	// ui.rect(pos.x, pos.y, 70, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
 	// ui.rect(pos.x+70, pos.y, 70, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
 	// ui.rect(pos.x+140, pos.y, 70, 20).font("ui_12"s).text("save")(UI::Button).onlClick([]{
-	ui.rect(70, 20).font("ui_12"s).edit(cursor.x)(UI::CaptureMouse);
-	ui.rect(70, 20).font("ui_12"s).edit(cursor.y)(UI::CaptureMouse);
-	ui.rect(70, 20).font("ui_12"s).edit(cursor.z)(UI::CaptureMouse);
+	ui.rect(70, 20).font("ui_12"s).edit(cursor.x)(UI::Hoverable);
+	ui.rect(70, 20).font("ui_12"s).edit(cursor.y)(UI::Hoverable);
+	ui.rect(70, 20).font("ui_12"s).edit(cursor.z)(UI::Hoverable);
 	ui.rect(70, 20).font("ui_12"s).text("save")(UI::Button).onlClick([]{
 		newPointName = generatePointName();
 		popup({"Set name", []()->bool{
@@ -437,63 +437,135 @@ void dropCallback(int count, const char** paths){
 
 /// ----------------------------------------------------- DIRECT ROBOT CONTROL
 
-i32 moduleUnderEdition;
-bool directControlEnabled = true;
-enum ControlType : u32 {
-	None = 0, Joint, Cartesian
-} controlType;
-i32 getMarkedModule(){
-	return moduleUnderEdition;
-}
+class DirectControlWidget
+{
+public:
+	i32 moduleUnderEdition;
+	bool directControlEnabled = true;
+	enum ControlType : u32 {
+		None = 0, Joint, Cartesian
+	} controlType;
+	enum SolverTarget {
+		OnlyPosition=0, OnlyOrientation, PositionAndOrientation
+	} solverTarget;
+	i32 getMarkedModule(){
+		return moduleUnderEdition;
+	}
 
-void directControlWidget(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
-	ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom )
-		.overridePosition(x, y);
+	glm::vec3 eulerAngles;
+	glm::vec3 axis;
+	glm::vec4 position;
 
-		cursorWidgetHorizontal({x,y});
+	void extendedEditButton(float &v, float incrVal){
 
-		if(not directControlEnabled) { ui.rect(200, 20).text("Show panel").button(directControlEnabled)(); ui.endTable(); return;}
 
-		ui.box(UI::LayoutHorizontal);
-			ui.rect(100, 20).color(controlType == Joint?0xFFA000FF : 0xA0A0A0FF).text("Joint control").radio(controlType, Joint)(UI::CaptureMouse);
-			ui.rect(100, 20).color(controlType == Cartesian?0xFFA000FF : 0xA0A0A0FF).text("Cartesian control").radio(controlType, Cartesian)(UI::CaptureMouse);
-		ui.endBox();
-		if(controlType == Joint){
-			for(i32 i=0; i<RC.robot->chain.size(); ++i){
+	}
 
-				auto &module = *RC.robot->chain[i];
+	void run(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
+		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom )
+			.overridePosition(x, y);
 
-				horizontal(
-					ui.rect(15, 22).text("-", UI::CenterText)
-						// .onRepeat([&module]{module.decr();}, 5u)
-						.onRepeat([&module]{module.decr();})
-						.onlClick([&module]{module.decr();}) (UI::Button);
-					ui.rect(120,22).edit(module.value)(UI::EditBox);
-					ui.rect(15, 22).text("+", UI::CenterText)
-						.onRepeat([&module]{module.incr();})
-						.onlClick([&module]{module.incr();}) (UI::Button);
-				);
-				if(not ui.outOfTable()){
-					moduleUnderEdition = i;
-					UI::g_UILayer++;
-					ui.rect(glm::vec4(mousePos+glm::vec2(-5, -15), 100, 20)).text(module.name)(UI::Label);
-					UI::g_UILayer--;
+			cursorWidgetHorizontal({x,y});
+
+			if(not directControlEnabled) { ui.rect(200, 20).text("Show panel").button(directControlEnabled)(); ui.endTable(); return;}
+
+			ui.box(UI::LayoutHorizontal);
+				ui.rect(100, 20).color(controlType == Joint?0xFFA000FF : 0xA0A0A0FF).text("Joint control").radio(controlType, Joint)(UI::CaptureMouse);
+				ui.rect(100, 20).color(controlType == Cartesian?0xFFA000FF : 0xA0A0A0FF).text("Cartesian control").radio(controlType, Cartesian)(UI::CaptureMouse);
+			ui.endBox();
+			if(controlType == Joint){
+				for(i32 i=0; i<RC.robot->chain.size(); ++i){
+
+					auto &module = *RC.robot->chain[i];
+
+					horizontal(
+						ui.rect(25, 22).text("-", "ui_17", UI::CenterText)
+							// .onlPressed([&module]{module.decr();}, 5u)
+							.onlPressed([&module]{module.decr();})
+							.onlClick([&module]{module.decr();}) (UI::Button);
+						ui.rect(150,22).edit(module.value)(UI::Hoverable);
+						ui.rect(25, 22).text("+", "ui_17", UI::CenterText)
+							.onlPressed([&module]{module.incr();})
+							.onlClick([&module]{module.incr();}) (UI::Button);
+					);
+					if(not ui.outOfTable()){
+						moduleUnderEdition = i;
+						UI::g_UILayer++;
+						ui.rect(glm::vec4(mousePos+glm::vec2(5, 15), 100, 20)).text(module.name)(UI::Label);
+						UI::g_UILayer--;
+					}
 				}
 			}
-		}
-		else {}
+			else if(controlType == Cartesian){
+				horizontal(
+						ui.rect(70, 20).font("ui_12"s)
+							// .edit(position.x)
+							.text(to_string(position.x))
+							(UI::Hoverable)
+							.onlPressed([this]{position.x += 0.01f;})
+							.onrPressed([this]{position.x-= 0.01f;})
+							;
+						ui.rect(70, 20).font("ui_12"s).edit(position.y)(UI::Hoverable);
+						ui.rect(70, 20).font("ui_12"s).edit(position.z)(UI::Hoverable);
+				);
+				ui.rect(70, 15).font("ui_10"s).text("Position:")(UI::CaptureMouse);
+				horizontal(
+						ui.rect(70, 20).font("ui_12"s).edit(axis.x)(UI::Hoverable);
+						ui.rect(70, 20).font("ui_12"s).edit(axis.y)(UI::Hoverable);
+						ui.rect(70, 20).font("ui_12"s).edit(axis.z)(UI::Hoverable);
+				);
+				ui.rect(70, 15).font("ui_10"s).text("Axis:")(UI::CaptureMouse);
+				horizontal(
+						ui.rect(70, 20).font("ui_12"s).edit(eulerAngles.x)(UI::Hoverable);
+						ui.rect(70, 20).font("ui_12"s).edit(eulerAngles.y)(UI::Hoverable);
+						ui.rect(70, 20).font("ui_12"s).edit(eulerAngles.z)(UI::Hoverable);
+				);
+				ui.rect(70, 15).font("ui_10"s).text("Euler:")(UI::CaptureMouse);
+				horizontal(
+						ui.rect(70, 20).color(solverTarget == OnlyPosition?0xFFA000FF : 0xA0A0A0FF).text("Position").radio(solverTarget, OnlyPosition)(UI::Hoverable);
+						ui.rect(70, 20).color(solverTarget == OnlyOrientation?0xFFA000FF : 0xA0A0A0FF).text("Orientation").radio(solverTarget, OnlyOrientation)(UI::Hoverable);
+						ui.rect(70, 20).color(solverTarget == PositionAndOrientation?0xFFA000FF : 0xA0A0A0FF).text("Both").radio(solverTarget, PositionAndOrientation)(UI::Hoverable);
+				);
+				ui.rect(70, 15).font("ui_10"s).text("Insert:")(UI::CaptureMouse);
 
+				horizontal(
+					ui.rect(100, 20).color(0xA0A0A0FF).text("From robot")(UI::Hoverable)
+						.onlClick([&RC, this]{
+							position = RC.robot->endEffector.position;
+							auto q = RC.robot->endEffector.quat;
+							axis = glm::axis(q);
+							eulerAngles = glm::eulerAngles(q);
+						});
+					ui.rect(100, 20).color(0xA0A0A0FF).text("To robot")(UI::Hoverable)
+						.onlClick([&RC, this]{
+							if(solverTarget == OnlyPosition){
+								JT0 solver;
+								solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
+								RC.robot->insertVariables(solver.result);
+							}
+							else if(solverTarget == OnlyOrientation){
+								JT2 solver;
+								solver.solve(Point{ RC.robot->endEffector.position, glm::quat(eulerAngles) }, *(RC.robot));
+								RC.robot->insertVariables(solver.result);
+							}
+							else {
+								JT2 solver;
+								solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
+								RC.robot->insertVariables(solver.result);
+							}
+						});
+					);
+			}
+			ui.endTable();
+	}
+} robotDirectControl;
 
-
-
-
-
-
-
-	ui.endTable();
+void directControlWidget(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
+	robotDirectControl.run(x,y, mousePos, RC);
 }
-
-
+i32 getMarkedModule(){
+	robotDirectControl.getMarkedModule();
+}
 
 
 

@@ -77,7 +77,7 @@ public:
 			.onlClick([this, &control_g]{
 				markedKnot = control_g;
 			})
-			.onRepeat([this, &control_g, i]{
+			.onlPressed([this, &control_g, i]{
 				if(markedKnot == control_g && i>0){
 					glm::vec4 tmp = *control_g;
 					float distGtoKnot = glm::distance(*knots[i+1], *control_g);
@@ -102,7 +102,7 @@ public:
 			.onlClick([this, &knot_e]{
 				markedKnot = knot_e;
 			})
-			.onRepeat([this, &knot_e, i]{
+			.onlPressed([this, &knot_e, i]{
 				if(markedKnot == knot_e){
 					glm::vec4 delta = knot_e.move({0,0});
 					if(i > 0)
@@ -123,7 +123,7 @@ public:
 			.onlClick([this, &control_f]{
 				markedKnot = control_f;
 			})
-			.onRepeat([this, &control_f, i]{
+			.onlPressed([this, &control_f, i]{
 				if(markedKnot == control_f && i>0){
 					glm::vec4 tmp = *control_f;
 					float distFtoKnot = glm::distance(*knots[i-1], *control_f);

@@ -191,11 +191,11 @@ public:
 		ui.image("Minimize")
 			.onHover([this]{ module->entity->isOutlined = true; })
 			.onlClick([this]{ module->value -=	incrementValue; })
-			.onRepeat([this]{ if(signal10ms)module->value -=	incrementValue; })();
+			.onlPressed([this]{ if(signal10ms)module->value -=	incrementValue; })();
 		ui.image("Maximize")
 			.onHover([this]{ module->entity->isOutlined = true; })
 			.onlClick([this]{ module->value +=	incrementValue; })
-			.onRepeat([this]{ if(signal10ms)module->value +=	incrementValue; })();
+			.onlPressed([this]{ if(signal10ms)module->value +=	incrementValue; })();
 		ui.rect(20,20)
 			.text(std::to_string((int)(module->value*toDeg)))();
 		ui.endBox();

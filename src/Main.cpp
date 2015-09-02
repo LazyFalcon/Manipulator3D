@@ -272,10 +272,10 @@ void mainLoop(){
 
 		ui.begin();
 		if(LeftMousePressed){
-			ui.setMouseLRepeat();
+			ui.setMouseLPressed();
 		}
 		if(RightMousePressed){
-			ui.setMouseRRepeat();
+			ui.setMouseRPressed();
 		}
 		ui.setMouse(mouse_x, mouse_y);
 		ui.updateCounter(msdt);
