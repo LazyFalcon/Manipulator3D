@@ -257,19 +257,21 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	Matrix variables(robot.getSize(), 1);
 	Matrix enhancement(robot.getSize(), 1);
 
-	double i = 1.5;
+	double i = 0.5;
 	for(auto &it : enhancement.getVector()){
 		it = i;
-		i -= 0.2;
+		i += 0.2;
 	}
 	variables.insertColumn(0, robot.getVariables());
 
 	float positionError = glm::distance(target.position, endEffector.position);
 	float quatError = 1;
-	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
-	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iterations = 0;
 	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
+
+		auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
+		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
+
 		auto positionDelta = (target.position - endEffector.position);
 		glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
 		glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));

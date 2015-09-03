@@ -153,7 +153,8 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoin
 	Matrix jacobian(robot.chain.size(), 6);
 	glm::vec4 endPosition = glm::vec4(0,0,0,1);
 	glm::vec3 axis = robot.chain[0]->axis.xyz();
-	glm::quat transform {0,0,0,1};
+	// glm::quat transform {0,0,0,1};
+	glm::quat transform = glm::angleAxis(0.f, glm::vec3(0,0,1));
 	glm::vec3 currentEndPosition = endPoint.position.xyz();
 
 
@@ -162,6 +163,7 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoin
 		{ // forward kinematics
 			if(module->type == HINGE){
 				transform = transform*glm::angleAxis((float)variables[i], glm::normalize(module->axis.xyz()));
+				// transform = transform*glm::quat(cos((float)variables[i]*0.5), glm::normalize(module->axis.xyz()));
 				endPosition += transform*module->vecToA;
 			}
 			else if(module->type == PRISMATIC){
