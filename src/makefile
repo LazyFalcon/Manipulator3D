@@ -90,7 +90,7 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 
 #-----------------------------------------------------
 
-../bin/JacobianTransposed.o: JacobianTransposed.cpp JacobianTransposed.h Robot.h
+../bin/JacobianTransposed.o: JacobianTransposed.cpp JacobianTransposed.h Robot.h JacobianMatrix.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) -o2  JacobianTransposed.cpp -o ../bin/JacobianTransposed.o
 
 ../bin/RobotController.o: RobotController.cpp RobotController.h JacobianTransposed.h Robot.h IInterpolator.h

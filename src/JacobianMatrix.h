@@ -153,8 +153,8 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoin
 	Matrix jacobian(robot.chain.size(), 6);
 	glm::vec4 endPosition = glm::vec4(0,0,0,1);
 	glm::vec3 axis = robot.chain[0]->axis.xyz();
-	// glm::quat transform {0,0,0,1};
-	glm::quat transform = glm::angleAxis(0.f, glm::vec3(0,0,1));
+	glm::quat transform {0,0,0,1};
+	// glm::quat transform = glm::angleAxis(0.f, glm::vec3(0,0,1));
 	glm::vec3 currentEndPosition = endPoint.position.xyz();
 
 

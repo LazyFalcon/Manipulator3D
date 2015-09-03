@@ -260,7 +260,7 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	double i = 0.5;
 	for(auto &it : enhancement.getVector()){
 		it = i;
-		i += 0.2;
+		i += 0.5;
 	}
 	variables.insertColumn(0, robot.getVariables());
 
@@ -277,8 +277,10 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 		glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
 		// auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat));
 		auto axisDelta = -glm::cross(t, e);
+		float axisMod = 3.1;
 
-		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x, axisDelta.y, axisDelta.z});
+
+		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x*axisMod, axisDelta.y*axisMod, axisDelta.z*axisMod});
 
 		auto a = dot(jjp*force, force);
 		a = a/dot(jjp*force, jjp*force);
