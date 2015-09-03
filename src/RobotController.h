@@ -114,7 +114,10 @@ public:
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
-	// SystemSettings defaultSettings;
+	SystemSettings defaultConfig;
+    SystemSettings& config(){
+        return defaultConfig;
+    }
 
 private:
 	WaitCommandBuilder waitCommandBuilder;

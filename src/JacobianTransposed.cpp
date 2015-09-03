@@ -296,7 +296,7 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	// succes = positionError < minError && quatError < minError*10;
 	succes = positionError < minError;
 	lastIterationCount = iterations;
-	lastSolverError = positionError;
+	lastSolverError = quatError;
 	return succes;
 }
 

@@ -15,7 +15,7 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::
 void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 void terminate();
 
-void executeSubScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+void executeSubScript(const std::string &name, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 
 void loadMainScript(const string &name, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
@@ -26,5 +26,8 @@ void handleInput(int key, int action, int mod, shared_ptr<RobotController> &rc, 
 
 std::vector<std::string> getScriptList();
 bpl::object loadFile(std::string);
+
+void executeSubScript();
+void executeSubScript(const std::string &name);
 
 NAM_END

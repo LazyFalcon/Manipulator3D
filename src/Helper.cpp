@@ -225,7 +225,6 @@ void showPopups(){
 	}
 }
 
-
 /// ----------------------------------------------------- CURSOR
 
 std::map<std::string, glm::vec4> g_pointList;
@@ -417,7 +416,7 @@ void handleYamlFileDrop(const string &path){
 void handlePythonFileDrop(const string &path){
 	boost::filesystem::path p(path);
 	std::string s = p.stem().string();
-	PythonBindings::loadMainScript(s.c_str(), RC, scene);
+	PythonBindings::executeSubScript(p.stem().string());
 }
 
 void handleDrop(const string &path){
@@ -451,6 +450,8 @@ public:
 	i32 getMarkedModule(){
 		return moduleUnderEdition;
 	}
+
+    std::vector<double> history;
 
 	glm::vec3 eulerAngles;
 	glm::vec3 axis;
@@ -493,14 +494,17 @@ public:
 		}
 		else {
 			JT2 solver;
-			solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
-			if(solver.succes) RC.robot->insertVariables(solver.result);
+			// solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
+			solver.solve(Point{ position, glm::quat(1.f, axis) }, *(RC.robot));
+			// if(solver.succes) RC.robot->insertVariables(solver.result);
+			RC.robot->insertVariables(solver.result);
 			// else alert("Solver failed");
 		}
-		position = RC.robot->endEffector.position;
-		auto q = RC.robot->endEffector.quat;
-		axis = glm::axis(q);
-		eulerAngles = glm::eulerAngles(q);
+
+		// auto q = RC.robot->endEffector.quat;
+		// axis = glm::axis(q);
+		// eulerAngles = glm::eulerAngles(q);
+
 	}
 	void run(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom )
@@ -508,11 +512,19 @@ public:
 
 			cursorWidgetHorizontal({x,y});
 
-			if(not directControlEnabled) { ui.rect(200, 20).text("Show panel").button(directControlEnabled)(); ui.endTable(); return;}
+			if(not directControlEnabled){
+                ui.rect(200, 20).text("Show panel").button(directControlEnabled)();
+                ui.endTable(); return;
+            }
 
-			ui.box(UI::LayoutHorizontal);
+			ui.box(UI::LayoutHorizontal);{
 				ui.rect(100, 20).color(controlType == Joint?0xFFA000FF : 0xA0A0A0FF).text("Joint control").radio(controlType, Joint)(UI::CaptureMouse);
-				ui.rect(100, 20).color(controlType == Cartesian?0xFFA000FF : 0xA0A0A0FF).text("Cartesian control").radio(controlType, Cartesian)(UI::CaptureMouse);
+				ui.rect(100, 20).color(controlType == Cartesian?0xFFA000FF : 0xA0A0A0FF).text("Cartesian control").radio(controlType, Cartesian)(UI::CaptureMouse).onlClick([this, &RC]{
+                    position = RC.robot->endEffector.position;
+                    auto q = RC.robot->endEffector.quat;
+                    axis = glm::axis(q);
+                    eulerAngles = glm::eulerAngles(q);
+                });}
 			ui.endBox();
 			if(controlType == Joint){
 				for(i32 i=0; i<RC.robot->chain.size(); ++i){
@@ -599,6 +611,15 @@ public:
 							});
 					);
 			}
+
+			ui.box(UI::LayoutHorizontal);{
+			ui.rect(100, 20).color( 0xA0A0A0FF).text("Restore")(UI::Hoverable).onlClick([this, &RC]{
+					RC.robot->insertVariables(history);
+				});
+			ui.rect(100, 20).color(0xA0A0A0FF).text("Save")(UI::Hoverable).onlClick([this, &RC]{
+					history = RC.robot->getVariables();
+				});
+			ui.endBox();}
 			ui.endTable();
 	}
 } robotDirectControl;
@@ -610,15 +631,12 @@ i32 getMarkedModule(){
 	robotDirectControl.getMarkedModule();
 }
 
+/// ----------------------------------------------------- SAVE STATE
 
-
-
-
-
-
-
-
-
+void saveState(const std::string &fileName){}
+void loadState(const std::string &fileName){}
+// void saveState(){}
+// void loadState(){}
 
 
 

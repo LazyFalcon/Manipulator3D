@@ -231,7 +231,7 @@ void prerequisites(){
 	jacobianTransposeInitialCall(*(scene->robot));
 	PythonBindings::init(RC, scene, "BaseScript");
 	glfwShowWindow(window);
-    Helper::alert("dupa!");
+    // Helper::alert("dupa!");
 }
 void updates(float dt){
 	Editor::update(*RC);
@@ -336,7 +336,7 @@ void mainLoop(){
 
 		g_scrollDel = 0.0;
 	}
-}
+} 
 void scrollCallback(GLFWwindow *window, double xOff, double yOff){
 	g_scrollDel = yOff;
 	g_scrollPos += yOff;
@@ -435,6 +435,13 @@ void exitCallback(GLFWwindow *window){
 	quit = true;
 }
 
+shared_ptr<RobotController> getRC(){
+    return RC;
+}
+shared_ptr<Scene> getScene(){
+    return scene;
+}
+
 void reloadWhatIsPossible(){
 
 	auto &&styles = CFG::Load("../styles.yml");
@@ -524,7 +531,6 @@ void initContext(CFG::Node &cfg){
 	defaultAngle = camera.m_angle = cfg["angle"].asFloat();
 	camera.m_width = window_width;
 	camera.m_height = window_height;
-	// camera.m_far = 200.f;
 	camera.m_far = 50.f;
 	camera.m_near = 0.1f;
 	camera.setProjection();

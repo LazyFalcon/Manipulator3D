@@ -78,4 +78,14 @@ void dropCallback(int count, const char** paths);
 i32 getMarkedModule();
 void directControlWidget(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC);
 
+
+/// -------------------------------- SAVE STATE
+/// Zapisuje stan, po co w sumie? akcji raczej zapisać się nie da
+void saveState(const std::string &fileName);
+void loadState(const std::string &fileName);
+// void saveState();
+// void loadState();
+
+
+
 NAM_END

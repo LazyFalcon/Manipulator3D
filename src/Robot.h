@@ -16,7 +16,7 @@ struct SystemSettings
 	double orientationPrecision;
 	u32 solverIterationLimit;
 	bool useRobotConstraints;
-	bool enableColisions;
+	bool enableCollisions;
 };
 
 struct Point {
@@ -110,6 +110,13 @@ public:
 	}
 
 
+	SystemSettings config;
+    SystemSettings& getConfig(){
+        return config;
+    }
+    void getConfig(const SystemSettings &c){
+        config = c;
+    }
 	bool isReady { true };
 	Point endEffector;
 	double endEffectorVelocity;

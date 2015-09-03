@@ -23,6 +23,9 @@
 #define NAM_START {
 
 namespace PythonBindings NAM_START
+shared_ptr<RobotController> getRC();
+shared_ptr<Scene> getScene();
+
 
 glm::quat glm_angleAxis(float angle, glm::vec3 axis){
 	return glm::quat(cos(angle*0.5f), glm::normalize(axis));
@@ -112,17 +115,6 @@ BOOST_PYTHON_MODULE(glm_export){
 		.def("__str__", to_string_vec3)
 		;
 }
-/*
-class IInterpolatorWrap : public IInterpolator, public bpl::wrapper<IInterpolator>
-{
-public:
-	glm::vec4 firstPoint(){return glm::vec4(0);}
-	glm::vec4 nextPoint(){return glm::vec4(0);}
-	void generatePath(){}
-	void reset(){}
-	void drawParams(){}
-}; */
-
 BOOST_PYTHON_MODULE(commandBuilders_export){
 	MoveCommandBuilder& (MoveCommandBuilder::*interpolator_ptr)(IInterpolatorContainer&) = &MoveCommandBuilder::interpolator;
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
@@ -226,6 +218,7 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 
 }
 BOOST_PYTHON_MODULE(scene_export){
+	// bpl::def("getScene", getScene);
 	bpl::class_<Entity, std::shared_ptr<Entity>>("Entity")
 		.def_readonly("ID", &Entity::ID)
 		.def_readwrite("position", &Entity::position)
@@ -240,6 +233,8 @@ BOOST_PYTHON_MODULE(scene_export){
 		;
 }
 BOOST_PYTHON_MODULE(robotController_export){
+	// bpl::def("getRC", getRC);
+
 	void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
 	bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")
 		.def("insertCommand", insertCommand_ptr)
@@ -283,6 +278,13 @@ BOOST_PYTHON_MODULE(robotController_export){
 		.def_readwrite("lastAcceleration", &Module::lastAcceleration)
 		.def_readwrite("axis", &Module::axis)
 		;
+	bpl::class_<SystemSettings>("SystemSettings")
+		.def_readwrite("positionPrecision", &SystemSettings::positionPrecision)
+		.def_readwrite("orientationPrecision", &SystemSettings::orientationPrecision)
+		.def_readwrite("solverIterationLimit", &SystemSettings::solverIterationLimit)
+		.def_readwrite("useRobotConstraints", &SystemSettings::useRobotConstraints)
+		.def_readwrite("enableCollisions", &SystemSettings::enableCollisions)
+		;
 
 
 }
@@ -317,6 +319,7 @@ BOOST_PYTHON_MODULE(helper_export){
     bpl::scope().attr("F10") = GLFW_KEY_F10;
     bpl::scope().attr("F11") = GLFW_KEY_F11;
     bpl::scope().attr("F12") = GLFW_KEY_F12;
+
 }
 
 std::unordered_map<std::string, int> keyMaps = {
@@ -329,6 +332,7 @@ bpl::object global;
 bpl::object mainScript;
 bpl::object subScript;
 std::string mainScriptName;
+std::string subScriptName;
 
 void handleInput(int key, int action, int mod, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
@@ -354,7 +358,7 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::
 				"import sys, os.path\n"
 				"path = os.path.dirname(%r)\n"
 				"sys.path.insert(0, path)"
-				% bpl::str("module")
+				% bpl::str("../python/")
 				);
 		bpl::object result = bpl::exec(script, global, global);
 		mainScriptName = name;
@@ -415,9 +419,20 @@ void terminate(){
 	Py_Finalize();
 }
 
-void executeSubScript(const std::string &name, shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
-
-
+void executeSubScript(){
+	try {
+		subScript = bpl::import(subScriptName.c_str());
+	}
+	catch (bpl::error_already_set) {
+		PyErr_Print();
+        std::cin.ignore();
+	}
 }
+void executeSubScript(const std::string &name){
+    subScriptName = name;
+    cout<<name<<endl;
+    executeSubScript();
+}
+
 
 NAM_END
