@@ -1,7 +1,8 @@
 ﻿
 extern UI::IMGUI ui;
 extern Camera camera;
-extern float	 mouse_x, mouse_y;
+extern float mouse_x, mouse_y;
+static const float hpi = 0.5f * 3.141592f;
 
 extern int robotPositionsCounter;
 extern int robotPositionsMax;

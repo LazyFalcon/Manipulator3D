@@ -387,6 +387,8 @@ void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, 
 	loader.loadScene(*scene, bulletWorld, resources);
 
 	RC->robot = scene->robot;
+
+  PythonBindings::reloadAndInitMainScript(RC, scene);
 }
 
 /// http://stackoverflow.com/questions/9285384/how-does-import-work-with-boost-python-from-inside-python-files
@@ -637,6 +639,30 @@ void saveState(const std::string &fileName){}
 void loadState(const std::string &fileName){}
 // void saveState(){}
 // void loadState(){}
+
+std::map<std::string, std::vector<float>> g_floats;
+std::map<std::string, std::vector<double>> g_doubles;
+std::map<std::string, std::vector<glm::vec4>> g_vec4;
+
+void storeFloat(const std::string &s, std::vector<float>&v){
+    g_floats[s] = v;
+}
+void storeDouble(const std::string &s, std::vector<double>&v){
+    g_doubles[s] = v;
+}
+void storeVec4(const std::string &s, std::vector<glm::vec4>&v){
+    g_vec4[s] = v;
+}
+
+std::vector<float>& storeFloat(const std::string &s){
+    return g_floats[s];
+}
+std::vector<double>& storeDouble(const std::string &s){
+    return g_doubles[s];
+}
+std::vector<glm::vec4>& storeVec4(const std::string &s){
+    return g_vec4[s];
+}
 
 
 

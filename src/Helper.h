@@ -85,7 +85,13 @@ void saveState(const std::string &fileName);
 void loadState(const std::string &fileName);
 // void saveState();
 // void loadState();
+void getFloat(const std::string &s, std::vector<float>&v);
+void getDouble(const std::string &s, std::vector<double>&v);
+void getVec4(const std::string &s, std::vector<glm::vec4>&v);
 
+std::vector<float>& storeFloat(const std::string &s);
+std::vector<double>& storeDouble(const std::string &s);
+std::vector<glm::vec4>& storeVec4(const std::string &s);
 
 
 NAM_END

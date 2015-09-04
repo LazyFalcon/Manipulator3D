@@ -12,7 +12,7 @@
 
 extern UI::IMGUI ui;
 extern Camera camera;
-extern float	 mouse_x, mouse_y;
+extern float mouse_x, mouse_y;
 
 extern int robotPositionsCounter;
 extern int robotPositionsMax;
@@ -23,7 +23,7 @@ extern PositionSaver g_robotDebugPositions;
 extern std::list<Plot*> plotList;
 
 // static const float pi = 3.141592f;
-static const float hpi = 0.5f * 3.141592f;
+// static const float hpi = 0.5f * 3.141592f;
 static const float pi2 = 2.f * 3.141592f;
 // static const double dpi = 3.141592653589793;
 static const double hdpi = 0.5 * 3.141592653589793;
@@ -33,6 +33,13 @@ static const double dpi2 = 2.0 * 3.141592653589793;
 u32 lastIterationCount;
 double lastSolverError;
 glm::vec4 g_targetPosition;
+
+glm::vec3 DEBUG_VEC3_1;
+glm::vec3 DEBUG_VEC3_2;
+glm::vec3 DEBUG_VEC3_3;
+glm::vec4 DEBUG_VEC4_1;
+glm::vec4 DEBUG_VEC4_2;
+glm::quat DEBUG_QUAT;
 
 Graph jacobianIterations("jacobianIterations", Graph::LastX, 0xFFFF00FF, 250);
 Graph jacobianPrecision("jacobianPrecision", Graph::LastX, 0xFF4000FF, 250);
@@ -260,7 +267,7 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	double i = 0.5;
 	for(auto &it : enhancement.getVector()){
 		it = i;
-		i += 0.5;
+		i += 0.2;
 	}
 	variables.insertColumn(0, robot.getVariables());
 
@@ -275,11 +282,15 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 		auto positionDelta = (target.position - endEffector.position);
 		glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
 		glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
-		// auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat));
-		auto axisDelta = -glm::cross(t, e);
-		float axisMod = 3.1;
-
-
+		
+        auto axisDelta = glm::cross(e, t);
+		
+        float axisMod = 3.1;
+        if(iterations == 0){
+            DEBUG_VEC3_1 = glm::normalize(axisDelta);
+            DEBUG_VEC3_2 = t;
+            DEBUG_VEC3_3 = e;
+        }
 		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x*axisMod, axisDelta.y*axisMod, axisDelta.z*axisMod});
 
 		auto a = dot(jjp*force, force);
@@ -297,61 +308,9 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	// cout<<iterations<<" << "<<quatError<<endl;
 	endPosition = endEffector.position;
 	result = variables.getVector();
-	// succes = positionError < minError && quatError < minError*10;
-	succes = positionError < minError;
+	succes = positionError < minError && quatError < minError*10;
 	lastIterationCount = iterations;
 	lastSolverError = quatError;
 	return succes;
-}
-
-extern glm::vec4 robotTarget;
-extern glm::vec4 endPos;
-extern glm::vec4 normal;
-extern glm::vec4 surfaceOfMotion;
-extern glm::quat gripperQuat;
-
-void robotFollowTheMouseTest(Robot &robot){
-	if(ui.rClick()){
-		endPos = robot.endEffector.position;
-		gripperQuat = robot.endEffector.quat;
-		normal = glm::normalize(camera.Normal);
-		// endPos = camera.eyePosition + normal*2.f;
-		surfaceOfMotion = glm::vec4(glm::vec3(normal.xyz()), -glm::dot(normal, endPos));
-	}
-
-	// glm::vec4 newPoint = camera.eyePlaneIntersection(surfaceOfMotion);
-
-	JT1 ik;
-	// auto res = ik.performIK({ newPoint, gripperQuat }, robot);
-	// auto res = ik.performIK({ robotTarget, gripperQuat }, robot);
-
-	if(ui.rRepeat() && ik.succes){
-		robotTarget = camera.eyePlaneIntersection(surfaceOfMotion);
-		g_mousePositions(robotTarget);
-	}
-	robot.insertVariables(ik.result);
-
-}
-
-void jacobianTransposeInit(){
-	jacobianIterations.setBouds({0,250,0,500});
-	jacobianPrecision.setBouds({0,250,0,1});
-}
-void jacobianTransposeUpdate(){
-
-
-}
-void test(Robot &robot){
-}
-
-void jacobianTransposeInitialCall(Robot &robot){
-	// robot.update(0.1);
-	// auto solver = make_unique<JT1>();
-
-	// Point target = {glm::vec4(4, 1, 4, 1), glm::angleAxis(1.f, glm::vec3(1,0,-1))};
-	// Point target = {robot.endEffector.position, glm::angleAxis(1.f, glm::vec3(0,1,0))};
-
-	// solver->solve(target, robot);
-	// robot.insertVariables(solver->result);
 }
 

@@ -285,7 +285,10 @@ bool ResourceLoader::loadImageSet(CFG::Node &cfg){
 bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node &cfg){
 	objectID = 1;
 	string dirname = cfg["dirname"].value;
-	meshPath = cfg["dirname"].value+"\\";
+	meshPath = "..\\models"+cfg["dirname"].value;
+
+	cout<<meshPath<<endl;
+	cin.ignore();
 
 	auto &meshes = cfg["Meshes"];
 	scene.units_ptrs.resize(meshes.Vector.size()+1);
@@ -294,7 +297,6 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 		Material material {it["Color"].asVec31()};
 		auto bulletData = buildBulletData(it, bulletWorld);
 
-		// scene.units.emplace(it["Name"].value, Entity {objectID, &resources->meshes[it["Name"].value], material, it["Position"].asVec31(), it["Quaternion"].asQuat(), bulletData});
 		auto en = make_shared<Entity>();
 		en->ID = objectID;
 		en->mesh = &resources->meshes[it["Name"].value];
@@ -406,6 +408,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 
 		robot.chain.push_back(std::move(module));
 	}
+	cout<<"done"<<endl;
 	return true;
 }
 

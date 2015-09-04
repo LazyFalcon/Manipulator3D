@@ -16,6 +16,7 @@
 #include <Python.h>
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 #include "PythonBindings.h"
 
@@ -152,8 +153,8 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("finish", singlefinish_ptr, bpl::return_internal_reference<>())
 		;
 
-    FollowObjectBuilder& (FollowObjectBuilder::*target_1)(glm::vec4 &t) = &FollowObjectBuilder::target;
-    FollowObjectBuilder& (FollowObjectBuilder::*target_2)(shared_ptr<Entity> &obj) = &FollowObjectBuilder::target;
+		FollowObjectBuilder& (FollowObjectBuilder::*target_1)(glm::vec4 &t) = &FollowObjectBuilder::target;
+		FollowObjectBuilder& (FollowObjectBuilder::*target_2)(shared_ptr<Entity> &obj) = &FollowObjectBuilder::target;
 	FollowObjectBuilder& (FollowObjectBuilder::*followfinish_ptr)(shared_ptr<RobotController>) = &FollowObjectBuilder::finish;
 	bpl::class_<FollowObjectBuilder, std::shared_ptr<FollowObjectBuilder>>("FollowObjectBuilder", bpl::init<>())
 		.def("init", &FollowObjectBuilder::init, bpl::return_internal_reference<>())
@@ -298,32 +299,51 @@ BOOST_PYTHON_MODULE(helper_export){
 	// bpl::def("getPoint", &getPoint);
 	// bpl::def("saveGroup", &saveGroup);
 	// bpl::def("getGroup", &getGroup);
-    bpl::scope().attr("Press") = GLFW_PRESS;
-    bpl::scope().attr("Release") = GLFW_RELEASE;
-    bpl::scope().attr("Repeat") = GLFW_REPEAT;
-    bpl::scope().attr("Pause") = GLFW_KEY_PAUSE;
-    bpl::scope().attr("Enter") = GLFW_KEY_ENTER;
-    bpl::scope().attr("Esc") = GLFW_KEY_ESCAPE;
-    bpl::scope().attr("Ctrl") = GLFW_MOD_CONTROL;
-    bpl::scope().attr("Shift") = GLFW_MOD_SHIFT;
-    bpl::scope().attr("Alt") = GLFW_MOD_ALT;
-    bpl::scope().attr("F1") = GLFW_KEY_F1;
-    bpl::scope().attr("F2") = GLFW_KEY_F2;
-    bpl::scope().attr("F3") = GLFW_KEY_F3;
-    bpl::scope().attr("F4") = GLFW_KEY_F4;
-    bpl::scope().attr("F5") = GLFW_KEY_F5;
-    bpl::scope().attr("F6") = GLFW_KEY_F6;
-    bpl::scope().attr("F7") = GLFW_KEY_F7;
-    // bpl::scope().attr("F8") = GLFW_KEY_F8;
-    bpl::scope().attr("F9") = GLFW_KEY_F9;
-    bpl::scope().attr("F10") = GLFW_KEY_F10;
-    bpl::scope().attr("F11") = GLFW_KEY_F11;
-    bpl::scope().attr("F12") = GLFW_KEY_F12;
+		bpl::scope().attr("Press") = GLFW_PRESS;
+		bpl::scope().attr("Release") = GLFW_RELEASE;
+		bpl::scope().attr("Repeat") = GLFW_REPEAT;
+		bpl::scope().attr("Pause") = GLFW_KEY_PAUSE;
+		bpl::scope().attr("Enter") = GLFW_KEY_ENTER;
+		bpl::scope().attr("Esc") = GLFW_KEY_ESCAPE;
+		bpl::scope().attr("Ctrl") = GLFW_MOD_CONTROL;
+		bpl::scope().attr("Shift") = GLFW_MOD_SHIFT;
+		bpl::scope().attr("Alt") = GLFW_MOD_ALT;
+		bpl::scope().attr("F1") = GLFW_KEY_F1;
+		bpl::scope().attr("F2") = GLFW_KEY_F2;
+		bpl::scope().attr("F3") = GLFW_KEY_F3;
+		bpl::scope().attr("F4") = GLFW_KEY_F4;
+		bpl::scope().attr("F5") = GLFW_KEY_F5;
+		bpl::scope().attr("F6") = GLFW_KEY_F6;
+		bpl::scope().attr("F7") = GLFW_KEY_F7;
+		// bpl::scope().attr("F8") = GLFW_KEY_F8;
+		bpl::scope().attr("F9") = GLFW_KEY_F9;
+		bpl::scope().attr("F10") = GLFW_KEY_F10;
+		bpl::scope().attr("F11") = GLFW_KEY_F11;
+		bpl::scope().attr("F12") = GLFW_KEY_F12;
+
+		// bpl::class_<std::vector<glm::vec4>>("XVec")
+				// .def(bpl::vector_indexing_suite<std::vector<glm::vec4>>())
+				// ;
+		// bpl::class_<std::vector<float>>("FloatVec")
+				// .def(bpl::vector_indexing_suite<std::vector<float>>())
+				// ;
+		// bpl::class_<std::vector<double>>("DoubleVec")
+				// .def(bpl::vector_indexing_suite<std::vector<double>>())
+				// ;
+
+		// bpl::def("getF", &getFloat, bpl::return_value_policy<bpl::reference_existing_object>());
+		// bpl::def("getD", &getDouble, bpl::return_value_policy<bpl::reference_existing_object>());
+		// bpl::def("getVec", &getVec4, bpl::return_value_policy<bpl::reference_existing_object>());
+
+		// bpl::def("store", &storeFloat);
+		// bpl::def("store", &storeDouble);
+		// bpl::def("store", &storeVec4);
+
 
 }
 
 std::unordered_map<std::string, int> keyMaps = {
-    {}
+		{}
 
 };
 
@@ -340,35 +360,36 @@ void handleInput(int key, int action, int mod, shared_ptr<RobotController> &rc, 
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-        std::cin.ignore();
+				std::cin.ignore();
 	}
 }
 
 void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::string &name){
 	Py_Initialize();
 	try {
-		initglm_export();
-		initscene_export();
-		initrobotController_export();
-		initcommandBuilders_export();
+		_DebugLine_
+		initglm_export();_DebugLine_
+		initscene_export();_DebugLine_
+		initrobotController_export();_DebugLine_
+		initcommandBuilders_export();_DebugLine_
 		inithelper_export();
 		main = bpl::import("__main__");
-		global = bpl::object(main.attr("__dict__"));
+		global = bpl::object(main.attr("__dict__"));_DebugLine_
 		bpl::str script(
 				"import sys, os.path\n"
 				"path = os.path.dirname(%r)\n"
 				"sys.path.insert(0, path)"
 				% bpl::str("../python/")
-				);
+				);_DebugLine_
 		bpl::object result = bpl::exec(script, global, global);
-		mainScriptName = name;
-		mainScript = bpl::import(mainScriptName.c_str());
-		mainScript.attr("init")(rc, scene);
+		mainScriptName = name;_DebugLine_
+		// mainScript = bpl::import(mainScriptName.c_str());
+		// mainScript.attr("init")(rc, scene);
 
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-        terminate();
+				terminate();
 	}
 }
 
@@ -390,7 +411,7 @@ void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-        terminate();
+				terminate();
 	}
 }
 
@@ -411,7 +432,7 @@ void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-        std::cin.ignore();
+				std::cin.ignore();
 	}
 }
 
@@ -425,13 +446,13 @@ void executeSubScript(){
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-        std::cin.ignore();
+				std::cin.ignore();
 	}
 }
 void executeSubScript(const std::string &name){
-    subScriptName = name;
-    cout<<name<<endl;
-    executeSubScript();
+		subScriptName = name;
+		cout<<name<<endl;
+		executeSubScript();
 }
 
 

@@ -90,13 +90,11 @@ public:
 		std::cerr<<"delete Robot"<<std::endl;
 	}
 
-	std::vector<glm::vec4> forward();
-	void inverse();
 	void update(float dt);
+	Point simulate(std::vector<double> &vec);
 	std::vector<double> getVariables();
 	bool goTo(float dt, double jVelocityModifier);
 	bool goTo(const std::vector<double> &jointPositions);
-	Point simulate(std::vector<double> &vec);
 	std::vector<Point> simulateFullData(std::vector<double> &variables);
 	glm::vec4 clamp(std::vector<double> &vec);
 	glm::vec4 insertVariables(std::vector<double> &vec);

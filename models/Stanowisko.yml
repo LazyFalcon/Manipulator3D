@@ -1,4 +1,4 @@
-dirname: D:\Work\Repo\Manipulator3D\models
+dirname: \Stanowisko\
 Robot:
  - Name: Robot_1
    Type: hinge

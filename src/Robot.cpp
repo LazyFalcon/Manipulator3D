@@ -5,23 +5,11 @@
 #include "Robot.h"
 
 extern const float pi;
+static const float hpi = 0.5f * 3.141592f;
 extern const double dpi;
 extern PositionSaver g_robotPositions;
 const double jointEpsilon = 1.0*dpi/60.0/180.0; /// one minute in radians
 
-std::vector<glm::vec4> Robot::forward(){
-	for(auto &module : chain){
-
-
-	}
-
-}
-
-
-// axis(quat): oś
-// angle(quat): kąt
-// angleAxis(angle, vec3 axis): quat
-// rotate(quat, angle, axis)
 void Robot::update(float dt){
 
 	glm::vec4 position = glm::vec4(0,0,0,1);

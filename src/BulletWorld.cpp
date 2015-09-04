@@ -10,6 +10,8 @@ typedef vector<float> floats;
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 
+
+
 void BulletWorld::init(){
 	btVector3 worldMin(-250,-250,-50);
 	btVector3 worldMax(250,250,50);

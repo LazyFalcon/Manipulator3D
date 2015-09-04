@@ -18,6 +18,12 @@ extern u32 lastIterationCount;
 extern u32 lastPathIterationCount;
 extern double lastSolverError;
 extern float lastPathIterationdistance;
+extern glm::vec3 DEBUG_VEC3_1;
+extern glm::vec3 DEBUG_VEC3_2;
+extern glm::vec3 DEBUG_VEC3_3;
+extern glm::vec4 DEBUG_VEC4_1;
+extern glm::vec4 DEBUG_VEC4_2;
+extern glm::quat DEBUG_QUAT;
 
 using namespace std::chrono;
 glm::vec4      viewCenter =	glm::vec4(0.f,0.f,0.f,0.f);
@@ -154,16 +160,14 @@ int main(){
 	RC = make_shared<RobotController>();
 	globalResources = make_shared<Resources>();
 
+
 	bulletWorld.init();
 
-    { // load res
+	{ // load res
 		auto &&resources = CFG::Load("../resources.yml");
 		ResourceLoader loader(globalResources);
 		loader.loadResources(resources["Main"]);
 		loader.loadFonts(resources["Fonts"]);
-	}
-	if(true){ // load def scene
-		Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 	}
 
 	camera.init();
@@ -173,7 +177,9 @@ int main(){
 	reloadWhatIsPossible();
 	ui.m_imageSet = &(globalResources->imageSets["Menu"]);
 	ui.setDefaultFont("ui_12", 12);
+	PythonBindings::init(RC, scene, "BaseScript");
 
+	Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
 	mainLoop();
 
 	Editor::clear();
@@ -228,10 +234,8 @@ void renderLoop(){
 void prerequisites(){
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
-	jacobianTransposeInitialCall(*(scene->robot));
-	PythonBindings::init(RC, scene, "BaseScript");
+	PythonBindings::reloadAndInitMainScript(RC, scene);
 	glfwShowWindow(window);
-    // Helper::alert("dupa!");
 }
 void updates(float dt){
 	Editor::update(*RC);
@@ -320,9 +324,13 @@ void mainLoop(){
 			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
 			ui.rect().text("LastError: " + std::to_string(lastSolverError)).font("ui_12"s)();
-			ui.rect().text("Selected: " + std::to_string(Helper::getCurrentSelection().size())).font("ui_12"s)();
-			ui.rect().text("ID: " + std::to_string(Helper::getIDUnderMouse())).font("ui_12"s)();
-			ui.rect().text("Angle: " + std::to_string(camera.m_angle)).font("ui_12"s)();
+			ui.rect().text("------- ").font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC3_1: " + to_string(DEBUG_VEC3_1)).font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC3_2: " + to_string(DEBUG_VEC3_2)).font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC3_3: " + to_string(DEBUG_VEC3_3)).font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC4_1: " + to_string(DEBUG_VEC4_1)).font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC4_2: " + to_string(DEBUG_VEC4_2)).font("ui_12"s)();
+			ui.rect().text("DEBUG_QUAT: " + to_string(DEBUG_QUAT)).font("ui_12"s)();
 		ui.endTable();
 		// ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
 		if(RC) Helper::directControlWidget(window_width-300, 2, mousePosition, *RC);
@@ -336,7 +344,7 @@ void mainLoop(){
 
 		g_scrollDel = 0.0;
 	}
-} 
+}
 void scrollCallback(GLFWwindow *window, double xOff, double yOff){
 	g_scrollDel = yOff;
 	g_scrollPos += yOff;
@@ -368,8 +376,14 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	if(action == GLFW_PRESS && key == GLFW_KEY_F5){
 		RC->run();
 	}
-	if(action == GLFW_PRESS && key == GLFW_KEY_F8){
+	else if(action == GLFW_PRESS && key == GLFW_KEY_F8 && mods&GLFW_MOD_CONTROL){
+		PythonBindings::reloadAndInitMainScript(RC, scene);
+	}
+	else if(action == GLFW_PRESS && key == GLFW_KEY_F8){
 		PythonBindings::reloadMainScript(RC, scene);
+	}
+	else if(action == GLFW_PRESS && key == GLFW_KEY_F9){
+		PythonBindings::executeSubScript();
 	}
 	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
 		RC->pause();
