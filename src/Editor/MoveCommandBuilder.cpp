@@ -105,36 +105,58 @@ public:
 
 
 MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
-	RC->insertCommand(moveCommand);
+	RC->pushCommand(moveCommand);
+	init();
+	return *this;
+}
+MoveCommandBuilder& MoveCommandBuilder::insert(shared_ptr<RobotController> RC){
+	RC->commandIter++;
+	RC->commandIter = RC->commands.insert(RC->commandIter,  moveCommand);
+	RC->commandIter--;
 	init();
 	return *this;
 }
 MoveCommandBuilder& MoveCommandBuilder::finish(RobotController &RC){
-	RC.insertCommand(moveCommand);
+	RC.pushCommand(moveCommand);
 	init();
 	return *this;
 }
 
 SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(shared_ptr<RobotController> RC){
-	RC->insertCommand(moveCommand);
+	RC->pushCommand(moveCommand);
+	init();
+	return *this;
+}
+SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::insert(shared_ptr<RobotController> RC){
+	RC->commandIter++;
+	RC->commands.insert(RC->commandIter,  moveCommand);
+	RC->commandIter--;
 	init();
 	return *this;
 }
 SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(RobotController &RC){
-	RC.insertCommand(moveCommand);
+	RC.pushCommand(moveCommand);
 	init();
 	return *this;
 }
 
 FollowObjectBuilder& FollowObjectBuilder::finish(shared_ptr<RobotController> RC){
 	moveCommand->solver = make_shared<JT0>();
-	RC->insertCommand(moveCommand);
+	RC->pushCommand(moveCommand);
+	init();
+	return *this;
+}
+FollowObjectBuilder& FollowObjectBuilder::insert(shared_ptr<RobotController> RC){
+	moveCommand->solver = make_shared<JT0>();
+	RC->commandIter++;
+	RC->commands.insert(RC->commandIter,  moveCommand);
+	RC->commandIter--;
 	init();
 	return *this;
 }
 FollowObjectBuilder& FollowObjectBuilder::finish(RobotController &RC){
 	moveCommand->solver = make_shared<JT0>();
-	RC.insertCommand(moveCommand);
+	RC.pushCommand(moveCommand);
 	init();
 	return *this;
 }

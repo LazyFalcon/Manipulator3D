@@ -17,8 +17,8 @@ enum CommandReturn : int {
 	Delete = 2,
 	GoToPrevious = 4,
 
-	DelAndForward = Delete | GoToNext,
-	DelAndBack = Delete | GoToPrevious,
+	DelAndForward = 15,
+	DelAndBack = 45,
 
 };
 }
@@ -54,7 +54,8 @@ public:
 class MoveCommand : public ICommand
 {
 public:
-	MoveCommand() : ICommand(MOVE), interpolator(make_shared<Linear>(std::vector<glm::vec4> {glm::vec4(0,0,0,1)})) {}
+	// MoveCommand() : ICommand(MOVE), interpolator(make_shared<Linear>(std::vector<glm::vec4> {glm::vec4(0,0,0,1)})) {}
+	MoveCommand() : ICommand(MOVE) {}
 	// MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	MoveCommand(shared_ptr<IInterpolator> interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	~MoveCommand(){

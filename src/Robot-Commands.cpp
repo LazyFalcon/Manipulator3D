@@ -10,6 +10,7 @@
 #include "Robot-Commands.h"
 #include "PythonBindings.h"
 #include <boost/python/call.hpp>
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 namespace PythonBindings {
 extern bpl::object mainScript;
@@ -72,7 +73,10 @@ void ExecutePythonCommand::init(shared_ptr<RobotController> &rc){
 };
 int ExecutePythonCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
 	try {
-		return boost::python::extract<bool>(callback.attr("onUpdate")(rc, scene, dt));
+		if( (boost::python::extract<bool>( callback.attr("onUpdate")(rc, scene, dt) ))() ){
+			return exit(rc, scene);
+		}
+		return 0;
 	}
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
@@ -82,7 +86,7 @@ int ExecutePythonCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Sce
 int ExecutePythonCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	isRuning = false;
 	try {
-		callback.attr("exit")(rc, scene);
+		callback.attr("onExit")(rc, scene);
 	}
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
@@ -107,7 +111,7 @@ void MoveCommand::init(shared_ptr<RobotController> &rc){
 	solver->solve(Point{ interpolator->firstPoint(), startOrientation }, *(rc->robot));
 	targetJointPosition = solver->result;
 	rc->robot->isReady = false;
-	// rc->robot->goTo(targetJointPosition);
+	rc->robot->goTo(targetJointPosition);
 	std::cout<<"Init command"<<std::endl;
 
 	previousPoint = rc->robot->endEffector.position;
@@ -155,7 +159,7 @@ int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scen
 		previousPoint = newTarget;
 		return 0;
 	}
-    return 0;
+	return 0;
 }
 
 void SingleJointMove::init(shared_ptr<RobotController> &rc){
@@ -187,12 +191,12 @@ void FollowObject::init(shared_ptr<RobotController> &rc){
 	rc->robot->goTo(targetJointPosition);
 }
 int FollowObject::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
-    if(*target != pTarget){
-        solver->solve(Point{ *target, glm::quat(0, 0, 0, 1) }, *(rc->robot));
-        targetJointPosition = solver->result;
-        rc->robot->goTo(targetJointPosition);
-        pTarget = *target;
-    }
+	if(*target != pTarget){
+		solver->solve(Point{ *target, glm::quat(0, 0, 0, 1) }, *(rc->robot));
+		targetJointPosition = solver->result;
+		rc->robot->goTo(targetJointPosition);
+		pTarget = *target;
+	}
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
 		return 0;

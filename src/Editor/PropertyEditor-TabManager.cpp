@@ -134,7 +134,7 @@ void CommandEditorTab::getTypeWidget(TabManager &TM){
 void CommandEditorTab::applyCommand(){
 	ui.rect(120, 30).text("Apply")(UI::Label)
 		.onlClick([this]{
-			// getRC().insertCommand(commandBuilderWidget->getCommand());
+			// getRC().pushCommand(commandBuilderWidget->getCommand());
 			commandBuilderWidget = createWidgetFromCommandType(EMPTY);
 		});
 }

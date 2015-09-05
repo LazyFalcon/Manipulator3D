@@ -676,7 +676,7 @@ void drawOutline(Scene &scene){
 	static auto uModel = glGetUniformLocation(shader,"uModel");
 	static auto uColor = glGetUniformLocation(shader,"uColor");
 
-	auto &objects = Helper::getCurrentSelection();
+	auto &objects = Helper::getSelection();
 
 	{ // fill stencil
 		// glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0);

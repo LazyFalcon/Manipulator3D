@@ -8,19 +8,35 @@
 #include "../IInterpolator.h"
 #include "../RobotController.h"
 
+ExecuteCommandBuilder& ExecuteCommandBuilder::insert(shared_ptr<RobotController> &RC){
+	RC->commandIter++;
+	RC->commands.insert(RC->commandIter, execCommand);
+	RC->commandIter--;
+	init();
+	return *this;
+}
+
 ExecuteCommandBuilder& ExecuteCommandBuilder::finish(shared_ptr<RobotController> &RC){
-	RC->insertCommand(execCommand);
+	RC->pushCommand(execCommand);
 	init();
 	return *this;
 }
 
 // ExecutePythonCommandBuilder& ExecutePythonCommandBuilder::finish(RobotController &RC){
-	// RC.insertCommand(execCommand);
+	// RC.pushCommand(execCommand);
 	// init();
 	// return *this;
 // }
 ExecutePythonCommandBuilder& ExecutePythonCommandBuilder::finish(shared_ptr<RobotController> RC){
-	RC->insertCommand(execCommand);
+	RC->pushCommand(execCommand);
+	init();
+	return *this;
+}
+
+ExecutePythonCommandBuilder& ExecutePythonCommandBuilder::insert(shared_ptr<RobotController> RC){
+	RC->commandIter++;
+	RC->commands.insert(RC->commandIter, execCommand);
+	RC->commandIter--;
 	init();
 	return *this;
 }

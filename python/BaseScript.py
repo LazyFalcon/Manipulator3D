@@ -23,10 +23,10 @@ class SampleObjectsAction:
 	def __init__(self):
 		self.timer = 3.0
 
-	def onEnter(self, Rc, scene):
-		print 'Action enter'
+	def onEnter(self, RC):
+		print '-------------------------- Action enter'
 		self.timer = 3
-		pass
+		print 'Action timer '+ str(self.timer)
 	def onExit(self, RC, scene):
 		print 'Action exit'
 		pass
@@ -38,19 +38,29 @@ class SampleObjectsAction:
 		else:
 			return True
 
-
 	def onUpdate(self, RC, scene, dt):
 		selection = getSelection()
 		if len(selection) > 0:
-			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position-vec4(0,0,0.2,0)).finish(RC)
-			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position).orientation(vec3(0,0,-1)).finish(RC)
+			print 'Ha, lets grab sometthin\'!'
+			print selection[0].position
+
+			# points = Vec4Vec()
+			# points[:] = [vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1), vec4(-1, -3.5, 4, 1)]
+			# path = addInterpolator(Interpolator.BSpline, points, "--")
+			# RC.move(1).name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
+
+			# RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
+			RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
+			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
+			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
+			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
 
 			# RC.grab(selection[0], CommandReturnAction.DelAndForward)
 			# RC.goTo(CommandReturnAction.DelAndForward).to(getCursor()-vec4(0,0,0.2,0)).finish(RC)
 			# RC.release(CommandReturnAction.DelAndForward).finish(RC)
-			return 0
+			return True
 		else:
-			return handleTimer(dt)
+			return self.handleTimer(dt)
 
 # -------------------------
 
@@ -164,7 +174,7 @@ def init(RC, scene):
 	dataCollector.initialize(RC)
 
 	action = SampleObjectsAction()
-	RC.pyExec(1).name("Move objects from box").callback(action).finish(RC)
+	RC.pyExec(CommandReturnAction.GoToNext).name("Move objects from box").callback(action).finish(RC)
 
 
 
@@ -184,10 +194,10 @@ def init(RC, scene):
 
 	# RC.pyExec().name("Exec from py").onEnter(c_init).onUpdate(c_update).onExit(c_exit).finish(RC)
 
-	foo = c_update(10)
-	RC.pyExec(1).name("Exec from py").callback(foo).finish(RC)
-	RC.move(1).name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
-	RC.move(1).name("Circle!").interpolator(circlePath).velocity(1.0).jointVelocity(0.5).finish(RC)
+	# foo = c_update(10)
+	# RC.pyExec(1).name("Exec from py").callback(foo).finish(RC)
+	# RC.move(1).name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
+	# RC.move(1).name("Circle!").interpolator(circlePath).velocity(1.0).jointVelocity(0.5).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	# RC.savePosition()

@@ -75,7 +75,7 @@ void Linear::drawParams(){
 }
 
 glm::vec4 Simple::nextPoint(){
-	if(currentPoint > maxPoints){
+	if(currentPoint >= maxPoints){
 		finished = true;
 		return points[maxPoints];
 	}

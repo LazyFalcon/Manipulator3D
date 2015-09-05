@@ -35,6 +35,13 @@ WaitCommandBuilder& WaitCommandBuilder::finish(shared_ptr<RobotController>& RC){
 	init();
 	return *this;
 }
+WaitCommandBuilder& WaitCommandBuilder::insert(shared_ptr<RobotController>& RC){
+	RC->commandIter++;
+	RC->commands.insert(RC->commandIter, waitCommand);
+	RC->commandIter--;
+	init();
+	return *this;
+}
 WaitCommandBuilder& WaitCommandBuilder::finish(RobotController &RC){
 	RC.commands.push_back(waitCommand);
 	init();

@@ -42,10 +42,10 @@ public:
 	void useEffector();
 	void releaseEffector();
 
-	void insertCommand(shared_ptr<ICommand> &ptr){
+	void pushCommand(shared_ptr<ICommand> &ptr){
 		commands.push_back(ptr);
 	}
-	void insertCommand(shared_ptr<ICommand> ptr){
+	void pushCommand(shared_ptr<ICommand> ptr){
 		commands.push_back(ptr);
 	}
 	std::shared_ptr<ICommand>& getCommand(){
@@ -83,11 +83,13 @@ public:
 	}
 
 	MoveCommandBuilder& goTo(int commandExitAction = 1){
-		return moveCommandBuilder.init(commandExitAction);
+		return moveCommandBuilder.init(commandExitAction).name("GoTo");
 	}
-	// ExecuteCommandBuilder& grab(shared_ptr<Entity> &obj, int commandExitAction = 1){
-		// auto mv = move(commandExitAction).name("Move to object, to grab it.");
-	// }
+	void grab(shared_ptr<Entity> &obj, int commandExitAction = 1){
+		// exec(commandExitAction).onEnter([this, &obj](shared_ptr<RobotController>&){
+
+		// }).insert(*this);
+	}
 
 
 	std::string getComandName() const {

@@ -298,14 +298,8 @@ std::string existingName;
 std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList(){
 	return g_groupList;
 }
-std::vector<shared_ptr<Entity>>& getCurrentSelection(){
-	return g_currentSelection;
-}
 void deleteGroup(const std::string &name){
 	g_groupList.erase(name);
-}
-std::vector<shared_ptr<Entity>>& getselection(){
-	return g_currentSelection;
 }
 void appendToSelection(const std::string &name){
 	g_currentSelection.insert(g_currentSelection.end(), g_groupList[name].begin(), g_groupList[name].end());
@@ -339,11 +333,15 @@ bool processMouse(int key, int action, int mods){
 		std::cout<<"Marked!"<<std::endl;
 		auto &&obj = getObjectUnderMouse();
 		if(obj){
+			if(not g_currentSelection.empty() && g_currentSelection[0] == obj){
+				g_currentSelection.clear();
+				return false;
+			}
 			g_currentSelection.clear();
 			g_currentSelection.push_back(obj);
 		}
 	}
-
+	return false;
 }
 bool processKeys(int key, int action, int mods){
 	if(action == GLFW_PRESS){
@@ -367,6 +365,9 @@ void saveGroup(std::vector<shared_ptr<Entity>> &s){
 	else
 		g_groupList[generateGroupName()] = s;
 	s.clear();
+}
+std::vector<shared_ptr<Entity>>& getSelection(){
+	return g_currentSelection;
 }
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName(){

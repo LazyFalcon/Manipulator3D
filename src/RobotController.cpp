@@ -13,6 +13,7 @@
 #include "CFGParser.h"
 #include "ResourceLoader.h"
 
+#define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 #define NAM_END }
 #define NAM_START {
 
@@ -46,6 +47,7 @@ void RobotController::run(){
 			(*commandIter)->init(RC);
 		}
 	}
+	else stop();
 }
 void RobotController::pause(){
 	state = RCStates::Pause;
@@ -63,7 +65,6 @@ void RobotController::next(){
 	}
 	else {
 		Editor::set(*commandIter);
-		(*commandIter)->init(RC);
 	}
 }
 void RobotController::prev(){
@@ -91,17 +92,19 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 			}
 			else {
 				Editor::set(*commandIter);
-				(*commandIter)->init(RC);
+				run();
 			}
 		}
-		if(returnedAction&CommandReturnAction::DelAndBack){
-			commands.erase(commandIter);
+		if(returnedAction == CommandReturnAction::DelAndBack){
+			commandIter = commands.erase(commandIter);
 			commandIter--;
-			Editor::set(*commandIter);
-			(*commandIter)->init(RC);
+			cerr<<(*commandIter)->name<<endl;
+			// Editor::set(*commandIter);
+			run();
 		}
 		else {
 			next();
+			run();
 		}
 
 		std::cout<<"Starting new job."<<endl;

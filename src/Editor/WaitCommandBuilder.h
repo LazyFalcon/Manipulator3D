@@ -27,6 +27,7 @@ public:
 	// }
 
 	WaitCommandBuilder& finish(shared_ptr<RobotController>& RC);
+	WaitCommandBuilder& insert(shared_ptr<RobotController>& RC);
 	WaitCommandBuilder& finish(RobotController &RC);
 
 	WaitCommandBuilder(){}

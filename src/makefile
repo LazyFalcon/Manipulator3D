@@ -4,6 +4,7 @@
 # CXXFLAGS			=  -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -Wall -Werror
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -DUSE_BULLET
 # CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse
+# CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64 -DBOOST_PYTHON_BOOL_INT_STRICT
 CXXFLAGS = -I c:\MinGW\include -std=c++1y -msse2 -mfpmath=sse -I C:\Python27\include -DBOOST_PYTHON_STATIC_LIB -DMS_WIN64
 CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
