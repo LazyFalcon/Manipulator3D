@@ -125,7 +125,7 @@ public:
 	glm::vec4 nextPoint();
 	void reset();
 	void drawParams();
-	float getNormalizedPosition() const {return 0;}
+	float getNormalizedPosition() const {return (currentPoint+1)/(maxPoints+1);}
 
 	~Simple(){
 		std::cerr<<"delete Simple "+name<<std::endl;

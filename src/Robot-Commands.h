@@ -10,21 +10,34 @@ enum CommandType : u32
 	EMPTY, SINGLEMOVE, MOVE, FOLLOW, WAIT, EXECUTE, EXECUTE_PY
 };
 
+namespace CommandReturnAction {
+enum CommandReturn : int {
+	None = 0,
+	GoToNext = 1,
+	Delete = 2,
+	GoToPrevious = 4,
+
+	DelAndForward = Delete | GoToNext,
+	DelAndBack = Delete | GoToPrevious,
+
+};
+}
 class ICommand
 {
 	//uint32_t flags;
 public:
-	ICommand(CommandType type) : type(type), isRuning(false){}
+	ICommand(CommandType type) : type(type), isRuning(false), exitAction(CommandReturnAction::GoToNext){}
 	//ICommand(uint32_t f) : flags(f){}
 	virtual void init(shared_ptr<RobotController> &rc) = 0;
-	virtual bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt) = 0;
-	virtual bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene) = 0;
+	virtual int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt) = 0;
+	virtual int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene) = 0;
 	virtual vector<glm::vec4>& getPath() = 0;
 	virtual vector<glm::vec4>& getPolyline() = 0;
 	virtual ~ICommand(){}
 	std::string name = "--empty--";
 	CommandType type;
 	bool isRuning;
+	int exitAction;
 };
 
 class ICommandBuilderWidget
@@ -55,8 +68,8 @@ public:
 		return interpolator->points;
 	}
 	void init(shared_ptr<RobotController> &rc);
-	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
-	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){}
+	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){}
 	glm::vec4 calculateNextPoint(float dt);
 	double calculateRequiredDistance(float dt);
 
@@ -88,8 +101,8 @@ public:
 	SingleJointMove() : ICommand(SINGLEMOVE){}
 	SingleJointMove(std::vector<double> &v) : ICommand(SINGLEMOVE), targetJointPosition(v){}
 	void init(shared_ptr<RobotController> &rc);
-	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
-	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	void set(std::vector<double> &v){
 		targetJointPosition = v;
 	}
@@ -112,8 +125,8 @@ public:
 	FollowObject() : ICommand(FOLLOW), target(nullptr){}
 	FollowObject(std::vector<double> &v) : ICommand(FOLLOW), targetJointPosition(v), target(nullptr){}
 	void init(shared_ptr<RobotController> &rc);
-	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
-	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	void set(glm::vec4 &t){
 		target = &t;
         pTarget = glm::vec4(0);
@@ -139,10 +152,10 @@ public:
 	}
 	WaitCommand() : ICommand(WAIT), releaseTime(0){}
 	WaitCommand(float time) : ICommand(WAIT), releaseTime(time){}
-	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
 
 	void init(shared_ptr<RobotController> &rc);
-	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
@@ -157,8 +170,8 @@ class ExecuteCommand : public ICommand
 public:
     ExecuteCommand() : ICommand(EXECUTE){}
 	void init(shared_ptr<RobotController> &rc);
-	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
-	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 
@@ -175,8 +188,8 @@ public:
 		std::cerr<<"delete py callback"<<std::endl;
 	}
 	void init(shared_ptr<RobotController> &rc);
-	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
-	bool exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
+	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
+	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	vector<glm::vec4>& getPath();
 	vector<glm::vec4>& getPolyline();
 

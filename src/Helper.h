@@ -37,10 +37,12 @@ std::map<std::string, std::vector<shared_ptr<Entity>>>& groupList();
 std::vector<shared_ptr<Entity>>& getCurrentSelection();
 bool processMouse(int key, int action, int mods);
 bool processKeys(int key, int action, int mods);
+
 void saveGroup(std::vector<shared_ptr<Entity>>&);
 void restoreSelection(const std::string &name);
 void deleteGroup(const std::string &name);
 void appendToSelection(const std::string &name);
+std::vector<shared_ptr<Entity>>& getselection();
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();
 ///
@@ -48,13 +50,14 @@ void alert(const std::string &s);
 void showPopups();
 
 ///
+glm::vec4& getCursor();
+
 std::map<std::string, glm::vec4>& pointList();
 void setCursor(glm::vec4 v);
 void moveCursor(glm::vec4 v);
 void restoreCursorPos(const std::string &name);
 void deletePoint(Point *p);
 void deletePoint(const std::string &name);
-glm::vec4& getCursor();
 glm::vec2 getScreenCursor(Camera &camera);
 void cursorVidgetHorizontal(glm::vec2 pos);
 

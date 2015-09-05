@@ -287,9 +287,6 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 	string dirname = cfg["dirname"].value;
 	meshPath = "..\\models"+cfg["dirname"].value;
 
-	cout<<meshPath<<endl;
-	cin.ignore();
-
 	auto &meshes = cfg["Meshes"];
 	scene.units_ptrs.resize(meshes.Vector.size()+1);
 	for(auto &it : meshes.Vector){

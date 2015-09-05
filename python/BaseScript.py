@@ -1,8 +1,4 @@
-from glm_export import *
-from commandBuilders_export import *
-from scene_export import *
-from robotController_export import *
-from helper_export import *
+from Manipulator3D import *
 
 import matplotlib
 from matplotlib.pyplot import draw, figure, show
@@ -17,6 +13,46 @@ import numpy as np
 #   jacobian transpose: iterations, internal joint positions, precision, errors
 #   interpolators: paths
 
+'''
+Przykladowa akcja:
+	jej zadaniem jest zbierac wszystkie zaznaczone obiekty i przenosic je w jedno miejsce
+	miejsce jest wskazywane kursorem(z pewnym offsetem) obiektem jest ten aktualnie zaznaczony
+	jesli nie ma nic zaznaczonego przez 3s, to akcja sie konczy
+'''
+class SampleObjectsAction:
+	def __init__(self):
+		self.timer = 3.0
+
+	def onEnter(self, Rc, scene):
+		print 'Action enter'
+		self.timer = 3
+		pass
+	def onExit(self, RC, scene):
+		print 'Action exit'
+		pass
+
+	def handleTimer(self, dt):
+		if self.timer > 0:
+			self.timer -= dt
+			return False
+		else:
+			return True
+
+
+	def onUpdate(self, RC, scene, dt):
+		selection = getSelection()
+		if len(selection) > 0:
+			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position-vec4(0,0,0.2,0)).finish(RC)
+			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position).orientation(vec3(0,0,-1)).finish(RC)
+
+			# RC.grab(selection[0], CommandReturnAction.DelAndForward)
+			# RC.goTo(CommandReturnAction.DelAndForward).to(getCursor()-vec4(0,0,0.2,0)).finish(RC)
+			# RC.release(CommandReturnAction.DelAndForward).finish(RC)
+			return 0
+		else:
+			return handleTimer(dt)
+
+# -------------------------
 
 def handleInput(key, action, mod, RC, scene):
 	if action == Press:
@@ -127,6 +163,12 @@ def init(RC, scene):
 	print 'Hello! This is first entry in this script.'
 	dataCollector.initialize(RC)
 
+	action = SampleObjectsAction()
+	RC.pyExec(1).name("Move objects from box").callback(action).finish(RC)
+
+
+
+
 	# RC.savePosition()
 	# moveBuilder = MoveCommandBuilder()
 	# uppka(uppa)
@@ -143,9 +185,9 @@ def init(RC, scene):
 	# RC.pyExec().name("Exec from py").onEnter(c_init).onUpdate(c_update).onExit(c_exit).finish(RC)
 
 	foo = c_update(10)
-	RC.pyExec().name("Exec from py").callback(foo).finish(RC)
-	RC.move().name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
-	RC.move().name("Circle!").interpolator(circlePath).velocity(1.0).jointVelocity(0.5).finish(RC)
+	RC.pyExec(1).name("Exec from py").callback(foo).finish(RC)
+	RC.move(1).name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
+	RC.move(1).name("Circle!").interpolator(circlePath).velocity(1.0).jointVelocity(0.5).finish(RC)
 	print 'Now new order is created.'
 	# RC.popPosition()
 	# RC.savePosition()

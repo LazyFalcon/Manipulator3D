@@ -5,26 +5,27 @@
 class ExecuteCommandBuilder
 {
 public:
-	ExecuteCommandBuilder& init(){
+	ExecuteCommandBuilder& init(int commandExitAction = 1){
 		execCommand = make_shared<ExecuteCommand>();
+		execCommand->exitAction = commandExitAction;
 		return *this;
 	}
-    ExecuteCommandBuilder& name(const std::string &s){
+	ExecuteCommandBuilder& name(const std::string &s){
 		execCommand->name = s;
 		return *this;
-    }
-    ExecuteCommandBuilder& onEnter(std::function<void(shared_ptr<RobotController> &rc)> fun){
+	}
+	ExecuteCommandBuilder& onEnter(std::function<void(shared_ptr<RobotController> &rc)> fun){
 		execCommand->onEnter = fun;
 		return *this;
-	}
-    ExecuteCommandBuilder& onUpdate(std::function<bool(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt)> fun){
+}
+	ExecuteCommandBuilder& onUpdate(std::function<bool(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt)> fun){
 		execCommand->onUpdate = fun;
 		return *this;
-	}
-    ExecuteCommandBuilder& onExit(std::function<void(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)> fun){
+}
+	ExecuteCommandBuilder& onExit(std::function<void(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)> fun){
 		execCommand->onExit = fun;
 		return *this;
-	}
+}
 
 	ExecuteCommandBuilder& finish(shared_ptr<RobotController> &rc);
 
@@ -38,8 +39,9 @@ private:
 class ExecutePythonCommandBuilder
 {
 public:
-	ExecutePythonCommandBuilder& init(){
+	ExecutePythonCommandBuilder& init(int commandExitAction = 1){
 		execCommand = make_shared<ExecutePythonCommand>();
+		execCommand->exitAction = commandExitAction;
 		return *this;
 	}
 	ExecutePythonCommandBuilder& name(const std::string s){

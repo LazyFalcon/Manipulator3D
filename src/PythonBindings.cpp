@@ -32,7 +32,7 @@ glm::quat glm_angleAxis(float angle, glm::vec3 axis){
 	return glm::quat(cos(angle*0.5f), glm::normalize(axis));
 }
 
-BOOST_PYTHON_MODULE(glm_export){
+BOOST_PYTHON_MODULE(Manipulator3D){
 
 	bpl::class_<std::vector<glm::vec4>>("Vec4Vec")
 		.def(bpl::vector_indexing_suite<std::vector<glm::vec4>>())
@@ -115,11 +115,11 @@ BOOST_PYTHON_MODULE(glm_export){
 		.def(bpl::self * float())
 		.def("__str__", to_string_vec3)
 		;
-}
-BOOST_PYTHON_MODULE(commandBuilders_export){
 	MoveCommandBuilder& (MoveCommandBuilder::*interpolator_ptr)(IInterpolatorContainer&) = &MoveCommandBuilder::interpolator;
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_string)(const std::string&) = &MoveCommandBuilder::solver;
 	MoveCommandBuilder& (MoveCommandBuilder::*solver_enum)(SolverType) = &MoveCommandBuilder::solver;
+	MoveCommandBuilder& (MoveCommandBuilder::*orientation_quat)(glm::quat) = &MoveCommandBuilder::orientation;
+	MoveCommandBuilder& (MoveCommandBuilder::*orientation_vec3)(glm::vec3) = &MoveCommandBuilder::orientation;
 	MoveCommandBuilder& (MoveCommandBuilder::*finish_ptr)(shared_ptr<RobotController>) = &MoveCommandBuilder::finish;
 
 	// bpl::class_<std::vector<double>>("doubleVec")
@@ -139,6 +139,12 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("interpolator", interpolator_ptr, bpl::return_internal_reference<>())
 		.def("solver", solver_string, bpl::return_internal_reference<>())
 		.def("solver", solver_enum, bpl::return_internal_reference<>())
+		/// for goTo command
+		.def("to", &MoveCommandBuilder::to, bpl::return_internal_reference<>())
+		.def("orientation", orientation_quat, bpl::return_internal_reference<>())
+		.def("orientation", orientation_vec3, bpl::return_internal_reference<>())
+		.def("offset", &MoveCommandBuilder::offset, bpl::return_internal_reference<>())
+
 		.def("finish", finish_ptr, bpl::return_internal_reference<>())
 		;
 
@@ -153,8 +159,8 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.def("finish", singlefinish_ptr, bpl::return_internal_reference<>())
 		;
 
-		FollowObjectBuilder& (FollowObjectBuilder::*target_1)(glm::vec4 &t) = &FollowObjectBuilder::target;
-		FollowObjectBuilder& (FollowObjectBuilder::*target_2)(shared_ptr<Entity> &obj) = &FollowObjectBuilder::target;
+	FollowObjectBuilder& (FollowObjectBuilder::*target_1)(glm::vec4 &t) = &FollowObjectBuilder::target;
+	FollowObjectBuilder& (FollowObjectBuilder::*target_2)(shared_ptr<Entity> &obj) = &FollowObjectBuilder::target;
 	FollowObjectBuilder& (FollowObjectBuilder::*followfinish_ptr)(shared_ptr<RobotController>) = &FollowObjectBuilder::finish;
 	bpl::class_<FollowObjectBuilder, std::shared_ptr<FollowObjectBuilder>>("FollowObjectBuilder", bpl::init<>())
 		.def("init", &FollowObjectBuilder::init, bpl::return_internal_reference<>())
@@ -188,6 +194,14 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 		.value("JT2", SolverType::JT2)
 		.value("CCD", SolverType::CCD)
 		;
+	bpl::enum_<CommandReturnAction::CommandReturn>("CommandReturnAction")
+		.value("None", CommandReturnAction::None)
+		.value("GoToNext", CommandReturnAction::GoToNext)
+		.value("Delete", CommandReturnAction::Delete)
+		.value("GoToPrevious", CommandReturnAction::GoToPrevious)
+		.value("DelAndForward", CommandReturnAction::DelAndForward)
+		.value("DelAndBack", CommandReturnAction::DelAndBack)
+		;
 	bpl::enum_<Interpolator>("Interpolator")
 		.value("Empty", Interpolator::Empty)
 		.value("Open", Interpolator::Open)
@@ -217,8 +231,6 @@ BOOST_PYTHON_MODULE(commandBuilders_export){
 			// .def_readwrite("points", &IInterpolator::points)
 			;
 
-}
-BOOST_PYTHON_MODULE(scene_export){
 	// bpl::def("getScene", getScene);
 	bpl::class_<Entity, std::shared_ptr<Entity>>("Entity")
 		.def_readonly("ID", &Entity::ID)
@@ -232,8 +244,6 @@ BOOST_PYTHON_MODULE(scene_export){
 	bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
 		.def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>>())
 		;
-}
-BOOST_PYTHON_MODULE(robotController_export){
 	// bpl::def("getRC", getRC);
 
 	void (RobotController::*insertCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::insertCommand;
@@ -287,13 +297,18 @@ BOOST_PYTHON_MODULE(robotController_export){
 		.def_readwrite("enableCollisions", &SystemSettings::enableCollisions)
 		;
 
-
-}
-BOOST_PYTHON_MODULE(helper_export){
 	using namespace Helper;
-	// bpl::def("getPositionUnderMouse", &getPositionUnderMouse);
-	// bpl::def("getNormalUnderMouse", &getNormalUnderMouse);
-	// bpl::def("getObjectUnderMouse", &getObjectUnderMouse, bpl::return_value_policy<bpl::reference_existing_object>());
+	bpl::def("getPositionUnderMouse", &Helper::getPositionUnderMouse);
+	bpl::def("getNormalUnderMouse", &Helper::getNormalUnderMouse);
+	// bpl::def("getObjectUnderMouse", &Helper::getObjectUnderMouse, bpl::return_value_policy<bpl::reference_existing_object>());
+	bpl::def("getselection", &Helper::getselection, bpl::return_value_policy<bpl::reference_existing_object>());
+	bpl::def("getCursor", &Helper::getCursor, bpl::return_value_policy<bpl::reference_existing_object>());
+	bpl::def("setCursor", &Helper::setCursor);
+	bpl::def("moveCursor", &Helper::moveCursor);
+	bpl::def("restoreCursorPos", &Helper::restoreCursorPos);
+
+	// bpl::def("getGroup", &Helper::getGroup, bpl::return_value_policy<bpl::reference_existing_object>());
+	// bpl::def("appendToSelection", &Helper::appendToSelection);
 
 	// bpl::def("savePoint", &savePoint);
 	// bpl::def("getPoint", &getPoint);
@@ -338,14 +353,7 @@ BOOST_PYTHON_MODULE(helper_export){
 		// bpl::def("store", &storeFloat);
 		// bpl::def("store", &storeDouble);
 		// bpl::def("store", &storeVec4);
-
-
 }
-
-std::unordered_map<std::string, int> keyMaps = {
-		{}
-
-};
 
 bpl::object main;
 bpl::object global;
@@ -367,22 +375,17 @@ void handleInput(int key, int action, int mod, shared_ptr<RobotController> &rc, 
 void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::string &name){
 	Py_Initialize();
 	try {
-		_DebugLine_
-		initglm_export();_DebugLine_
-		initscene_export();_DebugLine_
-		initrobotController_export();_DebugLine_
-		initcommandBuilders_export();_DebugLine_
-		inithelper_export();
+		initManipulator3D();
 		main = bpl::import("__main__");
-		global = bpl::object(main.attr("__dict__"));_DebugLine_
+		global = bpl::object(main.attr("__dict__"));
 		bpl::str script(
 				"import sys, os.path\n"
 				"path = os.path.dirname(%r)\n"
 				"sys.path.insert(0, path)"
 				% bpl::str("../python/")
-				);_DebugLine_
+				);
 		bpl::object result = bpl::exec(script, global, global);
-		mainScriptName = name;_DebugLine_
+		mainScriptName = name;
 		// mainScript = bpl::import(mainScriptName.c_str());
 		// mainScript.attr("init")(rc, scene);
 

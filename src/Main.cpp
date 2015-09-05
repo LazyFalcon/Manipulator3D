@@ -130,12 +130,7 @@ std::string shadersToReload[] = {
 	"SSAO",
 };
 
-void loadResources();
 void mainLoop();
-void shutDown(int returnCode);
-
-void BADBADBADRobotIKRealtimeTest(Robot &robot);
-
 void reloadWhatIsPossible();
 void initContext(CFG::Node &cfg);
 
@@ -345,6 +340,7 @@ void mainLoop(){
 		g_scrollDel = 0.0;
 	}
 }
+
 void scrollCallback(GLFWwindow *window, double xOff, double yOff){
 	g_scrollDel = yOff;
 	g_scrollPos += yOff;

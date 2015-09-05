@@ -69,7 +69,7 @@ void RobotController::next(){
 void RobotController::prev(){
 	if(commandIter != commands.begin()){
 		commandIter--;
-
+		Editor::set(*commandIter);
 	}
 }
 
@@ -82,9 +82,29 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 	if(state == RCStates::Pause)
 		return false;
 
-	if((*commandIter)->update(rc, scene, dt)){
+	auto returnedAction = (*commandIter)->update(rc, scene, dt);
+	if(returnedAction){
+		if(returnedAction == CommandReturnAction::DelAndForward){
+			commands.erase(commandIter);
+			if(commandIter == commands.end()){
+				stop();
+			}
+			else {
+				Editor::set(*commandIter);
+				(*commandIter)->init(RC);
+			}
+		}
+		if(returnedAction&CommandReturnAction::DelAndBack){
+			commands.erase(commandIter);
+			commandIter--;
+			Editor::set(*commandIter);
+			(*commandIter)->init(RC);
+		}
+		else {
+			next();
+		}
+
 		std::cout<<"Starting new job."<<endl;
-		next();
 		return true;
 	}
 	return false;

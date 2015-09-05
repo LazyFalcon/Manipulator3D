@@ -304,6 +304,9 @@ std::vector<shared_ptr<Entity>>& getCurrentSelection(){
 void deleteGroup(const std::string &name){
 	g_groupList.erase(name);
 }
+std::vector<shared_ptr<Entity>>& getselection(){
+	return g_currentSelection;
+}
 void appendToSelection(const std::string &name){
 	g_currentSelection.insert(g_currentSelection.end(), g_groupList[name].begin(), g_groupList[name].end());
 }

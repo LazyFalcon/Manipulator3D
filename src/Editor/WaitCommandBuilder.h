@@ -4,8 +4,9 @@
 class WaitCommandBuilder
 {
 public:
-	WaitCommandBuilder& init(){
+	WaitCommandBuilder& init(int commandExitAction = 1){
 		waitCommand = make_shared<WaitCommand>();
+		waitCommand->exitAction = commandExitAction;
 		return *this;
 	}
 	WaitCommandBuilder& name(const std::string &name){

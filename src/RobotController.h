@@ -63,24 +63,32 @@ public:
 	void next();
 	void prev();
 
-	WaitCommandBuilder& wait(){
-		return waitCommandBuilder.init();
+	WaitCommandBuilder& wait(int commandExitAction = 1){
+		return waitCommandBuilder.init(commandExitAction);
 	}
-	MoveCommandBuilder& move(){
-		return moveCommandBuilder.init();
+	MoveCommandBuilder& move(int commandExitAction = 1){
+		return moveCommandBuilder.init(commandExitAction);
 	}
-	SingleJointMoveCommandBuilder& jointMove(){
-		return singleJointMoveCommandBuilder.init();
+	SingleJointMoveCommandBuilder& jointMove(int commandExitAction = 1){
+		return singleJointMoveCommandBuilder.init(commandExitAction);
 	}
-	ExecuteCommandBuilder& exec(){
-		return execBuiilder.init();
+	ExecuteCommandBuilder& exec(int commandExitAction = 1){
+		return execBuiilder.init(commandExitAction);
 	}
-	ExecutePythonCommandBuilder& pyExec(){
-		return pyExecBuiilder.init();
+	ExecutePythonCommandBuilder& pyExec(int commandExitAction = 1){
+		return pyExecBuiilder.init(commandExitAction);
 	}
-	FollowObjectBuilder& follow(){
-		return followBuiilder.init();
+	FollowObjectBuilder& follow(int commandExitAction = 1){
+		return followBuiilder.init(commandExitAction);
 	}
+
+	MoveCommandBuilder& goTo(int commandExitAction = 1){
+		return moveCommandBuilder.init(commandExitAction);
+	}
+	// ExecuteCommandBuilder& grab(shared_ptr<Entity> &obj, int commandExitAction = 1){
+		// auto mv = move(commandExitAction).name("Move to object, to grab it.");
+	// }
+
 
 	std::string getComandName() const {
 		if(commandIter != commands.end())
@@ -115,9 +123,9 @@ public:
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
 	SystemSettings defaultConfig;
-    SystemSettings& config(){
-        return defaultConfig;
-    }
+	SystemSettings& config(){
+		return defaultConfig;
+	}
 
 private:
 	WaitCommandBuilder waitCommandBuilder;

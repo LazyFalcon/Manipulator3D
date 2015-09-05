@@ -5,9 +5,10 @@ class RobotController;
 class MoveCommandBuilder
 {
 public:
-	MoveCommandBuilder& init(){
+	MoveCommandBuilder& init(int commandExitAction = 1){
 		moveCommand = make_shared<MoveCommand>();
 		moveCommand->solver = make_shared<JT0>();
+		moveCommand->exitAction = commandExitAction;
 		return *this;
 	}
 	MoveCommandBuilder& name(const std::string &s){
@@ -68,6 +69,28 @@ public:
 		else if(value == SolverType::JT2) moveCommand->solver = make_shared<JT2>();
 		return *this;
 	}
+	/// for goTo
+	MoveCommandBuilder& to(glm::vec4 v){
+		moveCommand->interpolator = addInterpolator(Interpolator::Simple, {v}, "--");
+		return *this;
+	}
+	MoveCommandBuilder& orientation(glm::vec3 o){
+		moveCommand->solver = make_shared<JT2>();
+		moveCommand->endOrientationEnabled = true;
+		moveCommand->endOrientation = glm::quat(1.f, glm::normalize(o));
+		return *this;
+	}
+	MoveCommandBuilder& orientation(glm::quat o){
+		moveCommand->solver = make_shared<JT2>();
+		moveCommand->endOrientationEnabled = true;
+		moveCommand->endOrientation = o;
+		return *this;
+	}
+	MoveCommandBuilder& offset(glm::vec4 v){
+		moveCommand->interpolator->points.back() += v;
+		return *this;
+	}
+
 	MoveCommandBuilder& finish(shared_ptr<RobotController> RC);
 	MoveCommandBuilder& finish(RobotController &RC);
 
@@ -80,8 +103,9 @@ private:
 class SingleJointMoveCommandBuilder
 {
 public:
-	SingleJointMoveCommandBuilder& init(){
+	SingleJointMoveCommandBuilder& init(int commandExitAction = 1){
 		moveCommand = make_shared<SingleJointMove>();
+		moveCommand->exitAction = commandExitAction;
 		return *this;
 	}
 	SingleJointMoveCommandBuilder& name(const std::string &s){
@@ -115,8 +139,10 @@ public:
 class FollowObjectBuilder
 {
 public:
-	FollowObjectBuilder& init(){
+	FollowObjectBuilder& init(int commandExitAction = 1){
 		moveCommand = make_shared<FollowObject>();
+		moveCommand->solver = make_shared<JT0>();
+		moveCommand->exitAction = commandExitAction;
 		return *this;
 	}
 	FollowObjectBuilder& name(const std::string &s){

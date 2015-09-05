@@ -23,16 +23,16 @@ float lastPathIterationdistance;
 void WaitCommand::init(shared_ptr<RobotController> &rc){
 	isRuning = true;
 };
-bool WaitCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
+int WaitCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
 	// if(releaseTime <= 0.f || releaseFlag&globalFlags || (releaseFuction && releaseFuction()))
 	if(releaseTime <= 0.f || releaseFlag&globalFlags)
-		return true;
+		return exitAction;
 
 	releaseTime -= dt;
 	time += dt;
-	return false;
+	return 0;
 }
-bool WaitCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){}
+int WaitCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){}
 vector<glm::vec4>& WaitCommand::getPath(){
 	return fakePath;
 }
@@ -44,15 +44,15 @@ void ExecuteCommand::init(shared_ptr<RobotController> &rc){
 	isRuning = true;
 	if(onEnter) onEnter(rc);
 };
-bool ExecuteCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
-	if(onUpdate && onUpdate(rc, scene, dt)) return true;
+int ExecuteCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
+	if(onUpdate && onUpdate(rc, scene, dt)) return exitAction;
     else return exit(rc, scene);
-    return false;
+    return 0;
 }
-bool ExecuteCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+int ExecuteCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	isRuning = false;
     if(onExit) onExit(rc, scene);
-    return true;
+    return exitAction;
 }
 vector<glm::vec4>& ExecuteCommand::getPath(){
 	return fakePath;
@@ -64,23 +64,22 @@ vector<glm::vec4>& ExecuteCommand::getPolyline(){
 void ExecutePythonCommand::init(shared_ptr<RobotController> &rc){
 	isRuning = true;
 	try {
-		callback.attr("enter")(rc);
+		callback.attr("onEnter")(rc);
 	}
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
 	}
 };
-bool ExecutePythonCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
+int ExecutePythonCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
 	try {
-		return boost::python::extract<bool>(callback.attr("update")(rc, scene, dt));
+		return boost::python::extract<bool>(callback.attr("onUpdate")(rc, scene, dt));
 	}
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
-		return true;
+		return exitAction;
 	}
 }
-
-bool ExecutePythonCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+int ExecutePythonCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	isRuning = false;
 	try {
 		callback.attr("exit")(rc, scene);
@@ -88,8 +87,9 @@ bool ExecutePythonCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scen
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
 	}
-	return true;
+	return exitAction;
 }
+
 vector<glm::vec4>& ExecutePythonCommand::getPath(){
 	return fakePath;
 }
@@ -100,7 +100,11 @@ vector<glm::vec4>& ExecutePythonCommand::getPolyline(){
 void MoveCommand::init(shared_ptr<RobotController> &rc){
 	requiredDistance = 0;
 	isRuning = true;
-	solver->solve(Point{ interpolator->firstPoint(), glm::quat(0, 0, 0, 1) }, *(rc->robot));
+	if(not startOrientationEnabled)
+		startOrientation = rc->robot->endEffector.quat;
+	if(not endOrientationEnabled)
+		endOrientation = glm::quat(0,0,0,0);
+	solver->solve(Point{ interpolator->firstPoint(), startOrientation }, *(rc->robot));
 	targetJointPosition = solver->result;
 	rc->robot->isReady = false;
 	// rc->robot->goTo(targetJointPosition);
@@ -127,7 +131,7 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 
 	return newTarget;
 }
-bool MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
+int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
     // rc->robot->isReady = true;
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
@@ -135,7 +139,7 @@ bool MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &sce
 	}
 	if(rc->robot->isReady && interpolator->finished){
 		interpolator->reset();
-		return true;
+		return exitAction;
 	}
 	else if(rc->robot->isReady){
 		glm::vec4 newTarget = calculateNextPoint(dt);
@@ -144,30 +148,30 @@ bool MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &sce
 
 		solver->solve(Point{ newTarget, newO }, *(rc->robot));
 		targetJointPosition = solver->result;
-		if(solver->succes) rc->robot->insertVariables(targetJointPosition);
+		// if(solver->succes) rc->robot->insertVariables(targetJointPosition);
 		if(solver->succes) rc->robot->goTo(targetJointPosition);
 		if(solver->succes) rc->robot->goTo(dt, jointVelocityModifier);
 		// previousPoint = rc->robot->endEffector.position;
 		previousPoint = newTarget;
-		return false;
+		return 0;
 	}
-    return false;
+    return 0;
 }
 
 void SingleJointMove::init(shared_ptr<RobotController> &rc){
 	isRuning = true;
 	rc->robot->goTo(targetJointPosition);
 }
-bool SingleJointMove::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
+int SingleJointMove::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
-		return false;
+		return 0;
 	}
 	else return exit(rc, scene);
 }
-bool SingleJointMove::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+int SingleJointMove::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	isRuning = false;
-	return true;
+	return exitAction;
 }
 vector<glm::vec4>& SingleJointMove::getPath(){
 	return fakePath;
@@ -182,7 +186,7 @@ void FollowObject::init(shared_ptr<RobotController> &rc){
 	targetJointPosition = solver->result;
 	rc->robot->goTo(targetJointPosition);
 }
-bool FollowObject::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
+int FollowObject::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
     if(*target != pTarget){
         solver->solve(Point{ *target, glm::quat(0, 0, 0, 1) }, *(rc->robot));
         targetJointPosition = solver->result;
@@ -191,13 +195,13 @@ bool FollowObject::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &sc
     }
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
-		return false;
+		return 0;
 	}
 	else return exit(rc, scene);
 }
-bool FollowObject::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+int FollowObject::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	isRuning = false;
-	return true;
+	return exitAction;
 }
 vector<glm::vec4>& FollowObject::getPath(){
 	return fakePath;
