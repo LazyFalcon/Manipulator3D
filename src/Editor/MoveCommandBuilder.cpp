@@ -111,6 +111,7 @@ MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
 }
 MoveCommandBuilder& MoveCommandBuilder::insert(shared_ptr<RobotController> RC){
 	RC->commandIter++;
+	// advance (it2,6);
 	RC->commandIter = RC->commands.insert(RC->commandIter,  moveCommand);
 	RC->commandIter--;
 	init();

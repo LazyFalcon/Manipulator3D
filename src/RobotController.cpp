@@ -45,6 +45,7 @@ void RobotController::run(){
 		//commandIter = commands.begin();
 		if(!(*commandIter)->isRuning){
 			(*commandIter)->init(RC);
+			Editor::set(*commandIter);
 		}
 	}
 	else stop();
@@ -86,20 +87,12 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 	auto returnedAction = (*commandIter)->update(rc, scene, dt);
 	if(returnedAction){
 		if(returnedAction == CommandReturnAction::DelAndForward){
-			commands.erase(commandIter);
-			if(commandIter == commands.end()){
-				stop();
-			}
-			else {
-				Editor::set(*commandIter);
-				run();
-			}
+			commandIter = commands.erase(commandIter);
+			run();
 		}
 		if(returnedAction == CommandReturnAction::DelAndBack){
 			commandIter = commands.erase(commandIter);
 			commandIter--;
-			cerr<<(*commandIter)->name<<endl;
-			// Editor::set(*commandIter);
 			run();
 		}
 		else {

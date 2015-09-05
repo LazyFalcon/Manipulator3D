@@ -49,9 +49,9 @@ class SampleObjectsAction:
 			# path = addInterpolator(Interpolator.BSpline, points, "--")
 			# RC.move(1).name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
 
-			# RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
-			RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
 			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
+			RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).insert(RC)
+			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
 			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
 			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
 
