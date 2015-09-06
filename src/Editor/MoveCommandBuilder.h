@@ -69,6 +69,10 @@ public:
 		else if(value == SolverType::JT2) moveCommand->solver = make_shared<JT2>();
 		return *this;
 	}
+	MoveCommandBuilder& solver(shared_ptr<Solver> &value){
+		moveCommand->solver = value;
+		return *this;
+	}
 	/// for goTo
 	MoveCommandBuilder& to(glm::vec4 v){
 		moveCommand->interpolator = addInterpolator(Interpolator::Simple, {v}, "--");

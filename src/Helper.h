@@ -27,7 +27,7 @@ void moveCameraByKeys(Camera &camera, int key, int action, int mods);
 void moveCameraByMouse(Camera &camera, glm::vec2 mousePos, glm::vec2 mouseMov, bool pressed);
 void moveCameraByScroll(Camera &camera, double xOff, double yOff);
 
-void savePoint();
+void savePoint(const std::string &s, const glm::vec4 &p);
 void getPoint(const std::string &name);
 void deletePoint(Point *p);
 void deletePoint(const std::string &name);
@@ -56,8 +56,6 @@ std::map<std::string, glm::vec4>& pointList();
 void setCursor(glm::vec4 v);
 void moveCursor(glm::vec4 v);
 void restoreCursorPos(const std::string &name);
-void deletePoint(Point *p);
-void deletePoint(const std::string &name);
 glm::vec2 getScreenCursor(Camera &camera);
 void cursorVidgetHorizontal(glm::vec2 pos);
 

@@ -39,9 +39,6 @@ public:
 
 	bool update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
 
-	void useEffector();
-	void releaseEffector();
-
 	void pushCommand(shared_ptr<ICommand> &ptr){
 		commands.push_back(ptr);
 	}
