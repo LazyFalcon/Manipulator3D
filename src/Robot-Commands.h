@@ -22,6 +22,7 @@ enum CommandReturn : int {
 
 };
 }
+
 class ICommand
 {
 	//uint32_t flags;
@@ -89,7 +90,7 @@ public:
 	bool useOrientation {false};
 
 	shared_ptr<IInterpolator> interpolator;
-	shared_ptr<IIK> solver;
+	shared_ptr<Solver> solver;
 
 private:
 	glm::vec4 previousPoint;
@@ -140,7 +141,7 @@ public:
 	double velocity;
 	double jointVelocityModifier {1.0};
 	double acceleration;
-	shared_ptr<IIK> solver;
+	shared_ptr<Solver> solver;
 private:
 	std::vector<double> targetJointPosition;
 };

@@ -128,6 +128,7 @@ std::string shadersToReload[] = {
 	"GlobalLightWithoutShadowMap",
 	"ToneMapping",
 	"SSAO",
+	"SSAO_depthOnly",
 };
 
 void mainLoop();

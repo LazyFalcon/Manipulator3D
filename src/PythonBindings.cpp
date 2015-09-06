@@ -23,9 +23,9 @@
 #define NAM_END }
 #define NAM_START {
 
-namespace PythonBindings NAM_START
 shared_ptr<RobotController> getRC();
 shared_ptr<Scene> getScene();
+namespace PythonBindings NAM_START
 
 
 glm::quat glm_angleAxis(float angle, glm::vec3 axis){
@@ -215,6 +215,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.value("Open", Interpolator::Open)
 		.value("Closed", Interpolator::Closed)
 		.value("Linear", Interpolator::Linear)
+		.value("Simple", Interpolator::Simple)
 		.value("BezierCurve", Interpolator::BezierCurve)
 		.value("BSpline", Interpolator::BSpline)
 		.value("NURBS", Interpolator::NURBS)
@@ -242,7 +243,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
 		.def("get", &Scene::get, bpl::return_value_policy<bpl::reference_existing_object>())
 		;
-	// bpl::def("getRC", getRC);
+	bpl::def("getRC", getRC);
 
 	void (RobotController::*pushCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::pushCommand;
 	bpl::class_<RobotController, std::shared_ptr<RobotController>>("RobotController")

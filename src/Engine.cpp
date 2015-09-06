@@ -961,7 +961,7 @@ void blurDownsampledWithBlendToColor(Texture &source, Texture &target){ /// zakÅ
     - ssao do fullSize i blur
 */
 void SSAO(){
-	bool depthOnlySSAO = true;
+	bool depthOnlySSAO = false;
 	bool SSAOWithDownsample = false;
 	if(depthOnlySSAO){
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
@@ -977,8 +977,10 @@ void SSAO(){
 			auto uNear = glGetUniformLocation(shader,"uNear");
 			auto uFar = glGetUniformLocation(shader,"uFar");
 
-			depthBuffer2.bind(GL_TEXTURE0, uDepthBuffer);
+			glUniform(shader, screenSize.x, "uWidth");
+			glUniform(shader, screenSize.y, "uHeight");
 
+			depthBuffer2.bind(GL_TEXTURE0, uDepthBuffer);
 			glActiveTexture(GL_TEXTURE1);
 			glUniform1i(u_SSAORandom, 1);
 			glBindTexture(GL_TEXTURE_2D, globalResources->textures["SSAORandom"]);
@@ -1016,9 +1018,11 @@ void SSAO(){
 		blurDownsampledWithBlendToColor(half_RGBA8, colorBuffer);
 	}
 	else {
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, full_RGBA8.ID, 0);
-		// glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
-		glDisable(GL_BLEND);
+		// glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, full_RGBA8.ID, 0);
+		// glDisable(GL_BLEND);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 
 		auto shader = shaders["SSAO"];
 		glUseProgram(shader);
@@ -1039,7 +1043,7 @@ void SSAO(){
 		setupBuffer(screenQuad);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		blurWithBlendToColor(full_RGBA8, colorBuffer);
+		// blurWithBlendToColor(full_RGBA8, colorBuffer);
 	}
 }
 void Sobel(){

@@ -70,15 +70,16 @@ public:
 };
 
 class Gripper : public Module{};
-class IIK {
+class Solver {
 public:
 	std::vector<double> result;
 	glm::vec4 endPosition;
+	glm::vec4 endQuat;
 	bool succes = false;
 
 	virtual bool solve(Point target, Robot &robot) = 0;
 	virtual bool performIK(Point start, Point target, Robot &robot, double precision = 0.001)=0;
-	virtual ~IIK(){}
+	virtual ~Solver(){}
 };
 
 class Robot {
@@ -124,7 +125,7 @@ public:
 };
 
 /// without orientation
-class JT0 : public IIK {
+class JT0 : public Solver {
 public:
 	~JT0(){
 		std::cerr<<"delete JT0"<<std::endl;
@@ -133,7 +134,7 @@ public:
 	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
 };
 /// with orientation
-class JT1 : public IIK {
+class JT1 : public Solver {
 public:
 	~JT1(){
 		std::cerr<<"delete JT1"<<std::endl;
@@ -142,7 +143,7 @@ public:
 	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
 };
 /// with orientation
-class JT2 : public IIK {
+class JT2 : public Solver {
 public:
 	~JT2(){
 		std::cerr<<"delete JT2"<<std::endl;

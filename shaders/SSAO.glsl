@@ -30,12 +30,12 @@ in vec2 vUV;
 // const float scale = 50.01;
 // const float intensity = 150.1;
 // const float bias = -0.0069;
-const float bias = 0.12069;
+// const float bias = 0.12069;
+const float bias = 0.32069;
 const float scale = 40.01;
 // const float intensity = 3.1;
 const float intensity = 25.1;
 // const vec2 sampleRadius = 175/vec2(1400, 720);
-// const vec2 sampleRadius = 105/vec2(1400, 720);
 const vec2 sampleRadius = 105/vec2(1400, 720);
 // const vec2 sampleRadius = 30/vec2(1400, 720);
 const float randomSize = 60;
@@ -46,8 +46,8 @@ vec4 getNormal(vec2 uv){
 }
 vec4 getPosition(vec2 uv, out float depth){
 	depth = texture(uDepthBuffer, uv).r;
-	// vec4 viewSpace = vec4(uv*2-1, depth*2 - 1, 1);
-	vec4 viewSpace = vec4(uv*2-1, depth, 1);
+	vec4 viewSpace = vec4(uv*2-1, depth*2 - 1, 1);
+	// vec4 viewSpace = vec4(uv*2-1, depth, 1);
 	vec4 worldPos = uInvPV*viewSpace;
 	worldPos.xyz /= worldPos.w;
 	worldPos.w = 1;
@@ -109,12 +109,14 @@ void main(void){
 	float depth;
 	vec4 position = getPosition(vUV, depth);
 	vec4 normal = getNormal(vUV);
+	normal.w = 0;
 	// vec2 rand = getRandom(position.xz*vUV);
 
 	float ao = 0.0;
 	depth = depth*2-1;
-	vec2 radius = min(sampleRadius, sampleRadius/(1 - depth*0.9));
-	// vec2 radius = sampleRadius/(1 - depth*2.9);
+	// vec2 radius = min(sampleRadius, sampleRadius/(1 - depth*0.9));
+	// vec2 radius = sampleRadius;
+	vec2 radius = sampleRadius/(1 - depth*2.9);
 
 	const int iterations = 16;
 	for(int i=0; i<iterations; ++i){
@@ -122,9 +124,9 @@ void main(void){
 		// vec2 refl = reflect(kernel[i], rand) * radius;
 		// vec2 refl = normalize(kernel[i]) * radius;
 		vec2 refl = kernel[i] * radius;
-		ao += computeAmbientOcclusion(vUV, refl*rand, position, normal)*0.15;
+		ao += computeAmbientOcclusion(vUV, refl*rand, position, normal)*0.915;
 		// ao += computeAmbientOcclusion(vUV, refl*rand*0.75, position, normal)*0.35;
-		ao += computeAmbientOcclusion(vUV, refl*rand*0.5, position, normal)*0.75;
+		// ao += computeAmbientOcclusion(vUV, refl*rand*0.5, position, normal)*0.75;
 		// ao += computeAmbientOcclusion(vUV, refl*rand, position, normal)*length(refl)*15;
 	}
 	// ao *= ao;

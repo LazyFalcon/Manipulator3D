@@ -75,19 +75,17 @@ void Linear::drawParams(){
 }
 
 glm::vec4 Simple::nextPoint(){
-	// if(currentPoint >= maxPoints){
+	if(currentPoint >= maxPoints){
 		finished = true;
-		// return points[maxPoints];
-		return points[0];
-	// }
-	// return points[currentPoint++];
+		return points[maxPoints];
+	}
+	return points[currentPoint++];
 }
 bool Simple::generatePath(){
     return true;
 }
 void Simple::reset(){
-	// finished = false;
-	finished = true;
+	finished = false;
 	currentPoint = 0;
 }
 void Simple::drawParams(){

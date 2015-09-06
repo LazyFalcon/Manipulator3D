@@ -148,10 +148,11 @@ bool ResourceLoader::loadImage(const string &name){
 	return true;
 }
 void ResourceLoader::reloadShader(const string &shaderName){
+	cout<<shaderName<<endl;
 	glDeleteProgram(shaders[shaderName]);
 	shaders[shaderName] = compileShader(shaderName+".glsl");
 	auto err = glGetError();
-	if(err)std::cout<<"\t>> "<<err<<endl;
+	if(err)cout<<"\t>> "<<err<<endl;
 }
 GLuint ResourceLoader::compileShader(const string &shaderName){
 	GLuint fragmentS, vertexS;

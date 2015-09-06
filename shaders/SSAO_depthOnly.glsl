@@ -18,11 +18,12 @@ void main(){
 out vec4 outAO;
 
 uniform sampler2D uDepthBuffer;
-// uniform sampler2D uSSAORandom;
+uniform sampler2D uSSAORandom;
+uniform float uWidth;
+uniform float uHeight;
 
 in vec2 vUV;
-
-uniform vec2 camerarange = vec2(0.10, 50.0);
+const vec2 camerarange = vec2(0.10, 50.0);
 
 float pw = 1.0/1400.0*0.5;
 float ph = 1.0/720.0*0.5;
@@ -39,31 +40,27 @@ float readDepth(in vec2 coord){
 float compareDepths(in float depth1, in float depth2){
 	float gauss = 0.0;
 	float diff = (depth1 - depth2)*100.0; //depth difference (0-100)
-	float gdisplace = 0.2; //gauss bell center
-	float garea = 3.0; //gauss bell width
+	float gdisplace = 0.5; //gauss bell center
+	float garea = 0.50; //gauss bell width
 
 	//reduce left bell width to avoid self-shadowing
 	if (diff<gdisplace) garea = 0.2;
 
 	gauss = pow(2.7182,-2*(diff-gdisplace)*(diff-gdisplace)/(garea*garea));
 
-	return max(0.2,gauss);
+	return max(0.2, gauss);
 }
 
-vec4 calAO(float depth, vec2 uv,  float dw, float dh, inout float ao){
+float calAO(float depth, vec2 uv,  float dw, float dh, inout float ao){
 	float temp = 0;
-	vec4 bleed = vec4(1);
 	float coordw = vUV.x + (uv.x + dw)/depth*0.5;
 	float coordh = vUV.y + (uv.y + dh)/depth*0.5;
-
-	// if (coordw  < 1.0 && coordw  > 0.0 && coordh < 1.0 && coordh  > 0.0){
 
 	vec2 coord = vec2(coordw , coordh);
 	temp = compareDepths(depth, readDepth(coord));
 
-	// }
-	ao += temp*1.3;
-	return temp*bleed;
+	ao += temp*1.0;
+	return temp;
 }
 const vec2 kernel[16] = vec2[]
 (
@@ -108,10 +105,10 @@ void main(void){
 
  //initialize stuff:
  float depth = readDepth(vUV);
- vec4 gi = vec4(0);
+ float gi = 0;
  float ao = 0.0;
 
- 	const int iterations = 8;
+ 	const int iterations = 16;
 	for(int i=0; i<iterations; ++i){
 	 // gi += calAO(depth,kernel[i]/screen, pw, ph, ao);
 	 // gi += calAO(depth,kernel[i]/screen, pw, -ph, ao);
@@ -131,8 +128,8 @@ void main(void){
 	 ph *= 1.4;
 
 	}
-	vec4 finalAO = vec4(1.0-(ao/32.0));
-	vec4 finalGI = (gi/32)*0.6;
+	float finalAO = 1.0-(ao/32.0);
+	float finalGI = (gi/32)*0.6;
 
 	outAO = vec4(finalAO+finalGI);
 }

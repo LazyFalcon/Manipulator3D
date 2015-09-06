@@ -88,8 +88,6 @@ public:
 	ExecuteCommandBuilder&  grab(shared_ptr<Entity> &obj, int commandExitAction = 1);
 	ExecuteCommandBuilder&  release(int commandExitAction = 1);
 
-
-
 	std::string getComandName() const {
 		if(commandIter != commands.end())
 			return (*commandIter)->name;
