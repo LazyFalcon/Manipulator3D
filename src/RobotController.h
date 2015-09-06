@@ -119,6 +119,7 @@ public:
 		return *robot;
 	}
 	shared_ptr<Robot> robot;
+	u64 flags;
 	std::list<std::shared_ptr<ICommand>> commands;
 	std::list<std::shared_ptr<ICommand>>::iterator commandIter;
 	RCStates state = RCStates::Pause;
@@ -140,7 +141,7 @@ void RCTest(RobotController &rc);
 
 namespace RCUtils NAM_START
 
-void pinObjectToEffector(shared_ptr<Entity> &obj, shared_ptr<Entity> &effector);
+void pinObjectToEffector(shared_ptr<Entity> obj, shared_ptr<Entity> &effector);
 shared_ptr<Entity>& releaseObjects();
 void update();
 

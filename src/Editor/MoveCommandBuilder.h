@@ -77,13 +77,17 @@ public:
 	MoveCommandBuilder& orientation(glm::vec3 o){
 		moveCommand->solver = make_shared<JT2>();
 		moveCommand->endOrientationEnabled = true;
+		moveCommand->startOrientationEnabled = true;
+		moveCommand->startOrientation = glm::quat(1.f, glm::normalize(o));
 		moveCommand->endOrientation = glm::quat(1.f, glm::normalize(o));
 		return *this;
 	}
 	MoveCommandBuilder& orientation(glm::quat o){
 		moveCommand->solver = make_shared<JT2>();
+		moveCommand->startOrientationEnabled = true;
 		moveCommand->endOrientationEnabled = true;
 		moveCommand->endOrientation = o;
+		moveCommand->startOrientation = o;
 		return *this;
 	}
 	MoveCommandBuilder& offset(glm::vec4 v){

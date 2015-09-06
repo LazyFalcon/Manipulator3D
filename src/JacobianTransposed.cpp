@@ -233,23 +233,46 @@ bool JT2::solve(Point target, Robot &robot){
 	auto vecToTarget = glm::normalize(target.position - robot.endEffector.position);
 
 	float minR = std::min(glm::distance(target.position, glm::vec4(0,0,0,1)), glm::distance(robot.endEffector.position, glm::vec4(0,0,0,1)));
-
 	auto currentPosition = robot.endEffector.position;
 	auto tmpJoints = robot.getVariables();
-	u32 iterations = 0;
-	// while(distance >= maxDistanceInSingleStep){
-		// iterations++;
-		// distance -= maxDistanceInSingleStep;
-		// auto param = distance/totalDistance;
-		// subTarget += vecToTarget * maxDistanceInSingleStep;
 
-		// auto subTargetOnSphere = glm::normalize(subTarget - glm::vec4(0,0,0,1)) * std::max(glm::length(subTarget), minR);
-		// subTargetOnSphere.w = 1;
+	/// enable this when solver behave bad
+	// glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
+	// glm::vec3 e = glm::normalize((glm::vec3(robot.endEffector.quat.x, robot.endEffector.quat.y, robot.endEffector.quat.z)));
+	// float angle = acos(glm::dot(t,e))/pi;
+	// if(angle > 0.1f){
 
-		// performIK({currentPosition, robot.endEffector.quat} , {subTargetOnSphere, target.quat}, robot);
-		// currentPosition = subTargetOnSphere;
+		// auto prewQ = robot.endEffector.quat;
+		// auto newQ = glm::slerp(robot.endEffector.quat, target.quat, 1 - angle);
+		// while(angle > 0.05f){
+			// performIK({currentPosition, prewQ}, {target.position, newQ}, robot);
+			// angle -= 0.1f;
+			// }
+		// cout<<"next?";
+		// cin.ignore();
+		// prewQ = newQ;
 		// robot.insertVariables(result);
 	// }
+
+	u32 iterations = 0;
+	while(distance >= maxDistanceInSingleStep){
+		iterations++;
+		distance -= maxDistanceInSingleStep;
+		auto param = distance/totalDistance;
+		subTarget += vecToTarget * maxDistanceInSingleStep;
+
+		auto subTargetOnSphere = glm::normalize(subTarget - glm::vec4(0,0,0,1)) * std::max(glm::length(subTarget), minR);
+		subTargetOnSphere.w = 1;
+
+		// performIK({currentPosition, robot.endEffector.quat} , {subTargetOnSphere, target.quat}, robot);
+		performIK({currentPosition, robot.endEffector.quat} , {
+					subTargetOnSphere, glm::slerp(robot.endEffector.quat, target.quat, param)
+				}, robot);
+		currentPosition = subTargetOnSphere;
+		robot.insertVariables(result);
+	}
+
+
 	performIK({currentPosition, robot.endEffector.quat}, target, robot);
 
 	robot.insertVariables(tmpJoints);
@@ -282,15 +305,15 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 		auto positionDelta = (target.position - endEffector.position);
 		glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
 		glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
-		
-        auto axisDelta = glm::cross(e, t);
-		
-        float axisMod = 3.1;
-        if(iterations == 0){
-            DEBUG_VEC3_1 = glm::normalize(axisDelta);
-            DEBUG_VEC3_2 = t;
-            DEBUG_VEC3_3 = e;
-        }
+
+		auto axisDelta = glm::cross(e, t);
+
+		float axisMod = 3.1;
+		if(iterations == 0){
+			DEBUG_VEC3_1 = glm::normalize(axisDelta);
+			DEBUG_VEC3_2 = t;
+			DEBUG_VEC3_3 = e;
+		}
 		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x*axisMod, axisDelta.y*axisMod, axisDelta.z*axisMod});
 
 		auto a = dot(jjp*force, force);

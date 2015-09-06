@@ -179,15 +179,13 @@ void RobotController::popPosition(){
 }
 
 ExecuteCommandBuilder&  RobotController::grab(shared_ptr<Entity> &obj, int commandExitAction){
-	return exec(commandExitAction).onEnter([&obj, this](shared_ptr<RobotController> &rc){
-		// cout<<to_string(obj->position)<<endl;
-		// RCUtils::pinObjectToEffector(obj, rc->robot->chain.back()->entity);
+	return exec(commandExitAction).onEnter([obj, this](shared_ptr<RobotController> &rc){
+		RCUtils::pinObjectToEffector(obj, rc->robot->chain.back()->entity);
 	});
 }
 ExecuteCommandBuilder&  RobotController::release(int commandExitAction){
 	return exec(commandExitAction).onEnter([](shared_ptr<RobotController> &rc){
 		RCUtils::releaseObjects();
-					return true;
 	});
 }
 
@@ -198,7 +196,7 @@ namespace RCUtils NAM_START
 std::pair<shared_ptr<Entity>, shared_ptr<Entity>> pairedObjects;
 Point effectorToPairedRelation;
 
-void pinObjectToEffector(shared_ptr<Entity> &obj, shared_ptr<Entity> &effector){
+void pinObjectToEffector(shared_ptr<Entity> obj, shared_ptr<Entity> &effector){
     if(obj && effector){
         pairedObjects = std::make_pair(obj, effector);
         effectorToPairedRelation.position = obj->position - effector->position;
