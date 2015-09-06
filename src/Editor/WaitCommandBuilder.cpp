@@ -35,10 +35,11 @@ WaitCommandBuilder& WaitCommandBuilder::finish(shared_ptr<RobotController>& RC){
 	init();
 	return *this;
 }
-WaitCommandBuilder& WaitCommandBuilder::insert(shared_ptr<RobotController>& RC){
-	RC->commandIter++;
-	RC->commands.insert(RC->commandIter, waitCommand);
-	RC->commandIter--;
+WaitCommandBuilder& WaitCommandBuilder::insert(shared_ptr<RobotController>& RC, int distance){
+	auto iteratorCopy = RC->commandIter;
+	std::advance(iteratorCopy, distance);
+	RC->commands.insert(iteratorCopy, waitCommand);
+
 	init();
 	return *this;
 }

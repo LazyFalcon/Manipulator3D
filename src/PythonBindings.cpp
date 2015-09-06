@@ -293,6 +293,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("getPositionUnderMouse", &Helper::getPositionUnderMouse);
 	bpl::def("getNormalUnderMouse", &Helper::getNormalUnderMouse);
 	// bpl::def("getObjectUnderMouse", &Helper::getObjectUnderMouse, bpl::return_value_policy<bpl::reference_existing_object>());
+	bpl::def("unselect", &Helper::unselect);
 	bpl::def("getSelection", &Helper::getSelection, bpl::return_value_policy<bpl::reference_existing_object>());
 	bpl::def("getCursor", &Helper::getCursor, bpl::return_value_policy<bpl::reference_existing_object>());
 	bpl::def("setCursor", &Helper::setCursor);
@@ -334,7 +335,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		// bpl::class_<std::vector<float>>("FloatVec")
 				// .def(bpl::vector_indexing_suite<std::vector<float>>())
 				// ;
-		// bpl::class_<std::vector<double>>("DoubleVec")
+		// bpl::class_<std::vector<double>>("DoubleVec") 
 				// .def(bpl::vector_indexing_suite<std::vector<double>>())
 				// ;
 

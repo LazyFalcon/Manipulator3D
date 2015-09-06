@@ -8,10 +8,11 @@
 #include "../IInterpolator.h"
 #include "../RobotController.h"
 
-ExecuteCommandBuilder& ExecuteCommandBuilder::insert(shared_ptr<RobotController> &RC){
-	RC->commandIter++;
-	RC->commands.insert(RC->commandIter, execCommand);
-	RC->commandIter--;
+ExecuteCommandBuilder& ExecuteCommandBuilder::insert(shared_ptr<RobotController> &RC, int distance){
+	auto iteratorCopy = RC->commandIter;
+	std::advance(iteratorCopy, distance);
+	RC->commands.insert(iteratorCopy, execCommand);
+
 	init();
 	return *this;
 }
@@ -33,10 +34,11 @@ ExecutePythonCommandBuilder& ExecutePythonCommandBuilder::finish(shared_ptr<Robo
 	return *this;
 }
 
-ExecutePythonCommandBuilder& ExecutePythonCommandBuilder::insert(shared_ptr<RobotController> RC){
-	RC->commandIter++;
-	RC->commands.insert(RC->commandIter, execCommand);
-	RC->commandIter--;
+ExecutePythonCommandBuilder& ExecutePythonCommandBuilder::insert(shared_ptr<RobotController> RC, int distance){
+	auto iteratorCopy = RC->commandIter;
+	std::advance(iteratorCopy, distance);
+	RC->commands.insert(iteratorCopy, execCommand);
+
 	init();
 	return *this;
 }

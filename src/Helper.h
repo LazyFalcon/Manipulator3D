@@ -41,6 +41,7 @@ void saveGroup(std::vector<shared_ptr<Entity>>&);
 void restoreSelection(const std::string &name);
 void deleteGroup(const std::string &name);
 void appendToSelection(const std::string &name);
+void unselect();
 std::vector<shared_ptr<Entity>>& getSelection();
 std::vector<shared_ptr<Entity>>& getGroup(const std::string &name);
 std::string generateGroupName();

@@ -120,6 +120,7 @@ public:
 	Simple(const std::vector<glm::vec4> &p) : IInterpolator(p, Interpolator::Simple){
 		maxPoints = points.size() - 1;
 		currentPoint = 0;
+		finished = maxPoints == 0;
 	}
 	bool generatePath();
 	glm::vec4 nextPoint();

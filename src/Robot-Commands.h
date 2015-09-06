@@ -26,6 +26,7 @@ class ICommand
 {
 	//uint32_t flags;
 public:
+	virtual ~ICommand(){}
 	ICommand(CommandType type) : type(type), isRuning(false), exitAction(CommandReturnAction::GoToNext){}
 	//ICommand(uint32_t f) : flags(f){}
 	virtual void init(shared_ptr<RobotController> &rc) = 0;
@@ -33,8 +34,7 @@ public:
 	virtual int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene) = 0;
 	virtual vector<glm::vec4>& getPath() = 0;
 	virtual vector<glm::vec4>& getPolyline() = 0;
-	virtual ~ICommand(){}
-	std::string name = "--empty--";
+	std::string name;
 	CommandType type;
 	bool isRuning;
 	int exitAction;
@@ -70,7 +70,7 @@ public:
 	}
 	void init(shared_ptr<RobotController> &rc);
 	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);
-	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){}
+	int exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene);
 	glm::vec4 calculateNextPoint(float dt);
 	double calculateRequiredDistance(float dt);
 

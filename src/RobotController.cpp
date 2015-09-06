@@ -19,14 +19,7 @@
 
 extern UI::IMGUI ui;
 extern shared_ptr<RobotController> RC;
-// extern shared_ptr<Scene> scene;
-/*
-	Robot ma w IK wbudowane sledzenie punktu z okresloną predkością, nie udaje się do zadanego punktu od razu. wiec jak interpolator wypluje kolejny punkt robot dojedzie do niego
-	- ze "stałą" prędkością(po prostej)
-	- wyznaczy ik tego punktu i poleci interpolacją złączową( choć bedzie mu to trudno zrobić(musiałby co klatkę liczyć ik tego punktu, w sumie dałoby to lepsze przybliżenie tego punktu) )
 
-
-*/
 extern float g_timeStep;
 
 // static const float pi = 3.141592f;
@@ -42,8 +35,11 @@ void RCTest(RobotController &rc){}
 void RobotController::run(){
 	if (!commands.empty() && commandIter != commands.end()){
 		state = RCStates::Run;
+		cout<<endl;
+		cout<<"distance: "<<distance(commands.begin(), commandIter)<<" size: "<<commands.size()<<endl;
 		//commandIter = commands.begin();
 		if(!(*commandIter)->isRuning){
+			cout<<"------- NEW ACTION: "+(*commandIter)->name<<endl;
 			(*commandIter)->init(RC);
 			Editor::set(*commandIter);
 		}
@@ -62,6 +58,7 @@ void RobotController::next(){
 	//if (std::next(commandIter) != commands.end() && commandIter != commands.end())
 	commandIter++;
 	if(commandIter == commands.end()){
+		// commandIter--;
 		stop();
 	}
 	else {
@@ -86,21 +83,25 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 
 	auto returnedAction = (*commandIter)->update(rc, scene, dt);
 	if(returnedAction){
+		cout<<"------- END OF ACTION: "+(*commandIter)->name<<endl;
+		cout<<".....list size: "<<commands.size()<<endl;
 		if(returnedAction == CommandReturnAction::DelAndForward){
+			cout<<"------ DEL & FORWARD"<<endl;
 			commandIter = commands.erase(commandIter);
-			run();
 		}
-		if(returnedAction == CommandReturnAction::DelAndBack){
+		else if(returnedAction == CommandReturnAction::DelAndBack){
+			cout<<"------ DEL & BACK"<<endl;
 			commandIter = commands.erase(commandIter);
 			commandIter--;
-			run();
+			// commandIter++;
 		}
 		else {
-			next();
-			run();
+			// next();
+			commandIter++;
 		}
+		cout<<"..|..list size: "<<commands.size()<<endl;
+		run();
 
-		std::cout<<"Starting new job."<<endl;
 		return true;
 	}
 	return false;

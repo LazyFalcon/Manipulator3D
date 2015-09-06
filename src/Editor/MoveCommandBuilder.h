@@ -93,7 +93,7 @@ public:
 
 	MoveCommandBuilder& finish(shared_ptr<RobotController> RC);
 	MoveCommandBuilder& finish(RobotController &RC);
-	MoveCommandBuilder& insert(shared_ptr<RobotController> RC);
+	MoveCommandBuilder& insert(shared_ptr<RobotController> &RC, int distance);
 
 	MoveCommandBuilder(){}
 	~MoveCommandBuilder(){}
@@ -129,7 +129,7 @@ public:
 		moveCommand->acceleration = value;
 		return *this;
 	}
-	SingleJointMoveCommandBuilder& insert(shared_ptr<RobotController> RC);
+	SingleJointMoveCommandBuilder& insert(shared_ptr<RobotController> RC, int distance);
 	SingleJointMoveCommandBuilder& finish(shared_ptr<RobotController> RC);
 	SingleJointMoveCommandBuilder& finish(RobotController &RC);
 
@@ -171,7 +171,7 @@ public:
 		moveCommand->acceleration = value;
 		return *this;
 	}
-	FollowObjectBuilder& insert(shared_ptr<RobotController> RC);
+	FollowObjectBuilder& insert(shared_ptr<RobotController> RC, int distance);
 	FollowObjectBuilder& finish(shared_ptr<RobotController> RC);
 	FollowObjectBuilder& finish(RobotController &RC);
 

@@ -366,6 +366,9 @@ void saveGroup(std::vector<shared_ptr<Entity>> &s){
 		g_groupList[generateGroupName()] = s;
 	s.clear();
 }
+void unselect(){
+	g_currentSelection.clear();
+}
 std::vector<shared_ptr<Entity>>& getSelection(){
 	return g_currentSelection;
 }

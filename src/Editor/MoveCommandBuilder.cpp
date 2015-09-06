@@ -109,11 +109,10 @@ MoveCommandBuilder& MoveCommandBuilder::finish(shared_ptr<RobotController> RC){
 	init();
 	return *this;
 }
-MoveCommandBuilder& MoveCommandBuilder::insert(shared_ptr<RobotController> RC){
-	RC->commandIter++;
-	// advance (it2,6);
-	RC->commandIter = RC->commands.insert(RC->commandIter,  moveCommand);
-	RC->commandIter--;
+MoveCommandBuilder& MoveCommandBuilder::insert(shared_ptr<RobotController> &RC, int distance){
+	auto iteratorCopy = RC->commandIter;
+	std::advance(iteratorCopy, distance);
+	RC->commands.insert(iteratorCopy,  moveCommand);
 	init();
 	return *this;
 }
@@ -128,10 +127,11 @@ SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::finish(shared_ptr<
 	init();
 	return *this;
 }
-SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::insert(shared_ptr<RobotController> RC){
-	RC->commandIter++;
-	RC->commands.insert(RC->commandIter,  moveCommand);
-	RC->commandIter--;
+SingleJointMoveCommandBuilder& SingleJointMoveCommandBuilder::insert(shared_ptr<RobotController> RC, int distance){
+	auto iteratorCopy = RC->commandIter;
+	std::advance(iteratorCopy, distance);
+	RC->commands.insert(iteratorCopy,  moveCommand);
+
 	init();
 	return *this;
 }
@@ -147,11 +147,12 @@ FollowObjectBuilder& FollowObjectBuilder::finish(shared_ptr<RobotController> RC)
 	init();
 	return *this;
 }
-FollowObjectBuilder& FollowObjectBuilder::insert(shared_ptr<RobotController> RC){
+FollowObjectBuilder& FollowObjectBuilder::insert(shared_ptr<RobotController> RC, int distance){
 	moveCommand->solver = make_shared<JT0>();
-	RC->commandIter++;
-	RC->commands.insert(RC->commandIter,  moveCommand);
-	RC->commandIter--;
+	auto iteratorCopy = RC->commandIter;
+	std::advance(iteratorCopy, distance);
+	RC->commands.insert(iteratorCopy,  moveCommand);
+
 	init();
 	return *this;
 }

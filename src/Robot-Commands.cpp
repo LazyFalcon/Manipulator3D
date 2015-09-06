@@ -108,12 +108,13 @@ void MoveCommand::init(shared_ptr<RobotController> &rc){
 		startOrientation = rc->robot->endEffector.quat;
 	if(not endOrientationEnabled)
 		endOrientation = glm::quat(0,0,0,0);
-	solver->solve(Point{ interpolator->firstPoint(), startOrientation }, *(rc->robot));
-	targetJointPosition = solver->result;
-	rc->robot->isReady = false;
-	rc->robot->goTo(targetJointPosition);
-	std::cout<<"Init command"<<std::endl;
 
+	solver->solve(Point{ interpolator->firstPoint(), startOrientation }, *(rc->robot));
+
+	targetJointPosition = solver->result;
+	// rc->robot->insertVariables(targetJointPosition);
+	rc->robot->goTo(targetJointPosition);
+	rc->robot->isReady = false;
 	previousPoint = rc->robot->endEffector.position;
 }
 double MoveCommand::calculateRequiredDistance(float dt){
@@ -123,36 +124,40 @@ glm::vec4 MoveCommand::calculateNextPoint(float dt){
 	requiredDistance = calculateRequiredDistance(dt);
 	glm::vec4 newTarget;
 	glm::vec4 oldTarget = previousPoint;
-    u32 i = 0;
+	u32 i = 0;
 	while(requiredDistance > 0.0 && (not interpolator->finished)){
-        i++;
+		i++;
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);
 		previousPoint = newTarget;
 	}
-    lastPathIterationdistance = glm::distance(previousPoint, oldTarget);
-    lastPathIterationCount = i;
+	lastPathIterationdistance = glm::distance(previousPoint, oldTarget);
+	lastPathIterationCount = i;
 
 	return newTarget;
 }
+int MoveCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
+	isRuning = false;
+	return exitAction;
+}
 int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
-    // rc->robot->isReady = true;
+	cout<<interpolator->finished;
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
 		// previousPoint = rc->robot->endEffector.position;
 	}
-	if(rc->robot->isReady && interpolator->finished){
+	if(rc->robot->isReady && interpolator->finished){_DebugLine_
 		interpolator->reset();
-		return exitAction;
+		return exit(rc, scene);
 	}
-	else if(rc->robot->isReady){
+	else if(rc->robot->isReady){_DebugLine_
 		glm::vec4 newTarget = calculateNextPoint(dt);
 
 		auto newO = glm::slerp(startOrientation, endOrientation, interpolator->getNormalizedPosition());
 
 		solver->solve(Point{ newTarget, newO }, *(rc->robot));
 		targetJointPosition = solver->result;
-		// if(solver->succes) rc->robot->insertVariables(targetJointPosition);
+		// rc->robot->insertVariables(targetJointPosition);
 		if(solver->succes) rc->robot->goTo(targetJointPosition);
 		if(solver->succes) rc->robot->goTo(dt, jointVelocityModifier);
 		// previousPoint = rc->robot->endEffector.position;

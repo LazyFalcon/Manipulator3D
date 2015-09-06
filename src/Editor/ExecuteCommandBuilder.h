@@ -28,7 +28,7 @@ public:
 }
 
 	ExecuteCommandBuilder& finish(shared_ptr<RobotController> &rc);
-	ExecuteCommandBuilder& insert(shared_ptr<RobotController> &rc);
+	ExecuteCommandBuilder& insert(shared_ptr<RobotController> &rc, int distance);
 
 	ExecuteCommandBuilder(){}
 	~ExecuteCommandBuilder(){}
@@ -56,7 +56,7 @@ public:
 
 	// ExecutePythonCommandBuilder& finish(shared_ptr<RobotController> &rc);
 	ExecutePythonCommandBuilder& finish(shared_ptr<RobotController> RC);
-	ExecutePythonCommandBuilder& insert(shared_ptr<RobotController> RC);
+	ExecutePythonCommandBuilder& insert(shared_ptr<RobotController> RC, int distance);
 
 	ExecutePythonCommandBuilder(){}
 	~ExecutePythonCommandBuilder(){}

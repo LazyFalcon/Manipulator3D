@@ -24,11 +24,8 @@ class SampleObjectsAction:
 		self.timer = 3.0
 
 	def onEnter(self, RC):
-		print '-------------------------- Action enter'
 		self.timer = 3
-		print 'Action timer '+ str(self.timer)
 	def onExit(self, RC, scene):
-		print 'Action exit'
 		pass
 
 	def handleTimer(self, dt):
@@ -50,14 +47,17 @@ class SampleObjectsAction:
 			# RC.move(1).name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
 
 			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
-			RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).insert(RC)
-			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
+			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).name('GoTo 1').insert(RC,1)
+			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position).name('GoTo 2').insert(RC,2)
+			# RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(1,1,0,0)).name('GoTo 2').insert(RC,3)
+			RC.goTo(CommandReturnAction.DelAndBack).to(getCursor()+vec4(0,0,0.2,0)).name('GoTo 3').insert(RC,3)
+			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).name('GoTo 4').insert(RC,4)
 			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
 			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
 
 			# RC.grab(selection[0], CommandReturnAction.DelAndForward)
-			# RC.goTo(CommandReturnAction.DelAndForward).to(getCursor()-vec4(0,0,0.2,0)).finish(RC)
 			# RC.release(CommandReturnAction.DelAndForward).finish(RC)
+			unselect()
 			return True
 		else:
 			return self.handleTimer(dt)
