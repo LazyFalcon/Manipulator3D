@@ -85,11 +85,9 @@ public:
 	MoveCommandBuilder& goTo(int commandExitAction = 1){
 		return moveCommandBuilder.init(commandExitAction).name("GoTo");
 	}
-	void grab(shared_ptr<Entity> &obj, int commandExitAction = 1){
-		// exec(commandExitAction).onEnter([this, &obj](shared_ptr<RobotController>&){
+	ExecuteCommandBuilder&  grab(shared_ptr<Entity> &obj, int commandExitAction = 1);
+	ExecuteCommandBuilder&  release(int commandExitAction = 1);
 
-		// }).insert(*this);
-	}
 
 
 	std::string getComandName() const {

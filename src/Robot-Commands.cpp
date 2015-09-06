@@ -141,12 +141,11 @@ int MoveCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)
 	return exitAction;
 }
 int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
-	cout<<interpolator->finished;
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
 		// previousPoint = rc->robot->endEffector.position;
 	}
-	if(rc->robot->isReady && interpolator->finished){_DebugLine_
+	if(rc->robot->isReady && interpolator->finished){
 		interpolator->reset();
 		return exit(rc, scene);
 	}

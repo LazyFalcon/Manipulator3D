@@ -129,7 +129,6 @@ void RobotController::grabObject(shared_ptr<Entity> &obj){
         .init()
         .name("Grab target")
 		.onEnter([&obj, this](shared_ptr<RobotController> &rc){
-			// RCUtils::pinObjectToEffector(obj, rc.robot->chain.back()->entity);
 			RCUtils::pinObjectToEffector(obj, rc->robot->chain.back()->entity);
             return true;
 		})
@@ -178,6 +177,20 @@ void RobotController::popPosition(){
 		rc->positionCache.pop();
 	}).finish(RC);
 }
+
+ExecuteCommandBuilder&  RobotController::grab(shared_ptr<Entity> &obj, int commandExitAction){
+	return exec(commandExitAction).onEnter([&obj, this](shared_ptr<RobotController> &rc){
+		// cout<<to_string(obj->position)<<endl;
+		// RCUtils::pinObjectToEffector(obj, rc->robot->chain.back()->entity);
+	});
+}
+ExecuteCommandBuilder&  RobotController::release(int commandExitAction){
+	return exec(commandExitAction).onEnter([](shared_ptr<RobotController> &rc){
+		RCUtils::releaseObjects();
+					return true;
+	});
+}
+
 
 namespace RCUtils NAM_START
 

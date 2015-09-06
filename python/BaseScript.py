@@ -41,22 +41,12 @@ class SampleObjectsAction:
 			print 'Ha, lets grab sometthin\'!'
 			print selection[0].position
 
-			# points = Vec4Vec()
-			# points[:] = [vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1), vec4(-1, -3.5, 4, 1)]
-			# path = addInterpolator(Interpolator.BSpline, points, "--")
-			# RC.move(1).name("Order from python").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
-
-			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
 			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).name('GoTo 1').insert(RC,1)
 			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position).name('GoTo 2').insert(RC,2)
-			# RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(1,1,0,0)).name('GoTo 2').insert(RC,3)
-			RC.goTo(CommandReturnAction.DelAndBack).to(getCursor()+vec4(0,0,0.2,0)).name('GoTo 3').insert(RC,3)
-			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).name('GoTo 4').insert(RC,4)
-			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position+vec4(0,0,1.5,0)).insert(RC)
-			# RC.goTo(CommandReturnAction.DelAndBack).to(selection[0].position).orientation(vec3(0,0,-1)).insert(RC)
+			RC.grab(selection[0], CommandReturnAction.DelAndForward).insert(RC, 3)
+			RC.goTo(CommandReturnAction.DelAndBack).to(getCursor()+vec4(0,0,0.2,0)).name('GoTo 3').insert(RC,4)
+			RC.release(CommandReturnAction.DelAndForward).insert(RC,5)
 
-			# RC.grab(selection[0], CommandReturnAction.DelAndForward)
-			# RC.release(CommandReturnAction.DelAndForward).finish(RC)
 			unselect()
 			return True
 		else:

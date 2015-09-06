@@ -174,6 +174,13 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 
 	WaitCommandBuilder& (WaitCommandBuilder::*waitfinish_ptr)(shared_ptr<RobotController>&) = &WaitCommandBuilder::finish;
 
+	bpl::class_<ExecuteCommandBuilder, std::shared_ptr<ExecuteCommandBuilder>>("ExecuteCommandBuilder", bpl::init<>())
+		.def("init", &ExecuteCommandBuilder::init, bpl::return_internal_reference<>())
+		.def("name", &ExecuteCommandBuilder::name, bpl::return_internal_reference<>())
+		.def("insert", &ExecuteCommandBuilder::insert, bpl::return_internal_reference<>())
+		.def("finish", &ExecuteCommandBuilder::finish, bpl::return_internal_reference<>())
+		;
+
 	bpl::class_<ExecutePythonCommandBuilder, std::shared_ptr<ExecutePythonCommandBuilder>>("ExecutePythonCommandBuilder", bpl::init<>())
 		.def("init", &ExecutePythonCommandBuilder::init, bpl::return_internal_reference<>())
 		.def("name", &ExecutePythonCommandBuilder::name, bpl::return_internal_reference<>())
@@ -248,9 +255,9 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("savePosition", &RobotController::savePosition)
 		.def("popPosition", &RobotController::popPosition)
 		.def("peekPosition", &RobotController::peekPosition)
-		.def("grabObject", &RobotController::grabObject)
-		.def("releaseObject", &RobotController::releaseObject)
 		.def("clean", &RobotController::clean)
+		.def("grab", &RobotController::grab, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("release", &RobotController::release, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("wait", &RobotController::wait, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("move", &RobotController::move, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("pyExec", &RobotController::pyExec, bpl::return_value_policy<bpl::reference_existing_object>())
@@ -335,7 +342,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		// bpl::class_<std::vector<float>>("FloatVec")
 				// .def(bpl::vector_indexing_suite<std::vector<float>>())
 				// ;
-		// bpl::class_<std::vector<double>>("DoubleVec") 
+		// bpl::class_<std::vector<double>>("DoubleVec")
 				// .def(bpl::vector_indexing_suite<std::vector<double>>())
 				// ;
 
