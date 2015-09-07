@@ -1,64 +1,65 @@
 dirname: \Stanowisko\
+RobotPosition: [-2.0000, 0.0000, 0.0000]
 Robot:
  - Name: Robot_1
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base
      Vec: [0.0000, 0.0000, 0.2915]
      Axis: [0.0000, 0.0000, 1.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0000, 0.0000, 1.3012]
  - Name: Robot_2
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.001
      Vec: [0.0000, -0.5043, 1.3049]
      Axis: [-1.0000, -0.0000, -0.0000]
      Min: -45
      Max: 90
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0000, -0.4447, 1.7998]
  - Name: Robot_3
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.002
      Vec: [-0.0001, 1.2180, 0.1118]
      Axis: [-1.0000, 0.0000, 0.0000]
      Min: 120
      Max: 90
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0001, 2.0634, 0.0590]
  - Name: Robot_4
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.003
      Vec: [-0.0001, -2.4627, -0.0673]
      Axis: [0.0000, 1.0000, 0.0017]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0012, 3.2158, 0.1013]
  - Name: Robot_5
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.004
      Vec: [-0.0007, 0.0066, -0.0169]
      Axis: [-1.0000, 0.0000, -0.0000]
      Min: -120
      Max: 120
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0004, 0.3187, 0.0024]
  - Name: Robot_Gripper
    Type: hinge
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.005
      Vec: [0.0005, -0.3187, -0.0024]
      Axis: [-0.0001, 1.0000, -0.0000]
      Min: -370
      Max: 370
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0003, 0.9222, 0.0096]
 Meshes:
  - Name: Barrier
@@ -71,10 +72,10 @@ Meshes:
    Quaternion: [0.9999, 0.0000, 0.0000, -0.0156]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
-     mass: 1.0000
+     mass: 50.0000
      friction: 0.5000
      BBox: -1.0000 -1.0000 -1.0000 -1.0000 -1.0000 1.0000 -1.0000 1.0000 1.0000 -1.0000 1.0000 -1.0000 1.0000 -1.0000 -1.0000 1.0000 -1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 -1.0000
  - Name: FakeGripper
@@ -82,12 +83,18 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
+   RigidBody: 
+     enabled: yes
+     type: ACTIVE
+     mass: 1.0000
+     friction: 0.5000
+     BBox: -0.5420 0.0772 -0.2283 -0.5420 0.0772 0.1439 -0.5420 0.8793 0.1439 -0.5420 0.8793 -0.2283 0.0983 0.0772 -0.2283 0.0983 0.0772 0.1439 0.0983 0.8793 0.1439 0.0983 0.8793 -0.2283
  - Name: Floor
    Position: [0.0000, 0.0000, 0.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.3250, 0.3588, 0.2417]
    Spectacular: 0.0000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: PASSIVE
      mass: 0.0010
@@ -98,78 +105,84 @@ Meshes:
    Quaternion: [0.9447, 0.0000, 0.0000, 0.3280]
    Color: [0.5017, 0.5173, 0.2831]
    Spectacular: 0.0000
+   RigidBody: 
+     enabled: yes
+     type: ACTIVE
+     mass: 1.0000
+     friction: 0.5000
+     BBox: -0.4438 -0.1852 0.0000 -0.4438 -0.1852 0.2741 -0.4438 0.7346 0.2741 -0.4438 0.7346 0.0000 0.4438 -0.1852 0.0000 0.4438 -0.1852 0.2741 0.4438 0.7346 0.2741 0.4438 0.7346 0.0000
  - Name: Robot_1
-   Position: [0.0000, 0.0000, 0.2915]
+   Position: [-2.0000, 0.0000, 0.2915]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1027, 0.4020, 0.0428]
    Spectacular: 0.0000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
      friction: 0.5000
      BBox: -0.5983 -0.7342 0.2658 -0.5983 -0.7342 1.5069 -0.5983 0.7342 1.5069 -0.5983 0.7342 0.2658 0.5863 -0.7342 0.2658 0.5863 -0.7342 1.5069 0.5863 0.7342 1.5069 0.5863 0.7342 0.2658
  - Name: Robot_2
-   Position: [0.0000, -0.5043, 2.8977]
+   Position: [-2.0000, -0.5043, 2.8977]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.4480, 0.1785, 0.0057]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
      friction: 0.5000
      BBox: -0.3310 -0.6369 -1.8429 -0.3310 -0.6369 2.1452 -0.3310 0.5368 2.1452 -0.3310 0.5368 -1.8429 0.3310 -0.6369 -1.8429 0.3310 -0.6369 2.1452 0.3310 0.5368 2.1452 0.3310 0.5368 -1.8429
  - Name: Robot_3
-   Position: [-0.0001, 0.2690, 4.8093]
+   Position: [-2.0001, 0.2690, 4.8093]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.8000, 0.2397, 0.0000]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
      friction: 0.5000
      BBox: -0.4588 -1.5031 -0.3834 -0.4588 -1.5031 0.3163 -0.4588 2.3653 0.3163 -0.4588 2.3653 -0.3834 0.4572 -1.5031 -0.3834 0.4572 -1.5031 0.3163 0.4572 2.3653 0.3163 0.4572 2.3653 -0.3834
  - Name: Robot_4
-   Position: [-0.0001, -0.1303, 4.8009]
+   Position: [-2.0001, -0.1303, 4.8009]
    Quaternion: [1.0000, -0.0009, -0.0000, 0.0001]
    Color: [0.8000, 0.0000, 0.0008]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
      friction: 0.5000
      BBox: -0.3068 2.7600 -0.2117 -0.3068 2.7600 0.3011 -0.3068 3.4291 0.3011 -0.3068 3.4291 -0.2117 0.3070 2.7600 -0.2117 0.3070 2.7600 0.3011 0.3070 3.4291 0.3011 0.3070 3.4291 -0.2117
  - Name: Robot_5
-   Position: [0.0005, 3.0921, 4.8853]
+   Position: [-1.9995, 3.0921, 4.8853]
    Quaternion: [1.0000, -0.0009, -0.0000, 0.0001]
    Color: [0.0521, 0.2598, 0.0000]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
      friction: 0.5000
      BBox: -0.1788 -0.1413 -0.1422 -0.1788 -0.1413 0.1406 -0.1788 0.1451 0.1406 -0.1788 0.1451 -0.1422 0.1800 -0.1413 -0.1422 0.1800 -0.1413 0.1406 0.1800 0.1451 0.1406 0.1800 0.1451 -0.1422
  - Name: Robot_Gripper
-   Position: [0.0005, 3.0921, 4.8853]
+   Position: [-1.9995, 3.0921, 4.8853]
    Quaternion: [1.0000, -0.0009, -0.0000, 0.0002]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
      friction: 0.5000
      BBox: -0.2451 0.1451 -0.1675 -0.2451 0.1451 0.1965 -0.2451 0.8707 0.1965 -0.2451 0.8707 -0.1675 0.2451 0.1451 -0.1675 0.2451 0.1451 0.1965 0.2451 0.8707 0.1965 0.2451 0.8707 -0.1675
  - Name: RobotSubbase
-   Position: [0.0000, 0.0000, 0.0000]
+   Position: [-2.0000, 0.0000, 0.0000]
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1902, 0.1467, 0.0771]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: PASSIVE
      mass: 1.0000
@@ -180,7 +193,7 @@ Meshes:
    Quaternion: [0.9989, 0.0000, 0.0000, -0.0473]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 0.0010
@@ -191,7 +204,7 @@ Meshes:
    Quaternion: [0.9996, 0.0000, 0.0000, 0.0278]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -202,7 +215,7 @@ Meshes:
    Quaternion: [0.9937, 0.0000, 0.0000, -0.1117]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -213,7 +226,7 @@ Meshes:
    Quaternion: [0.9937, 0.0000, 0.0000, -0.1117]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -224,7 +237,7 @@ Meshes:
    Quaternion: [0.9999, 0.0000, 0.0000, 0.0115]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -235,7 +248,7 @@ Meshes:
    Quaternion: [0.9998, 0.0000, 0.0000, -0.0182]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000
@@ -246,7 +259,7 @@ Meshes:
    Quaternion: [0.9999, 0.0000, 0.0000, 0.0115]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      mass: 1.0000

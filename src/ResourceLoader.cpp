@@ -332,8 +332,10 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 
 	Engine::genVao(model_vertices, model_coords, model_normals, model_indices, scene.resources);
 
-	if(cfg.has("Robot"))
+	if(cfg.has("Robot")){
+		scene.robot->basePosition = cfg["RobotPosition"].asVec31();
 		loadRobot(scene, *scene.robot, cfg["Robot"], bulletWorld);
+	}
 
 	return true;
 }
@@ -427,18 +429,6 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, Bulle
 			body->setActivationState(WANTS_DEACTIVATION);
 			body->getCollisionShape()->setLocalScaling(btVector3(1,1,1));
 			bulletWorld.dynamicsWorld->addRigidBody(body);
-
-
-
-
-
-
-
-
-
-
-
-
 		}
 
 		robot.chain.push_back(std::move(module));

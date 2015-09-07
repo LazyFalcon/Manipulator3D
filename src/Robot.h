@@ -110,16 +110,18 @@ public:
 
 
 	SystemSettings config;
-    SystemSettings& getConfig(){
-        return config;
-    }
-    void getConfig(const SystemSettings &c){
-        config = c;
-    }
+	SystemSettings& getConfig(){
+		return config;
+	}
+	void getConfig(const SystemSettings &c){
+		config = c;
+	}
 	bool isReady { true };
 	Point endEffector;
 	double endEffectorVelocity;
 	double endEffectorAcceleration;
+
+	glm::vec4 basePosition;
 
 	std::vector<std::unique_ptr<Module>> chain;
 };

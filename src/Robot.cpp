@@ -12,7 +12,7 @@ const double jointEpsilon = 1.0*dpi/60.0/180.0; /// one minute in radians
 
 void Robot::update(float dt){
 
-	glm::vec4 position = glm::vec4(0,0,0,1);
+	glm::vec4 position = basePosition;
 	glm::vec3 axis = chain[0]->axis.xyz();
 	// glm::quat transform(1,0,0,0);
 	glm::quat transform{0,0,0,1};
@@ -52,7 +52,7 @@ void Robot::update(float dt){
 }
 
 Point Robot::simulate(std::vector<double> &variables){
-	glm::vec4 position = glm::vec4(0,0,0,1);
+	glm::vec4 position = basePosition;
 	glm::vec3 axis = chain[0]->axis.xyz();
 	// glm::quat transform(1,0,0,0);
 	glm::quat transform{0,0,0,1};
@@ -81,7 +81,7 @@ std::vector<double> Robot::getVariables(){
 }
 
 std::vector<Point> Robot::simulateFullData(std::vector<double> &variables){
-	glm::vec4 position = glm::vec4(0,0,0,1);
+	glm::vec4 position = basePosition;
 	glm::vec3 axis = chain[0]->axis.xyz();
 	// glm::quat transform(1,0,0,0);
 	std::vector<Point> out(variables.size());

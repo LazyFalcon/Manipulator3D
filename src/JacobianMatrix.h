@@ -119,7 +119,7 @@ Matrix mul(const Matrix &a, const Matrix &b){
 
 Matrix buildJacobian(Robot &robot){
 	Matrix jacobian(robot.chain.size(), 6);
-	glm::vec4 position = glm::vec4(0,0,0,1);
+	glm::vec4 position = robot.basePosition;
 	glm::vec3 axis = robot.chain[0]->axis.xyz();
 	glm::quat transform(1,0,0,0);
 	glm::vec3 currentEndPosition = robot.endEffector.position.xyz();
@@ -152,7 +152,7 @@ Matrix buildJacobian(Robot &robot){
 }
 Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoint){
 	Matrix jacobian(robot.chain.size(), 6);
-	glm::vec4 endPosition = glm::vec4(0,0,0,1);
+	glm::vec4 endPosition = robot.basePosition;
 	glm::vec3 axis = robot.chain[0]->axis.xyz();
 	glm::quat transform {0,0,0,1};
 	// glm::quat transform = glm::angleAxis(0.f, glm::vec3(0,0,1));
@@ -191,7 +191,7 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoin
 }
 Matrix buildJacobianReversed(Robot &robot, std::vector<double> &variables){
 	Matrix jacobian(robot.chain.size(), 6);
-	glm::vec4 position = glm::vec4(0,0,0,1);
+	glm::vec4 position = robot.basePosition;
 	glm::vec3 axis = robot.chain[0]->axis.xyz();
 	glm::quat transform(1,0,0,0);
 	glm::vec3 currentEndPosition = robot.endEffector.position.xyz();
