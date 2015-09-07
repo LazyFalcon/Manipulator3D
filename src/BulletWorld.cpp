@@ -13,6 +13,10 @@ typedef vector<float> floats;
 
 
 // http://bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=7772&hilit=setCollisionFlags
+static inline bool LogicalXor(bool a, bool b)
+{
+	return (!a && b) || (a && !b);
+}
 
 struct RobotObjectFilterCallback : public btOverlapFilterCallback
 {
@@ -21,16 +25,24 @@ struct RobotObjectFilterCallback : public btOverlapFilterCallback
 		bool collides = (proxy0->m_collisionFilterGroup & proxy1->m_collisionFilterMask) != 0;
 		collides = collides && (proxy1->m_collisionFilterGroup & proxy0->m_collisionFilterMask);
 
-		// btCollisionObject* collisionObject = (btCollisionObject*) proxy0->m_clientObject;
-		// EntityPayload &userData_0 = *((EntityPayload*)collisionObject->getUserPointer());
-		// collisionObject = (btCollisionObject*) proxy1->m_clientObject;
-		// EntityPayload &userData_1 = *((EntityPayload*)collisionObject->getUserPointer());
+		/// no need to check pointers, rigidBody always is constructed with payload
+		btCollisionObject* collisionObject = (btCollisionObject*) proxy0->m_clientObject;
 
-		// if(collides && ( userData_0.ownerType == OwnerType::Robot || userData_1.ownerType == OwnerType::Robot) )
-			// cout<<"---------------> COLLSISION"<<endl;
+		if(not collisionObject->getUserPointer()) return collides;
+		EntityPayload &userData_0 = *((EntityPayload*)collisionObject->getUserPointer());
+
+		collisionObject = (btCollisionObject*) proxy1->m_clientObject;
+
+		if(not collisionObject->getUserPointer()) return collides;
+		EntityPayload &userData_1 = *((EntityPayload*)collisionObject->getUserPointer());
+
+		// if(collides && LogicalXor( userData_0.ownerType == OwnerType::Robot, userData_1.ownerType == OwnerType::Robot) ){
+		// if( LogicalXor( userData_0.ownerType == OwnerType::Robot, userData_1.ownerType == OwnerType::Robot) ){
+			if(userData_0.ownerType == OwnerType::Robot || userData_1.ownerType == OwnerType::Robot){
 		// Helper::collidingPair(proxy0->m_clientObject->getUserPointer()->backPointer, proxy1->m_clientObject->getUserPointer()->backPointer);
-
-		return true;
+				return false;
+			}
+		return collides;
 	}
 };
 
@@ -50,8 +62,8 @@ void BulletWorld::init(){
 	dynamicsWorld->getSolverInfo().m_minimumSolverBatchSize = 128;
 	dynamicsWorld->getSolverInfo().m_numIterations = 100;
 
-    filterCallback = new RobotObjectFilterCallback();
-    dynamicsWorld->getPairCache()->setOverlapFilterCallback(filterCallback);
+	filterCallback = new RobotObjectFilterCallback();
+	dynamicsWorld->getPairCache()->setOverlapFilterCallback(filterCallback);
 
 
 	// btContactSolverInfo& info = dynamicsWorld->getSolverInfo();
@@ -82,12 +94,12 @@ btRigidBody* BulletWorld::createRigidBody(float mass, const btTransform& startTr
 
 	btRigidBody* body = new btRigidBody(cInfo);
 
-    body->setActivationState(DISABLE_DEACTIVATION);
-    body->setSleepingThresholds(0.001f, 0.001f);
+	body->setActivationState(DISABLE_DEACTIVATION);
+	body->setSleepingThresholds(0.001f, 0.001f);
 
 	// body->setContactProcessingThreshold(BT_LARGE_FLOAT);
 	body->setUserPointer(nullptr);
-	dynamicsWorld->addRigidBody(body);
+	// dynamicsWorld->addRigidBody(body);
 	bodies.push_back(body);
 	shapes.push_back(shape);
 	motion_states.push_back(motionState);

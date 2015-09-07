@@ -34,7 +34,9 @@ void Robot::update(float dt){
 			tr.setRotation(btQuaternion(transform.x, transform.y, transform.z, transform.w));
 			tr.setOrigin(btVector3(position.x, position.y, position.z));
 
-			module->entity->rgBody->setWorldTransform(tr);
+			// module->entity->rgBody->setWorldTransform(tr);
+			module->entity->rgBody->getMotionState()->setWorldTransform(tr);
+			module->entity->rgBody->setCenterOfMassTransform(tr);
 		}
 
 		axis = transform*module->axis.xyz();

@@ -633,9 +633,8 @@ void renderScene(Scene &scene){
 	auto uID = glGetUniformLocation(shader, "uID");
 	for(auto &entity : scene.units){
 		auto &mesh = *(entity.second->mesh);
-		glm::mat4 transform;
+		glm::mat4 transform = identity;
 
-// #ifdef USE_BULLET
 		auto rgBody = entity.second->rgBody;
 		if(rgBody && !rgBody->isStaticOrKinematicObject()){
 			auto btPos = rgBody->getCenterOfMassTransform().getOrigin();
@@ -644,28 +643,24 @@ void renderScene(Scene &scene){
 			entity.second->quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
+		else if(rgBody && rgBody->isStaticOrKinematicObject()){
+			transform = to_mat4(rgBody->getCenterOfMassTransform());
+		}
 		else
-// #endif
 			transform = glm::translate(entity.second->position.xyz()) * glm::mat4_cast(entity.second->quat);
 
 		glUniform(shader, entity.second->material.color, u_colorPosition);
-		// glUniform(shader, float(entity.second->ID)/65535.f, uID);
 		glUniform(shader, float(entity.second->ID), uID);
 		glUniform(shader, transform, u_modelPosition);
-		if(globalSettings & MSAA)
-			glUniform(shader, glm::transpose(glm::inverse(transform)), u_NMPosition);
-			// glUniform(shader, glm::transpose(glm::inverse(camera.ViewMatrix*transform)), u_NMPosition);
-		else
-			// glUniform(shader, camera.ViewMatrix*transform, u_NMPosition);
-			glUniform(shader, transform, u_NMPosition);
+		glUniform(shader, transform, u_NMPosition);
 		glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, mesh.offset);
 	}
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, 0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, 0, 0);
 	glBindVertexArray(0);
 	copyDepth(scene);
 }

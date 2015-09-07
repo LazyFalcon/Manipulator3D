@@ -333,7 +333,7 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 	Engine::genVao(model_vertices, model_coords, model_normals, model_indices, scene.resources);
 
 	if(cfg.has("Robot"))
-		loadRobot(scene, *scene.robot, cfg["Robot"]);
+		loadRobot(scene, *scene.robot, cfg["Robot"], bulletWorld);
 
 	return true;
 }
@@ -345,11 +345,11 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bullet
 	CFG::Node &rgData = cfg["RigidBody"];
 	float mass = rgData["mass"].asFloat();
 
-    if(rgData["type"].value == "PASSIVE"){
+	if(rgData["type"].value == "PASSIVE"){
 		mass = 0;
 	}
 
-    vector<float> &floatArr = rgData["BBox"].cacheFloat;
+	vector<float> &floatArr = rgData["BBox"].cacheFloat;
 	btConvexHullShape *convex = new btConvexHullShape();
 	for(u32 i = 0; i<8; i++){
 		convex->addPoint(btVector3(floatArr[i*3+0]*0.9, floatArr[i*3+1]*0.9, floatArr[i*3+2]*0.9));
@@ -368,14 +368,18 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bullet
 	body->setFriction(rgData["friction"].asFloat());
 	body->setRollingFriction(rgData["friction"].asFloat());
 
-    EntityPayload *payload = new EntityPayload();
-    if(mass) payload->ownerType = OwnerType::SceneElement;
-    else payload->ownerType = OwnerType::Static;
-    body->setUserPointer(payload);
+	EntityPayload *payload = new EntityPayload();
+	if(mass) payload->ownerType = OwnerType::SceneElement;
+	else {
+		payload->ownerType = OwnerType::Static;
+		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+	}
+	body->setUserPointer(payload);
+	bulletWorld.dynamicsWorld->addRigidBody(body);
 
 	return body;
 }
-bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
+bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, BulletWorld &bulletWorld){
 	for(auto &it : cfg.Vector){
 		int type;
 		if(it["Type"].value == "prismatic")
@@ -397,14 +401,43 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->maxAcceleration = 0.2; /// rad/s^2
 
 		if(module->entity->rgBody){
-            auto body = module->entity->rgBody;
-            EntityPayload *payload = (EntityPayload*)(body->getUserPointer());
-            payload->ownerType = OwnerType::Robot;
-            payload->owner = (void*)(&robot);
-            body->setMassProps(0, btVector3(0,0,0));
-            body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-            // body->setCollisionFlags(body->getCollisionFlags() & ~COL_OBJECTS);
-            // body->setCollisionFlags(body->getCollisionFlags() | COL_ROBOT);
+			auto body = module->entity->rgBody;
+			EntityPayload *payload = (EntityPayload*)(body->getUserPointer());
+			payload->ownerType = OwnerType::Robot;
+			payload->owner = (void*)(&robot);
+			// body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+			body->setMassProps(0, btVector3(0,0,0));
+			body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT | btCollisionObject::CF_KINEMATIC_OBJECT);
+			// body->setCollisionFlags(body->getCollisionFlags() & ~COL_OBJECTS);
+			// body->setCollisionFlags(body->getCollisionFlags() | COL_ROBOT);
+
+
+			bulletWorld.dynamicsWorld->removeRigidBody(body);
+			btVector3 inertia(0,0,0);
+			body->getCollisionShape()->calculateLocalInertia(0, inertia);
+			body->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT | btCollisionObject::CF_KINEMATIC_OBJECT);
+			body->setMassProps(0, inertia);
+			body->setLinearFactor(btVector3(0,0,0));
+			body->setAngularFactor(btVector3(0,0,0));
+			body->setGravity(btVector3(0,0,0));
+			body->updateInertiaTensor();
+			body->setAngularVelocity(btVector3(0,0,0));
+			body->setLinearVelocity(btVector3(0,0,0));
+			body->clearForces();
+			body->setActivationState(WANTS_DEACTIVATION);
+			body->getCollisionShape()->setLocalScaling(btVector3(1,1,1));
+			bulletWorld.dynamicsWorld->addRigidBody(body);
+
+
+
+
+
+
+
+
+
+
+
 
 		}
 

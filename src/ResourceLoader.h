@@ -80,7 +80,7 @@ public:
 
 	bool loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node &cfg);
 	btRigidBody* buildBulletData(CFG::Node &cfg, BulletWorld &bulletWorld);
-	bool loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg);
+	bool loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, BulletWorld &bulletWorld);
 	GLuint compileShader(const string &shaderName);
 };
 

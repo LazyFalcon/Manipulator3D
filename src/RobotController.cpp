@@ -36,7 +36,6 @@ void RobotController::run(){
 	if (!commands.empty() && commandIter != commands.end()){
 		state = RCStates::Run;
 		cout<<endl;
-		cout<<"distance: "<<distance(commands.begin(), commandIter)<<" size: "<<commands.size()<<endl;
 		//commandIter = commands.begin();
 		if(!(*commandIter)->isRuning){
 			cout<<"------- NEW ACTION: "+(*commandIter)->name<<endl;
@@ -84,7 +83,6 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 	auto returnedAction = (*commandIter)->update(rc, scene, dt);
 	if(returnedAction){
 		cout<<"------- END OF ACTION: "+(*commandIter)->name<<endl;
-		cout<<".....list size: "<<commands.size()<<endl;
 		if(returnedAction == CommandReturnAction::DelAndForward){
 			cout<<"------ DEL & FORWARD"<<endl;
 			commandIter = commands.erase(commandIter);
@@ -99,7 +97,6 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 			// next();
 			commandIter++;
 		}
-		cout<<"..|..list size: "<<commands.size()<<endl;
 		run();
 
 		return true;
