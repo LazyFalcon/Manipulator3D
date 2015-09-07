@@ -21,13 +21,13 @@ struct RobotObjectFilterCallback : public btOverlapFilterCallback
 		bool collides = (proxy0->m_collisionFilterGroup & proxy1->m_collisionFilterMask) != 0;
 		collides = collides && (proxy1->m_collisionFilterGroup & proxy0->m_collisionFilterMask);
 
-		btCollisionObject* collisionObject = (btCollisionObject*) proxy0->m_clientObject;
-		EntityPayload &userData_0 = *((EntityPayload*)collisionObject->getUserPointer());
-		collisionObject = (btCollisionObject*) proxy1->m_clientObject;
-		EntityPayload &userData_1 = *((EntityPayload*)collisionObject->getUserPointer());
+		// btCollisionObject* collisionObject = (btCollisionObject*) proxy0->m_clientObject;
+		// EntityPayload &userData_0 = *((EntityPayload*)collisionObject->getUserPointer());
+		// collisionObject = (btCollisionObject*) proxy1->m_clientObject;
+		// EntityPayload &userData_1 = *((EntityPayload*)collisionObject->getUserPointer());
 
-		if(collides && ( userData_0.ownerType == OwnerType::Robot || userData_1.ownerType == OwnerType::Robot) )
-			cout<<"---------------> COLLSISION"<<endl;
+		// if(collides && ( userData_0.ownerType == OwnerType::Robot || userData_1.ownerType == OwnerType::Robot) )
+			// cout<<"---------------> COLLSISION"<<endl;
 		// Helper::collidingPair(proxy0->m_clientObject->getUserPointer()->backPointer, proxy1->m_clientObject->getUserPointer()->backPointer);
 
 		return true;

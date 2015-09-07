@@ -11,7 +11,6 @@
 #include "Editor/MoveCommandBuilder.h"
 #include "Editor/ExecuteCommandBuilder.h"
 #include "Editor/WaitCommandBuilder.h"
-#include "DataRecorder.h"
 
 #include <Python.h>
 #include <boost/python.hpp>

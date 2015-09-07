@@ -45,7 +45,7 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 ../bin/manipulator: $(OBJS)
 	$(CXX) $(OBJS) -o ../bin/manipulator $(LIBS)
 
-../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
+../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
 
 #-----------------------------------------------------

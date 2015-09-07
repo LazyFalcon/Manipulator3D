@@ -92,13 +92,11 @@ Camera camera;
 
 class Entity;
 #include "Robot.h"
-#include "Mech.h"
 int robotPositionsCounter = 0;
 int robotPositionsMax = 100;
 vector<glm::vec4> robotPositions(robotPositionsMax);
 #include "BulletWorld.h"
 #include "ResourceLoader.h"
-#include "Scene.h"
 #include "Widgets.h"
 #include "Engine.h"
 #include "Editor/Editor.h"
@@ -111,8 +109,6 @@ namespace Editor
 #include "JacobianTransposed.h"
 #include "IInterpolator.h"
 #include "RobotController.h"
-#include "PathCreator.h"
-#include "SomeTests.h"
 BulletWorld bulletWorld;
 shared_ptr<RobotController> RC;
 shared_ptr<Scene> scene;
