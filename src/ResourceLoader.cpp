@@ -13,6 +13,7 @@
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 u16 objectID = 1;
 std::unordered_map<string, GLuint>	shaders;
+
 void ResourceLoader::loadResources(CFG::Node &cfg){
 	count = cfg["Shaders"].size() + cfg["Images"].size() + cfg["Meshes"].size();
 	loadShaders();
@@ -292,7 +293,6 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 	for(auto &it : meshes.Vector){
 		loadMesh(it);
 		Material material {it["Color"].asVec31()};
-		auto bulletData = buildBulletData(it, bulletWorld);
 
 		auto en = make_shared<Entity>();
 		en->ID = objectID;
@@ -300,14 +300,16 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 		en->material = material;
 		en->position = it["Position"].asVec31();
 		en->quat = it["Quaternion"].asQuat();
-		en->rgBody = bulletData;
+		en->rgBody = buildBulletData(it, bulletWorld);
 		scene.units[it["Name"].value] = en;
 		scene.units_ptrs[objectID++] = en;
 
 		if(en->rgBody){
-				EntityPayload *payload = (EntityPayload*)(en->rgBody->getUserPointer());
-				payload->backPointer = en.get();
-				payload->owner = (void*)payload->backPointer;
+			EntityPayload *payload = (EntityPayload*)(en->rgBody->getUserPointer());
+			payload->backPointer = en.get();
+			payload->owner = (void*)payload->backPointer;
+
+			// en->rgBody->setCollisionFlags( en->rgBody->getCollisionFlags() | COL_OBJECTS );
 		}
 	}
 
@@ -337,9 +339,9 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 }
 btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bulletWorld){
 
-	// if(!cfg.has("RigidBody")){
+	if(!cfg.has("RigidBody")){
 		return nullptr;
-	// }
+	}
 	CFG::Node &rgData = cfg["RigidBody"];
 	float mass = rgData["mass"].asFloat();
 
@@ -350,7 +352,7 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bullet
     vector<float> &floatArr = rgData["BBox"].cacheFloat;
 	btConvexHullShape *convex = new btConvexHullShape();
 	for(u32 i = 0; i<8; i++){
-		convex->addPoint(btVector3(floatArr[i*3+0]*0.5, floatArr[i*3+1]*0.5, floatArr[i*3+2]*0.5));
+		convex->addPoint(btVector3(floatArr[i*3+0]*0.9, floatArr[i*3+1]*0.9, floatArr[i*3+2]*0.9));
 	}
 
 	btTransform tr;
@@ -367,7 +369,8 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bullet
 	body->setRollingFriction(rgData["friction"].asFloat());
 
     EntityPayload *payload = new EntityPayload();
-    payload->ownerType = OwnerType::Casual;
+    if(mass) payload->ownerType = OwnerType::SceneElement;
+    else payload->ownerType = OwnerType::Static;
     body->setUserPointer(payload);
 
 	return body;
@@ -380,9 +383,6 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		else if(it["Type"].value == "hinge")
 			type = HINGE;
 
-
-
-		// auto module = std::make_shared<Module>();
 		auto module = std::make_unique<Module>();
 		cout<<"-- "+it["Name"].value<<endl;
 		module->type = type;
@@ -397,11 +397,16 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg){
 		module->maxAcceleration = 0.2; /// rad/s^2
 
 		if(module->entity->rgBody){
-				EntityPayload *payload = (EntityPayload*)(module->entity->rgBody->getUserPointer());
-				payload->owner = (void*)(&robot);
+            auto body = module->entity->rgBody;
+            EntityPayload *payload = (EntityPayload*)(body->getUserPointer());
+            payload->ownerType = OwnerType::Robot;
+            payload->owner = (void*)(&robot);
+            body->setMassProps(0, btVector3(0,0,0));
+            body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+            // body->setCollisionFlags(body->getCollisionFlags() & ~COL_OBJECTS);
+            // body->setCollisionFlags(body->getCollisionFlags() | COL_ROBOT);
+
 		}
-		// module->entity->rgBody->setMassProps(0, btVector3(0,0,0));
-		// module->entity->rgBody->setCollisionFlags(module->entity->rgBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 
 		robot.chain.push_back(std::move(module));
 	}

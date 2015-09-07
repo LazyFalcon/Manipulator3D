@@ -1,6 +1,13 @@
 #pragma once
 #include <BulletCollision/NarrowPhaseCollision/btRaycastCallback.h>
 
+#define BIT(x) (1<<(x))
+enum collisiontypes {
+    COL_NOTHING = 0, //<Collide with nothing
+    COL_ROBOT = BIT(6), //<Collide with robot
+    COL_OBJECTS = BIT(7), //<Collide with scene objects
+};
+
 class BulletWorld{
 public:
 	btBroadphaseInterface*                  broadphase {nullptr};
@@ -13,6 +20,7 @@ public:
 	vector<btHeightfieldTerrainShape*>      groundShapes {nullptr};
 	btDefaultMotionState*                   groundMotionState {nullptr};
 	btRigidBody*                            groundRigidBody {nullptr};
+    btOverlapFilterCallback*                filterCallback {nullptr};
 
 	vector <btRigidBody*> bodies;
 	vector <btCollisionShape*> shapes;

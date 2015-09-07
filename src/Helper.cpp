@@ -671,7 +671,11 @@ std::vector<glm::vec4>& storeVec4(const std::string &s){
     return g_vec4[s];
 }
 
+/// ----------------------------------------------------- 	COLLISIONS
+std::pair<shared_ptr<Entity> , shared_ptr<Entity> > g_pairInCollision;
+void collidingPair(shared_ptr<Entity> &a, shared_ptr<Entity> &b){
 
+}
 
 
 NAM_END

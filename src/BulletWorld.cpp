@@ -1,6 +1,8 @@
 #include <Utils/Includes.h>
 #include <Utils/Utils.h>
 #include <Utils/BaseStructs.h>
+#include <BulletCollision\CollisionDispatch\btGhostObject.h>
+#include "Helper.h"
 
 extern glm::mat4 identity;
 typedef vector<unsigned int> ints;
@@ -10,14 +12,35 @@ typedef vector<float> floats;
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
 
+// http://bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=7772&hilit=setCollisionFlags
 
+struct RobotObjectFilterCallback : public btOverlapFilterCallback
+{
+	virtual bool needBroadphaseCollision(btBroadphaseProxy* proxy0,btBroadphaseProxy* proxy1) const
+	{
+		bool collides = (proxy0->m_collisionFilterGroup & proxy1->m_collisionFilterMask) != 0;
+		collides = collides && (proxy1->m_collisionFilterGroup & proxy0->m_collisionFilterMask);
+
+		btCollisionObject* collisionObject = (btCollisionObject*) proxy0->m_clientObject;
+		EntityPayload &userData_0 = *((EntityPayload*)collisionObject->getUserPointer());
+		collisionObject = (btCollisionObject*) proxy1->m_clientObject;
+		EntityPayload &userData_1 = *((EntityPayload*)collisionObject->getUserPointer());
+
+		if(collides && ( userData_0.ownerType == OwnerType::Robot || userData_1.ownerType == OwnerType::Robot) )
+			cout<<"---------------> COLLSISION"<<endl;
+		// Helper::collidingPair(proxy0->m_clientObject->getUserPointer()->backPointer, proxy1->m_clientObject->getUserPointer()->backPointer);
+
+		return true;
+	}
+};
 
 void BulletWorld::init(){
 	btVector3 worldMin(-250,-250,-50);
 	btVector3 worldMax(250,250,50);
 	// broadphase = new btAxisSweep3(worldMin,worldMax);// precyzja pozycjonowania œwiata
 	broadphase = new btDbvtBroadphase();
-
+	btOverlappingPairCallback *ghostCallback = new btGhostPairCallback();
+	broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(ghostCallback);
 
 	collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -26,6 +49,11 @@ void BulletWorld::init(){
 	dynamicsWorld->setGravity(btVector3(0,0,-10));
 	dynamicsWorld->getSolverInfo().m_minimumSolverBatchSize = 128;
 	dynamicsWorld->getSolverInfo().m_numIterations = 100;
+
+    filterCallback = new RobotObjectFilterCallback();
+    dynamicsWorld->getPairCache()->setOverlapFilterCallback(filterCallback);
+
+
 	// btContactSolverInfo& info = dynamicsWorld->getSolverInfo();
 	// info.m_solverMode |= SOLVER_INTERLEAVE_CONTACT_AND_FRICTION_CONSTRAINTS;
 	// info.m_erp = 0.8;
@@ -38,6 +66,7 @@ void BulletWorld::clear(){
 	delete dispatcher;
 	delete collisionConfiguration;
 	delete broadphase;
+	delete filterCallback;
 }
 
 btRigidBody* BulletWorld::createRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, float inertiaScalling){
@@ -52,8 +81,12 @@ btRigidBody* BulletWorld::createRigidBody(float mass, const btTransform& startTr
 	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, motionState, shape, localInertia);
 
 	btRigidBody* body = new btRigidBody(cInfo);
-	body->setContactProcessingThreshold(BT_LARGE_FLOAT);
-	body->setUserPointer(NULL);
+
+    body->setActivationState(DISABLE_DEACTIVATION);
+    body->setSleepingThresholds(0.001f, 0.001f);
+
+	// body->setContactProcessingThreshold(BT_LARGE_FLOAT);
+	body->setUserPointer(nullptr);
 	dynamicsWorld->addRigidBody(body);
 	bodies.push_back(body);
 	shapes.push_back(shape);

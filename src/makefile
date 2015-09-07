@@ -24,11 +24,9 @@ OBJS = \
 ../bin/Engine.o \
 ../bin/JacobianTransposed.o \
 ../bin/Robot.o \
-../bin/Mech.o \
 ../bin/IInterpolator.o \
 ../bin/RobotController.o \
 ../bin/Widgets.o   \
-../bin/SomeTests.o  \
 ../bin/Editor.o  \
 ../bin/Graph.o \
 ../bin/MoveCommandBuilder.o \
@@ -47,7 +45,7 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 ../bin/manipulator: $(OBJS)
 	$(CXX) $(OBJS) -o ../bin/manipulator $(LIBS)
 
-../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h SomeTests.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
+../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h  PathCreator.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o
 
 #-----------------------------------------------------
@@ -78,9 +76,6 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 ../bin/Graph.o: Graph.cpp Graph.h Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Graph.cpp -o ../bin/Graph.o
 
-../bin/SomeTests.o: SomeTests.cpp SomeTests.h Widgets.h $(UTIL)/IMGUI_V4.h
-	$(CXX) -c $(CXXFLAGS) -o2  SomeTests.cpp -o ../bin/SomeTests.o
-
 ../bin/Widgets.o: Widgets.cpp Widgets.h $(UTIL)/IMGUI_V4.h
 	$(CXX) -c $(CXXFLAGS) -o2  Widgets.cpp -o ../bin/Widgets.o
 
@@ -101,9 +96,6 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 	$(CXX) -c $(CXXFLAGS) -o2  IInterpolator.cpp -o ../bin/IInterpolator.o
 
 #-----------------------------------------------------
-
-../bin/Mech.o: Mech.cpp Mech.h Robot.h
-	$(CXX) -c $(CXXFLAGS) -o2  Mech.cpp -o ../bin/Mech.o
 
 ../bin/Robot.o: Robot.cpp Robot.h
 	$(CXX) -c $(CXXFLAGS) -o2  Robot.cpp -o ../bin/Robot.o

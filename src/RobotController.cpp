@@ -214,6 +214,15 @@ void update(){
         auto effector = pairedObjects.second;
         obj->position = effector->position + effector->quat * effectorToPairedRelation.quat * effectorToPairedRelation.position;
         obj->quat = effector->quat * effectorToPairedRelation.quat;
+        if(obj->rgBody){
+			btTransform tr;
+			tr.setRotation(btQuaternion(obj->quat.x, obj->quat.y, obj->quat.z, obj->quat.w));
+			tr.setOrigin(btVector3(obj->position.x, obj->position.y, obj->position.z));
+
+			obj->rgBody->setWorldTransform(tr);
+        }
+
+
     }
 
 }
