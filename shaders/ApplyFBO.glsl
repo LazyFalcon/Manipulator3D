@@ -21,6 +21,14 @@ uniform sampler2D uTexture;
 
 void main(void){
 	vec4 color = texture(uTexture, vUV);
+	// const vec2 camerarange = vec2(0.10, 50.0);
+	// float color = texture(uTexture, vUV).r;
+
+	// float nearZ = camerarange.x;
+	// float farZ = camerarange.y;
+	// float posZ = color*0.5+0.5;
+	// color =  (2.0 * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));
+
 	// float y = vUV.y*250*3.14;
 	// color.rgb = pow(color.rgb, vec3(1.0/2.2)*((vUV.x+vUV.y)*0.5-2)*0.3);
 	// vec2 uv = abs(vUV*2 - vec2(1));
@@ -30,6 +38,7 @@ void main(void){
 	// color.rgb = pow(color.rgb, vec3(1.0/2.2))*0.8;
 
 	outColor = color;
+	// outColor = vec4(sqrt(color));
 }
 
 #endif

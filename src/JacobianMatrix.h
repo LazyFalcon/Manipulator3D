@@ -129,22 +129,22 @@ Matrix buildJacobian(Robot &robot){
 	for(u32 i=0; i<robot.chain.size(); i++){
 		auto &module = robot.chain[i];
 		{ // forward kinematics
-			if(module->type == HINGE){
+			if(module->type == REVOLUTE_JOINT){
 				transform = transform*glm::angleAxis(float(module->value), module->axis.xyz());
 				position += transform*module->vecToA;
 			}
-			else if(module->type == PRISMATIC){
+			else if(module->type == PRISMATIC_JOINT){
 				position += transform*(module->vecToA + module->axis*float(module->value));
 			}
 			axis = module->entity->quat*axis;
 			position += transform*module->vecToB;
 		}
 
-		if(module->type == HINGE){
+		if(module->type == REVOLUTE_JOINT){
 			glm::vec3 c = glm::cross(axis.xyz(), currentEndPosition-position.xyz());
 			jacobian.insertRow(i, {c.x, c.y, c.z, axis.x, axis.y, axis.z});
 		}
-		if(module->type == PRISMATIC)
+		if(module->type == PRISMATIC_JOINT)
 			jacobian.insertRow(i, {axis.x, axis.y, axis.z,0,0,0});
 	}
 	return jacobian;
@@ -162,23 +162,23 @@ Matrix buildJacobian(Robot &robot, std::vector<double> &variables, Point endPoin
 	for(u32 i=0; i<robot.chain.size(); i++){
 		auto &module = robot.chain[i];
 		{ // forward kinematics
-			if(module->type == HINGE){
+			if(module->type == REVOLUTE_JOINT){
 				transform = transform*glm::angleAxis((float)variables[i], glm::normalize(module->axis.xyz()));
 				// transform = transform*glm::quat(cos((float)variables[i]*0.5), glm::normalize(module->axis.xyz()));
 				endPosition += transform*module->vecToA;
 			}
-			else if(module->type == PRISMATIC){
+			else if(module->type == PRISMATIC_JOINT){
 				endPosition += transform*(module->vecToA + module->axis*(float)variables[i]);
 			}
 			axis = transform*module->axis.xyz();
 			endPosition += transform*module->vecToB;
 		}
 
-		if(module->type == HINGE){
+		if(module->type == REVOLUTE_JOINT){
 			glm::vec3 c = glm::cross(axis.xyz(), currentEndPosition - endPosition.xyz());
 			jacobian.insertRow(i, {c.x, c.y, c.z, axis.x, axis.y, axis.z});
 		}
-		if(module->type == PRISMATIC){
+		if(module->type == PRISMATIC_JOINT){
 			jacobian.insertRow(i, {axis.x, axis.y, axis.z,0,0,0});
 		}
 
@@ -200,22 +200,22 @@ Matrix buildJacobianReversed(Robot &robot, std::vector<double> &variables){
 	for(u32 i=0; i<robot.chain.size(); i++){
 		auto &module = robot.chain[i];
 		{ // forward kinematics
-			if(module->type == HINGE){
+			if(module->type == REVOLUTE_JOINT){
 				transform = transform*glm::angleAxis((float)variables[i], module->axis.xyz());
 				position += transform*module->vecToA;
 			}
-			else if(module->type == PRISMATIC){
+			else if(module->type == PRISMATIC_JOINT){
 				position += transform*(module->vecToA + module->axis*(float)variables[i]);
 			}
 			axis = module->entity->quat*axis;
 			position += transform*module->vecToB;
 		}
 
-		if(module->type == HINGE){
+		if(module->type == REVOLUTE_JOINT){
 			glm::vec3 c = glm::cross(axis.xyz(), currentEndPosition-position.xyz());
 			jacobian.insertRow(i, {c.x, c.y, c.z, axis.x, axis.y, axis.z});
 		}
-		if(module->type == PRISMATIC)
+		if(module->type == PRISMATIC_JOINT)
 			jacobian.insertRow(i, {axis.x, axis.y, axis.z,0,0,0});
 
 	}

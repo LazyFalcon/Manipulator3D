@@ -2,8 +2,8 @@
 #include <Utils/BaseStructs.h>
 class Robot;
 enum JointType {
-	HINGE = 1,
-	PRISMATIC = 2,
+	REVOLUTE_JOINT = 1,
+	PRISMATIC_JOINT = 2,
 };
 
 enum class SolverType : int {

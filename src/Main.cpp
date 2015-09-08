@@ -125,6 +125,7 @@ std::string shadersToReload[] = {
 	"ToneMapping",
 	"SSAO",
 	"SSAO_depthOnly",
+	"ApplyFBO",
 };
 
 void mainLoop();
@@ -143,6 +144,7 @@ int main(){
 	// globalSettings |= DRAW_XY_GRID;
 	// globalSettings |= SSAO;
 	// globalSettings |= HDR;
+	globalSettings |= HIDE_GUI;
 	globalSettings |= SOBEL;
 	globalSettings |= DRAW_COLORS;
 	cfg_settings = CFG::Load("../settings.yml");
@@ -219,8 +221,8 @@ void renderLoop(){
 	// Engine::drawPoints({g_targetPosition}, 0xFF2000FF, 6);
 	Engine::drawGrids();
 	Engine::finalize(*scene);
-	Engine::renderGUI(ui);
-	Engine::renderShapes();
+	if(globalSettings & HIDE_GUI)Engine::renderGUI(ui);
+	if(globalSettings & HIDE_GUI)Engine::renderShapes();
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
@@ -316,13 +318,13 @@ void mainLoop(){
 			ui.rect().text("pIterations: " + std::to_string(lastPathIterationCount)).font("ui_12"s)();
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
 			ui.rect().text("LastError: " + std::to_string(lastSolverError)).font("ui_12"s)();
-			ui.rect().text("------- ").font("ui_12"s)();
-			ui.rect().text("DEBUG_VEC3_1: " + to_string(DEBUG_VEC3_1)).font("ui_12"s)();
-			ui.rect().text("DEBUG_VEC3_2: " + to_string(DEBUG_VEC3_2)).font("ui_12"s)();
-			ui.rect().text("DEBUG_VEC3_3: " + to_string(DEBUG_VEC3_3)).font("ui_12"s)();
-			ui.rect().text("DEBUG_VEC4_1: " + to_string(DEBUG_VEC4_1)).font("ui_12"s)();
-			ui.rect().text("DEBUG_VEC4_2: " + to_string(DEBUG_VEC4_2)).font("ui_12"s)();
-			ui.rect().text("DEBUG_QUAT: " + to_string(DEBUG_QUAT)).font("ui_12"s)();
+			// ui.rect().text("------- ").font("ui_12"s)();
+			// ui.rect().text("DEBUG_VEC3_1: " + to_string(DEBUG_VEC3_1)).font("ui_12"s)();
+			// ui.rect().text("DEBUG_VEC3_2: " + to_string(DEBUG_VEC3_2)).font("ui_12"s)();
+			// ui.rect().text("DEBUG_VEC3_3: " + to_string(DEBUG_VEC3_3)).font("ui_12"s)();
+			// ui.rect().text("DEBUG_VEC4_1: " + to_string(DEBUG_VEC4_1)).font("ui_12"s)();
+			// ui.rect().text("DEBUG_VEC4_2: " + to_string(DEBUG_VEC4_2)).font("ui_12"s)();
+			// ui.rect().text("DEBUG_QUAT: " + to_string(DEBUG_QUAT)).font("ui_12"s)();
 		ui.endTable();
 		// ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
 		if(RC) Helper::directControlWidget(window_width-300, 2, mousePosition, *RC);
@@ -358,6 +360,9 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	PythonBindings::handleInput(key, action,  mods, RC, scene);
 
+	if(key == 'H' && action == GLFW_PRESS){
+		globalSettings ^= HIDE_GUI;
+	}
 	if(key == 'R' && (mods & GLFW_MOD_CONTROL) && action == GLFW_PRESS){
 		ResourceLoader loader(scene->resources);
 		for(auto &it : shadersToReload){

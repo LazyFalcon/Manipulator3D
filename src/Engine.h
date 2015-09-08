@@ -23,26 +23,28 @@ extern HexColor GUIhover[4];
 extern HexColor GUIfontColor[4];
 extern HexColor GUIspecColor[4];
 
+#define BIT(x) (1<<(x))
 enum {
-	LIGHTS =               0b1,
-	SHADOWS =              0b10,
-	WIREFRAME =            0b100,
-	GOD_RAYS =             0b1000,
-	MSAA =                 0b10000,
-	HDR =                  0b100000,
-	DOF =                  0b1000000,
-	SSAO =                 0b10000000,
-	SOBEL =                0b100000000,
-	BLUR =                 0b1000000000,
-	PREVENT_COLLISIONS =   0b10000000000,
-	DRAW_COLORS =          0b100000000000,
-	DRAW_NORMALS =         0b1000000000000,
-	DRAW_DEPTH =           0b10000000000000,
-	DRAW_LIGHTS =          0b100000000000000,
-	DRAW_XY_GRID =         0b1000000000000000,
-	DRAW_XZ_GRID =         0b10000000000000000,
-	DRAW_YZ_GRID =         0b100000000000000000,
-	BLUR_WITH_DOWNSAMPLE = 0b1000000000000000000,
+	LIGHTS =               BIT(0),
+	SHADOWS =              BIT(1),
+	WIREFRAME =            BIT(2),
+	GOD_RAYS =             BIT(3),
+	MSAA =                 BIT(4),
+	HDR =                  BIT(5),
+	DOF =                  BIT(6),
+	SSAO =                 BIT(7),
+	SOBEL =                BIT(8),
+	BLUR =                 BIT(9),
+	PREVENT_COLLISIONS =   BIT(10),
+	DRAW_COLORS =          BIT(11),
+	DRAW_NORMALS =         BIT(12),
+	DRAW_DEPTH =           BIT(13),
+	DRAW_LIGHTS =          BIT(14),
+	DRAW_XY_GRID =         BIT(15),
+	DRAW_XZ_GRID =         BIT(16),
+	DRAW_YZ_GRID =         BIT(17),
+	BLUR_WITH_DOWNSAMPLE = BIT(18),
+	HIDE_GUI =             BIT(19),
 };
 
 namespace Engine NAM_START

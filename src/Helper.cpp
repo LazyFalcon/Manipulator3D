@@ -448,7 +448,7 @@ void dropCallback(int count, const char** paths){
 class DirectControlWidget
 {
 public:
-	i32 moduleUnderEdition;
+	i32 moduleUnderEdition = -1;
 	bool directControlEnabled = true;
 	enum ControlType : u32 {
 		None = 0, Joint, Cartesian
@@ -460,11 +460,12 @@ public:
 		return moduleUnderEdition;
 	}
 
-    std::vector<double> history;
+	std::vector<double> history;
 
 	glm::vec3 eulerAngles;
 	glm::vec3 axis;
 	glm::vec4 position;
+	bool automaticInsert = true;
 
 	void extendedEditButton(float &v, float incrVal = 0.01f){
 		ui.rect(70, 20).font("ui_12"s);
@@ -522,9 +523,9 @@ public:
 			cursorWidgetHorizontal({x,y});
 
 			if(not directControlEnabled){
-                ui.rect(200, 20).text("Show panel").button(directControlEnabled)();
-                ui.endTable(); return;
-            }
+				ui.rect(200, 20).text("Show panel").button(directControlEnabled)();
+				ui.endTable(); return;
+			}
 
 			ui.box(UI::LayoutHorizontal);{
 				ui.rect(100, 20).color(controlType == Joint?0xFFA000FF : 0xA0A0A0FF).text("Joint control").radio(controlType, Joint)(UI::CaptureMouse);
@@ -533,8 +534,11 @@ public:
                     auto q = RC.robot->endEffector.quat;
                     axis = glm::axis(q);
                     eulerAngles = glm::eulerAngles(q);
+										history = RC.robot->getVariables();
+										moduleUnderEdition = -1;
                 });}
 			ui.endBox();
+
 			if(controlType == Joint){
 				for(i32 i=0; i<RC.robot->chain.size(); ++i){
 
@@ -568,13 +572,15 @@ public:
 					extendedEditButton(position.z);
 				);
 				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
-					pushCanges(RC);
-					/// update rest of..
-					auto q = RC.robot->endEffector.quat;
-					axis = glm::axis(q);
-					eulerAngles = glm::eulerAngles(q);
+					if(automaticInsert){
+						pushCanges(RC);
+						/// update rest of..
+						auto q = RC.robot->endEffector.quat;
+						axis = glm::axis(q);
+						eulerAngles = glm::eulerAngles(q);
+					}
 				}
-				ui.rect(70, 15).font("ui_10"s).text("Position:")(UI::CaptureMouse);
+				ui.rect(70, 15).font("ui_10"s).text("Position (X,Y,Z):")(UI::CaptureMouse);
 				horizontal(
 					extendedEditButton(axis.x);
 					extendedEditButton(axis.y);
@@ -582,42 +588,41 @@ public:
 				);
 				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
 					axis = glm::normalize(axis);
-					pushCanges(RC);
+					if(automaticInsert) pushCanges(RC);
 					eulerAngles = glm::eulerAngles(glm::quat(1, axis));
 				}
-				ui.rect(70, 15).font("ui_10"s).text("Axis:")(UI::CaptureMouse);
+				ui.rect(70, 15).font("ui_10"s).text("Axis (X,Y,Z):")(UI::CaptureMouse);
 				horizontal(
 					extendedEditButton(eulerAngles.x);
 					extendedEditButton(eulerAngles.y);
 					extendedEditButton(eulerAngles.z);
 				);
 				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
-					pushCanges(RC);
+					if(automaticInsert) pushCanges(RC);
 					axis = glm::axis(glm::quat(eulerAngles));
 				}
 				ui.rect(70, 15).font("ui_10"s).text("Euler:")(UI::CaptureMouse);
-
-
 
 				horizontal(
 					ui.rect(70, 20).color(solverTarget == OnlyPosition?0xFFA000FF : 0xA0A0A0FF).text("Position").radio(solverTarget, OnlyPosition)(UI::Hoverable);
 					ui.rect(70, 20).color(solverTarget == OnlyOrientation?0xFFA000FF : 0xA0A0A0FF).text("Orientation").radio(solverTarget, OnlyOrientation)(UI::Hoverable);
 					ui.rect(70, 20).color(solverTarget == PositionAndOrientation?0xFFA000FF : 0xA0A0A0FF).text("Both").radio(solverTarget, PositionAndOrientation)(UI::Hoverable);
 				);
-				ui.rect(70, 15).font("ui_10"s).text("Insert:")(UI::CaptureMouse);
+				ui.rect(70, 15).font("ui_10"s).text("What to insert:")(UI::CaptureMouse);
 
 				horizontal(
-					ui.rect(100, 20).color(0xA0A0A0FF).text("From robot")(UI::Hoverable)
+					ui.rect(70, 20).color(0xA0A0A0FF).text("Read")(UI::Hoverable)
 						.onlClick([&RC, this]{
 							position = RC.robot->endEffector.position;
 							auto q = RC.robot->endEffector.quat;
 							axis = glm::axis(q);
 							eulerAngles = glm::eulerAngles(q);
 						});
-					ui.rect(100, 20).color(0xA0A0A0FF).text("To robot")(UI::Hoverable)
+					ui.rect(70, 20).color(0xA0A0A0FF).text("Insert")(UI::Hoverable)
 						.onlClick([&RC, this]{
 							pushCanges(RC);
 							});
+					ui.rect(70, 20).color(automaticInsert ? 0xFFA000FF : 0xA0A0A0FF).text("Automatic").button(automaticInsert)(UI::Hoverable);
 					);
 			}
 

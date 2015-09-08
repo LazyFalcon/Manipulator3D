@@ -17,13 +17,13 @@ void Robot::update(float dt){
 	// glm::quat transform(1,0,0,0);
 	glm::quat transform{0,0,0,1};
 	for(auto &module : chain){
-		if(module->type == HINGE){
+		if(module->type == REVOLUTE_JOINT){
 			// module->value = period(module->value);
 			// module->value = glm::clamp(module->value, module->min, module->max);
 			transform = transform*glm::angleAxis(float(module->value), glm::normalize(module->axis.xyz()));
 			position += transform*module->vecToA;
 		}
-		else if(module->type == PRISMATIC){
+		else if(module->type == PRISMATIC_JOINT){
 			position += transform*(module->vecToA + module->axis*float(module->value));
 		}
 		module->entity->quat = transform;
@@ -58,12 +58,12 @@ Point Robot::simulate(std::vector<double> &variables){
 	glm::quat transform{0,0,0,1};
 	for(int i=0; i<getSize(); i++){
 		auto &module = chain[i];
-		if(module->type == HINGE){
+		if(module->type == REVOLUTE_JOINT){
 			// variables[i] = period(variables[i]);
 			transform = transform*glm::angleAxis((float)variables[i], glm::normalize(module->axis.xyz()));
 			position += transform*module->vecToA;
 		}
-		else if(module->type == PRISMATIC){
+		else if(module->type == PRISMATIC_JOINT){
 			position += transform*(module->vecToA + module->axis*(float)variables[i]);
 		}
 		axis = transform*module->axis.xyz();
@@ -88,12 +88,12 @@ std::vector<Point> Robot::simulateFullData(std::vector<double> &variables){
 	glm::quat transform{0,0,0,1};
 	for(int i=0; i<getSize(); i++){
 		auto &module = chain[i];
-		if(module->type == HINGE){
+		if(module->type == REVOLUTE_JOINT){
 			// module->value = period(module->value);
 			transform = transform*glm::angleAxis((float)variables[i], glm::normalize(module->axis.xyz()));
 			position += transform*module->vecToA;
 		}
-		else if(module->type == PRISMATIC){
+		else if(module->type == PRISMATIC_JOINT){
 			position += transform*(module->vecToA + module->axis*(float)variables[i]);
 		}
 		axis = transform*module->axis.xyz();

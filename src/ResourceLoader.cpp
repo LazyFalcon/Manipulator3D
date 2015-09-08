@@ -385,9 +385,9 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, Bulle
 	for(auto &it : cfg.Vector){
 		int type;
 		if(it["Type"].value == "prismatic")
-			type = PRISMATIC;
-		else if(it["Type"].value == "hinge")
-			type = HINGE;
+			type = PRISMATIC_JOINT;
+		else if(it["Type"].value == "revolute")
+			type = REVOLUTE_JOINT;
 
 		auto module = std::make_unique<Module>();
 		cout<<"-- "+it["Name"].value<<endl;
@@ -399,8 +399,8 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, Bulle
 		module->max = it["ParentJoint"]["Max"].asFloat()*toRad;
 		module->name = it["Name"].value;
 		module->entity = scene.units[it["Name"].value];
-		module->maxVelocty = 0.9; /// rad/s
-		module->maxAcceleration = 0.2; /// rad/s^2
+		module->maxVelocty = it.has("MaxVelocity")?  it["MaxVelocity"].asFloat() : 1.f; /// rad/s
+		module->maxAcceleration = it.has("MaxAcceleration")?  it["MaxAcceleration"].asFloat() : 1.f; /// rad/s^2
 
 		if(module->entity->rgBody){
 			auto body = module->entity->rgBody;

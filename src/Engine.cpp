@@ -1094,13 +1094,13 @@ void finalize(Scene &scene){
 	glUseProgram(shader);
 
 	setupBuffer(screenQuad);
+
 	if(globalSettings & DRAW_COLORS)
 		colorBuffer.bind();
 	if(globalSettings & DRAW_NORMALS)
 		normalBuffer.bind();
 	if(globalSettings & DRAW_DEPTH)
-		// depthBuffer.bind();
-		objectIDTex_R16.bind();
+		depthBuffer.bind();
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
