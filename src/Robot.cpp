@@ -3,6 +3,7 @@
 #include <Utils/BaseStructs.h>
 #include "common.h"
 #include "Robot.h"
+#include "Helper.h"
 
 extern const float pi;
 static const float hpi = 0.5f * 3.141592f;
@@ -29,7 +30,7 @@ void Robot::update(float dt){
 		module->entity->quat = transform;
 		module->entity->position = position;
 
-		if(module->entity->rgBody){
+		if(module->entity->rgBody && config.usePhysics){
 			btTransform tr;
 			tr.setRotation(btQuaternion(transform.x, transform.y, transform.z, transform.w));
 			tr.setOrigin(btVector3(position.x, position.y, position.z));
@@ -41,14 +42,16 @@ void Robot::update(float dt){
 
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
-
 	}
 
 	auto positionShift = glm::distance(position, endEffector.position);
 	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 
-	endEffectorAcceleration = (positionShift/dt - endEffectorVelocity)/dt;
-	endEffectorVelocity = positionShift/dt;
+    Helper::record().EffectorPosition = position;
+    Helper::record().EffectorOrientation = glm::angleAxis(1.f,glm::normalize(axis.xyz()));
+    Helper::record().EffectorDelta = positionShift;
+	Helper::record().EffectorAcceleration = (positionShift/dt - Helper::record().EffectorVelocity)/dt;
+	Helper::record().EffectorVelocity = positionShift/dt;
 }
 
 Point Robot::simulate(std::vector<double> &variables){

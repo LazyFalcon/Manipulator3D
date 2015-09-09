@@ -17,6 +17,7 @@ struct SystemSettings
 	u32 solverIterationLimit;
 	bool useRobotConstraints;
 	bool enableCollisions;
+	bool usePhysics;
 };
 
 struct Point {
@@ -90,6 +91,14 @@ public:
 		chain.clear();
 		std::cerr<<"delete Robot"<<std::endl;
 	}
+	Robot(){
+		config.positionPrecision = 0.001;
+		config.orientationPrecision = 0.01;
+		config.solverIterationLimit = 2000;
+		config.useRobotConstraints = false;
+		config.enableCollisions = true;
+		config.usePhysics = true;
+	}
 
 	void update(float dt);
 	Point simulate(std::vector<double> &vec);
@@ -108,7 +117,6 @@ public:
 		return chain.size();
 	}
 
-
 	SystemSettings config;
 	SystemSettings& getConfig(){
 		return config;
@@ -118,8 +126,6 @@ public:
 	}
 	bool isReady { true };
 	Point endEffector;
-	double endEffectorVelocity;
-	double endEffectorAcceleration;
 
 	glm::vec4 basePosition;
 
@@ -133,7 +139,7 @@ public:
 		std::cerr<<"delete JT0"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
+	bool performIK(Point start, Point target, Robot &robot, double precision = -1);
 };
 /// with orientation
 class JT1 : public Solver {
@@ -142,7 +148,7 @@ public:
 		std::cerr<<"delete JT1"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
+	bool performIK(Point start, Point target, Robot &robot, double precision = -1);
 };
 /// with orientation
 class JT2 : public Solver {
@@ -151,7 +157,7 @@ public:
 		std::cerr<<"delete JT2"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
-	bool performIK(Point start, Point target, Robot &robot, double precision = 0.001);
+	bool performIK(Point start, Point target, Robot &robot, double precision = -1);
 };
 
 void robotTestInit(Robot &robot);

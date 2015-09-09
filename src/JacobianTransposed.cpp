@@ -7,6 +7,7 @@
 #include "JacobianTransposed.h"
 #include "Timer.h"
 #include "JacobianMatrix.h"
+#include "Helper.h"
 
 #include "Graph.h"
 
@@ -88,8 +89,11 @@ bool JT0::solve(Point target, Robot &robot){
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
-	int iterationLimit = 2000;
-	float minError = precision;
+	Timer<double, std::ratio<1,1000>,1> precisetimer;
+    precisetimer.start();
+	u32 iterationLimit = robot.config.solverIterationLimit;
+	float positionPrecision = precision>0 ? precision : robot.config.positionPrecision;
+	float orientationPrecision = precision>0 ? precision*10 : robot.config.orientationPrecision;
 
 	auto endEffector = start;
 	auto force = Matrix(6,1);
@@ -115,7 +119,7 @@ bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iterations = 0;
-	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
+	for(; (positionError > positionPrecision || quatError > orientationPrecision) && iterations<iterationLimit; iterations++){
 		auto positionDelta = (target.position - endEffector.position);
 		auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat))*0.f;
 
@@ -136,8 +140,15 @@ bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 	// cout<<iterations<<" << "<<quatError<<endl;
 	endPosition = endEffector.position;
 	result = variables.getVector();
-	succes = positionError < minError;
+	succes = positionError < positionPrecision;
 	lastIterationCount = iterations;
+
+    precisetimer.end();
+
+    Helper::record().IKIterationTime = precisetimer.get();
+    Helper::record().IKIterarationCount = iterations;
+    Helper::record().IKPositionError = positionError;
+
 	return succes;
 }
 
@@ -172,8 +183,11 @@ bool JT1::solve(Point target, Robot &robot){
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
-	int iterationLimit = 2000;
-	float minError = precision;
+	Timer<double, std::ratio<1,1000>,1> precisetimer;
+    precisetimer.start();
+	u32 iterationLimit = robot.config.solverIterationLimit;
+	float positionPrecision = precision>0 ? precision : robot.config.positionPrecision;
+	float orientationPrecision = precision>0 ? precision*10 : robot.config.orientationPrecision;
 
 	auto endEffector = start;
 	auto force = Matrix(6,1);
@@ -199,7 +213,7 @@ bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
 	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iterations = 0;
-	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
+	for(; (positionError > positionPrecision || quatError > orientationPrecision) && iterations<iterationLimit; iterations++){
 		auto positionDelta = (target.position - endEffector.position);
 		auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat));
 
@@ -220,8 +234,16 @@ bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
 	// cout<<iterations<<" << "<<quatError<<endl;
 	endPosition = endEffector.position;
 	result = variables.getVector();
-	succes = positionError < minError;
+	succes = positionError < positionPrecision;
 	lastIterationCount = iterations;
+
+    precisetimer.end();
+
+    Helper::record().IKIterationTime = precisetimer.get();
+    Helper::record().IKIterarationCount = iterations;
+    Helper::record().IKPositionError = positionError;
+    Helper::record().IKOrientationError = quatError;
+
 	return succes;
 }
 
@@ -279,8 +301,11 @@ bool JT2::solve(Point target, Robot &robot){
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
-	int iterationLimit = 2000;
-	float minError = precision;
+	Timer<double, std::ratio<1,1000>,1> precisetimer;
+    precisetimer.start();
+	u32 iterationLimit = robot.config.solverIterationLimit;
+	float positionPrecision = precision>0 ? precision : robot.config.positionPrecision;
+	float orientationPrecision = precision>0 ? precision*10 : robot.config.orientationPrecision;
 
 	auto endEffector = start;
 	auto force = Matrix(6,1);
@@ -297,7 +322,7 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	float positionError = glm::distance(target.position, endEffector.position);
 	float quatError = 1;
 	u32 iterations = 0;
-	for(; (positionError > minError || quatError > minError*10) && iterations<iterationLimit; iterations++){
+	for(; (positionError > positionPrecision || quatError > orientationPrecision) && iterations<iterationLimit; iterations++){
 
 		auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
@@ -331,9 +356,17 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	// cout<<iterations<<" << "<<quatError<<endl;
 	endPosition = endEffector.position;
 	result = variables.getVector();
-	succes = positionError < minError && quatError < minError*10;
+	succes = positionError < positionPrecision && quatError < positionPrecision*10;
 	lastIterationCount = iterations;
 	lastSolverError = quatError;
+
+    precisetimer.end();
+
+    Helper::record().IKIterationTime = precisetimer.get();
+    Helper::record().IKIterarationCount = iterations;
+    Helper::record().IKPositionError = positionError;
+    Helper::record().IKOrientationError = quatError;
+
 	return succes;
 }
 

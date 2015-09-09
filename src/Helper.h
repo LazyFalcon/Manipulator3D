@@ -59,8 +59,6 @@ void restoreCursorPos(const std::string &name);
 glm::vec2 getScreenCursor(Camera &camera);
 void cursorVidgetHorizontal(glm::vec2 pos);
 
-
-
 /// -------------------------------- FILESYSTEM
 /**
  *  Obejmuje:
@@ -94,5 +92,28 @@ std::vector<float>& storeFloat(const std::string &s);
 std::vector<double>& storeDouble(const std::string &s);
 std::vector<glm::vec4>& storeVec4(const std::string &s);
 
+/// ----------------------------------------------------- DATA RECORDING
+
+struct FrameRecordedData
+{
+    double IKIterationTime;
+    double IKIterarationCount;
+    double IKPositionError;
+    double IKOrientationError;
+
+    double EffectorDelta;
+    double EffectorVelocity;
+    double EffectorAcceleration;
+
+    double FrameTime;
+
+    glm::vec4 EffectorPosition;
+    glm::quat EffectorOrientation;
+
+    std::vector<glm::vec4> RobotJoints;
+
+};
+
+FrameRecordedData& record();
 
 NAM_END

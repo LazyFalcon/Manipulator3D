@@ -636,14 +636,14 @@ void renderScene(Scene &scene){
 		glm::mat4 transform = identity;
 
 		auto rgBody = entity.second->rgBody;
-		if(rgBody && !rgBody->isStaticOrKinematicObject()){
+		if(rgBody && !rgBody->isStaticOrKinematicObject() && scene.robot->config.usePhysics){
 			auto btPos = rgBody->getCenterOfMassTransform().getOrigin();
 			entity.second->position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
 			auto btQuat = rgBody->getOrientation();
 			entity.second->quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
-		else if(rgBody && rgBody->isStaticOrKinematicObject()){
+		else if(rgBody && rgBody->isStaticOrKinematicObject() && scene.robot->config.usePhysics){
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
 		else

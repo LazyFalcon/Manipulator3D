@@ -259,6 +259,7 @@ void mainLoop(){
 		dt = timer();
 		ddt = dtimer();
 		msdt = msecTimer();
+        Helper::record().FrameTime = ddt;
 		timeAccumulator += dt;
 		accu10ms += dt;
 		signal10ms = false;

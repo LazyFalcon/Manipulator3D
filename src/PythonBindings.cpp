@@ -273,11 +273,19 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::class_<std::vector<double>>("DoubleVec")
 		.def(bpl::vector_indexing_suite<std::vector<double>>())
 		;
+	bpl::class_<SystemSettings>("SystemSettings")
+		.def_readwrite("positionPrecision", &SystemSettings::positionPrecision)
+		.def_readwrite("orientationPrecision", &SystemSettings::orientationPrecision)
+		.def_readwrite("solverIterationLimit", &SystemSettings::solverIterationLimit)
+		.def_readwrite("useRobotConstraints", &SystemSettings::useRobotConstraints)
+		.def_readwrite("enableCollisions", &SystemSettings::enableCollisions)
+		;
 	bpl::class_<Robot, std::shared_ptr<Robot>, boost::noncopyable>("Robot")
 		.def("getModuleCount", &Robot::getModuleCount)
 		.def("module", &Robot::module, bpl::return_value_policy<bpl::reference_existing_object>())
-		.def_readonly("velocity", &Robot::endEffectorVelocity)
-		.def_readonly("acceleration", &Robot::endEffectorAcceleration)
+		// .def_readonly("velocity", &Robot::endEffectorVelocity)
+		.def_readwrite("config", &Robot::config)
+		// .def_readonly("acceleration", &Robot::endEffectorAcceleration)
 		;
 	bpl::class_<Module, boost::noncopyable>("Module")
 		.def_readwrite("value", &Module::value)
@@ -288,15 +296,25 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readwrite("lastAcceleration", &Module::lastAcceleration)
 		.def_readwrite("axis", &Module::axis)
 		;
-	bpl::class_<SystemSettings>("SystemSettings")
-		.def_readwrite("positionPrecision", &SystemSettings::positionPrecision)
-		.def_readwrite("orientationPrecision", &SystemSettings::orientationPrecision)
-		.def_readwrite("solverIterationLimit", &SystemSettings::solverIterationLimit)
-		.def_readwrite("useRobotConstraints", &SystemSettings::useRobotConstraints)
-		.def_readwrite("enableCollisions", &SystemSettings::enableCollisions)
-		;
 
 	using namespace Helper;
+
+    bpl::class_<FrameRecordedData>("FrameRecordedData")
+        .def_readonly("IKIterationTime", &FrameRecordedData::IKIterationTime)
+        .def_readonly("IKIterarationCount", &FrameRecordedData::IKIterarationCount)
+        .def_readonly("IKPositionError", &FrameRecordedData::IKPositionError)
+        .def_readonly("IKOrientationError", &FrameRecordedData::IKOrientationError)
+        .def_readonly("EffectorDelta", &FrameRecordedData::EffectorDelta)
+        .def_readonly("EffectorVelocity", &FrameRecordedData::EffectorVelocity)
+        .def_readonly("EffectorAcceleration", &FrameRecordedData::EffectorAcceleration)
+        .def_readonly("FrameTime", &FrameRecordedData::FrameTime)
+        .def_readonly("EffectorPosition", &FrameRecordedData::EffectorPosition)
+        .def_readonly("EffectorOrientation", &FrameRecordedData::EffectorOrientation)
+        .def_readonly("RobotJoints", &FrameRecordedData::RobotJoints)
+        ;
+    bpl::def("getRecord", &record, bpl::return_value_policy<bpl::reference_existing_object>());
+
+
 	bpl::def("getPositionUnderMouse", &Helper::getPositionUnderMouse);
 	bpl::def("getNormalUnderMouse", &Helper::getNormalUnderMouse);
 	// bpl::def("getObjectUnderMouse", &Helper::getObjectUnderMouse, bpl::return_value_policy<bpl::reference_existing_object>());
@@ -314,45 +332,45 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	// bpl::def("getPoint", &getPoint);
 	// bpl::def("saveGroup", &saveGroup);
 	// bpl::def("getGroup", &getGroup);
-		bpl::scope().attr("Press") = GLFW_PRESS;
-		bpl::scope().attr("Release") = GLFW_RELEASE;
-		bpl::scope().attr("Repeat") = GLFW_REPEAT;
-		bpl::scope().attr("Pause") = GLFW_KEY_PAUSE;
-		bpl::scope().attr("Enter") = GLFW_KEY_ENTER;
-		bpl::scope().attr("Esc") = GLFW_KEY_ESCAPE;
-		bpl::scope().attr("Ctrl") = GLFW_MOD_CONTROL;
-		bpl::scope().attr("Shift") = GLFW_MOD_SHIFT;
-		bpl::scope().attr("Alt") = GLFW_MOD_ALT;
-		bpl::scope().attr("F1") = GLFW_KEY_F1;
-		bpl::scope().attr("F2") = GLFW_KEY_F2;
-		bpl::scope().attr("F3") = GLFW_KEY_F3;
-		bpl::scope().attr("F4") = GLFW_KEY_F4;
-		bpl::scope().attr("F5") = GLFW_KEY_F5;
-		bpl::scope().attr("F6") = GLFW_KEY_F6;
-		bpl::scope().attr("F7") = GLFW_KEY_F7;
-		// bpl::scope().attr("F8") = GLFW_KEY_F8;
-		bpl::scope().attr("F9") = GLFW_KEY_F9;
-		bpl::scope().attr("F10") = GLFW_KEY_F10;
-		bpl::scope().attr("F11") = GLFW_KEY_F11;
-		bpl::scope().attr("F12") = GLFW_KEY_F12;
+    bpl::scope().attr("Press") = GLFW_PRESS;
+    bpl::scope().attr("Release") = GLFW_RELEASE;
+    bpl::scope().attr("Repeat") = GLFW_REPEAT;
+    bpl::scope().attr("Pause") = GLFW_KEY_PAUSE;
+    bpl::scope().attr("Enter") = GLFW_KEY_ENTER;
+    bpl::scope().attr("Esc") = GLFW_KEY_ESCAPE;
+    bpl::scope().attr("Ctrl") = GLFW_MOD_CONTROL;
+    bpl::scope().attr("Shift") = GLFW_MOD_SHIFT;
+    bpl::scope().attr("Alt") = GLFW_MOD_ALT;
+    bpl::scope().attr("F1") = GLFW_KEY_F1;
+    bpl::scope().attr("F2") = GLFW_KEY_F2;
+    bpl::scope().attr("F3") = GLFW_KEY_F3;
+    bpl::scope().attr("F4") = GLFW_KEY_F4;
+    bpl::scope().attr("F5") = GLFW_KEY_F5;
+    bpl::scope().attr("F6") = GLFW_KEY_F6;
+    bpl::scope().attr("F7") = GLFW_KEY_F7;
+    // bpl::scope().attr("F8") = GLFW_KEY_F8;
+    bpl::scope().attr("F9") = GLFW_KEY_F9;
+    bpl::scope().attr("F10") = GLFW_KEY_F10;
+    bpl::scope().attr("F11") = GLFW_KEY_F11;
+    bpl::scope().attr("F12") = GLFW_KEY_F12;
 
-		// bpl::class_<std::vector<glm::vec4>>("XVec")
-				// .def(bpl::vector_indexing_suite<std::vector<glm::vec4>>())
-				// ;
-		// bpl::class_<std::vector<float>>("FloatVec")
-				// .def(bpl::vector_indexing_suite<std::vector<float>>())
-				// ;
-		// bpl::class_<std::vector<double>>("DoubleVec")
-				// .def(bpl::vector_indexing_suite<std::vector<double>>())
-				// ;
+    // bpl::class_<std::vector<glm::vec4>>("XVec")
+            // .def(bpl::vector_indexing_suite<std::vector<glm::vec4>>())
+            // ;
+    // bpl::class_<std::vector<float>>("FloatVec")
+            // .def(bpl::vector_indexing_suite<std::vector<float>>())
+            // ;
+    // bpl::class_<std::vector<double>>("DoubleVec")
+            // .def(bpl::vector_indexing_suite<std::vector<double>>())
+            // ;
 
-		// bpl::def("getF", &getFloat, bpl::return_value_policy<bpl::reference_existing_object>());
-		// bpl::def("getD", &getDouble, bpl::return_value_policy<bpl::reference_existing_object>());
-		// bpl::def("getVec", &getVec4, bpl::return_value_policy<bpl::reference_existing_object>());
+    // bpl::def("getF", &getFloat, bpl::return_value_policy<bpl::reference_existing_object>());
+    // bpl::def("getD", &getDouble, bpl::return_value_policy<bpl::reference_existing_object>());
+    // bpl::def("getVec", &getVec4, bpl::return_value_policy<bpl::reference_existing_object>());
 
-		// bpl::def("store", &storeFloat);
-		// bpl::def("store", &storeDouble);
-		// bpl::def("store", &storeVec4);
+    // bpl::def("store", &storeFloat);
+    // bpl::def("store", &storeDouble);
+    // bpl::def("store", &storeVec4);
 }
 
 bpl::object main;

@@ -122,12 +122,13 @@ class DataCollector:
 		self.enableCollecting = False
 
 	def collect(self, RC, dt):
-		if self.enableCollecting:
-			for i in range(self.js):
-				self.jointPosList[i].append(RC.getRobot().module(i).value)
-			self.effectorAcceleration.append(RC.getRobot().acceleration)
-			self.effectorVelocity.append(RC.getRobot().velocity)
-			self.time.append(self.time[-1] + dt)
+		pass
+		# if self.enableCollecting:
+			# for i in range(self.js):
+				# self.jointPosList[i].append(RC.getRobot().module(i).value)
+			# self.effectorAcceleration.append(RC.getRobot().acceleration)
+			# self.effectorVelocity.append(RC.getRobot().velocity)
+			# self.time.append(self.time[-1] + dt)
 
 dataCollector = DataCollector()
 

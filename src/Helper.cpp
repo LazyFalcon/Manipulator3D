@@ -682,5 +682,12 @@ void collidingPair(shared_ptr<Entity> &a, shared_ptr<Entity> &b){
 
 }
 
+/// ----------------------------------------------------- DATA RECORDING
+FrameRecordedData g_record;
+FrameRecordedData& record(){
+    return g_record;
+}
+
+
 
 NAM_END
