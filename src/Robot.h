@@ -79,7 +79,7 @@ public:
 	bool succes = false;
 
 	virtual bool solve(Point target, Robot &robot) = 0;
-	virtual bool performIK(Point start, Point target, Robot &robot, double precision = 0.001)=0;
+	virtual bool performIK(Point start, Point target, Robot &robot, double precision = -1)=0;
 	virtual ~Solver(){}
 };
 
@@ -92,7 +92,7 @@ public:
 		std::cerr<<"~Robot"<<std::endl;
 	}
 	Robot(){
-		config.positionPrecision = 0.001;
+		config.positionPrecision = 0.0005;
 		config.orientationPrecision = 0.01;
 		config.solverIterationLimit = 2000;
 		config.useRobotConstraints = false;

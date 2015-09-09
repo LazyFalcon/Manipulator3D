@@ -83,13 +83,13 @@ bool JT0::solve(Point target, Robot &robot){
 		robot.insertVariables(result);
 	}
 
-	performIK({currentPosition, robot.endEffector.quat}, target, robot, 0.0001);
+	performIK({currentPosition, robot.endEffector.quat}, target, robot);
 
 	robot.insertVariables(tmpJoints);
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
-	Timer<double, std::ratio<1,1000000>,1> precisetimer;
+	Timer<double, 1000,1> precisetimer;
 	precisetimer.start();
 
 	u32 iterationLimit = robot.config.solverIterationLimit;
@@ -184,7 +184,7 @@ bool JT1::solve(Point target, Robot &robot){
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
-	Timer<double, std::ratio<1,1000>,1> precisetimer;
+	Timer<double, 1000,1> precisetimer;
 	precisetimer.start();
 
 	u32 iterationLimit = robot.config.solverIterationLimit;
@@ -303,7 +303,7 @@ bool JT2::solve(Point target, Robot &robot){
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
-	Timer<double, std::ratio<1,1000>,1> precisetimer;
+	Timer<double, 1000,1> precisetimer;
 	precisetimer.start();
 
 	u32 iterationLimit = robot.config.solverIterationLimit;

@@ -82,18 +82,18 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 #-----------------------------------------------------
 
 ../bin/Robot-Commands.o: $(UTIL)/IMGUI_V4.h Robot-Commands.cpp Robot-Commands.h $(UTIL)/BaseStructs.h
-	$(CXX) -c $(CXXFLAGS) -o2 Robot-Commands.cpp -o ../bin/Robot-Commands.o
+	$(CXX) -c $(CXXFLAGS) -o3 Robot-Commands.cpp -o ../bin/Robot-Commands.o
 
 #-----------------------------------------------------
 
 ../bin/JacobianTransposed.o: JacobianTransposed.cpp JacobianTransposed.h Robot.h JacobianMatrix.h $(UTIL)/Utils.h
-	$(CXX) -c $(CXXFLAGS) -o2  JacobianTransposed.cpp -o ../bin/JacobianTransposed.o
+	$(CXX) -c $(CXXFLAGS) -o3  JacobianTransposed.cpp -o ../bin/JacobianTransposed.o
 
 ../bin/RobotController.o: RobotController.cpp RobotController.h JacobianTransposed.h Robot.h IInterpolator.h
-	$(CXX) -c $(CXXFLAGS) -o2  RobotController.cpp -o ../bin/RobotController.o
+	$(CXX) -c $(CXXFLAGS) -o3  RobotController.cpp -o ../bin/RobotController.o
 
 ../bin/IInterpolator.o: IInterpolator.cpp IInterpolator.h Robot.h
-	$(CXX) -c $(CXXFLAGS) -o2  IInterpolator.cpp -o ../bin/IInterpolator.o
+	$(CXX) -c $(CXXFLAGS) -o3  IInterpolator.cpp -o ../bin/IInterpolator.o
 
 #-----------------------------------------------------
 

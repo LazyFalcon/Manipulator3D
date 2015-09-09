@@ -236,11 +236,11 @@ void updates(float dt){
 	// PythonBindings::update(RC, scene);
 }
 void mainLoop(){
-	Timer<float, std::ratio<1,1000>,30> timer;
-	Timer<double, std::ratio<1,1000>,30> dtimer;
-	Timer<uint32_t, std::ratio<1,1000>,100> msecTimer;
-	Timer<uint32_t, std::ratio<1,1000>,1> msecCounter;
-	Timer<double, std::ratio<1,1000>,1> precisetimer;
+	Timer<float, 1000,30> timer;
+	Timer<double, 1000,30> dtimer;
+	Timer<uint32_t, 1000,100> msecTimer;
+	Timer<uint32_t, 1000,1> msecCounter;
+	Timer<double, 1000,1> precisetimer;
 	float timeAccumulator = 0.f;
 	float step = g_timeStep;
 	float dt = 0.f;

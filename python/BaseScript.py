@@ -68,25 +68,6 @@ class EndTest():
 	def onUpdate(self, RC, scene, dt):
 		return True
 
-def startTest_1():
-	global recordName
-	RC = getRC()
-	enableRecording = True
-	recordName = 'FirstRecord'
-
-	points = Vec4Vec()
-	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1), vec4(1, -3.5, 4, 1)]
-	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
-	# RC.move(1).name("FirstRecord").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
-	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).jointVelocity(2.5).finish(RC)
-	foo = EndTest()
-	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
-
-	RC.next()
-	RC.run()
-
-	pass
-
 def handleInput(key, action, mod, RC, scene):
 	if action == Press:
 		if key == ord('1') and mod & Ctrl == Ctrl:
@@ -119,7 +100,7 @@ class RecordedData:
 
 		self.IKIterationTime.append( data.IKIterationTime )
 		self.IKIterarationCount.append( data.IKIterarationCount )
-		self.IKPositionError.append( data.IKPositionError )
+		self.IKPositionError.append( data.IKPositionError*1000 )
 		self.IKOrientationError.append( data.IKOrientationError )
 
 		self.EffectorDelta.append( data.EffectorDelta )
@@ -135,61 +116,86 @@ class RecordedData:
 
 		print '[SAVE RECORDS] ' + recordName
 		plt.figure(1)
-		plt.plot(self.IKIterationTime)
+		plt.plot(self.IKIterationTime, plotColor)
 		plt.xlabel('time [ms]')
 		plt.ylabel('time [ms]')
 		plt.title('Time of single solver')
-		plt.savefig(recordName+'\\IKIterationTime.png')
+		plt.savefig(recordName+'\\IKIterationTime.pdf')
 		plt.show()
 
 		plt.figure(2)
-		plt.plot(self.IKIterarationCount)
+		plt.plot(self.IKIterarationCount, plotColor)
 		plt.xlabel('time [ms]')
 		plt.ylabel('-')
 		plt.title('Number of solver iterations')
 		plt.savefig(recordName+'\\IKIterarationCount.png')
 
 		plt.figure(3)
-		plt.plot(self.IKOrientationError)
+		plt.plot(self.IKOrientationError, plotColor)
 		plt.xlabel('time [ms]')
 		plt.ylabel('error')
 		plt.title('Orientation error')
 		plt.savefig(recordName+'\\IKOrientationError.png')
 
 		plt.figure(4)
-		plt.plot(self.IKPositionError)
+		plt.plot(self.IKPositionError, plotColor)
 		plt.xlabel('time [ms]')
-		plt.ylabel('error [m]')
+		plt.ylabel('error [mm]')
 		plt.title('Position error')
 		plt.savefig(recordName+'\\IKPositionError.png')
 
 		plt.figure(5)
-		plt.plot(self.EffectorDelta)
+		plt.plot(self.EffectorDelta, plotColor)
 		plt.xlabel('time [ms]')
 		plt.ylabel('End effector ?transition? [m]')
 		plt.title('Time of single solver')
 		plt.savefig(recordName+'\\EffectorDelta.png')
 
 		plt.figure(6)
-		plt.plot(self.EffectorVelocity)
+		plt.plot(self.EffectorVelocity, plotColor)
 		plt.xlabel('time [ms]')
 		plt.ylabel('velocity [m/s]')
 		plt.title('End effector velocity')
 		plt.savefig(recordName+'\\EffectorVelocity.png')
 
 		plt.figure(7)
-		plt.plot(self.EffectorAcceleration)
+		plt.plot(self.EffectorAcceleration, plotColor)
 		plt.xlabel('time [ms]')
 		plt.ylabel('accelereation [m/s^2]')
 		plt.title('End effector acceleration')
 		plt.savefig(recordName+'\\EffectorAcceleration.png')
 
 
-recorder = RecordedData()
+def startTest_1():
+	global recordName
+	global enableRecording
+	global recorder
+
+	recorder = RecordedData()
+
+	RC = getRC()
+	enableRecording = True
+	recordName = 'FirstRecord'
+
+	points = Vec4Vec()
+	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1), vec4(1, -3.5, 4, 1)]
+	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
+	# RC.move(1).name("FirstRecord").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
+	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).jointVelocity(2.5).finish(RC)
+	foo = EndTest()
+	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
+
+	RC.next()
+	RC.run()
+
+	pass
 
 def update(RC, scene, dt):
 	global plotRecordedData
-	recorder.saveFrameRecords(dt)
+
+	if enableRecording:
+		recorder.saveFrameRecords(dt)
+
 	if plotRecordedData:
 		recorder.savePlotsToFile()
 		plotRecordedData = False
