@@ -47,9 +47,9 @@ void Robot::update(float dt){
 	auto positionShift = glm::distance(position, endEffector.position);
 	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
 
-    Helper::record().EffectorPosition = position;
-    Helper::record().EffectorOrientation = glm::angleAxis(1.f,glm::normalize(axis.xyz()));
-    Helper::record().EffectorDelta = positionShift;
+	Helper::record().EffectorPosition = position;
+	Helper::record().EffectorOrientation = glm::angleAxis(1.f,glm::normalize(axis.xyz()));
+	Helper::record().EffectorDelta = positionShift;
 	Helper::record().EffectorAcceleration = (positionShift/dt - Helper::record().EffectorVelocity)/dt;
 	Helper::record().EffectorVelocity = positionShift/dt;
 }

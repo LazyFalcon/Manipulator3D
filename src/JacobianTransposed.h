@@ -11,7 +11,7 @@ public:
 	Matrix& operator =(const Matrix &matrix);
 	Matrix(const Matrix &matrix);
 	~Matrix(){
-		// delete [] array;
+		// ~[] array;
 	}
 	double& operator()(u32 h, u32 w=0);
 	double operator()(u32 h, u32 w=0) const ;

@@ -19,9 +19,9 @@ void drawBoxes(std::pair<BoxColor, std::string> &data){
 
 	updateBuffer(Engine::b_guiRects, data.first.m_box);
 	updateBuffer(Engine::b_color, data.first.m_color);
-		setupBuffer(Engine::quadCorner,0,4,0);
-		setupBuffer(Engine::b_guiRects,1,4,1);
-		setupBuffer(Engine::b_color, 2, 4, 1, GL_UNSIGNED_BYTE, GL_TRUE);
+	setupBuffer(Engine::quadCorner,0,4,0);
+	setupBuffer(Engine::b_guiRects,1,4,1);
+	setupBuffer(Engine::b_color, 2, 4, 1, GL_UNSIGNED_BYTE, GL_TRUE);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, data.first.m_box.size());
 }
@@ -29,9 +29,9 @@ void drawBoxes(std::pair<BoxColor, std::string> &data){
 
 void UIContainer::draw(UI::IMGUI &gui, u32 layer){
 
-    drawBoxes(m_bigBoxes[layer]);
-    drawBoxes(m_editBoxes[layer]);
-    drawBoxes(m_labels[layer]);
+	drawBoxes(m_bigBoxes[layer]);
+	drawBoxes(m_editBoxes[layer]);
+	drawBoxes(m_labels[layer]);
 
     auto shader = shaders[m_images.second];
 	glUseProgram(shader);
@@ -71,10 +71,8 @@ bool ResourceLoader::loadImage(const string &name){
 	string fileName = imagePath+name;
 	GLuint textureID;
 
-	//image format
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 
-	//check the file signature and deduce its format
 	fif = FreeImage_GetFileType(fileName.c_str(), 0);
 	if(fif == FIF_UNKNOWN){
 		std::cout<<"duupa\n";
@@ -84,17 +82,12 @@ bool ResourceLoader::loadImage(const string &name){
 	FIBITMAP *image = FreeImage_Load(fif, fileName.c_str());
 
 	BYTE *imageData = FreeImage_GetBits(image);
-	//get the image width and height
 	auto width = FreeImage_GetWidth(image);
 	auto height = FreeImage_GetHeight(image);
 
-	// auto imageType = FreeImage_GetImageType(image);
-
-	// How many bits-per-pixel is the source image?
 	int bitsPerPixel =  FreeImage_GetBPP(image);
-	// int colorsUsed =  FreeImage_GetColorsUsed(image);
 
-	std::cout<<"name "<<fileName<<std::endl;
+	std::cout<<"[ IMAGE ] "<<name<<std::endl;
 
 	GLuint internalFormat;
 	GLuint imageFormat;
@@ -263,7 +256,7 @@ Scene::~Scene(){
 	units_ptrs.clear();
 	units.clear();
 	pointLamps.clear();
-	std::cerr<<"delete Scene"<<std::endl;
+	std::cerr<<"~Scene"<<std::endl;
 }
 
 void Graph::draw(){

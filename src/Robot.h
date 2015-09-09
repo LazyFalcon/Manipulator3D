@@ -28,7 +28,7 @@ struct Point {
 class Module {
 public:
 	virtual ~Module(){
-		std::cerr<<"delete Module"<<std::endl;
+		std::cerr<<"~Module"<<std::endl;
 	}
 	Module(){
 		lastVelocity = 0.0;
@@ -89,7 +89,7 @@ public:
 		for(auto &it : chain)
 			it.reset();
 		chain.clear();
-		std::cerr<<"delete Robot"<<std::endl;
+		std::cerr<<"~Robot"<<std::endl;
 	}
 	Robot(){
 		config.positionPrecision = 0.001;
@@ -136,7 +136,7 @@ public:
 class JT0 : public Solver {
 public:
 	~JT0(){
-		std::cerr<<"delete JT0"<<std::endl;
+		std::cerr<<"~JT0"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot, double precision = -1);
@@ -145,7 +145,7 @@ public:
 class JT1 : public Solver {
 public:
 	~JT1(){
-		std::cerr<<"delete JT1"<<std::endl;
+		std::cerr<<"~JT1"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot, double precision = -1);
@@ -154,7 +154,7 @@ public:
 class JT2 : public Solver {
 public:
 	~JT2(){
-		std::cerr<<"delete JT2"<<std::endl;
+		std::cerr<<"~JT2"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot, double precision = -1);

@@ -60,7 +60,7 @@ public:
 	// MoveCommand(IInterpolator *interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	MoveCommand(shared_ptr<IInterpolator> interpolator) : ICommand(MOVE), interpolator(interpolator){}
 	~MoveCommand(){
-		std::cerr<<"delete MoveCommand: "+name<<std::endl;
+		std::cerr<<"~MoveCommand: "+name<<std::endl;
 	}
 
 	vector<glm::vec4>& getPath(){
@@ -150,7 +150,7 @@ class WaitCommand : public ICommand
 {
 public:
 	~WaitCommand(){
-		std::cerr << "delete Wait command\n";
+		std::cerr << "~Wait command\n";
 	}
 	WaitCommand() : ICommand(WAIT), releaseTime(0){}
 	WaitCommand(float time) : ICommand(WAIT), releaseTime(time){}
@@ -187,7 +187,7 @@ class ExecutePythonCommand : public ICommand
 public:
 	ExecutePythonCommand() : ICommand(EXECUTE_PY){}
 	~ExecutePythonCommand(){
-		std::cerr<<"delete py callback"<<std::endl;
+		std::cerr<<"~py callback"<<std::endl;
 	}
 	void init(shared_ptr<RobotController> &rc);
 	int update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt);

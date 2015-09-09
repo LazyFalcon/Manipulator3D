@@ -209,7 +209,7 @@ namespace CFG {
 		string buff;
 		file.open(filename);
 			if (file.is_open()){
-				cout<<"reading: "+filename<<endl;
+				cout<<"[ CFG FILE ] "+filename<<endl;
 				while(!file.eof()){
 					getline(file, buff);
                     auto hashPos = buff.find_first_of('#');

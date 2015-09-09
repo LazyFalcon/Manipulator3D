@@ -31,9 +31,9 @@ class RobotController
 {
 public:
 	~RobotController(){
-		std::cerr<<"delete RobotController"<<std::endl;
+		std::cerr<<"~RobotController"<<std::endl;
 	}
-	RobotController() {
+	RobotController(){
 		commandIter = commands.end();
 	}
 

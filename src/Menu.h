@@ -121,7 +121,7 @@ public:
 	bool isMoving = false;
 	MovableBar(glm::vec4 pos): position(pos){}
 	~MovableBar(){
-		// cerr<<"~MovableBar"<<endl;
+		cerr<<"~MovableBar"<<endl;
 	}
 	void move(){
 		isMoving = ui.onGroupGrab([this](glm::vec4){
@@ -144,7 +144,7 @@ class SideBarPoints : public MovableBar  {
 public:
 	SideBarPoints(): MovableBar(glm::vec4(1400-160, 700-200,0,0)) {}
 	~SideBarPoints(){
-		// cerr<<"~SideBarPoints"<<endl;
+		cerr<<"~SideBarPoints"<<endl;
 	}
 
 	void operator ()(){
@@ -210,7 +210,7 @@ public:
 
 	SteeringConsole():MovableBar({940,0,456,196}){}
 	~SteeringConsole(){
-		// cerr<<"~SteeringConsole"<<endl;
+		cerr<<"~SteeringConsole"<<endl;
 	}
 
 	void operator ()(){

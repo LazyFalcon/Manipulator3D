@@ -38,10 +38,17 @@ void RobotController::run(){
 		cout<<endl;
 		//commandIter = commands.begin();
 		if(!(*commandIter)->isRuning){
-			cout<<"------- NEW ACTION: "+(*commandIter)->name<<endl;
+			cout<<"------- [ NEW ACTION: "+(*commandIter)->name<<" ]"<<endl;
 			(*commandIter)->init(RC);
 			Editor::set(*commandIter);
 		}
+	}
+	else if(commandIter == commands.end() && !commands.empty()){
+		// cout<<"------- [ NEW ACTION: "+(*commandIter)->name<<" ]"<<endl;
+		// state = RCStates::Run;
+		// commandIter = commands.begin();
+		// (*commandIter)->init(RC);
+		// Editor::set(*commandIter);
 	}
 	else stop();
 }
@@ -82,13 +89,13 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 
 	auto returnedAction = (*commandIter)->update(rc, scene, dt);
 	if(returnedAction){
-		cout<<"------- END OF ACTION: "+(*commandIter)->name<<endl;
+		cout<<"------- [ END OF ACTION: "+(*commandIter)->name<<" ]"<<endl;
 		if(returnedAction == CommandReturnAction::DelAndForward){
-			cout<<"------ DEL & FORWARD"<<endl;
+			// cout<<"------- [ DEL & FORWARD ]"<<endl;
 			commandIter = commands.erase(commandIter);
 		}
 		else if(returnedAction == CommandReturnAction::DelAndBack){
-			cout<<"------ DEL & BACK"<<endl;
+			// cout<<"------- [ DEL & BACK ] "<<endl;
 			commandIter = commands.erase(commandIter);
 			commandIter--;
 			// commandIter++;

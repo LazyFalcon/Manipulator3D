@@ -89,8 +89,9 @@ bool JT0::solve(Point target, Robot &robot){
 	return glm::distance(endPosition, target.position) < 0.005;
 }
 bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
-	Timer<double, std::ratio<1,1000>,1> precisetimer;
-    precisetimer.start();
+	Timer<double, std::ratio<1,1000000>,1> precisetimer;
+	precisetimer.start();
+
 	u32 iterationLimit = robot.config.solverIterationLimit;
 	float positionPrecision = precision>0 ? precision : robot.config.positionPrecision;
 	float orientationPrecision = precision>0 ? precision*10 : robot.config.orientationPrecision;
@@ -143,11 +144,11 @@ bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 	succes = positionError < positionPrecision;
 	lastIterationCount = iterations;
 
-    precisetimer.end();
+	precisetimer.end();
 
-    Helper::record().IKIterationTime = precisetimer.get();
-    Helper::record().IKIterarationCount = iterations;
-    Helper::record().IKPositionError = positionError;
+	Helper::record().IKIterationTime = precisetimer.get();
+	Helper::record().IKIterarationCount = iterations;
+	Helper::record().IKPositionError = positionError;
 
 	return succes;
 }
@@ -184,7 +185,8 @@ bool JT1::solve(Point target, Robot &robot){
 }
 bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
 	Timer<double, std::ratio<1,1000>,1> precisetimer;
-    precisetimer.start();
+	precisetimer.start();
+
 	u32 iterationLimit = robot.config.solverIterationLimit;
 	float positionPrecision = precision>0 ? precision : robot.config.positionPrecision;
 	float orientationPrecision = precision>0 ? precision*10 : robot.config.orientationPrecision;
@@ -237,12 +239,12 @@ bool JT1::performIK(Point start, Point target, Robot &robot, double precision){
 	succes = positionError < positionPrecision;
 	lastIterationCount = iterations;
 
-    precisetimer.end();
+	precisetimer.end();
 
-    Helper::record().IKIterationTime = precisetimer.get();
-    Helper::record().IKIterarationCount = iterations;
-    Helper::record().IKPositionError = positionError;
-    Helper::record().IKOrientationError = quatError;
+	Helper::record().IKIterationTime = precisetimer.get();
+	Helper::record().IKIterarationCount = iterations;
+	Helper::record().IKPositionError = positionError;
+	Helper::record().IKOrientationError = quatError;
 
 	return succes;
 }
@@ -302,7 +304,8 @@ bool JT2::solve(Point target, Robot &robot){
 }
 bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	Timer<double, std::ratio<1,1000>,1> precisetimer;
-    precisetimer.start();
+	precisetimer.start();
+
 	u32 iterationLimit = robot.config.solverIterationLimit;
 	float positionPrecision = precision>0 ? precision : robot.config.positionPrecision;
 	float orientationPrecision = precision>0 ? precision*10 : robot.config.orientationPrecision;
@@ -360,12 +363,12 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 	lastIterationCount = iterations;
 	lastSolverError = quatError;
 
-    precisetimer.end();
+	precisetimer.end();
 
-    Helper::record().IKIterationTime = precisetimer.get();
-    Helper::record().IKIterarationCount = iterations;
-    Helper::record().IKPositionError = positionError;
-    Helper::record().IKOrientationError = quatError;
+	Helper::record().IKIterationTime = precisetimer.get();
+	Helper::record().IKIterarationCount = iterations;
+	Helper::record().IKPositionError = positionError;
+	Helper::record().IKOrientationError = quatError;
 
 	return succes;
 }

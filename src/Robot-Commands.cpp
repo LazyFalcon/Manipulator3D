@@ -149,7 +149,7 @@ int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scen
 		interpolator->reset();
 		return exit(rc, scene);
 	}
-	else if(rc->robot->isReady){_DebugLine_
+	else if(rc->robot->isReady){
 		glm::vec4 newTarget = calculateNextPoint(dt);
 
 		auto newO = glm::slerp(startOrientation, endOrientation, interpolator->getNormalizedPosition());

@@ -34,7 +34,7 @@ public:
 	CommandEditorTab() : ITab("COMMAND EDITOR"){
 	}
 	~CommandEditorTab(){
-		std::cerr<<"delete CommandEditorTab"<<std::endl;
+		std::cerr<<"~CommandEditorTab"<<std::endl;
 	}
 	void run(TabManager &tabManager);
 	/**
@@ -69,7 +69,7 @@ public:
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	~CommandListTab(){
-		std::cerr<<"delete CommandListTab"<<std::endl;
+		std::cerr<<"~CommandListTab"<<std::endl;
 	}
 };
 
@@ -93,7 +93,7 @@ public:
 		interpolator.reset();
 	}
 	~PathEditorTab(){
-		std::cerr<<"delete PathEditorTab"<<std::endl;
+		std::cerr<<"~PathEditorTab"<<std::endl;
 	}
 private:
 	shared_ptr<IInterpolator> interpolator;
@@ -107,7 +107,7 @@ public:
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	~PathListTab(){
-		std::cerr<<"delete PathListTab"<<std::endl;
+		std::cerr<<"~PathListTab"<<std::endl;
 	}
 };
 
@@ -119,7 +119,7 @@ public:
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	~GroupListTab(){
-		std::cerr<<"delete GroupListTab"<<std::endl;
+		std::cerr<<"~GroupListTab"<<std::endl;
 	}
 };
 
@@ -131,7 +131,7 @@ public:
 	void run(TabManager &TM);
 	void onEnter(TabManager &TM){}
 	~PointListTab(){
-		std::cerr<<"delete PointListTab"<<std::endl;
+		std::cerr<<"~PointListTab"<<std::endl;
 	}
 };
 
@@ -141,7 +141,7 @@ class TabManager
 public:
 	TabManager(){}
 	~TabManager(){
-		std::cerr<<"delete TabManager"<<std::endl;
+		std::cerr<<"~TabManager"<<std::endl;
 	}
 	void clearTab(u32 index){
 		tabs[index].reset();

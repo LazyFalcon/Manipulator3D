@@ -34,8 +34,9 @@ glm::quat glm_angleAxis(float angle, glm::vec3 axis){
 BOOST_PYTHON_MODULE(Manipulator3D){
 
 	bpl::class_<std::vector<glm::vec4>>("Vec4Vec")
-		.def(bpl::vector_indexing_suite<std::vector<glm::vec4>>())
-		;
+		.def(bpl::vector_indexing_suite<std::vector<glm::vec4>>());
+	bpl::class_<std::vector<double>>("DoubleVec")
+		.def(bpl::vector_indexing_suite<std::vector<double>>());
 
 	std::string (*to_string_vec3)(const glm::vec3&) = &to_string;
 	std::string (*to_string_vec4)(const glm::vec4&) = &to_string;
@@ -202,7 +203,6 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.value("CCD", SolverType::CCD)
 		;
 	bpl::enum_<CommandReturnAction::CommandReturn>("CommandReturnAction")
-		// .value("None", CommandReturnAction::None)
 		.value("GoToNext", CommandReturnAction::GoToNext)
 		.value("Delete", CommandReturnAction::Delete)
 		.value("GoToPrevious", CommandReturnAction::GoToPrevious)
@@ -228,12 +228,10 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 
 	bpl::def("addInterpolator", &addInterpolatorByContainer);
 
-	// bpl::def("getScene", getScene);
 	bpl::class_<Entity, std::shared_ptr<Entity>, boost::noncopyable>("Entity", bpl::no_init)
 		.def_readonly("ID", &Entity::ID)
 		.def_readwrite("position", &Entity::position)
 		.def_readwrite("quat", &Entity::quat)
-		// .def("rgBody", &Entity::rgBodyRef, bpl::return_value_policy<bpl::manage_new_object>() )
 		;
 	bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
 		.def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>, true>())
@@ -270,9 +268,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readwrite("state ", &RobotController::state )
 		.def_readwrite("commands", &RobotController::commands)
 		;
-	bpl::class_<std::vector<double>>("DoubleVec")
-		.def(bpl::vector_indexing_suite<std::vector<double>>())
-		;
+
 	bpl::class_<SystemSettings>("SystemSettings")
 		.def_readwrite("positionPrecision", &SystemSettings::positionPrecision)
 		.def_readwrite("orientationPrecision", &SystemSettings::orientationPrecision)
@@ -283,9 +279,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::class_<Robot, std::shared_ptr<Robot>, boost::noncopyable>("Robot")
 		.def("getModuleCount", &Robot::getModuleCount)
 		.def("module", &Robot::module, bpl::return_value_policy<bpl::reference_existing_object>())
-		// .def_readonly("velocity", &Robot::endEffectorVelocity)
 		.def_readwrite("config", &Robot::config)
-		// .def_readonly("acceleration", &Robot::endEffectorAcceleration)
 		;
 	bpl::class_<Module, boost::noncopyable>("Module")
 		.def_readwrite("value", &Module::value)
@@ -299,20 +293,20 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 
 	using namespace Helper;
 
-    bpl::class_<FrameRecordedData>("FrameRecordedData")
-        .def_readonly("IKIterationTime", &FrameRecordedData::IKIterationTime)
-        .def_readonly("IKIterarationCount", &FrameRecordedData::IKIterarationCount)
-        .def_readonly("IKPositionError", &FrameRecordedData::IKPositionError)
-        .def_readonly("IKOrientationError", &FrameRecordedData::IKOrientationError)
-        .def_readonly("EffectorDelta", &FrameRecordedData::EffectorDelta)
-        .def_readonly("EffectorVelocity", &FrameRecordedData::EffectorVelocity)
-        .def_readonly("EffectorAcceleration", &FrameRecordedData::EffectorAcceleration)
-        .def_readonly("FrameTime", &FrameRecordedData::FrameTime)
-        .def_readonly("EffectorPosition", &FrameRecordedData::EffectorPosition)
-        .def_readonly("EffectorOrientation", &FrameRecordedData::EffectorOrientation)
-        .def_readonly("RobotJoints", &FrameRecordedData::RobotJoints)
-        ;
-    bpl::def("getRecord", &record, bpl::return_value_policy<bpl::reference_existing_object>());
+	bpl::class_<FrameRecordedData>("FrameRecordedData")
+		.def_readonly("IKIterationTime", &FrameRecordedData::IKIterationTime)
+		.def_readonly("IKIterarationCount", &FrameRecordedData::IKIterarationCount)
+		.def_readonly("IKPositionError", &FrameRecordedData::IKPositionError)
+		.def_readonly("IKOrientationError", &FrameRecordedData::IKOrientationError)
+		.def_readonly("EffectorDelta", &FrameRecordedData::EffectorDelta)
+		.def_readonly("EffectorVelocity", &FrameRecordedData::EffectorVelocity)
+		.def_readonly("EffectorAcceleration", &FrameRecordedData::EffectorAcceleration)
+		.def_readonly("FrameTime", &FrameRecordedData::FrameTime)
+		.def_readonly("EffectorPosition", &FrameRecordedData::EffectorPosition)
+		.def_readonly("EffectorOrientation", &FrameRecordedData::EffectorOrientation)
+		.def_readonly("RobotJoints", &FrameRecordedData::RobotJoints)
+		;
+	bpl::def("getRecord", &record, bpl::return_value_policy<bpl::reference_existing_object>());
 
 
 	bpl::def("getPositionUnderMouse", &Helper::getPositionUnderMouse);
@@ -443,7 +437,7 @@ void reloadAndInitMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-				terminate();
+		terminate();
 	}
 }
 
@@ -453,7 +447,8 @@ void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-				std::cin.ignore();
+		std::cin.ignore();
+		reloadMainScript(rc, scene);
 	}
 }
 

@@ -107,7 +107,7 @@ public:
 	float getNormalizedPosition() const {return position;}
 
 	~Linear(){
-		std::cerr<<"delete Linear "+name<<std::endl;
+		std::cerr<<"~Linear "+name<<std::endl;
 	}
 };
 
@@ -130,7 +130,7 @@ public:
 	float getNormalizedPosition() const {return 1;}
 
 	~Simple(){
-		std::cerr<<"delete Simple "+name<<std::endl;
+		std::cerr<<"~Simple "+name<<std::endl;
 	}
 };
 
@@ -171,7 +171,7 @@ public:
 	float getNormalizedPosition() const {return position;}
 
 	~BezierCurve(){
-		std::cerr<<"delete BezierCurve "+name<<std::endl;
+		std::cerr<<"~BezierCurve "+name<<std::endl;
 	}
 };
 
@@ -231,7 +231,7 @@ public:
 
 
 	~BSpline(){
-		std::cerr<<"delete BSpline "+name<<std::endl;
+		std::cerr<<"~BSpline "+name<<std::endl;
 	}
 };
 
@@ -263,7 +263,7 @@ public:
 	float getNormalizedPosition() const {return position;}
 
 	~NURBS(){
-		std::cerr<<"delete NURBS "+name<<std::endl;
+		std::cerr<<"~NURBS "+name<<std::endl;
 	}
 };
 
@@ -290,7 +290,7 @@ public:
 	/// editable params
 	double singleStepLength {0.00001};
 	~HermiteCardinal(){
-		std::cerr<<"delete HermiteCardinal "+name<<std::endl;
+		std::cerr<<"~HermiteCardinal "+name<<std::endl;
 	}
 	HermiteCardinal(const std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteCardinal),
@@ -327,7 +327,7 @@ public:
 	/// editable params
 	double singleStepLength {0.00001};
 	~HermiteFiniteDifference(){
-		std::cerr<<"delete HermiteFiniteDifference "+name<<std::endl;
+		std::cerr<<"~HermiteFiniteDifference "+name<<std::endl;
 	}
 	HermiteFiniteDifference(const std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteFiniteDifference),
@@ -364,7 +364,7 @@ public:
 	/// editable params
 	double singleStepLength {0.00001};
 	~HermiteFiniteDifferenceClosed(){
-		std::cerr<<"delete HermiteFiniteDifferenceClosed "+name<<std::endl;
+		std::cerr<<"~HermiteFiniteDifferenceClosed "+name<<std::endl;
 	}
 	HermiteFiniteDifferenceClosed(const std::vector<glm::vec4> &_points) :
 		IInterpolator(_points, Interpolator::HermiteFiniteDifferenceClosed),

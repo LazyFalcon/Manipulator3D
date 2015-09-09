@@ -42,7 +42,7 @@ bool ResourceLoader::loadShaders(){
 			auto shaderName = (*dir_it).path().stem().string();
 
 			if(shaders.find(shaderName) == shaders.end()){
-				cout<<"shader: "<<shaderName<<endl;
+				cout<<"[ SHADER ] "<<shaderName<<endl;
 				shaders[shaderName] = compileShader(shaderName + ".glsl");
 			}
 		}
@@ -74,7 +74,7 @@ bool ResourceLoader::loadMesh(string meshName){
 	auto &meshes = resources->meshes;
 
 	Mesh mesh;
-	cout<<"mesh: "+meshName<<endl;
+	cout<<"[ MESH ] "+meshName<<endl;
 	fstream file;
 	file.open(fileName, std::ios::in);
 
@@ -232,9 +232,10 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 	for(int i=0; i<FNTs.size(); i++){
 		auto cfg = FNTs[i];
 		string name = cfg["name"].value;
+		cout<<"[ FONT ] "<<name<<endl;
 		string symbolsName = cfg["symbols"].value;
 
-		if (UI::fonts.find(symbolsName) == UI::fonts.end()){
+		if(UI::fonts.find(symbolsName) == UI::fonts.end()){
 			UI::Font &symbols = UI::fonts[symbolsName];
 			success &= loadImage(symbolsName+".png");
 			symbols.texID = resources->textures[symbolsName];
@@ -244,7 +245,7 @@ bool ResourceLoader::loadFonts(CFG::Node &_cfg){
 			symbols.generator->loadFontInfoFNT(name);
 			symbols.generator->loadFontInfoSYM(symbolsName);
 		}
-		if (UI::fonts.find(name) == UI::fonts.end()){
+		if(UI::fonts.find(name) == UI::fonts.end()){
 			UI::Font &font = UI::fonts[name];
 			success &= loadImage(name+".png");
 			font.texID = resources->textures[name];
@@ -311,6 +312,7 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 
 			// en->rgBody->setCollisionFlags( en->rgBody->getCollisionFlags() | COL_OBJECTS );
 		}
+		cout<<endl;
 	}
 
 	auto &lamps = cfg["Lamps"];
@@ -346,6 +348,8 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bullet
 	}
 	CFG::Node &rgData = cfg["RigidBody"];
 	float mass = rgData["mass"].asFloat();
+
+	cout<<"[ "+rgData["type"].value+" ]";
 
 	if(rgData["type"].value == "PASSIVE"){
 		mass = 0;
@@ -390,14 +394,14 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, Bulle
 			type = REVOLUTE_JOINT;
 
 		auto module = std::make_unique<Module>();
-		cout<<"-- "+it["Name"].value<<endl;
+		cout<<"[ ROBOT PART ] "+it["Name"].value<<endl;
 		module->type = type;
+		module->name = it["Name"].value;
 		module->vecToA = it["ParentJoint"]["Vec"].asVec30();
 		module->axis = it["ParentJoint"]["Axis"].asVec30();
 		module->vecToB = it["ChildJoint"]["Vec"].asVec30();
-		module->min = it["ParentJoint"]["Min"].asFloat()*toRad;
-		module->max = it["ParentJoint"]["Max"].asFloat()*toRad;
-		module->name = it["Name"].value;
+		module->min = it.has("MaxVelocity")? it["Min"].asFloat()*toRad : -20.f;
+		module->max = it.has("MaxVelocity")? it["Max"].asFloat()*toRad : 20.f;
 		module->entity = scene.units[it["Name"].value];
 		module->maxVelocty = it.has("MaxVelocity")?  it["MaxVelocity"].asFloat() : 1.f; /// rad/s
 		module->maxAcceleration = it.has("MaxAcceleration")?  it["MaxAcceleration"].asFloat() : 1.f; /// rad/s^2
@@ -412,7 +416,6 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, Bulle
 			body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT | btCollisionObject::CF_KINEMATIC_OBJECT);
 			// body->setCollisionFlags(body->getCollisionFlags() & ~COL_OBJECTS);
 			// body->setCollisionFlags(body->getCollisionFlags() | COL_ROBOT);
-
 
 			bulletWorld.dynamicsWorld->removeRigidBody(body);
 			btVector3 inertia(0,0,0);
@@ -433,7 +436,7 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, Bulle
 
 		robot.chain.push_back(std::move(module));
 	}
-	cout<<"done"<<endl;
+	cout<<"[ DONE ]"<<endl;
 	return true;
 }
 

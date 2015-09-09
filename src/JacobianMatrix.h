@@ -88,7 +88,7 @@ Matrix& Matrix::transpose(){
 	std::swap(width, height);
 	array.swap(newArray);
 	// std::swap(array, newArray);
-	// delete [] newArray;
+	// ~[] newArray;
 	return *this;
 }
 Matrix Matrix::transposed(){

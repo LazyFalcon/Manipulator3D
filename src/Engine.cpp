@@ -54,7 +54,6 @@ PositionSaver g_robotPositions(100);
 PositionSaver g_robotDebugPositions(100);
 LineBuffer		g_lines(100);
 
-
 namespace Engine NAM_START
 
 GLuint b_position;
@@ -288,30 +287,30 @@ void resize(){
 		GLenum framebufferStatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 			switch (framebufferStatus) {
 					case GL_FRAMEBUFFER_COMPLETE_EXT:
-							std::cout<<"FRAMEBUFFER Object  OK"<<endl; break;
+							std::cout<<"[ FRAMEBUFFER OBJECT ] OK"<<endl; break;
 					case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-							std::cout<<"FRAMEBUFFER Object %d Error: Attachment Point Unconnected"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ] %d Error: Attachment Point Unconnected"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-							std::cout<<"FRAMEBUFFER Object %d Error: Missing Attachment"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ] %d Error: Missing Attachment"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-							std::cout<<"FRAMEBUFFER Object  Error: Dimensions do not match"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ]  Error: Dimensions do not match"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-							std::cout<<"FRAMEBUFFER Object  Error: Formats"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ]  Error: Formats"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-							std::cout<<"FRAMEBUFFER Object  Error: Draw Buffer"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ]  Error: Draw Buffer"<<endl;
 							break;
 					case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-							std::cout<<"FRAMEBUFFER Object  Error: Read Buffer"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ]  Error: Read Buffer"<<endl;
 							break;
 					case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-							std::cout<<"FRAMEBUFFER Object  Error: Unsupported FRAMEBUFFER Configuration"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ]  Error: Unsupported FRAMEBUFFER Configuration"<<endl;
 							break;
 					default:
-							std::cout<<"framebuffer Object  Error: Unkown framebuffer Object Failure"<<endl;
+							std::cout<<"[ FRAMEBUFFER OBJECT ]  Error: Unkown framebuffer Object Failure"<<endl;
 							break;
 			}
 		};
