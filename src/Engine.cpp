@@ -123,7 +123,49 @@ vector<lineInfo> 	lines2D;
 vector<std::pair<GLuint, glm::vec4>> texturedBoxes;
 
 const u32 g_lightsToForward = 2;
+std::unordered_map<string, std::pair<GLuint,u64>> timerMeasurements;
 
+void initQueries(){
+	u32 queryCount = 10;
+	GLuint queries[queryCount];
+	glGenQueries(queryCount, queries);
+	for(u32 i=0; i<queryCount; i++){
+		glBeginQuery(GL_TIME_ELAPSED, queries[i]);
+		glEndQuery(GL_TIME_ELAPSED);
+	}
+
+	u32 qyeryNum = 0;
+	timerMeasurements["Scene render"] = std::make_pair(queries[qyeryNum++], 0);
+	timerMeasurements["SSAO"] = std::make_pair(queries[qyeryNum++], 0);
+	timerMeasurements["Sobel"] = std::make_pair(queries[qyeryNum++], 0);
+	timerMeasurements["HDR"] = std::make_pair(queries[qyeryNum++], 0);
+	// timerMeasurements["GUI"] = std::make_pair(queries[qyeryNum++], 0);
+	timerMeasurements["Draw outline"] = std::make_pair(queries[qyeryNum++], 0);
+	// timerMeasurements["Lights"] = std::make_pair(queries[qyeryNum++], 0);
+
+
+
+}
+void getDataAndStartQuery(const std::string name){
+	auto &query = timerMeasurements[name];
+	glGetQueryObjectui64v(query.first, GL_QUERY_RESULT, &query.second);
+	glBeginQuery(GL_TIME_ELAPSED, query.first);
+}
+void endQuery(){
+	glEndQuery(GL_TIME_ELAPSED);
+}
+void drawQueries(UI::IMGUI &gui){
+	gui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignTop | UI::Draw)
+		.overridePosition(screenSize.x*0.1f, screenSize.y*0.9);
+
+		gui.rect(150,17).text("Perf measurements:", "ui_10"s)();
+		for(auto &it : timerMeasurements){
+			gui.rect(150,20).text(it.first)();
+			gui.rect(150,20).text(std::to_string( (it.second.second/1000)*0.001f ))();
+		}
+
+	gui.endTable();
+}
 
 void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vector<int32_t>indices, shared_ptr<Resources> &res){
 
@@ -609,6 +651,8 @@ void setup(Scene &scene){
 	}
 }
 void renderScene(Scene &scene){
+	getDataAndStartQuery("Scene render");
+
 	glStencilFunc(GL_ALWAYS,1,0xFF);
 	auto shader = shaders["SceneElement"];
 	glUseProgram(shader);
@@ -662,6 +706,7 @@ void renderScene(Scene &scene){
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, 0, 0);
 	glBindVertexArray(0);
 	copyDepth(scene);
+	endQuery();
 }
 void drawOutline(Scene &scene){
 
@@ -786,7 +831,10 @@ void copyDepth(Scene &scene){
 	// ui.rect(3,350,150,20).text("error: "+std::to_string(glGetError()))();
 }
 void HDR(Scene &scene){
+	getDataAndStartQuery("HDR");
+
 	HDR(full_RGBA16F.ID, colorBuffer.ID, normalBuffer.ID, depthBuffer2.ID, scene);
+	endQuery();
 }
 
 void renderLights(Scene &scene){
@@ -955,6 +1003,8 @@ void blurDownsampledWithBlendToColor(Texture &source, Texture &target){ /// zak≈
     - ssao do fullSize i blur
 */
 void SSAO(){
+	getDataAndStartQuery("SSAO");
+
 	bool depthOnlySSAO = false;
 	bool SSAOWithDownsample = false;
 	if(depthOnlySSAO){
@@ -1039,8 +1089,11 @@ void SSAO(){
 
 		// blurWithBlendToColor(full_RGBA8, colorBuffer);
 	}
+	endQuery();
 }
 void Sobel(){
+	getDataAndStartQuery("Sobel");
+
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
@@ -1075,6 +1128,7 @@ void Sobel(){
 
 	setupBuffer(screenQuad);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	endQuery();
 }
 
 void finalize(Scene &scene){

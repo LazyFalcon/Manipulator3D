@@ -226,6 +226,7 @@ void renderLoop(){
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
+	Engine::initQueries();
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
 	PythonBindings::reloadAndInitMainScript(RC, scene);
@@ -332,6 +333,8 @@ void mainLoop(){
 		// Helper::cursorVidgetHorizontal({window_width*0.5-50, 2});
 		ui.image(Helper::getScreenCursor(camera), "Cursor").color(0xFFFFFFFF)();
 
+		if(globalSettings & DRAW_PERF) Engine::drawQueries(ui);
+
 		ui.end();
 		renderLoop();
 
@@ -386,6 +389,9 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	}
 	else if(action == GLFW_PRESS && key == GLFW_KEY_F6){
 		RC->pause();
+	}
+	else if(action == GLFW_PRESS && key == GLFW_KEY_F12){
+		globalSettings ^= DRAW_PERF;
 	}
 
 }

@@ -45,9 +45,13 @@ enum {
 	DRAW_YZ_GRID =         BIT(17),
 	BLUR_WITH_DOWNSAMPLE = BIT(18),
 	HIDE_GUI =             BIT(19),
+	DRAW_PERF =            BIT(20),
 };
 
 namespace Engine NAM_START
+
+void initQueries();
+void drawQueries(UI::IMGUI &gui);
 
 struct Config
 {
