@@ -239,15 +239,16 @@ void updates(float dt){
 void mainLoop(){
 	Timer<float, 1000,30> timer;
 	Timer<double, 1000,30> dtimer;
-	Timer<uint32_t, 1000,100> msecTimer;
-	Timer<uint32_t, 1000,1> msecCounter;
+	Timer<u32, 1000,1> msecTimer;
+	Timer<u32, 1000,60> frameTimeCounter;
 	Timer<double, 1000,1> precisetimer;
 	float timeAccumulator = 0.f;
 	float step = g_timeStep;
 	float dt = 0.f;
 	double ddt = 0.0;
-	uint32_t msdt = 0;
-	float accu10ms = 0.f;
+	u32 msdt = 0;
+	u32 accu10ms = 0;
+	u32 accu50ms = 0;
 	glm::vec3 tmpAxis(0);
 	float tmpAngle(0);
 	float tmpAngle2(0);
@@ -257,16 +258,23 @@ void mainLoop(){
 	std::string ikTime = "--";
 	cout<<"Here we go."<<endl;
 	while(!quit){
+		frameTimeCounter();
+		msecTimer();
 		dt = timer();
-		ddt = dtimer();
-		msdt = msecTimer();
-		Helper::record().FrameTime = ddt;
+		Helper::record().FrameTime = dtimer();
 		timeAccumulator += dt;
-		accu10ms += dt;
+		accu10ms += msecTimer.get();
+		accu50ms += msecTimer.get();
 		signal10ms = false;
-		if(accu10ms > 0.01f){
+		globalSettings &= ~GET_PERF;
+
+		if(accu10ms > 10){
 			accu10ms = 0;
 			signal10ms = true;
+		}
+		if(accu50ms > 50){
+			accu50ms = 0;
+			globalSettings |= GET_PERF;
 		}
 
 		glfwPollEvents();
@@ -279,7 +287,7 @@ void mainLoop(){
 			ui.setMouseRPressed();
 		}
 		ui.setMouse(mouse_x, mouse_y);
-		ui.updateCounter(msdt);
+		ui.updateCounter(msecTimer.get());
 
 		double m_x, m_y;
 		glfwGetCursorPos(window, &m_x, &m_y);
@@ -311,7 +319,7 @@ void mainLoop(){
         Helper::showPopups();
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
-			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(msecTimer.get()/25.0*255.0))).text(msecTimer.getString()+"ms").font("ui_12"s)();
+			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(frameTimeCounter.get()/25.0*255.0))).text(frameTimeCounter.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
 			ui.rect().text("IK time: " + ikTime).font("ui_12"s)();

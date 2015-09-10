@@ -46,6 +46,7 @@ enum {
 	BLUR_WITH_DOWNSAMPLE = BIT(18),
 	HIDE_GUI =             BIT(19),
 	DRAW_PERF =            BIT(20),
+	GET_PERF =             BIT(21),
 };
 
 namespace Engine NAM_START

@@ -26,14 +26,14 @@ void drawBoxes(std::pair<BoxColor, std::string> &data){
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, data.first.m_box.size());
 }
 
-
 void UIContainer::draw(UI::IMGUI &gui, u32 layer){
+	Engine::getDataAndStartQuery("GUI");
 
 	drawBoxes(m_bigBoxes[layer]);
 	drawBoxes(m_editBoxes[layer]);
 	drawBoxes(m_labels[layer]);
 
-    auto shader = shaders[m_images.second];
+	auto shader = shaders[m_images.second];
 	glUseProgram(shader);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gui.m_imageSet->ID);
@@ -56,6 +56,7 @@ void UIContainer::draw(UI::IMGUI &gui, u32 layer){
 	m_labels[layer].first.m_box.clear();
 	m_labels[layer].first.m_color.clear();
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	Engine::endQuery();
 }
 
 bool ResourceLoader::loadImage(const string &name){

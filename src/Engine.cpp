@@ -139,7 +139,7 @@ void initQueries(){
 	timerMeasurements["SSAO"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["Sobel"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["HDR"] = std::make_pair(queries[qyeryNum++], 0);
-	// timerMeasurements["GUI"] = std::make_pair(queries[qyeryNum++], 0);
+	timerMeasurements["GUI"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["Draw outline"] = std::make_pair(queries[qyeryNum++], 0);
 	// timerMeasurements["Lights"] = std::make_pair(queries[qyeryNum++], 0);
 
@@ -148,7 +148,7 @@ void initQueries(){
 }
 void getDataAndStartQuery(const std::string name){
 	auto &query = timerMeasurements[name];
-	glGetQueryObjectui64v(query.first, GL_QUERY_RESULT, &query.second);
+	if(globalSettings & GET_PERF) glGetQueryObjectui64v(query.first, GL_QUERY_RESULT, &query.second);
 	glBeginQuery(GL_TIME_ELAPSED, query.first);
 }
 void endQuery(){
@@ -158,9 +158,9 @@ void drawQueries(UI::IMGUI &gui){
 	gui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignTop | UI::Draw)
 		.overridePosition(screenSize.x*0.1f, screenSize.y*0.9);
 
-		gui.rect(150,17).text("Perf measurements:", "ui_10"s)();
+		gui.rect(150,17).color(0xFFA000FF).text("Perf measurements:", "ui_10"s)();
 		for(auto &it : timerMeasurements){
-			gui.rect(150,20).text(it.first)();
+			gui.rect(150,15).color(0xFFA000FF).text(it.first, "ui_10"s)();
 			gui.rect(150,20).text(std::to_string( (it.second.second/1000)*0.001f ))();
 		}
 
