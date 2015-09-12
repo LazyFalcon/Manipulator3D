@@ -43,6 +43,7 @@ void main(void){
 	vec4 N = normalize(vNormal);
 
 	gl_FragData[0] = uColor;
+	// gl_FragData[0] = N;
 	gl_FragData[1] = vec4(N.xyz, uID);
 }
 

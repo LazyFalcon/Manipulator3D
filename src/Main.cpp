@@ -126,6 +126,7 @@ std::string shadersToReload[] = {
 	"SSAO",
 	"SSAO_depthOnly",
 	"ApplyFBO",
+	"SceneElement",
 };
 
 void mainLoop();
