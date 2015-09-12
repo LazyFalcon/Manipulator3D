@@ -259,6 +259,7 @@ void mainLoop(){
 	std::string ikTime = "--";
 	cout<<"Here we go."<<endl;
 	while(!quit){
+		precisetimer();
 		frameTimeCounter();
 		msecTimer();
 		dt = timer();
@@ -300,13 +301,13 @@ void mainLoop(){
 		mouseMoveLen = glm::length(mouseTranslation);
 		mousePosition = glm::vec2(mouse_x, mouse_y);
 
+		// precisetimer();
 		while(timeAccumulator >= step && !quit){ // fixed step loop
-			precisetimer();
 			timeAccumulator -= step;
 			fastLoop(step);
-			precisetimer();
 		}
-		ikTime = precisetimer.getString();
+		// precisetimer();
+		// ikTime = precisetimer.getString();
 		if(ui.captureMouse) _DebugLine_
 
 		camera.setCamPosition(camPosition);
@@ -345,6 +346,8 @@ void mainLoop(){
 		if(globalSettings & DRAW_PERF) Engine::drawQueries(ui);
 
 		ui.end();
+		precisetimer();
+		ikTime = precisetimer.getString();
 		renderLoop();
 
 		Helper::moveCameraByMouse(camera, mousePosition, mouseTranslation, MiddleMousePressed);
