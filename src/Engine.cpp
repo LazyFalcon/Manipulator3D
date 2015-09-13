@@ -140,6 +140,7 @@ void initQueries(){
 	timerMeasurements["Sobel"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["HDR"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["GUI"] = std::make_pair(queries[qyeryNum++], 0);
+	timerMeasurements["Total"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["Draw outline"] = std::make_pair(queries[qyeryNum++], 0);
 	// timerMeasurements["Lights"] = std::make_pair(queries[qyeryNum++], 0);
 
@@ -651,8 +652,6 @@ void setup(Scene &scene){
 	}
 }
 void renderScene(Scene &scene){
-	getDataAndStartQuery("Scene render");
-
 	glStencilFunc(GL_ALWAYS,1,0xFF);
 	auto shader = shaders["SceneElement"];
 	glUseProgram(shader);
@@ -706,7 +705,6 @@ void renderScene(Scene &scene){
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, 0, 0);
 	glBindVertexArray(0);
 	copyDepth(scene);
-	endQuery();
 }
 void drawOutline(Scene &scene){
 
@@ -831,10 +829,7 @@ void copyDepth(Scene &scene){
 	// ui.rect(3,350,150,20).text("error: "+std::to_string(glGetError()))();
 }
 void HDR(Scene &scene){
-	getDataAndStartQuery("HDR");
-
 	HDR(full_RGBA16F.ID, colorBuffer.ID, normalBuffer.ID, depthBuffer2.ID, scene);
-	endQuery();
 }
 
 void renderLights(Scene &scene){
@@ -1003,8 +998,6 @@ void blurDownsampledWithBlendToColor(Texture &source, Texture &target){ /// zak≈
     - ssao do fullSize i blur
 */
 void SSAO(){
-	getDataAndStartQuery("SSAO");
-
 	bool depthOnlySSAO = false;
 	bool SSAOWithDownsample = false;
 	if(depthOnlySSAO){
@@ -1089,12 +1082,8 @@ void SSAO(){
 
 		// blurWithBlendToColor(full_RGBA8, colorBuffer);
 	}
-	endQuery();
 }
 void Sobel(){
-	getDataAndStartQuery("Sobel");
-
-
 	glBindFramebuffer(GL_FRAMEBUFFER, fullFBO);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorBuffer.ID, 0);
 	glEnable(GL_BLEND);
@@ -1128,7 +1117,6 @@ void Sobel(){
 
 	setupBuffer(screenQuad);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	endQuery();
 }
 
 void finalize(Scene &scene){

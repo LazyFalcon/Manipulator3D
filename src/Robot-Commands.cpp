@@ -1,14 +1,14 @@
-#include <Utils/Includes.h>
-#include <Utils/Utils.h>
-#include <Utils/BaseStructs.h>
-#include <Utils/IMGUI_V4.h>
-#include <boost/python.hpp>
+#include "Utils/Includes.h"
+#include "Utils/Utils.h"
+#include "Utils/BaseStructs.h"
+#include "Utils/IMGUI_V4.h"
 #include "Robot.h"
 #include "JacobianTransposed.h"
 #include "IInterpolator.h"
 #include "RobotController.h"
 #include "Robot-Commands.h"
 #include "PythonBindings.h"
+#include <boost/python.hpp>
 #include <boost/python/call.hpp>
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
 
@@ -103,6 +103,8 @@ vector<glm::vec4>& ExecutePythonCommand::getPolyline(){
 
 void MoveCommand::init(shared_ptr<RobotController> &rc){
 	requiredDistance = 0;
+	currentVelocity = 0;
+
 	isRuning = true;
 	if(not startOrientationEnabled)
 		startOrientation = rc->robot->endEffector.quat;
@@ -118,14 +120,17 @@ void MoveCommand::init(shared_ptr<RobotController> &rc){
 	previousPoint = rc->robot->endEffector.position;
 }
 double MoveCommand::calculateRequiredDistance(float dt){
-	return dt*velocity;
+	// return dt*velocity;
+	currentVelocity += glm::clamp((velocity - currentVelocity)*dt, -acceleration, acceleration)*dt;
+	return dt*currentVelocity;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
-	requiredDistance = calculateRequiredDistance(dt);
-	glm::vec4 newTarget;
+	requiredDistance += calculateRequiredDistance(dt);
+	glm::vec4 newTarget = previousPoint;
 	glm::vec4 oldTarget = previousPoint;
 	u32 i = 0;
 	while(requiredDistance > 0.0 && (not interpolator->finished)){
+	// while(requiredDistance > glm::distance(oldTarget, newTarget) && (not interpolator->finished)){
 		i++;
 		newTarget = interpolator->nextPoint();
 		requiredDistance -= glm::distance(previousPoint, newTarget);

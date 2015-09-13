@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <random>
 #include <btBulletDynamicsCommon.h>
-#include <Utils/Bezier.h>
+#include "Utils/Bezier.h"
 
 namespace CFG {
 	extern string 	rFloat;

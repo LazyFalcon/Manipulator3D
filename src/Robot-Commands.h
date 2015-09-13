@@ -81,6 +81,7 @@ public:
 	bool endOrientationEnabled;
 
 	double velocity;
+	double currentVelocity {0};
 	double jointVelocityModifier {1.0};
 	double acceleration;
 	double requiredDistance {0.0};

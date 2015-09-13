@@ -1,15 +1,15 @@
-#include <Utils/Includes.h>
+#include "Utils/Includes.h"
 #include "common.h"
 
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <IL/ilut.h>
 
-#include <Utils/Utils.h>
-#include <Utils/glUtils.h>
-#include <Utils/IMGUI_V4.h>
-#include <Utils/UIContainer.cpp>
-#include <Utils/Camera.h>
+#include "Utils/Utils.h"
+#include "Utils/glUtils.h"
+#include "Utils/IMGUI_V4.h"
+#include "Utils/UIContainer.cpp"
+#include "Utils/Camera.h"
 #include "CFGParser.h"
 #include "Timer.h"
 #define _DebugLine_ std::cerr<<"line: "<<__LINE__<<" : "<<__FILE__<<" : "<<__FUNCTION__<<"()\n";
@@ -197,6 +197,7 @@ void fastLoop(float step){
 	PythonBindings::update(RC, scene);
 }
 void renderLoop(){
+	Engine::getDataAndStartQuery("Total");
 	// Engine::plotGraphs();
 	// Engine::generateShadowMap(*scene);
 	Engine::setup(*scene);
@@ -224,6 +225,7 @@ void renderLoop(){
 	Engine::finalize(*scene);
 	if(globalSettings & HIDE_GUI)Engine::renderGUI(ui);
 	if(globalSettings & HIDE_GUI)Engine::renderShapes();
+	Engine::endQuery();
 	glfwSwapBuffers(window);
 }
 void prerequisites(){
@@ -541,7 +543,7 @@ void initContext(CFG::Node &cfg){
 		window_width = min((int)window_width,mode->width);
 		window_height = min((int)window_height,mode->height);
 
-		window = glfwCreateWindow(window_width, window_height, "DezerteR's game", NULL, NULL);
+		window = glfwCreateWindow(window_width, window_height, "Manipulator3D", NULL, NULL);
 		glfwSetWindowPos(window, mode->width/2-window_width/2, mode->height/2-window_height/2);
 		glfwHideWindow(window);
 	}
@@ -574,8 +576,8 @@ void initContext(CFG::Node &cfg){
 		glfwSetKeyCallback(window, keyCallback);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		glfwSetDropCallback(window, dropCallback);
-        glfwSetWindowCloseCallback(window, exitCallback);
-        glfwSetWindowSizeCallback(window, resizeCallback);
+		glfwSetWindowCloseCallback(window, exitCallback);
+		glfwSetWindowSizeCallback(window, resizeCallback);
 	}
 
 	if(Engine::initGlew())

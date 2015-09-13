@@ -1,5 +1,5 @@
 #pragma once
-#include <Utils/BaseStructs.h>
+#include "Utils/BaseStructs.h"
 class Robot;
 enum JointType {
 	REVOLUTE_JOINT = 1,
@@ -63,11 +63,13 @@ public:
 	std::shared_ptr<Entity> entity;
 	double min, max;
 	double value;
-	double targetValue;
+	double targetValue {0};
 	double maxVelocty;
 	double maxAcceleration;
-	double lastVelocity;
-	double lastAcceleration;
+	double lastVelocity {0};
+	double lastAcceleration {0};
+
+	double leftValue {0};
 };
 
 class Gripper : public Module{};

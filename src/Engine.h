@@ -1,11 +1,11 @@
 #pragma once
-#include <Utils/Includes.h>
-#include <Utils/Utils.h>
-#include <Utils/Camera.h>
-#include <Utils/MeshInfo.h>
-#include <Utils/Camera.h>
-#include <Utils/IMGUI_V4.h>
-#include <Utils/glUtils.h>
+#include "Utils/Includes.h"
+#include "Utils/Utils.h"
+#include "Utils/Camera.h"
+#include "Utils/MeshInfo.h"
+#include "Utils/Camera.h"
+#include "Utils/IMGUI_V4.h"
+#include "Utils/glUtils.h"
 #include "Common.h"
 #include "Robot.h"
 #include "CFGParser.h"
@@ -53,6 +53,8 @@ namespace Engine NAM_START
 
 void initQueries();
 void drawQueries(UI::IMGUI &gui);
+void getDataAndStartQuery(const std::string name);
+void endQuery();
 
 struct Config
 {

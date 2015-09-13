@@ -10,7 +10,7 @@ CXX = C:\MinGw\bin\g++.exe
 BUILDDIR = bin
 SRC = src
 Editor = ./Editor
-UTIL = C:/MinGW/include/Utils
+UTIL = ./Utils
 
 OBJS = \
 ../bin/Utils.o \
@@ -20,8 +20,8 @@ OBJS = \
 ../bin/Logger.o \
 ../bin/CFGparser.o \
 ../bin/BulletWorld.o \
-../bin/ResourceLoader.o \
 ../bin/Engine.o \
+../bin/ResourceLoader.o \
 ../bin/JacobianTransposed.o \
 ../bin/Robot.o \
 ../bin/IInterpolator.o \
@@ -103,11 +103,11 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 ../bin/CFGparser.o: CFGparser.cpp CFGparser.h $(UTIL)/Utils.h
 	$(CXX) -c $(CXXFLAGS) CFGparser.cpp -o ../bin/CFGparser.o
 
+../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h BulletWorld.h $(UTIL)/BaseStructs.h
+	$(CXX) -c $(CXXFLAGS) -o2 ResourceLoader.cpp -o ../bin/ResourceLoader.o
+
 ../bin/Engine.o: Engine.cpp Engine.h $(UTIL)/glUtils.h  glUtils.h Engine-DrawUtils.h Engine-Externals.h Engine-Ilumination.h $(UTIL)/Utils.h $(UTIL)/BaseStructs.h
 	$(CXX) -c $(CXXFLAGS) Engine.cpp -o ../bin/Engine.o
-
-../bin/ResourceLoader.o: ResourceLoader.cpp ResourceLoader.h $(UTIL)/Utils.h BulletWorld.h $(UTIL)/BaseStructs.h
-	$(CXX) -c $(CXXFLAGS) ResourceLoader.cpp -o ../bin/ResourceLoader.o
 
 # --------- BULLET -------------------------
 

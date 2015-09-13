@@ -1,6 +1,6 @@
-#include <Utils/Includes.h>
-#include <Utils/Utils.h>
-#include <Utils/IMGUI_V4.h>
+#include "../Utils/Includes.h"
+#include "../Utils/Utils.h"
+#include "../Utils/IMGUI_V4.h"
 #include "MoveCommandBuilder.h"
 #include "Editor.h"
 #include "../Robot-Commands.h"
@@ -194,11 +194,12 @@ wxg::DropdownPairWithCallback<double> jointVelocities (UI::AlignTop, 100, std::v
 	{"150 %", 1.5},
 });
 wxg::DropdownPairWithCallback<double> accelerations (UI::AlignTop, 100, std::vector <pair<string, double>>{
-	{"0.1 m/s^2", 0.1},
-	{"0.15 m/s^2", 0.15},
-	{"0.25 m/s^2", 0.25},
 	{"0.5 m/s^2", 0.5},
 	{"1.0 m/s^2", 1.0},
+	{"3.0 m/s^2", 3.0},
+	{"6.0 m/s^2", 6.0},
+	{"9.0 m/s^2", 9.0},
+	{"12.0 m/s^2", 12.0},
 });
 wxg::DropdownPairWithCallback<double> times (UI::AlignTop, 100, std::vector <pair<string, double>>{
 	{"1s", 1000},

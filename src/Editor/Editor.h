@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include <Utils/Includes.h>
-#include <Utils/Utils.h>
+#include "../Utils/Includes.h"
+#include "../Utils/Utils.h"
 #include <set>
-#include <Utils/IMGUI_V4.h>
-#include <Utils/Camera.h>
+#include "../Utils/IMGUI_V4.h"
+#include "../Utils/Camera.h"
 #include "PropertyEditor-TabManager.h"
 #include "../Widgets.h"
 #include "../IInterpolator.h"

@@ -1,60 +1,14 @@
 from Manipulator3D import *
 
 import os
-# import matplotlib
-# from matplotlib.pyplot import draw, figure, show
 import matplotlib.pyplot as plt
-# from numpy import arange, sin, pi
-# import numpy as np
+import numpy as np
+from scipy.signal import savgol_filter
 
 enableRecording = False
 plotRecordedData = False
 recordName = '------------'
 plotColor = 'k'
-
-'''
-Przykladowa akcja:
-	jej zadaniem jest zbierac wszystkie zaznaczone obiekty i przenosic je w jedno miejsce
-	miejsce jest wskazywane kursorem(z pewnym offsetem) obiektem jest ten aktualnie zaznaczony
-	jesli nie ma nic zaznaczonego przez 3s, to akcja sie konczy
-'''
-class MoveObjects:
-	def __init__(self):
-		self.timer = 3.0
-
-	def onEnter(self, RC):
-		self.timer = 3
-	def onExit(self, RC, scene):
-		pass
-
-	def handleTimer(self, dt):
-		if self.timer > 0:
-			self.timer -= dt
-			return False
-		else:
-			return True
-
-	def onUpdate(self, RC, scene, dt):
-		selection = getSelection()
-		if len(selection) > 0:
-			print 'Ha, lets grab sometthin\'!'
-			print selection[0].position
-
-			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).name('GoTo 1').insert(RC,1)
-			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).orientation(vec3(0,0,-1)).name('GoTo 1').jointVelocity(0.9).insert(RC,2)
-			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position).orientation(vec3(0,0,-1)).name('GoTo 2').jointVelocity(0.9).insert(RC,3)
-			RC.grab(selection[0], CommandReturnAction.DelAndForward).insert(RC, 4)
-			RC.goTo(CommandReturnAction.DelAndForward).to(selection[0].position+vec4(0,0,1.5,0)).name('GoTo 1').jointVelocity(0.9).insert(RC,5)
-
-
-			RC.goTo(CommandReturnAction.DelAndForward).to(getCursor()+vec4(0,0,1.2,0)).name('GoTo 3').insert(RC,6)
-			# RC.goTo(CommandReturnAction.DelAndForward).to(getCursor()+vec4(0,0,0.2,0)).orientation(vec3(0,0,-1)).name('GoTo 3').insert(RC,7)
-			RC.release(CommandReturnAction.DelAndBack).insert(RC,7)
-
-			unselect()
-			return True
-		else:
-			return self.handleTimer(dt)
 
 class EndTest():
 	def onEnter(self, RC):
@@ -72,6 +26,12 @@ def handleInput(key, action, mod, RC, scene):
 	if action == Press:
 		if key == ord('1') and mod & Ctrl == Ctrl:
 			startTest_1()
+		if key == ord('2') and mod & Ctrl == Ctrl:
+			startTest_2()
+		if key == ord('3') and mod & Ctrl == Ctrl:
+			startTest_3()
+		if key == ord('4') and mod & Ctrl == Ctrl:
+			startTest_4()
 		if key == ord('W') and mod & Ctrl == Ctrl:
 			plotData(RC, scene)
 		elif key == F5:
@@ -110,9 +70,16 @@ class RecordedData:
 		self.time = self.totalTime + dt
 		self.totalTime = self.totalTime + dt
 
+	def smooth(self):
+		self.EffectorDelta = savgol_filter(self.EffectorDelta, 101, 3)
+		self.EffectorVelocity = savgol_filter(self.EffectorVelocity, 21, 3)
+		self.EffectorAcceleration = savgol_filter(self.EffectorAcceleration, 201, 3)
+
 	def savePlotsToFile(self):
 		if not os.path.exists('.\\'+recordName):
 			os.makedirs('.\\'+recordName)
+
+		self.smooth()
 
 		print '[SAVE RECORDS] ' + recordName
 		plt.figure(1)
@@ -120,8 +87,7 @@ class RecordedData:
 		plt.xlabel('time [ms]')
 		plt.ylabel('time [ms]')
 		plt.title('Time of single solver')
-		plt.savefig(recordName+'\\IKIterationTime.pdf')
-		plt.show()
+		plt.savefig(recordName+'\\IKIterationTime.png')
 
 		plt.figure(2)
 		plt.plot(self.IKIterarationCount, plotColor)
@@ -165,8 +131,34 @@ class RecordedData:
 		plt.title('End effector acceleration')
 		plt.savefig(recordName+'\\EffectorAcceleration.png')
 
-
+'''
+Proste sledzenie trasy
+'''
 def startTest_1():
+	global recordName
+	global enableRecording
+	global recorder
+
+	recorder = RecordedData()
+
+	RC = getRC()
+	enableRecording = True
+	recordName = 'FirstRecord'
+
+	points = Vec4Vec()
+	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1), vec4(1, -3.5, 4, 1)]
+	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
+	# RC.move(1).name("FirstRecord").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
+	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(0.5).finish(RC)
+	foo = EndTest()
+	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
+
+	RC.next()
+	RC.run()
+
+	pass
+
+def startTest_2():
 	global recordName
 	global enableRecording
 	global recorder
@@ -203,8 +195,6 @@ def update(RC, scene, dt):
 def init(RC, scene):
 	print 'Hello! This is first entry in this script.'
 
-	action = MoveObjects()
-	# RC.pyExec(CommandReturnAction.GoToNext).name("Move objects from box").callback(action).finish(RC)
 
 	# RC.savePosition()
 	# moveBuilder = MoveCommandBuilder()
