@@ -67,7 +67,6 @@ glm::vec2      screenSize;
 bool           quit = false;
 bool           UI::GetInput = false;
 int64_t        globalSettings;
-float          g_timeStep = 5.f;
 u32            RedC = 0xFF000000;
 u32            GreenC = 0x00FF0000;
 u32            BlueC = 0x0000FF00;
@@ -246,7 +245,6 @@ void mainLoop(){
 	Timer<u32, 1000,60> frameTimeCounter;
 	Timer<double, 1000,1> precisetimer;
 	float timeAccumulator = 0.f;
-	float step = g_timeStep;
 	float dt = 0.f;
 	double ddt = 0.0;
 	u32 msdt = 0;
@@ -304,9 +302,9 @@ void mainLoop(){
 		mousePosition = glm::vec2(mouse_x, mouse_y);
 
 		// precisetimer();
-		while(timeAccumulator >= step && !quit){ // fixed step loop
-			timeAccumulator -= step;
-			fastLoop(step);
+		while(timeAccumulator >= scene->fixedLoopStep && !quit){ // fixed step loop
+			timeAccumulator -= scene->fixedLoopStep;
+			fastLoop(scene->fixedLoopStep);
 		}
 		// precisetimer();
 		// ikTime = precisetimer.getString();

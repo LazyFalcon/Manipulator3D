@@ -28,6 +28,9 @@ public:
 	shared_ptr<Resources> resources;
 	shared_ptr<Robot> robot;
 
+	float fixedLoopStep;
+
+
 	/// python binding utils, sorry
 	shared_ptr<Entity>& get(const std::string &name){
 		return units[name];
@@ -35,7 +38,7 @@ public:
 	/// --
 
 	~Scene();
-	Scene() : robot(make_shared<Robot>()), resources(make_shared<Resources>()) {}
+	Scene() : robot(make_shared<Robot>()), resources(make_shared<Resources>()) , fixedLoopStep(5.f){}
 };
 
 class ResourceLoader

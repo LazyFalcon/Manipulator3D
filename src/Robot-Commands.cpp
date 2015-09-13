@@ -121,7 +121,7 @@ void MoveCommand::init(shared_ptr<RobotController> &rc){
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	// return dt*velocity;
-	currentVelocity += glm::clamp((velocity - currentVelocity)*dt, -acceleration, acceleration)*dt;
+	currentVelocity += glm::clamp((velocity - currentVelocity), -acceleration, acceleration)*dt;
 	return dt*currentVelocity;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){

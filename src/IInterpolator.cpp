@@ -9,7 +9,6 @@
 
 #define _DebugLine_  cerr<<"line: "<<__LINE__<<"\n";
 
-extern float g_timeStep;
 
 /// -------------------------------- LINEAR --------------------------------
 glm::vec4 Linear::nextPoint(){
@@ -59,14 +58,6 @@ void Linear::reset(){
 	nextSection();
 }
 void Linear::genNextStep(){
-	float velocity = 0.005; // m/s
-	float stepLen = velocity/g_timeStep;
-
-	int next = (currentPoint+1)%points.size();
-	vec = points[next] - points[currentPoint];
-	steps = glm::length(vec)/stepLen;
-	vec = glm::normalize(vec)*stepLen;
-	currentPoint = (currentPoint+1)%points.size();
 }
 void Linear::drawParams(){
 	wxg::editBox("step: ", singleStepLength, 160);

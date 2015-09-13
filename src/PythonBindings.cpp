@@ -239,7 +239,9 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 
 	bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
 		.def("get", &Scene::get, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def_readwrite("fixedLoopStep", &Scene::fixedLoopStep)
 		;
+	bpl::def("getScene", getScene);
 	bpl::def("getRC", getRC);
 
 	void (RobotController::*pushCommand_ptr)(shared_ptr<ICommand> ptr) = &RobotController::pushCommand;
@@ -289,6 +291,8 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readwrite("lastVelocity", &Module::lastVelocity)
 		.def_readwrite("lastAcceleration", &Module::lastAcceleration)
 		.def_readwrite("axis", &Module::axis)
+		.def_readwrite("vecToA", &Module::vecToA)
+		.def_readwrite("vecToB", &Module::vecToB)
 		;
 
 	using namespace Helper;

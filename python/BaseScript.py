@@ -71,9 +71,10 @@ class RecordedData:
 		self.totalTime = self.totalTime + dt
 
 	def smooth(self):
-		self.EffectorDelta = savgol_filter(self.EffectorDelta, 101, 3)
-		self.EffectorVelocity = savgol_filter(self.EffectorVelocity, 21, 3)
-		self.EffectorAcceleration = savgol_filter(self.EffectorAcceleration, 201, 3)
+		# self.EffectorDelta = savgol_filter(self.EffectorDelta, 101, 3)
+		# self.EffectorVelocity = savgol_filter(self.EffectorVelocity, 21, 3)
+		# self.EffectorAcceleration = savgol_filter(self.EffectorAcceleration, 201, 3)
+		pass
 
 	def savePlotsToFile(self):
 		if not os.path.exists('.\\'+recordName):
@@ -113,7 +114,7 @@ class RecordedData:
 		plt.figure(5)
 		plt.plot(self.EffectorDelta, plotColor)
 		plt.xlabel('time [ms]')
-		plt.ylabel('End effector ?transition? [m]')
+		plt.ylabel('End effector position  [m]')
 		plt.title('Time of single solver')
 		plt.savefig(recordName+'\\EffectorDelta.png')
 
@@ -133,7 +134,7 @@ class RecordedData:
 
 '''
 Proste sledzenie trasy
-'''
+''
 def startTest_1():
 	global recordName
 	global enableRecording
@@ -157,6 +158,29 @@ def startTest_1():
 	RC.run()
 
 	pass
+'''
+def startTest_1():
+	global recordName
+	global enableRecording
+	global recorder
+
+	recorder = RecordedData()
+
+	RC = getRC()
+	enableRecording = True
+	recordName = 'Czysty przejazd bez ograniczen'
+
+	points = Vec4Vec()
+	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
+	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
+	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).acceleration(60.0).jointVelocity(100.5).finish(RC)
+	foo = EndTest()
+	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
+
+	RC.next()
+	RC.run()
+
+	pass
 
 def startTest_2():
 	global recordName
@@ -167,13 +191,37 @@ def startTest_2():
 
 	RC = getRC()
 	enableRecording = True
-	recordName = 'FirstRecord'
+	recordName = 'Ograniczenie zlaczowe'
 
 	points = Vec4Vec()
-	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(-3,0,3,1), vec4(1, -3.5, 4, 1)]
+	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
 	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
 	# RC.move(1).name("FirstRecord").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
-	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).jointVelocity(2.5).finish(RC)
+	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(0.5).finish(RC)
+	foo = EndTest()
+	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
+
+	RC.next()
+	RC.run()
+
+	pass
+
+def startTest_3():
+	global recordName
+	global enableRecording
+	global recorder
+
+	recorder = RecordedData()
+
+	RC = getRC()
+	enableRecording = True
+	recordName = 'Orientacja'
+
+	points = Vec4Vec()
+	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
+	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
+	# RC.move(1).name("FirstRecord").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
+	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(0.5).finish(RC)
 	foo = EndTest()
 	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
 
