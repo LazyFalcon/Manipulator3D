@@ -76,20 +76,20 @@ void dropCallback(int count, const char** paths);
 
 i32 getMarkedModule();
 void directControlWidget(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC);
-
-
+void saveRobot(shared_ptr<RobotController> &RC);
+void loadRobot(shared_ptr<RobotController> &RC);
 /// -------------------------------- SAVE STATE
 /// Zapisuje stan, po co w sumie? akcji raczej zapisać się nie da
 void saveState(const std::string &fileName);
 void loadState(const std::string &fileName);
 // void saveState();
-// void loadState();
+// void loadState();storeDouble
 void getFloat(const std::string &s, std::vector<float>&v);
-void getDouble(const std::string &s, std::vector<double>&v);
+void storeDouble(const std::string &s, std::vector<double>&v);
 void getVec4(const std::string &s, std::vector<glm::vec4>&v);
 
 std::vector<float>& storeFloat(const std::string &s);
-std::vector<double>& storeDouble(const std::string &s);
+std::vector<double>& getDouble(const std::string &s);
 std::vector<glm::vec4>& storeVec4(const std::string &s);
 
 /// ----------------------------------------------------- DATA RECORDING

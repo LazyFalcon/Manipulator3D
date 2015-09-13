@@ -9,14 +9,20 @@ enableRecording = False
 plotRecordedData = False
 recordName = '------------'
 plotColor = 'k'
+ikPlotNme = '1.0mm'
+count = 0
 
 class EndTest():
+	def __init__(self, name):
+		self.ikPlotNme = name
 	def onEnter(self, RC):
 		global enableRecording
 		global plotRecordedData
+		global ikPlotNme
+		ikPlotNme = self.ikPlotNme
 		enableRecording = False
 		plotRecordedData = True
-
+		loadRobot(RC)
 	def onExit(self, RC, scene):
 		return True
 	def onUpdate(self, RC, scene, dt):
@@ -24,6 +30,12 @@ class EndTest():
 
 def handleInput(key, action, mod, RC, scene):
 	if action == Press:
+		if key == ord('1'):
+			startTest_1_a()
+		if key == ord('2'):
+			startTest_1_b()
+		if key == ord('3'):
+			startTest_1_c()
 		if key == ord('1') and mod & Ctrl == Ctrl:
 			startTest_1()
 		if key == ord('2') and mod & Ctrl == Ctrl:
@@ -83,20 +95,34 @@ class RecordedData:
 		self.smooth()
 
 		print '[SAVE RECORDS] ' + recordName
-		plt.figure(1)
-		plt.plot(self.IKIterationTime, plotColor)
-		plt.xlabel('time [ms]')
-		plt.ylabel('time [ms]')
-		plt.title('Time of single solver')
-		plt.savefig(recordName+'\\IKIterationTime.png')
+		# plt.figure(1)
+		# plt.plot(self.IKIterationTime, plotColor)
+		# plt.xlabel('time [ms]')
+		# plt.ylabel('time [ms]')
+		# plt.title('Time of single solver')
+		# plt.savefig(recordName+'\\IKIterationTime.png')
 
-		plt.figure(2)
-		plt.plot(self.IKIterarationCount, plotColor)
-		plt.xlabel('time [ms]')
-		plt.ylabel('-')
-		plt.title('Number of solver iterations')
-		plt.savefig(recordName+'\\IKIterarationCount.png')
+		global ikPlotNme
+		global count
+		count = count+1
 
+		store(ikPlotNme, self.IKIterarationCount)
+		if count== 3:
+			plt.figure(2)
+
+			a = getD('1.0mm')
+			b = getD('0.5mm')
+			c = getD('0.05mm')
+
+			# plt.plot(self.IKIterarationCount, plotColor)
+			plt.plot(a, 'g', b, 'b', c, 'k')
+			plt.xlabel('time [ms]')
+			plt.ylabel('-')
+			plt.title('Number of solver iterations')
+			plt.legend(['1.0mm', '0.5mm', '0.05mm'], loc='upper left')
+			plt.savefig(recordName+'\\IKIterarationCount.png')
+			plt.show()
+'''
 		plt.figure(3)
 		plt.plot(self.IKOrientationError, plotColor)
 		plt.xlabel('time [ms]')
@@ -131,7 +157,7 @@ class RecordedData:
 		plt.ylabel('accelereation [m/s^2]')
 		plt.title('End effector acceleration')
 		plt.savefig(recordName+'\\EffectorAcceleration.png')
-
+'''
 '''
 Proste sledzenie trasy
 ''
@@ -159,7 +185,7 @@ def startTest_1():
 
 	pass
 '''
-def startTest_1():
+def startTest_1_a():
 	global recordName
 	global enableRecording
 	global recorder
@@ -167,21 +193,74 @@ def startTest_1():
 	recorder = RecordedData()
 
 	RC = getRC()
+	saveRobot(RC)
+	RC.getRobot().config.positionPrecision = 1/1000.0
+
 	enableRecording = True
 	recordName = 'Czysty przejazd bez ograniczen'
 
 	points = Vec4Vec()
 	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
 	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
-	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).acceleration(60.0).jointVelocity(100.5).finish(RC)
-	foo = EndTest()
-	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
+	RC.move(CommandReturnAction.DelAndForward).name("FirstRecord a").interpolator(path).velocity(4.0).acceleration(20.0).jointVelocity(0.5).finish(RC)
+	foo = EndTest('1.0mm')
+	RC.pyExec(CommandReturnAction.DelAndForward).name("Save records").callback(foo).finish(RC)
 
 	RC.next()
 	RC.run()
 
 	pass
 
+def startTest_1_b():
+	global recordName
+	global enableRecording
+	global recorder
+
+	recorder = RecordedData()
+
+	RC = getRC()
+	saveRobot(RC)
+	RC.getRobot().config.positionPrecision = 0.5/1000.0
+	enableRecording = True
+	recordName = 'Czysty przejazd bez ograniczen'
+
+	points = Vec4Vec()
+	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
+	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
+	RC.move(CommandReturnAction.DelAndForward).name("FirstRecord b").interpolator(path).velocity(4.0).acceleration(20.0).jointVelocity(0.5).finish(RC)
+	foo = EndTest('0.5mm')
+	RC.pyExec(CommandReturnAction.DelAndForward).name("Save records").callback(foo).finish(RC)
+
+	RC.next()
+	RC.run()
+
+	pass
+
+def startTest_1_c():
+	global recordName
+	global enableRecording
+	global recorder
+
+	recorder = RecordedData()
+
+	RC = getRC()
+	saveRobot(RC)
+	RC.getRobot().config.positionPrecision = 0.05/1000.0
+	enableRecording = True
+	recordName = 'Czysty przejazd bez ograniczen'
+
+	points = Vec4Vec()
+	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
+	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
+	RC.move(CommandReturnAction.DelAndForward).name("FirstRecord c").interpolator(path).velocity(4.0).acceleration(20.0).jointVelocity(100.5).finish(RC)
+	foo = EndTest('0.05mm')
+	RC.pyExec(CommandReturnAction.DelAndForward).name("Save records").callback(foo).finish(RC)
+
+	RC.next()
+	RC.run()
+
+	pass
+'''
 def startTest_2():
 	global recordName
 	global enableRecording
@@ -196,9 +275,8 @@ def startTest_2():
 	points = Vec4Vec()
 	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
 	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
-	# RC.move(1).name("FirstRecord").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
-	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(0.5).finish(RC)
-	foo = EndTest()
+	RC.move(1).name("SecondRecord").interpolator(path).velocity(4.0).acceleration(20.0).jointVelocity(0.5).finish(RC)
+	foo = EndTest('sdf')
 	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
 
 	RC.next()
@@ -220,15 +298,16 @@ def startTest_3():
 	points = Vec4Vec()
 	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
 	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
-	# RC.move(1).name("FirstRecord").interpolator(path).velocity(1.0).jointVelocity(0.5).finish(RC)
-	RC.move(1).name("FirstRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(0.5).finish(RC)
-	foo = EndTest()
+	RC.move(1).name("ThirdRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(0.5).orientation(vec3(0,0,-1)).finish(RC)
+	foo = EndTest('43')
 	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
 
 	RC.next()
 	RC.run()
 
 	pass
+
+'''
 
 def update(RC, scene, dt):
 	global plotRecordedData

@@ -103,24 +103,20 @@ bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 
 	// double i = 0.2;
 	double i = 1.5;
-	// for(auto &it : variables.getVector()){
-		// it = 0.0;
-	// }
 	for(auto &it : enhancement.getVector()){
 		it = i;
-		// it = 1;
-		i -= 0.2;
-		// i += 0.9;
+		i += 0.2;
 	}
 	// enhancement(3) *= 15;
 	variables.insertColumn(0, robot.getVariables());
 
 	float positionError = glm::distance(target.position, endEffector.position);
 	float quatError = 1;
-	auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
-	auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 	u32 iterations = 0;
 	for(; (positionError > positionPrecision || quatError > orientationPrecision) && iterations<iterationLimit; iterations++){
+		auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
+		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6,
+
 		auto positionDelta = (target.position - endEffector.position);
 		auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat))*0.f;
 
@@ -129,7 +125,7 @@ bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 		auto a = dot(jjp*force, force);
 		a = a/dot(jjp*force, jjp*force);
 		auto gradient = jacobian*force*a;
-		gradient = mul(gradient, enhancement);
+		// gradient = mul(gradient, enhancement);
 
 		variables = gradient + variables;
 		// robot.clamp(variables.getVector());

@@ -1,43 +1,44 @@
-dirname: D:\Work\Repo\Manipulator3D\models
+dirname: \StanowiskoPrismatic\
+RobotPosition: [0.0000, 0.0000, 0.0000]
 Robot:
  - Name: Robot_1
    Type: hinge
+   Min: -370
+   Max: 370
    ParentJoint: 
      Name: Robot-Base
      Vec: [0.0000, 0.0000, 0.2915]
      Axis: [0.0000, 0.0000, 1.0000]
-     Min: -370
-     Max: 370
    ChildJoint: 
      Vec: [0.0000, 0.0000, 1.2331]
  - Name: Plane
    Type: prismatic
+   Min: -370
+   Max: 370
    ParentJoint: 
      Name: Robot-Base.001
      Vec: [0.0004, 0.0000, 0.5253]
      Axis: [0.0000, 0.0000, 1.0000]
-     Min: -370
-     Max: 370
    ChildJoint: 
      Vec: [0.0962, -0.3562, 0.0835]
  - Name: Cube
    Type: prismatic
+   Min: -370
+   Max: 370
    ParentJoint: 
      Name: Robot-Base.002
      Vec: [-3.9185, -0.1011, 0.1754]
      Axis: [-1.0000, 0.0000, 0.0000]
-     Min: -370
-     Max: 370
    ChildJoint: 
      Vec: [0.0056, 0.1689, 0.0209]
  - Name: Cube.001
    Type: prismatic
+   Min: -370
+   Max: 370
    ParentJoint: 
      Name: Robot-Base.003
      Vec: [-0.0056, -0.1011, -0.0209]
      Axis: [-0.0000, -1.0000, 0.0000]
-     Min: -370
-     Max: 370
    ChildJoint: 
      Vec: [-0.0005, -2.4767, 0.2324]
 Meshes:

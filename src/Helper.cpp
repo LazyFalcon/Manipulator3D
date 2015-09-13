@@ -638,6 +638,13 @@ public:
 	}
 } robotDirectControl;
 
+void saveRobot(shared_ptr<RobotController> &RC){
+	robotDirectControl.history = RC->robot->getVariables();
+}
+void loadRobot(shared_ptr<RobotController> &RC){
+	RC->robot->insertVariables(robotDirectControl.history);
+}
+
 void directControlWidget(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
 	robotDirectControl.run(x,y, mousePos, RC);
 }
@@ -661,6 +668,7 @@ void storeFloat(const std::string &s, std::vector<float>&v){
 }
 void storeDouble(const std::string &s, std::vector<double>&v){
     g_doubles[s] = v;
+		std::cout<<"[ "+s+" ] "<<v.size()<<std::endl;
 }
 void storeVec4(const std::string &s, std::vector<glm::vec4>&v){
     g_vec4[s] = v;
@@ -669,7 +677,7 @@ void storeVec4(const std::string &s, std::vector<glm::vec4>&v){
 std::vector<float>& storeFloat(const std::string &s){
     return g_floats[s];
 }
-std::vector<double>& storeDouble(const std::string &s){
+std::vector<double>& getDouble(const std::string &s){
     return g_doubles[s];
 }
 std::vector<glm::vec4>& storeVec4(const std::string &s){

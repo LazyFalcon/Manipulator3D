@@ -69,14 +69,14 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("eulerAngles", cpp_eulerAngles);
 	bpl::def("angleAxis", glm_angleAxis);
 
-	bpl::class_<glm::mat4>("mat4", bpl::init<float>())
-		.def(bpl::init<float>())
-		.def(bpl::self + glm::mat4())
-		.def(bpl::self - glm::mat4())
-		.def(bpl::self * glm::mat4())
-		.def(bpl::self * glm::vec4())
-		.def(bpl::self * float())
-		;
+	// bpl::class_<glm::mat4>("mat4", bpl::init<float>())
+		// .def(bpl::init<float>())
+		// .def(bpl::self + glm::mat4())
+		// .def(bpl::self - glm::mat4())
+		// .def(bpl::self * glm::mat4())
+		// .def(bpl::self * glm::vec4())
+		// .def(bpl::self * float())
+		// ;
 	bpl::class_<glm::quat>("quat", bpl::init<float, float, float, float>())
 		.def(bpl::init<float, glm::vec3>())
 		.def(bpl::init<glm::vec3>())
@@ -160,17 +160,17 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	FollowObjectBuilder& (FollowObjectBuilder::*target_1)(glm::vec4 &t) = &FollowObjectBuilder::target;
 	FollowObjectBuilder& (FollowObjectBuilder::*target_2)(shared_ptr<Entity> &obj) = &FollowObjectBuilder::target;
 	FollowObjectBuilder& (FollowObjectBuilder::*followfinish_ptr)(shared_ptr<RobotController>) = &FollowObjectBuilder::finish;
-	bpl::class_<FollowObjectBuilder, std::shared_ptr<FollowObjectBuilder>>("FollowObjectBuilder", bpl::init<>())
-		.def("init", &FollowObjectBuilder::init, bpl::return_internal_reference<>())
-		.def("name", &FollowObjectBuilder::name, bpl::return_internal_reference<>())
-		.def("target", target_1, bpl::return_internal_reference<>())
-		.def("target", target_2, bpl::return_internal_reference<>())
-		.def("velocity", &FollowObjectBuilder::velocity, bpl::return_internal_reference<>())
-		.def("jointVelocity", &FollowObjectBuilder::jointVelocity, bpl::return_internal_reference<>())
-		.def("acceleration", &FollowObjectBuilder::acceleration, bpl::return_internal_reference<>())
-		.def("insert", &FollowObjectBuilder::insert, bpl::return_internal_reference<>())
-		.def("finish", followfinish_ptr, bpl::return_internal_reference<>())
-		;
+	// bpl::class_<FollowObjectBuilder, std::shared_ptr<FollowObjectBuilder>>("FollowObjectBuilder", bpl::init<>())
+		// .def("init", &FollowObjectBuilder::init, bpl::return_internal_reference<>())
+		// .def("name", &FollowObjectBuilder::name, bpl::return_internal_reference<>())
+		// .def("target", target_1, bpl::return_internal_reference<>())
+		// .def("target", target_2, bpl::return_internal_reference<>())
+		// .def("velocity", &FollowObjectBuilder::velocity, bpl::return_internal_reference<>())
+		// .def("jointVelocity", &FollowObjectBuilder::jointVelocity, bpl::return_internal_reference<>())
+		// .def("acceleration", &FollowObjectBuilder::acceleration, bpl::return_internal_reference<>())
+		// .def("insert", &FollowObjectBuilder::insert, bpl::return_internal_reference<>())
+		// .def("finish", followfinish_ptr, bpl::return_internal_reference<>())
+		// ;
 
 	WaitCommandBuilder& (WaitCommandBuilder::*waitfinish_ptr)(shared_ptr<RobotController>&) = &WaitCommandBuilder::finish;
 
@@ -188,13 +188,13 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("insert", &ExecutePythonCommandBuilder::insert, bpl::return_internal_reference<>())
 		.def("finish", &ExecutePythonCommandBuilder::finish, bpl::return_internal_reference<>())
 		;
-	bpl::class_<WaitCommandBuilder, std::shared_ptr<WaitCommandBuilder>>("WaitCommandBuilder", bpl::init<>())
-		.def("init", &WaitCommandBuilder::init, bpl::return_internal_reference<>())
-		.def("name", &WaitCommandBuilder::name, bpl::return_internal_reference<>())
-		.def("time", &WaitCommandBuilder::time, bpl::return_internal_reference<>())
-		.def("insert", &WaitCommandBuilder::insert, bpl::return_internal_reference<>())
-		.def("finish", waitfinish_ptr, bpl::return_internal_reference<>())
-		;
+	// bpl::class_<WaitCommandBuilder, std::shared_ptr<WaitCommandBuilder>>("WaitCommandBuilder", bpl::init<>())
+		// .def("init", &WaitCommandBuilder::init, bpl::return_internal_reference<>())
+		// .def("name", &WaitCommandBuilder::name, bpl::return_internal_reference<>())
+		// .def("time", &WaitCommandBuilder::time, bpl::return_internal_reference<>())
+		// .def("insert", &WaitCommandBuilder::insert, bpl::return_internal_reference<>())
+		// .def("finish", waitfinish_ptr, bpl::return_internal_reference<>())
+		// ;
 
 	bpl::enum_<SolverType>("SolverType")
 		.value("JT0", SolverType::JT0)
@@ -233,9 +233,9 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readwrite("position", &Entity::position)
 		.def_readwrite("quat", &Entity::quat)
 		;
-	bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
-		.def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>, true>())
-		;
+	// bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
+		// .def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>, true>())
+		// ;
 
 	bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
 		.def("get", &Scene::get, bpl::return_value_policy<bpl::reference_existing_object>())
@@ -283,17 +283,17 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("module", &Robot::module, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def_readwrite("config", &Robot::config)
 		;
-	bpl::class_<Module, boost::noncopyable>("Module")
-		.def_readwrite("value", &Module::value)
-		.def_readwrite("targetValue", &Module::targetValue)
-		.def_readwrite("maxVelocty", &Module::maxVelocty)
-		.def_readwrite("maxAcceleration", &Module::maxAcceleration)
-		.def_readwrite("lastVelocity", &Module::lastVelocity)
-		.def_readwrite("lastAcceleration", &Module::lastAcceleration)
-		.def_readwrite("axis", &Module::axis)
-		.def_readwrite("vecToA", &Module::vecToA)
-		.def_readwrite("vecToB", &Module::vecToB)
-		;
+	// bpl::class_<Module, boost::noncopyable>("Module")
+		// .def_readwrite("value", &Module::value)
+		// .def_readwrite("targetValue", &Module::targetValue)
+		// .def_readwrite("maxVelocty", &Module::maxVelocty)
+		// .def_readwrite("maxAcceleration", &Module::maxAcceleration)
+		// .def_readwrite("lastVelocity", &Module::lastVelocity)
+		// .def_readwrite("lastAcceleration", &Module::lastAcceleration)
+		// .def_readwrite("axis", &Module::axis)
+		// .def_readwrite("vecToA", &Module::vecToA)
+		// .def_readwrite("vecToB", &Module::vecToB)
+		// ;
 
 	using namespace Helper;
 
@@ -363,11 +363,13 @@ BOOST_PYTHON_MODULE(Manipulator3D){
             // ;
 
     // bpl::def("getF", &getFloat, bpl::return_value_policy<bpl::reference_existing_object>());
-    // bpl::def("getD", &getDouble, bpl::return_value_policy<bpl::reference_existing_object>());
+    bpl::def("getD", &getDouble, bpl::return_value_policy<bpl::reference_existing_object>());
     // bpl::def("getVec", &getVec4, bpl::return_value_policy<bpl::reference_existing_object>());
 
     // bpl::def("store", &storeFloat);
-    // bpl::def("store", &storeDouble);
+    bpl::def("store", &storeDouble);
+    bpl::def("saveRobot", &saveRobot);
+    bpl::def("loadRobot", &loadRobot);
     // bpl::def("store", &storeVec4);
 }
 
