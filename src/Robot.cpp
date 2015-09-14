@@ -106,12 +106,11 @@ std::vector<Point> Robot::simulateFullData(std::vector<double> &variables){
 	}
 	return out;
 }
-glm::vec4 Robot::clamp(std::vector<double> &vec){
-
+void Robot::clamp(std::vector<double> &vec){
+	if(not config.useRobotConstraints) return;
 	for(int i=0; i<getSize() && i<vec.size(); i++){
 		auto &module = chain[i];
 		vec[i] = glm::clamp(vec[i], module->min, module->max);
-			// vec[i] = glm::clamp((float)vec[i], -pi, pi);
 	}
 }
 glm::vec4 Robot::insertVariables(std::vector<double> &vec){

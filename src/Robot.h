@@ -108,7 +108,7 @@ public:
 	bool goTo(float dt, double jVelocityModifier);
 	bool goTo(const std::vector<double> &jointPositions);
 	std::vector<Point> simulateFullData(std::vector<double> &variables);
-	glm::vec4 clamp(std::vector<double> &vec);
+	void clamp(std::vector<double> &vec);
 	glm::vec4 insertVariables(std::vector<double> &vec);
 	int getSize(){return chain.size();}
 	void reset();
