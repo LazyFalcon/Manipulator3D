@@ -395,7 +395,7 @@ void reloadScene(const std::string &sceneName, shared_ptr<RobotController> &RC, 
 
 	RC->robot = scene->robot;
 
-  PythonBindings::reloadAndInitMainScript(RC, scene);
+  // PythonBindings::reloadAndInitMainScript(RC, scene);
 }
 
 /// http://stackoverflow.com/questions/9285384/how-does-import-work-with-boost-python-from-inside-python-files

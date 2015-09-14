@@ -110,7 +110,7 @@ struct FrameRecordedData
     glm::vec4 EffectorPosition;
     glm::quat EffectorOrientation;
 
-    std::vector<glm::vec4> RobotJoints;
+    std::vector<double> RobotJoints {-1,-1,-1,-1,-1,-1};
 
 };
 

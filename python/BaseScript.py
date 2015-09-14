@@ -66,6 +66,7 @@ class RecordedData:
 		self.FrameTime = DoubleVec()
 		self.time = DoubleVec()
 		self.totalTime = 0
+		self.joints = [DoubleVec(), DoubleVec(), DoubleVec(), DoubleVec(), DoubleVec(), DoubleVec()]
 
 	def saveFrameRecords(self, dt):
 		data = getRecord()
@@ -78,6 +79,9 @@ class RecordedData:
 		self.EffectorDelta.append( data.EffectorDelta )
 		self.EffectorVelocity.append( data.EffectorVelocity )
 		self.EffectorAcceleration.append( data.EffectorAcceleration )
+
+		for i in range(0,5):
+			self.joints[i].append(data.RobotJoints[i])
 
 		self.time = self.totalTime + dt
 		self.totalTime = self.totalTime + dt
@@ -93,7 +97,19 @@ class RecordedData:
 			os.makedirs('.\\'+recordName)
 
 		self.smooth()
-
+		plt.figure(8)
+		plt.plot(self.joints[0])
+		plt.plot(self.joints[1])
+		plt.plot(self.joints[2])
+		plt.plot(self.joints[3])
+		plt.plot(self.joints[4])
+		plt.plot(self.joints[5])
+		plt.legend(['1','2','3','4','5','6',], loc='upper left')
+		# plt.legend(['1','2','3','4','5','6',])
+		plt.xlabel('-')
+		plt.ylabel('Joint values')
+		plt.show()
+'''
 		print '[SAVE RECORDS] ' + recordName
 		plt.figure(1)
 		plt.plot(self.IKIterationTime, plotColor)
@@ -101,6 +117,8 @@ class RecordedData:
 		plt.ylabel('time [ms]')
 		plt.title('Time of single solver')
 		plt.savefig(recordName+'\\IKIterationTime.png')
+
+		print '[Mean] ' + str(np.mean(self.IKIterationTime))+' [Median ]' + str(np.median (self.IKIterationTime))
 
 		global ikPlotNme
 		global count
@@ -158,6 +176,9 @@ class RecordedData:
 		plt.ylabel('accelereation [m/s^2]')
 		plt.title('End effector acceleration')
 		plt.savefig(recordName+'\\EffectorAcceleration.png')
+'''
+
+
 
 '''
 Proste sledzenie trasy
@@ -299,7 +320,7 @@ def startTest_3():
 	points = Vec4Vec()
 	points[:] = [getRecord().EffectorPosition+vec4(0.1,0,0,0), vec4(-1, -3.5, 4, 1), vec4(1, -5, 2, 1), vec4(4, 0, 5, 1), vec4(2, 5, 4, 1), vec4(2,3,3,1), vec4(2,4,3,1)]
 	path = addInterpolator(Interpolator.BSpline, points, "FirsRecordPath")
-	RC.move(1).name("ThirdRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(10.5).orientation(vec3(0,0,-1)).finish(RC)
+	RC.move(1).name("ThirdRecord").interpolator(path).velocity(4.0).acceleration(6.0).jointVelocity(1.005).startO(angleAxis(0.2, vec3(0,0,-1))).endO(angleAxis(2.3, vec3(0.5, 0, -1))).solver(SolverType.JT2).finish(RC)
 	foo = EndTest('43')
 	RC.pyExec(1).name("Save records").callback(foo).finish(RC)
 
@@ -321,6 +342,7 @@ def update(RC, scene, dt):
 		plotRecordedData = False
 
 def init(RC, scene):
+	# print 'dddduuuuuuuuuuuuuupa!'
 	print 'Hello! This is first entry in this script.'
 
 

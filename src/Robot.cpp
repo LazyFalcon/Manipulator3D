@@ -52,6 +52,7 @@ void Robot::update(float dt){
 	Helper::record().EffectorDelta = positionShift;
 	Helper::record().EffectorAcceleration = (positionShift/dt - Helper::record().EffectorVelocity)/dt;
 	Helper::record().EffectorVelocity = positionShift/dt;
+	Helper::record().RobotJoints = getVariables();
 }
 
 Point Robot::simulate(std::vector<double> &variables){

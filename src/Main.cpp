@@ -231,7 +231,8 @@ void prerequisites(){
 	Engine::initQueries();
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
-	PythonBindings::reloadAndInitMainScript(RC, scene);
+	// PythonBindings::reloadAndInitMainScript(RC, scene);
+	PythonBindings::loadMainScript("BaseScript", RC, scene);
 	glfwShowWindow(window);
 }
 void updates(float dt){

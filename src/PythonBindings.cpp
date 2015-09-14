@@ -395,7 +395,8 @@ void init(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, const std::
 	try {
 		initManipulator3D();
 		main = bpl::import("__main__");
-		global = bpl::object(main.attr("__dict__"));
+		// global = bpl::object(main.attr("__dict__"));
+		global = main.attr("__dict__");
 		bpl::str script(
 				"import sys, os.path\n"
 				"path = os.path.dirname(%r)\n"
@@ -418,7 +419,10 @@ void loadMainScript(const string &name, shared_ptr<RobotController> &rc, shared_
 	try {
 		mainScriptName = name;
 		mainScript = bpl::import(name.c_str());
+		global[name.c_str()] = mainScript;
+		mainScript = global[name.c_str()];
 		mainScript.attr("init")(rc, scene);
+		cout<<"[ Main script loaded ] " + mainScriptName<<endl;
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
@@ -428,7 +432,12 @@ void loadMainScript(const string &name, shared_ptr<RobotController> &rc, shared_
 
 void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
+		// bpl::object result = bpl::exec("reload(BaseScript)", global, global);
+		// global["BaseScript"] = bpl::import(mainScriptName.c_str());
+		// mainScript = global["BaseScript"];
+
 		mainScript = bpl::import(mainScriptName.c_str());
+		cout<<"[ Main script reloaded ] " + mainScriptName<<endl;
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
@@ -438,8 +447,11 @@ void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)
 
 void reloadAndInitMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
+		bpl::object result = bpl::exec("reload(BaseScript)", global, global);
+		// global["BaseScript"] = bpl::import(mainScriptName.c_str());
 		mainScript = bpl::import(mainScriptName.c_str());
 		mainScript.attr("init")(rc, scene);
+		cout<<"[ Main script reloaded and started ] " + mainScriptName<<endl;
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
