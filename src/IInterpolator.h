@@ -58,6 +58,7 @@ public:
 	virtual void reset() = 0;
 	virtual void drawParams() = 0;
 	virtual float getNormalizedPosition() const  = 0;
+	virtual float distanceToEnd() const  = 0;
 	virtual ~IInterpolator(){}
 };
 
@@ -102,6 +103,7 @@ public:
 	void genNextStep();
 	void nextSection();
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	void reset();
 	void drawParams();
 	float getNormalizedPosition() const {return position;}
@@ -124,6 +126,7 @@ public:
 	}
 	bool generatePath();
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	void reset();
 	void drawParams();
 	// float getNormalizedPosition() const {return (currentPoint+1)/(maxPoints+1);}
@@ -159,10 +162,11 @@ public:
 	}
 
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	glm::vec4 currPoint();
-	glm::vec4 eval(double param);
-	float Berenstein(float t, int n, int i);
-	float factorial(int k);
+	glm::vec4 eval(double param) const ;
+	float Berenstein(float t, int n, int i) const ;
+	float factorial(int k) const ;
 
 	void calculateLength();
 	bool generatePath();
@@ -181,10 +185,11 @@ public:
 class BezierSpline : public IInterpolator
 {
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	glm::vec4 currPoint();
-	glm::vec4 eval(double param);
-	float Berenstein(float t, int n, int i);
-	float factorial(int k);
+	glm::vec4 eval(double param) const ;
+	float Berenstein(float t, int n, int i) const ;
+	float factorial(int k) const ;
 
 	void calculateLength();
 	bool generatePath();
@@ -217,11 +222,12 @@ public:
 	}
 
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	glm::vec4 currPoint();
 	void makeNurbs();
-	glm::vec4 eval(double param);
-	float Berenstein(float t, int n, int i);
-	float factorial(int k);
+	glm::vec4 eval(double param) const ;
+	float Berenstein(float t, int n, int i) const ;
+	float factorial(int k) const ;
 	void calculateLength();
 	bool generatePath();
 	void reset();
@@ -254,6 +260,7 @@ public:
 	}
 
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	glm::vec4 currPoint();
 	void makeNurbs();
 	void calculateLength();
@@ -280,10 +287,11 @@ class HermiteCardinal : public IInterpolator
 public:
 
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	void reset();
 	bool generatePath();
 	void calculateLength();
-	glm::vec4 eval(double);
+	glm::vec4 eval(double) const ;
 	void drawParams();
 	float getNormalizedPosition() const {return position/numOfSegments;}
 
@@ -317,10 +325,11 @@ class HermiteFiniteDifference : public IInterpolator
 public:
 
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	void reset();
 	bool generatePath();
 	void calculateLength();
-	glm::vec4 eval(double);
+	glm::vec4 eval(double) const ;
 	void drawParams();
 	float getNormalizedPosition() const {return position/numOfSegments;}
 
@@ -354,10 +363,11 @@ class HermiteFiniteDifferenceClosed : public IInterpolator
 public:
 
 	glm::vec4 nextPoint();
+	float distanceToEnd() const;
 	void reset();
 	bool generatePath();
 	void calculateLength();
-	glm::vec4 eval(double);
+	glm::vec4 eval(double) const ;
 	void drawParams();
 	float getNormalizedPosition() const {return position/numOfSegments;}
 

@@ -386,6 +386,9 @@ btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bullet
 	return body;
 }
 bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, BulletWorld &bulletWorld){
+	float velocity = 1.2;
+	float accel = 1.2;
+
 	for(auto &it : cfg.Vector){
 		int type;
 		if(it["Type"].value == "prismatic")
@@ -403,8 +406,11 @@ bool ResourceLoader::loadRobot(Scene &scene, Robot &robot, CFG::Node &cfg, Bulle
 		module->min = it.has("MaxVelocity")? it["Min"].asFloat()*toRad : -20.f;
 		module->max = it.has("MaxVelocity")? it["Max"].asFloat()*toRad : 20.f;
 		module->entity = scene.units[it["Name"].value];
-		module->maxVelocty = it.has("MaxVelocity")?  it["MaxVelocity"].asFloat() : 1.f; /// rad/s
-		module->maxAcceleration = it.has("MaxAcceleration")?  it["MaxAcceleration"].asFloat() : 1.f; /// rad/s^2
+		module->maxVelocty = it.has("MaxVelocity")?  it["MaxVelocity"].asFloat() : velocity; /// rad/s
+		module->maxAcceleration = it.has("MaxAcceleration")?  it["MaxAcceleration"].asFloat() : accel; /// rad/s^2
+
+		velocity -= 0.06;
+		accel -= 0.06;
 
 		if(module->entity->rgBody){
 			auto body = module->entity->rgBody;

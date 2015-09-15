@@ -100,7 +100,7 @@ vector<glm::vec4>& ExecutePythonCommand::getPath(){
 vector<glm::vec4>& ExecutePythonCommand::getPolyline(){
 	return fakePath;
 }
-
+double lastAdd;
 void MoveCommand::init(shared_ptr<RobotController> &rc){
 	requiredDistance = 0;
 	currentVelocity = 0;
@@ -121,11 +121,22 @@ void MoveCommand::init(shared_ptr<RobotController> &rc){
 }
 double MoveCommand::calculateRequiredDistance(float dt){
 	// return dt*velocity;
-	currentVelocity += glm::clamp((velocity - currentVelocity), -acceleration, acceleration)*dt;
+	auto targetVelocity = velocity;
+	float distance = interpolator->distanceToEnd();
+	if(distance < distanceTreshold){
+		// velocity = 0.f;
+		// velocity = distance/dt - acceleration*dt*0.5;
+		// velocity = acceleration*dt*0.5; /// OK
+		// velocity = sqrt(acceleration*dt*2);
+		targetVelocity = glm::mix(0.0, velocity, distance/distanceTreshold );
+	}
+	// currentVelocity += (glm::clamp((targetVelocity - currentVelocity)/dt, - acceleration*5, acceleration)*dt + lastAdd)*0.5;
+	// lastAdd = glm::clamp((targetVelocity - currentVelocity)/dt, - acceleration*5, acceleration)*dt;
+	currentVelocity += glm::clamp(regulator(targetVelocity, currentVelocity, dt)/dt, -acceleration*5, acceleration)*dt;
 	return dt*currentVelocity;
 }
 glm::vec4 MoveCommand::calculateNextPoint(float dt){
-	requiredDistance += calculateRequiredDistance(dt);
+	requiredDistance = calculateRequiredDistance(dt);
 	glm::vec4 newTarget = previousPoint;
 	glm::vec4 oldTarget = previousPoint;
 	u32 i = 0;
@@ -148,7 +159,7 @@ int MoveCommand::exit(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)
 int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
 	if(not rc->robot->isReady){
 		rc->robot->goTo(dt, jointVelocityModifier);
-		// previousPoint = rc->robot->endEffector.position;
+		previousPoint = rc->robot->endEffector.position;
 	}
 	if(rc->robot->isReady && interpolator->finished){
 		interpolator->reset();
@@ -165,7 +176,7 @@ int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scen
 		if(solver->succes) rc->robot->goTo(targetJointPosition);
 		if(solver->succes) rc->robot->goTo(dt, jointVelocityModifier);
 		// previousPoint = rc->robot->endEffector.position;
-		previousPoint = newTarget;
+		// previousPoint = newTarget;
 		return 0;
 	}
 	return 0;

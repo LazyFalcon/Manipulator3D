@@ -11,6 +11,10 @@
 
 
 /// -------------------------------- LINEAR --------------------------------
+float Linear::distanceToEnd() const {
+	if(section != maxSections-1) return 1000.f;
+	return glm::distance(glm::mix(points[maxSections-1], points[maxSections], position), points[maxSections]);
+}
 glm::vec4 Linear::nextPoint(){
 	if(section > maxSections){
 		finished = true;
@@ -26,6 +30,7 @@ glm::vec4 Linear::nextPoint(){
 	//	nextSection();
 	return out;
 }
+
 void Linear::nextSection(){
 	section++;
 	step = 0;
@@ -65,6 +70,7 @@ void Linear::drawParams(){
 	ui.rect(120,20).text("smooth radius")();
 }
 
+float Simple::distanceToEnd() const { return 1000; }
 glm::vec4 Simple::nextPoint(){
 	if(currentPoint >= maxPoints){
 		finished = true;
@@ -83,12 +89,29 @@ void Simple::drawParams(){
 }
 
 /// -------------------------------- BEZIERCURVE --------------------------------
+float BezierCurve::distanceToEnd() const {
+	double left = 1.0 - position;
+
+	glm::vec4 pts[4] = {
+		eval(position),
+		eval(position + left/3.0),
+		eval(position + 2.0*left/3.0),
+		eval(1),
+	};
+
+	float distance = 0;
+	distance += glm::distance(pts[0], pts[1]);
+	distance += glm::distance(pts[1], pts[2]);
+	distance += glm::distance(pts[2], pts[3]);
+
+	return distance;
+}
 glm::vec4 BezierCurve::nextPoint(){
 	position = period(position + singleStepLength, 0, 1);
 
 	return eval(position);
 }
-glm::vec4 BezierCurve::eval(double param){
+glm::vec4 BezierCurve::eval(double param) const {
 	auto t = param;
 	int n = points.size()-1;
 	glm::vec4 out(0);
@@ -100,7 +123,7 @@ glm::vec4 BezierCurve::eval(double param){
 	}
 	return out/sum;
 }
-float BezierCurve::Berenstein(float t, int n, int i){
+float BezierCurve::Berenstein(float t, int n, int i) const {
 	// t - parametr
 	// n - stopień krzywej
 	// i - indeks punktu
@@ -108,7 +131,7 @@ float BezierCurve::Berenstein(float t, int n, int i){
 		return 0;
 	return factorial(n)/factorial(n-i)/factorial(i)*pow(t, i)*pow(1.f-t, n-i);
 }
-float BezierCurve::factorial(int k){
+float BezierCurve::factorial(int k) const {
 	switch (k){
 		case 0 : return 1;
 		case 1 : return 1;
@@ -144,6 +167,23 @@ void BezierCurve::drawParams(){
 }
 
 /// -------------------------------- BSPLINE --------------------------------
+float BSpline::distanceToEnd() const {
+	double left = (double)numOfBeziers - position;
+
+	glm::vec4 pts[4] = {
+		eval(position),
+		eval(position + left/3.0),
+		eval(position + 2.0*left/3.0),
+		eval(numOfBeziers),
+	};
+
+	float distance = 0;
+	distance += glm::distance(pts[0], pts[1]);
+	distance += glm::distance(pts[1], pts[2]);
+	distance += glm::distance(pts[2], pts[3]);
+
+	return distance;
+}
 glm::vec4 BSpline::nextPoint(){
 	position = glm::clamp(position + singleStepLength, 0.0, (double)numOfBeziers);
 	finished = position == (double)numOfBeziers;
@@ -201,7 +241,7 @@ void BSpline::makeNurbs(){
 
 }
 
-glm::vec4 BSpline::eval(double param){
+glm::vec4 BSpline::eval(double param) const {
 	int n = 3;
 	double integral;
 	double t = modf(param, &integral);
@@ -215,7 +255,7 @@ glm::vec4 BSpline::eval(double param){
 	}
 	return out/sum;
 }
-float BSpline::Berenstein(float t, int n, int i){
+float BSpline::Berenstein(float t, int n, int i) const {
 	// t - parametr
 	// n - stopień krzywej
 	// i - indeks punktu
@@ -223,7 +263,7 @@ float BSpline::Berenstein(float t, int n, int i){
 		return 0;
 	return factorial(n)/factorial(n-i)/factorial(i)*pow(t, i)*pow(1.f-t, n-i);
 }
-float BSpline::factorial(int k){
+float BSpline::factorial(int k) const {
 	switch (k){
 		case 0 : return 1;
 		case 1 : return 1;
@@ -249,6 +289,23 @@ void BSpline::drawParams(){
 /// -------------------------------- NURBS --------------------------------
 
 /// -------------------------------- HERMITECARDINAL --------------------------------
+float HermiteCardinal::distanceToEnd() const {
+	double left = (double)numOfSegments - position;
+
+	glm::vec4 pts[4] = {
+		eval(position),
+		eval(position + left/3.0),
+		eval(position + 2.0*left/3.0),
+		eval(numOfSegments),
+	};
+
+	float distance = 0;
+	distance += glm::distance(pts[0], pts[1]);
+	distance += glm::distance(pts[1], pts[2]);
+	distance += glm::distance(pts[2], pts[3]);
+
+	return distance;
+}
 glm::vec4 HermiteCardinal::nextPoint(){
 	position = glm::clamp(position + singleStepLength, 1.0, (double)(numOfSegments));
 	finished = position == (double)(numOfSegments);
@@ -272,11 +329,11 @@ bool HermiteCardinal::generatePath(){
 	}
 
 	singleStepLength = singleStepLengthTmp;
-    return true;
+	return true;
 }
 void HermiteCardinal::calculateLength(){}
 /// tension/weight proporcjonalny do odleglosci?
-glm::vec4 HermiteCardinal::eval(double param){
+glm::vec4 HermiteCardinal::eval(double param) const {
 	double integral;
 	double t = modf(param, &integral);
 	double t3 = t*t*t;
@@ -299,6 +356,23 @@ void HermiteCardinal::drawParams(){
 }
 
 /// -------------------------------- HERMITEFINITEDIFFERENCE --------------------------------
+float HermiteFiniteDifference::distanceToEnd() const {
+	double left = (double)numOfSegments - position;
+
+	glm::vec4 pts[4] = {
+		eval(position),
+		eval(position + left/3.0),
+		eval(position + 2.0*left/3.0),
+		eval(numOfSegments),
+	};
+
+	float distance = 0;
+	distance += glm::distance(pts[0], pts[1]);
+	distance += glm::distance(pts[1], pts[2]);
+	distance += glm::distance(pts[2], pts[3]);
+
+	return distance;
+}
 glm::vec4 HermiteFiniteDifference::nextPoint(){
 	position = glm::clamp(position + singleStepLength, 0.0, (double)(numOfSegments));
 	finished = position == (double)(numOfSegments);
@@ -325,7 +399,7 @@ bool HermiteFiniteDifference::generatePath(){
     return true;
 }
 void HermiteFiniteDifference::calculateLength(){}
-glm::vec4 HermiteFiniteDifference::eval(double param){
+glm::vec4 HermiteFiniteDifference::eval(double param) const {
 	double integral;
 	double t = modf(param, &integral);
 	double t3 = t*t*t;
@@ -358,6 +432,23 @@ void HermiteFiniteDifference::drawParams(){
 	}
 
 /// -------------------------------- HERMITEFINITEDIFFERENCECLOSED --------------------------------
+float HermiteFiniteDifferenceClosed::distanceToEnd() const {
+	double left = (double)numOfSegments - position;
+
+	glm::vec4 pts[4] = {
+		eval(position),
+		eval(position + left/3.0),
+		eval(position + 2.0*left/3.0),
+		eval(numOfSegments),
+	};
+
+	float distance = 0;
+	distance += glm::distance(pts[0], pts[1]);
+	distance += glm::distance(pts[1], pts[2]);
+	distance += glm::distance(pts[2], pts[3]);
+
+	return distance;
+}
 glm::vec4 HermiteFiniteDifferenceClosed::nextPoint(){
 	position = glm::clamp(position + singleStepLength, 0.0, (double)(numOfSegments));
 	finished = position == (double)(numOfSegments);
@@ -385,7 +476,7 @@ bool HermiteFiniteDifferenceClosed::generatePath(){
     return true;
 }
 void HermiteFiniteDifferenceClosed::calculateLength(){}
-glm::vec4 HermiteFiniteDifferenceClosed::eval(double param){
+glm::vec4 HermiteFiniteDifferenceClosed::eval(double param) const {
 	double integral;
 	double t = modf(param, &integral);
 	double t3 = t*t*t;

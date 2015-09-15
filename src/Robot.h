@@ -69,6 +69,7 @@ public:
 	double lastVelocity {0};
 	double lastAcceleration {0};
 
+	PDreg regulator {0.1, 0.1};
 	double leftValue {0};
 };
 

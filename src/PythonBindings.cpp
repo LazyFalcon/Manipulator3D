@@ -131,6 +131,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("endO", &MoveCommandBuilder::endO, bpl::return_internal_reference<>())
 		.def("jointVelocity", &MoveCommandBuilder::jointVelocity, bpl::return_internal_reference<>())
 		.def("acceleration", &MoveCommandBuilder::acceleration, bpl::return_internal_reference<>())
+		.def("treshold", &MoveCommandBuilder::treshold, bpl::return_internal_reference<>())
 		.def("time", &MoveCommandBuilder::time, bpl::return_internal_reference<>())
 		.def("interpolator", interpolator_ptr, bpl::return_internal_reference<>())
 		.def("solver", solver_string, bpl::return_internal_reference<>())
@@ -140,6 +141,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("orientation", orientation_quat, bpl::return_internal_reference<>())
 		.def("orientation", orientation_vec3, bpl::return_internal_reference<>())
 		.def("offset", &MoveCommandBuilder::offset, bpl::return_internal_reference<>())
+		.def("pid", &MoveCommandBuilder::pid, bpl::return_internal_reference<>())
 
 		.def("finish", finish_ptr, bpl::return_internal_reference<>())
 		.def("insert", &MoveCommandBuilder::insert, bpl::return_internal_reference<>())
@@ -432,11 +434,11 @@ void loadMainScript(const string &name, shared_ptr<RobotController> &rc, shared_
 
 void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
-		// bpl::object result = bpl::exec("reload(BaseScript)", global, global);
-		// global["BaseScript"] = bpl::import(mainScriptName.c_str());
-		// mainScript = global["BaseScript"];
+        string scr = "reload("+mainScriptName+")";
 
+		bpl::object result = bpl::exec(scr.c_str(), global, global);
 		mainScript = bpl::import(mainScriptName.c_str());
+
 		cout<<"[ Main script reloaded ] " + mainScriptName<<endl;
 	}
 	catch (bpl::error_already_set) {
@@ -447,10 +449,12 @@ void reloadMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene)
 
 void reloadAndInitMainScript(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 	try {
-		bpl::object result = bpl::exec("reload(BaseScript)", global, global);
-		// global["BaseScript"] = bpl::import(mainScriptName.c_str());
+        string scr = "reload("+mainScriptName+")";
+		bpl::object result = bpl::exec(scr.c_str(), global, global);
 		mainScript = bpl::import(mainScriptName.c_str());
+		global[mainScriptName.c_str()] = mainScript;
 		mainScript.attr("init")(rc, scene);
+
 		cout<<"[ Main script reloaded and started ] " + mainScriptName<<endl;
 	}
 	catch (bpl::error_already_set) {
@@ -467,6 +471,7 @@ void update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene){
 		PyErr_Print();
 		std::cin.ignore();
 		reloadMainScript(rc, scene);
+        exit(0);
 	}
 }
 
@@ -476,17 +481,28 @@ void terminate(){
 
 void executeSubScript(){
 	try {
-		subScript = bpl::import(subScriptName.c_str());
+        string scr = "reload("+subScriptName+")";
+        bpl::object result = bpl::exec(scr.c_str(), global, global);
+        subScript = bpl::import(subScriptName.c_str());
 	}
 	catch (bpl::error_already_set) {
 		PyErr_Print();
-				std::cin.ignore();
+        std::cin.ignore();
+        exit(0);
 	}
 }
 void executeSubScript(const std::string &name){
-		subScriptName = name;
-		cout<<name<<endl;
-		executeSubScript();
+    if(subScriptName == name){
+        string scr = "reload("+subScriptName+")";
+        bpl::object result = bpl::exec(scr.c_str(), global, global);
+    }
+    else {
+        subScriptName = name;
+        subScript = bpl::import(subScriptName.c_str());
+		global[subScriptName.c_str()] = subScript;
+    }
+    subScript = bpl::import(subScriptName.c_str());
+
 }
 
 

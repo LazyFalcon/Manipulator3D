@@ -85,10 +85,13 @@ public:
 	double jointVelocityModifier {1.0};
 	double acceleration;
 	double requiredDistance {0.0};
+	double distanceTreshold {1.0};
 	float time;
 	float inTime;
 	float outTime;
 	bool useOrientation {false};
+
+	PDreg regulator {10.1, 0.1};
 
 	shared_ptr<IInterpolator> interpolator;
 	shared_ptr<Solver> solver;

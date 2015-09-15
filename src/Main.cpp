@@ -171,9 +171,11 @@ int main(){
 	reloadWhatIsPossible();
 	ui.m_imageSet = &(globalResources->imageSets["Menu"]);
 	ui.setDefaultFont("ui_12", 12);
-	PythonBindings::init(RC, scene, "BaseScript");
+	PythonBindings::init(RC, scene, cfg_settings["DefaultScript"].value);
 
-	Helper::reloadScene("../models/stanowisko.yml", RC, scene, bulletWorld);
+	Helper::reloadScene("../models/"+cfg_settings["DefaultScene"].value+".yml", RC, scene, bulletWorld);
+	// PythonBindings::loadMainScript("BaseScript", RC, scene);
+	PythonBindings::loadMainScript(cfg_settings["DefaultScript"].value, RC, scene);
 	mainLoop();
 
 	Editor::clear();
@@ -208,7 +210,6 @@ void renderLoop(){
 	if(globalSettings & HDR)Engine::HDR(*scene);
 	if(globalSettings & SSAO)Engine::SSAO();
 	Engine::drawOutline(*scene);
-	// Engine::postprocess(*scene);
 	Engine::postprocess(*scene);
 
 	if(!RC->commands.empty()){
@@ -231,8 +232,6 @@ void prerequisites(){
 	Engine::initQueries();
 	Editor::MoveCommandBuilderWidget_inits();
 	Editor::init();
-	// PythonBindings::reloadAndInitMainScript(RC, scene);
-	PythonBindings::loadMainScript("BaseScript", RC, scene);
 	glfwShowWindow(window);
 }
 void updates(float dt){

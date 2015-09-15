@@ -291,7 +291,7 @@ int loadCache(std::string fileName, std::vector<T> &data){
 // } */
 
 
-float PDreg::operator () (float toReach, float current, float dt){
+double PDreg::operator () (double toReach, double current, double dt){
 	speed = (prev - current)/dt;
 	prev = current;
 

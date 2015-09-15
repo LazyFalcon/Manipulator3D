@@ -90,12 +90,15 @@ int loadCache(std::string fileName, std::vector<T> &data, std::string ex = "cach
 
 class PDreg {
 public:
-	float kr;
-	float td;
-	float speed;
-	float prev;
+	double kr;
+	double td;
+	double ti;
 
-	float operator () (float toReach, float current, float dt);
+	double speed;
+	double prev;
+	double integral;
+
+	double operator () (double toReach, double current, double dt);
 };
 
 struct Statement {

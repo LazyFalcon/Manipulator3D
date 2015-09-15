@@ -37,6 +37,10 @@ public:
 		moveCommand->acceleration = value;
 		return *this;
 	}
+		MoveCommandBuilder& treshold(double value){
+		moveCommand->distanceTreshold = value;
+		return *this;
+	}
 	MoveCommandBuilder& time(float value){
 		moveCommand->time = value;
 		return *this;
@@ -98,7 +102,10 @@ public:
 		moveCommand->interpolator->points.back() += v;
 		return *this;
 	}
-
+	MoveCommandBuilder& pid(double k, double kd, double ki){
+		moveCommand->regulator = PDreg {k, kd, ki};
+		return *this;
+	}
 	MoveCommandBuilder& finish(shared_ptr<RobotController> RC);
 	MoveCommandBuilder& finish(RobotController &RC);
 	MoveCommandBuilder& insert(shared_ptr<RobotController> &RC, int distance);
