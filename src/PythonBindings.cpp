@@ -235,9 +235,9 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readwrite("position", &Entity::position)
 		.def_readwrite("quat", &Entity::quat)
 		;
-	// bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
-		// .def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>, true>())
-		// ;
+	bpl::class_<std::vector<std::shared_ptr<Entity>>>("EntityVec")
+		.def(bpl::vector_indexing_suite<std::vector<std::shared_ptr<Entity>>, true>())
+		;
 
 	bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
 		.def("get", &Scene::get, bpl::return_value_policy<bpl::reference_existing_object>())
@@ -285,17 +285,17 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("module", &Robot::module, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def_readwrite("config", &Robot::config)
 		;
-	// bpl::class_<Module, boost::noncopyable>("Module")
-		// .def_readwrite("value", &Module::value)
-		// .def_readwrite("targetValue", &Module::targetValue)
-		// .def_readwrite("maxVelocty", &Module::maxVelocty)
-		// .def_readwrite("maxAcceleration", &Module::maxAcceleration)
-		// .def_readwrite("lastVelocity", &Module::lastVelocity)
-		// .def_readwrite("lastAcceleration", &Module::lastAcceleration)
-		// .def_readwrite("axis", &Module::axis)
-		// .def_readwrite("vecToA", &Module::vecToA)
-		// .def_readwrite("vecToB", &Module::vecToB)
-		// ;
+	bpl::class_<Module, boost::noncopyable>("Module")
+		.def_readwrite("value", &Module::value)
+		.def_readwrite("targetValue", &Module::targetValue)
+		.def_readwrite("maxVelocty", &Module::maxVelocty)
+		.def_readwrite("maxAcceleration", &Module::maxAcceleration)
+		.def_readwrite("lastVelocity", &Module::lastVelocity)
+		.def_readwrite("lastAcceleration", &Module::lastAcceleration)
+		.def_readwrite("axis", &Module::axis)
+		.def_readwrite("vecToA", &Module::vecToA)
+		.def_readwrite("vecToB", &Module::vecToB)
+		;
 
 	using namespace Helper;
 
@@ -325,7 +325,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("moveCursor", &Helper::moveCursor);
 	bpl::def("restoreCursorPos", &Helper::restoreCursorPos);
 
-	// bpl::def("getGroup", &Helper::getGroup, bpl::return_value_policy<bpl::reference_existing_object>());
+	bpl::def("getGroup", &Helper::getGroup, bpl::return_value_policy<bpl::reference_existing_object>());
 	// bpl::def("appendToSelection", &Helper::appendToSelection);
 
 	// bpl::def("savePoint", &savePoint);
