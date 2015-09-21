@@ -49,8 +49,14 @@ public:
 		execCommand->name = s;
 		return *this;
 	}
-	ExecutePythonCommandBuilder& callback(boost::python::object &fun){
+	ExecutePythonCommandBuilder& callback(boost::python::object &object){
+		execCommand->callback = object;
+		execCommand->isObject = true;
+		return *this;
+	}
+	ExecutePythonCommandBuilder& fun(boost::python::object &fun){
 		execCommand->callback = fun;
+		execCommand->isObject = false;
 		return *this;
 	}
 

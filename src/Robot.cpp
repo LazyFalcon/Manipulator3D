@@ -10,13 +10,15 @@ static const float hpi = 0.5f * 3.141592f;
 extern const double dpi;
 extern PositionSaver g_robotPositions;
 const double jointEpsilon = 1.0*dpi/60.0/180.0; /// one minute in radians
-
+extern glm::vec3 DEBUG_VEC3_1;
+extern glm::vec3 DEBUG_VEC3_2;
 void Robot::update(float dt){
 
 	glm::vec4 position = basePosition;
 	glm::vec3 axis = chain[0]->axis.xyz();
-	// glm::quat transform(1,0,0,0);
-	glm::quat transform{0,0,0,1};
+	glm::quat transform(0,0,0,1);
+	// glm::quat transform = glm::angleAxis(0.f,glm::normalize(axis));
+	// glm::quat transform{0,0,0,1};
 	for(auto &module : chain){
 		if(module->type == REVOLUTE_JOINT){
 			// module->value = period(module->value);
@@ -43,9 +45,18 @@ void Robot::update(float dt){
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
 	}
-
+	transform = (transform * glm::quat(0,0,1,0));
 	auto positionShift = glm::distance(position, endEffector.position);
-	endEffector = Point {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
+
+	endEffector = Point {position, glm::angleAxis(2.f * acos(transform.w), glm::normalize(axis.xyz()))};
+
+	// endEffector = Point {position, glm::quat(transform.w, glm::normalize(axis.xyz()))};
+
+	// endEffector = Point {position, glm::angleAxis(transform.w,glm::normalize(axis.xyz()))};
+	// endEffector = Point {position, transform};
+	glm::mat3 m = glm::toMat3(transform);
+	DEBUG_VEC3_1 = m*glm::vec3(0,0,1);
+	DEBUG_VEC3_2 = m*glm::vec3(1,0,0);
 
 	Helper::record().EffectorPosition = position;
 	Helper::record().EffectorOrientation = glm::angleAxis(1.f,glm::normalize(axis.xyz()));
@@ -59,7 +70,9 @@ Point Robot::simulate(std::vector<double> &variables){
 	glm::vec4 position = basePosition;
 	glm::vec3 axis = chain[0]->axis.xyz();
 	// glm::quat transform(1,0,0,0);
-	glm::quat transform{0,0,0,1};
+	// glm::quat transform{0,0,0,1};
+	glm::quat transform(0,0,0,1);
+	// glm::quat transform = glm::angleAxis(0.f,glm::normalize(axis));
 	for(int i=0; i<getSize(); i++){
 		auto &module = chain[i];
 		if(module->type == REVOLUTE_JOINT){
@@ -72,9 +85,13 @@ Point Robot::simulate(std::vector<double> &variables){
 		}
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
-
+		// transform =
+		DEBUG_VEC3_1 = axis;
 	}
-	return {position, glm::angleAxis(1.f,glm::normalize(axis.xyz()))};
+	// transform = glm::quat(0,0,1,0) * transform;
+	return {position, glm::angleAxis(2.f * acos(transform.w),glm::normalize(axis.xyz()))};
+	// return {position, glm::quat(transform.w,glm::normalize(axis.xyz()))};
+	// return {position, transform};
 }
 
 std::vector<double> Robot::getVariables(){
@@ -126,7 +143,9 @@ bool Robot::goTo(const std::vector<double> &jointPositions){
 	isReady = false;
 	for(u32 i=0; i<loopSize; i++){
 		auto delta = circleDistance(jointPositions[i], chain[i]->value);
+		if(chain[i]->type == REVOLUTE_JOINT) delta = period(delta);
 		chain[i]->targetValue = delta;
+		cout<<"("<<delta<<")"<<endl;
 	}
 }
 
@@ -156,6 +175,7 @@ bool Module::goTo(float dt, double jVelocityModifier){
 	lastAcceleration = (lastVelocity - lVel)/dt;
 
 	if(glm::epsilonEqual(targetValue, 0.0, jointEpsilon)){
+		value = period(value);
 		return true;
 	}
 

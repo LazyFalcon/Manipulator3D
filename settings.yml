@@ -10,5 +10,5 @@ Window:
   posX: 100
   posY: 100
   width: 1400
-DefaultScript: BaseScript
+DefaultScript: Paletowanie
 DefaultScene: Stanowisko

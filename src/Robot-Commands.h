@@ -200,6 +200,7 @@ public:
 	vector<glm::vec4>& getPolyline();
 
 	boost::python::object callback;
+    bool isObject;
 };
 
 

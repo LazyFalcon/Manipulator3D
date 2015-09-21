@@ -37,7 +37,7 @@ public:
 		moveCommand->acceleration = value;
 		return *this;
 	}
-		MoveCommandBuilder& treshold(double value){
+    MoveCommandBuilder& treshold(double value){
 		moveCommand->distanceTreshold = value;
 		return *this;
 	}
@@ -65,12 +65,14 @@ public:
 		if(name == "JT0") moveCommand->solver = make_shared<JT0>();
 		else if(name == "JT1") moveCommand->solver = make_shared<JT1>();
 		else if(name == "JT2") moveCommand->solver = make_shared<JT2>();
+		else if(name == "JT3") moveCommand->solver = make_shared<JT3>();
 		return *this;
 	}
 	MoveCommandBuilder& solver(SolverType value){
 		if(value == SolverType::JT0) moveCommand->solver = make_shared<JT0>();
 		else if(value == SolverType::JT1) moveCommand->solver = make_shared<JT1>();
 		else if(value == SolverType::JT2) moveCommand->solver = make_shared<JT2>();
+		else if(value == SolverType::JT3) moveCommand->solver = make_shared<JT3>();
 		return *this;
 	}
 	MoveCommandBuilder& solver(shared_ptr<Solver> &value){
@@ -83,7 +85,7 @@ public:
 		return *this;
 	}
 	MoveCommandBuilder& orientation(glm::vec3 o){
-		moveCommand->solver = make_shared<JT2>();
+		moveCommand->solver = make_shared<JT3>();
 		moveCommand->endOrientationEnabled = true;
 		moveCommand->startOrientationEnabled = true;
 		moveCommand->startOrientation = glm::quat(1.f, glm::normalize(o));
@@ -91,7 +93,7 @@ public:
 		return *this;
 	}
 	MoveCommandBuilder& orientation(glm::quat o){
-		moveCommand->solver = make_shared<JT2>();
+		moveCommand->solver = make_shared<JT3>();
 		moveCommand->startOrientationEnabled = true;
 		moveCommand->endOrientationEnabled = true;
 		moveCommand->endOrientation = o;

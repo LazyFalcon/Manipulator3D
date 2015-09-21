@@ -343,9 +343,9 @@ bool ResourceLoader::loadScene(Scene &scene, BulletWorld &bulletWorld, CFG::Node
 }
 btRigidBody* ResourceLoader::buildBulletData(CFG::Node &cfg, BulletWorld &bulletWorld){
 
-	if(!cfg.has("RigidBody")){
+	// if(!cfg.has("RigidBody")){
 		return nullptr;
-	}
+	// }
 	CFG::Node &rgData = cfg["RigidBody"];
 	float mass = rgData["mass"].asFloat();
 

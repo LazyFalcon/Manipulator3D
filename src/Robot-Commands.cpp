@@ -65,7 +65,7 @@ vector<glm::vec4>& ExecuteCommand::getPolyline(){
 void ExecutePythonCommand::init(shared_ptr<RobotController> &rc){
 	isRuning = true;
 	try {
-		callback.attr("onEnter")(rc);
+		if(isObject) callback.attr("onEnter")(rc);
 	}
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
@@ -73,9 +73,13 @@ void ExecutePythonCommand::init(shared_ptr<RobotController> &rc){
 };
 int ExecutePythonCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scene, float dt){
 	try {
-		if( (boost::python::extract<bool>( callback.attr("onUpdate")(rc, scene, dt) ))() ){
+		if(isObject and (boost::python::extract<bool>( callback.attr("onUpdate")(rc, scene, dt) ))() ){
 			return exit(rc, scene);
 		}
+		else if(not isObject and (boost::python::extract<bool>( callback(rc, scene, dt) ))() ){
+            isRuning = false;
+			return exitAction;
+        }
 		return 0;
 	}
 	catch (boost::python::error_already_set) {
@@ -172,9 +176,9 @@ int MoveCommand::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> &scen
 
 		solver->solve(Point{ newTarget, newO }, *(rc->robot));
 		targetJointPosition = solver->result;
-		// rc->robot->insertVariables(targetJointPosition);
 		if(solver->succes) rc->robot->goTo(targetJointPosition);
 		if(solver->succes) rc->robot->goTo(dt, jointVelocityModifier);
+		rc->robot->insertVariables(targetJointPosition);
 		// previousPoint = rc->robot->endEffector.position;
 		// previousPoint = newTarget;
 		return 0;

@@ -318,9 +318,22 @@ void mainLoop(){
 		updates(dt);
 		lClick = false;
 		rClick = false;
-        Helper::showPopups();
+		Helper::showPopups();
 		MainMenu();
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom );
+
+			auto &&vars = RC->robot->getVariables();
+			for(auto it : vars){
+				ui.rect().text(std::to_string(it)).font("ui_12"s)();
+			}
+			DEBUG_QUAT = RC->robot->endEffector.quat;
+			auto DEBUG_QUAT_2 = scene->get("Target")->quat;
+
+			glm::mat3 m = glm::toMat3(DEBUG_QUAT_2);
+
+			DEBUG_VEC3_1 = m * glm::vec3(0,0,1);
+			DEBUG_VEC3_2 = m * glm::vec3(1,0,0);
+
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(frameTimeCounter.get()/25.0*255.0))).text(frameTimeCounter.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
 			ui.rect().text("rot_x "+std::to_string(camera.rot_x)).font("ui_12"s)();
@@ -331,12 +344,13 @@ void mainLoop(){
 			ui.rect().text("dIteration: " + std::to_string(lastPathIterationdistance)).font("ui_12"s)();
 			ui.rect().text("LastError: " + std::to_string(lastSolverError)).font("ui_12"s)();
 			// ui.rect().text("------- ").font("ui_12"s)();
-			// ui.rect().text("DEBUG_VEC3_1: " + to_string(DEBUG_VEC3_1)).font("ui_12"s)();
-			// ui.rect().text("DEBUG_VEC3_2: " + to_string(DEBUG_VEC3_2)).font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC3_1: " + to_string(DEBUG_VEC3_1)).font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC3_2: " + to_string(DEBUG_VEC3_2)).font("ui_12"s)();
 			// ui.rect().text("DEBUG_VEC3_3: " + to_string(DEBUG_VEC3_3)).font("ui_12"s)();
 			// ui.rect().text("DEBUG_VEC4_1: " + to_string(DEBUG_VEC4_1)).font("ui_12"s)();
-			// ui.rect().text("DEBUG_VEC4_2: " + to_string(DEBUG_VEC4_2)).font("ui_12"s)();
-			// ui.rect().text("DEBUG_QUAT: " + to_string(DEBUG_QUAT)).font("ui_12"s)();
+			ui.rect().text("DEBUG_VEC4_2: " + to_string(DEBUG_QUAT * glm::vec4(0,0,-1,0))).font("ui_12"s)();
+			ui.rect().text("DEBUG_QUAT: " + to_string(DEBUG_QUAT)).font("ui_12"s)();
+			ui.rect().text("DEBUG_QUAT_2: " + to_string(DEBUG_QUAT_2)).font("ui_12"s)();
 		ui.endTable();
 		// ui.rect(window_width*0.5-50, 2, 100, 20).text(to_string(Helper::getCursor()))();
 		if(RC) Helper::directControlWidget(window_width-300, 2, mousePosition, *RC);

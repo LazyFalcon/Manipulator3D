@@ -32,7 +32,7 @@ public:
 
 
 	/// python binding utils, sorry
-	shared_ptr<Entity>& get(const std::string &name){
+	shared_ptr<Entity> get(const std::string &name){
 		return units[name];
 	}
 	/// --

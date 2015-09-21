@@ -7,7 +7,7 @@ enum JointType {
 };
 
 enum class SolverType : int {
-	JT0, JT1, JT2, CCD
+	JT0, JT1, JT2, JT3, CCD
 };
 
 struct SystemSettings
@@ -158,6 +158,15 @@ class JT2 : public Solver {
 public:
 	~JT2(){
 		std::cerr<<"~JT2"<<std::endl;
+	}
+	bool solve(Point aim, Robot &robot);
+	bool performIK(Point start, Point target, Robot &robot, double precision = -1);
+};
+
+class JT3 : public Solver {
+public:
+	~JT3(){
+		std::cerr<<"~JT3"<<std::endl;
 	}
 	bool solve(Point aim, Robot &robot);
 	bool performIK(Point start, Point target, Robot &robot, double precision = -1);

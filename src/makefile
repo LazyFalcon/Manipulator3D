@@ -35,8 +35,8 @@ LIBS = -lboost_system -lboost_filesystem -lBulletSoftBody -lBulletDynamics -lBul
 -lglew32 -lglfw3 -lgdi32 -lFreeImage -lglu32 -lopengl32 -lboost_python-mgw49-mt-d-1_56 -LC:\Python27\libs -lpython27
 
 
-../bin/manipulator: $(OBJS)
-	$(CXX) $(OBJS) -o ../bin/manipulator $(LIBS)
+../bin/manipulator2: $(OBJS)
+	$(CXX) $(OBJS) -o ../bin/manipulator2 $(LIBS)
 
 ../bin/MAIN.o: MAIN.cpp $(UTIL)/Utils.h $(UTIL)/Camera.h $(UTIL)/IMGUI_V4.h JacobianTransposed.h CFGparser.h Engine.h Menu.h Robot.h Robot-Commands.h Widgets.h $(Editor)/PropertyEditor-TabManager.h RobotController.h $(Editor)/Editor.h
 	$(CXX) -c $(CXXFLAGS) MAIN.cpp -o ../bin/MAIN.o

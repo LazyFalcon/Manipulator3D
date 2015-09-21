@@ -30,6 +30,9 @@ namespace PythonBindings NAM_START
 glm::quat glm_angleAxis(float angle, glm::vec3 axis){
 	return glm::quat(cos(angle*0.5f), glm::normalize(axis));
 }
+glm::quat glm_quatreverse(glm::quat q){
+	return -q;
+}
 
 BOOST_PYTHON_MODULE(Manipulator3D){
 
@@ -65,6 +68,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("dot", cpp_dot3);
 	bpl::def("length", cpp_len4);
 	bpl::def("length", cpp_len3);
+	bpl::def("quatRev", glm_quatreverse);
 
 	bpl::def("eulerAngles", cpp_eulerAngles);
 	bpl::def("angleAxis", glm_angleAxis);
@@ -186,6 +190,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::class_<ExecutePythonCommandBuilder, std::shared_ptr<ExecutePythonCommandBuilder>>("ExecutePythonCommandBuilder", bpl::init<>())
 		.def("init", &ExecutePythonCommandBuilder::init, bpl::return_internal_reference<>())
 		.def("name", &ExecutePythonCommandBuilder::name, bpl::return_internal_reference<>())
+		.def("fun", &ExecutePythonCommandBuilder::fun, bpl::return_internal_reference<>())
 		.def("callback", &ExecutePythonCommandBuilder::callback, bpl::return_internal_reference<>())
 		.def("insert", &ExecutePythonCommandBuilder::insert, bpl::return_internal_reference<>())
 		.def("finish", &ExecutePythonCommandBuilder::finish, bpl::return_internal_reference<>())
@@ -231,6 +236,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("addInterpolator", &addInterpolatorByContainer);
 
 	bpl::class_<Entity, std::shared_ptr<Entity>, boost::noncopyable>("Entity", bpl::no_init)
+	// bpl::class_<std::shared_ptr<Entity>, boost::noncopyable>("Entity", bpl::no_init)
 		.def_readonly("ID", &Entity::ID)
 		.def_readwrite("position", &Entity::position)
 		.def_readwrite("quat", &Entity::quat)
@@ -240,7 +246,8 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		;
 
 	bpl::class_<Scene, std::shared_ptr<Scene>>("Scene", bpl::no_init)
-		.def("get", &Scene::get, bpl::return_value_policy<bpl::reference_existing_object>())
+		// .def("get", &Scene::get, bpl::return_value_policy<bpl::reference_existing_object>())
+		.def("get", &Scene::get)
 		.def_readwrite("fixedLoopStep", &Scene::fixedLoopStep)
 		;
 	bpl::def("getScene", getScene);
@@ -325,7 +332,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("moveCursor", &Helper::moveCursor);
 	bpl::def("restoreCursorPos", &Helper::restoreCursorPos);
 
-	bpl::def("getGroup", &Helper::getGroup, bpl::return_value_policy<bpl::reference_existing_object>());
+	// bpl::def("getGroup", &Helper::getGroup, bpl::return_value_policy<bpl::reference_existing_object>());
 	// bpl::def("appendToSelection", &Helper::appendToSelection);
 
 	// bpl::def("savePoint", &savePoint);

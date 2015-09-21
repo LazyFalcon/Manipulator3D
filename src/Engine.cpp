@@ -682,14 +682,15 @@ void renderScene(Scene &scene){
 			auto btPos = rgBody->getCenterOfMassTransform().getOrigin();
 			entity.second->position = glm::vec4(btPos[0], btPos[1], btPos[2], 1);
 			auto btQuat = rgBody->getOrientation();
-			entity.second->quat = glm::quat(btQuat.getW(), btQuat.getX(), btQuat.getY(), btQuat.getZ());
+			glm::vec3 v = glm::normalize(glm::vec3(btQuat.getX(), btQuat.getY(), btQuat.getZ()));
+			entity.second->quat = glm::quat(btQuat.getW(), v.x, v.y, v.z);
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
 		else if(rgBody && rgBody->isStaticOrKinematicObject() && scene.robot->config.usePhysics){
 			transform = to_mat4(rgBody->getCenterOfMassTransform());
 		}
 		else
-			transform = glm::translate(entity.second->position.xyz()) * glm::mat4_cast(entity.second->quat);
+			transform = glm::translate(entity.second->position.xyz()) * glm::toMat4(entity.second->quat);
 
 		glUniform(shader, entity.second->material.color, u_colorPosition);
 		glUniform(shader, float(entity.second->ID), uID);
