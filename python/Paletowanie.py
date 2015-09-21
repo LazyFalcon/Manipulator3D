@@ -11,7 +11,7 @@ def nullFun( RC, scene, dt):
 
 def goOverTargetAndGrab(RC, position, offset, target, idx):
     # q = quatRev(getScene().get(target).quat)
-    q = quat(1, 0, 0, -1)
+    q = fromAxis(vec3(0,0,-1))
     RC.goTo(delAction).to(position + offset).insert(RC, idx)
     RC.goTo(delAction).to(position + offset).orientation(q).insert(RC, idx+1)
     # RC.goTo(delAction).to(position).orientation(q).insert(RC, idx+2)
@@ -34,7 +34,7 @@ def goOverTargetAndRelease(RC, position, offset, orientation, idx):
 def moveFromTo(RC, pFrom, pTo, target):
     idx = goOverTargetAndGrab(RC, pFrom, vec4(0,0,1,0), target, 1)
 
-    orientation = angleAxis(1.0707, vec3(0,0,-1))
+    orientation = fromAxis(vec3(0,0,-1))
 
     idx = goOverTargetAndRelease(RC, pTo, vec4(0,0,1,0), orientation, idx)
     RC.pyExec(CommandReturnAction.DelAndBack).fun(nullFun).insert(RC, idx)

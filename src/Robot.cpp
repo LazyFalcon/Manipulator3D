@@ -45,7 +45,8 @@ void Robot::update(float dt){
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
 	}
-	transform = glm::rotation(glm::normalize(glm::rotate(transform, glm::vec4(0,0,1,0)).xyz()), axis);
+	// transform = glm::rotation(glm::normalize(glm::rotate(transform, glm::vec4(0,0,1,0)).xyz()), axis);
+	transform = glm::rotation(glm::vec3(0,0,1), axis);
 	// transform = (transform * glm::quat(0,0,1,0));
 	auto positionShift = glm::distance(position, endEffector.position);
 
@@ -89,7 +90,8 @@ Point Robot::simulate(std::vector<double> &variables){
 		// transform =
 		DEBUG_VEC3_1 = axis;
 	}
-	transform = glm::rotation(glm::normalize(glm::rotate(transform, glm::vec4(0,0,1,0)).xyz()), axis);
+	// transform = glm::rotation(glm::normalize(glm::rotate(transform, glm::vec4(0,0,1,0)).xyz()), axis);
+	transform = glm::rotation(glm::vec3(0,0,1), axis);
 	// transform = glm::quat(0,0,1,0) * transform;
 	// return {position, glm::angleAxis(2.f * acos(transform.w),glm::normalize(axis.xyz()))};
 	// return {position, glm::quat(transform.w,glm::normalize(axis.xyz()))};

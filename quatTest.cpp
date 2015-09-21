@@ -63,13 +63,15 @@ std::string to_string(const glm::vec3 &v){
 int main(){
 	glm::vec4 z(0,0,1,0);
 	glm::vec4 x(1,0,0,0);
-	// glm::quat b(1,0,-1,0);
-	glm::quat b = glm::angleAxis(0.f,glm::vec3(0,0,-1));
+	glm::quat b = glm::rotation(glm::vec3(0,0,1), glm::vec3(0,0,-1));
+	// glm::quat b(-0.5,0,-1,0);
+	// glm::quat b = glm::angleAxis(0.f,glm::vec3(-0.0000, 1.0000, 0.0));
+	// glm::quat b = glm::angleAxis(0.f,glm::vec3(0,0,-1));
 	glm::quat c = glm::angleAxis(1.f, glm::vec3(0,0,1));
 
 	cout<<to_string(b*z)<<endl;
 	cout<<to_string(glm::axis(b))<<endl;
-	// cout<<to_string(b*z)<<endl;
+	cout<<to_string(b)<<endl;
 
 	return 0;
 }
