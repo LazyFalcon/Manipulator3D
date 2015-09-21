@@ -53,7 +53,7 @@ std::string to_string(const glm::vec4 &v){
 	return string_formatted(v[0])+" "+string_formatted(v[1])+" "+string_formatted(v[2])+" "+string_formatted(v[3]);
 }
 std::string to_string(const glm::quat &v){
-	return string_formatted(v[0])+" "+string_formatted(v[1])+" "+string_formatted(v[2])+" "+string_formatted(acos(v[3])*2.f);
+	return string_formatted(v.x)+" "+string_formatted(v.y)+" "+string_formatted(v.z)+" "+string_formatted(acos(v.w)*2.f);
 }
 std::string to_string(const glm::vec3 &v){
 	return string_formatted(v[0])+" "+string_formatted(v[1])+" "+string_formatted(v[2]);
@@ -63,12 +63,13 @@ std::string to_string(const glm::vec3 &v){
 int main(){
 	glm::vec4 z(0,0,1,0);
 	glm::vec4 x(1,0,0,0);
-	glm::quat b(0.5,0,0,1);
+	// glm::quat b(1,0,-1,0);
+	glm::quat b = glm::angleAxis(0.f,glm::vec3(0,0,-1));
 	glm::quat c = glm::angleAxis(1.f, glm::vec3(0,0,1));
 
 	cout<<to_string(b*z)<<endl;
-	cout<<to_string(b*x)<<endl;
-	cout<<to_string(c*z)<<endl;
+	cout<<to_string(glm::axis(b))<<endl;
+	// cout<<to_string(b*z)<<endl;
 
 	return 0;
 }

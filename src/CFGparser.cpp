@@ -28,7 +28,9 @@ namespace CFG {
 		return glm::vec4(cacheFloat[0],cacheFloat[1],cacheFloat[2],cacheFloat[3]);
 	}
 	glm::quat Node::asQuat(){
-		return glm::quat(cacheFloat[0],cacheFloat[1],cacheFloat[2],cacheFloat[3]);
+		// glm::vec3 v = glm::normalize( glm::vec3(cacheFloat[1],cacheFloat[2],cacheFloat[3]) );
+		glm::vec3 v = glm::vec3(cacheFloat[1],cacheFloat[2],cacheFloat[3]) ;
+		return glm::quat(cacheFloat[0], v.x, v.y, v.z);
 	}
 	btVector3 Node::asbtVec3(){
 		return btVector3(cacheFloat[0],cacheFloat[1],cacheFloat[2]);

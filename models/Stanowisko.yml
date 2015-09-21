@@ -5,61 +5,61 @@ Robot:
    Type: revolute
    Min: -370
    Max: 370
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base
      Vec: [0.0000, 0.0000, 0.2915]
      Axis: [0.0000, 0.0000, 1.0000]
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0000, 0.0000, 1.3012]
  - Name: Robot_2
    Type: revolute
    Min: -45
    Max: 90
-   ParentJoint:
+   ParentJoint: 
      Name: Revolute.001
      Vec: [0.0000, -0.4839, 1.3126]
      Axis: [-1.0000, -0.0000, -0.0000]
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0000, -0.4166, 1.8065]
  - Name: Robot_3
    Type: revolute
    Min: 120
    Max: 90
-   ParentJoint:
+   ParentJoint: 
      Name: Revolute
      Vec: [-0.0001, 1.0853, 0.0950]
      Axis: [-1.0000, 0.0000, 0.0000]
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0001, 2.1984, 0.0246]
  - Name: Robot_4
    Type: revolute
    Min: -370
    Max: 370
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.003
      Vec: [-0.0000, 0.5685, 0.0046]
      Axis: [-0.0001, 1.0000, 0.0017]
-   ChildJoint:
+   ChildJoint: 
      Vec: [0.0011, 0.1850, 0.0177]
  - Name: Robot_5
    Type: revolute
    Min: -120
    Max: 120
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.004
      Vec: [-0.0007, 0.0063, -0.0170]
      Axis: [-1.0000, 0.0000, 0.0000]
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0005, 0.3187, -0.0025]
  - Name: Robot_Gripper
    Type: revolute
    Min: -370
    Max: 370
-   ParentJoint:
+   ParentJoint: 
      Name: Robot-Base.005
      Vec: [0.0005, -0.3187, 0.0025]
      Axis: [-0.0001, 1.0000, -0.0000]
-   ChildJoint:
+   ChildJoint: 
      Vec: [-0.0004, 0.9222, -0.0047]
 Meshes:
  - Name: Barrier
@@ -72,7 +72,7 @@ Meshes:
    Quaternion: [0.9999, 0.0000, 0.0000, -0.0156]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -84,7 +84,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -93,10 +93,10 @@ Meshes:
      BBox: -0.5420 0.0772 -0.2283 -0.5420 0.0772 0.1439 -0.5420 0.8793 0.1439 -0.5420 0.8793 -0.2283 0.0983 0.0772 -0.2283 0.0983 0.0772 0.1439 0.0983 0.8793 0.1439 0.0983 0.8793 -0.2283
  - Name: Floor
    Position: [0.0000, 0.0000, 0.0000]
-   Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
+   Quaternion: [1.0000, -0.0000, 0.0000, 0.0000]
    Color: [0.3250, 0.3588, 0.2417]
    Spectacular: 0.0000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: PASSIVE
      collision_shape: CONVEX_HULL
@@ -108,7 +108,7 @@ Meshes:
    Quaternion: [0.9447, 0.0000, 0.0000, 0.3280]
    Color: [0.5017, 0.5173, 0.2831]
    Spectacular: 0.0000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -120,7 +120,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1027, 0.4020, 0.0428]
    Spectacular: 0.0000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -132,7 +132,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.4480, 0.1785, 0.0057]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -144,7 +144,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.8000, 0.2397, 0.0000]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: BOX
@@ -156,7 +156,7 @@ Meshes:
    Quaternion: [1.0000, -0.0009, -0.0000, 0.0001]
    Color: [0.8000, 0.0000, 0.0008]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: BOX
@@ -168,7 +168,7 @@ Meshes:
    Quaternion: [1.0000, -0.0009, -0.0000, 0.0001]
    Color: [0.0521, 0.2598, 0.0000]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -180,7 +180,7 @@ Meshes:
    Quaternion: [1.0000, -0.0009, -0.0000, 0.0002]
    Color: [0.1776, 0.2579, 0.2810]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -192,7 +192,7 @@ Meshes:
    Quaternion: [1.0000, 0.0000, 0.0000, 0.0000]
    Color: [0.1902, 0.1467, 0.0771]
    Spectacular: 0.5000
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: PASSIVE
      collision_shape: CONVEX_HULL
@@ -201,10 +201,10 @@ Meshes:
      BBox: -1.0586 -1.0645 0.0000 -1.0586 -1.0645 0.7579 -1.0586 1.0645 0.7579 -1.0586 1.0645 0.0000 1.0587 -1.0645 0.0000 1.0587 -1.0645 0.7579 1.0587 1.0645 0.7579 1.0587 1.0645 0.0000
  - Name: Target
    Position: [-0.4647, 3.2205, 2.1518]
-   Quaternion: [0.0000, 0.0000, 0.0000, 1.0000]
+   Quaternion: [-0.0000, 0.0000, 0.0000, 1.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -213,10 +213,10 @@ Meshes:
      BBox: -0.1253 -0.2535 -0.1253 -0.1253 -0.2535 0.1253 -0.1253 0.2535 0.1253 -0.1253 0.2535 -0.1253 0.1253 -0.2535 -0.1253 0.1253 -0.2535 0.1253 0.1253 0.2535 0.1253 0.1253 0.2535 -0.1253
  - Name: Target.001
    Position: [-0.0495, 3.2205, 2.1518]
-   Quaternion: [0.0000, 0.0000, 0.0000, 1.0000]
+   Quaternion: [-0.0000, 0.0000, 0.0000, -1.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -225,10 +225,10 @@ Meshes:
      BBox: -0.1253 -0.2535 -0.1253 -0.1253 -0.2535 0.1253 -0.1253 0.2535 0.1253 -0.1253 0.2535 -0.1253 0.1253 -0.2535 -0.1253 0.1253 -0.2535 0.1253 0.1253 0.2535 0.1253 0.1253 0.2535 -0.1253
  - Name: Target.002
    Position: [0.4677, 3.3106, 2.1518]
-   Quaternion: [0.0000, 0.0000, 0.0000, 1.0000]
+   Quaternion: [-0.0000, 0.0000, 0.0000, 1.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -237,10 +237,10 @@ Meshes:
      BBox: -0.1253 -0.2535 -0.1253 -0.1253 -0.2535 0.1253 -0.1253 0.2535 0.1253 -0.1253 0.2535 -0.1253 0.1253 -0.2535 -0.1253 0.1253 -0.2535 0.1253 0.1253 0.2535 0.1253 0.1253 0.2535 -0.1253
  - Name: Target.003
    Position: [0.2483, 3.8316, 2.1518]
-   Quaternion: [0.0000, 0.0000, 0.0000, 1.0000]
+   Quaternion: [0.7071, -0.0000, 0.0000, 0.7071]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -249,10 +249,10 @@ Meshes:
      BBox: -0.1253 -0.2535 -0.1253 -0.1253 -0.2535 0.1253 -0.1253 0.2535 0.1253 -0.1253 0.2535 -0.1253 0.1253 -0.2535 -0.1253 0.1253 -0.2535 0.1253 0.1253 0.2535 0.1253 0.1253 0.2535 -0.1253
  - Name: Target.004
    Position: [-0.3276, 3.9374, 2.1518]
-   Quaternion: [0.0000, 0.0000, 0.0000, 1.0000]
+   Quaternion: [0.7071, 0.0000, 0.0000, 0.7071]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -261,10 +261,10 @@ Meshes:
      BBox: -0.1253 -0.2535 -0.1253 -0.1253 -0.2535 0.1253 -0.1253 0.2535 0.1253 -0.1253 0.2535 -0.1253 0.1253 -0.2535 -0.1253 0.1253 -0.2535 0.1253 0.1253 0.2535 0.1253 0.1253 0.2535 -0.1253
  - Name: Target.005
    Position: [0.0524, 4.4193, 2.1518]
-   Quaternion: [0.0000, 0.0000, 0.0000, 1.0000]
+   Quaternion: [-0.0000, 0.0000, 0.0000, -1.0000]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL
@@ -273,10 +273,10 @@ Meshes:
      BBox: -0.1253 -0.2535 -0.1253 -0.1253 -0.2535 0.1253 -0.1253 0.2535 0.1253 -0.1253 0.2535 -0.1253 0.1253 -0.2535 -0.1253 0.1253 -0.2535 0.1253 0.1253 0.2535 0.1253 0.1253 0.2535 -0.1253
  - Name: Target.006
    Position: [0.5813, 4.4193, 2.1518]
-   Quaternion: [0.0000, 0.0000, 0.0000, 1.0000]
+   Quaternion: [0.7071, -0.0000, 0.0000, 0.7071]
    Color: [0.1473, 0.1473, 0.1473]
    Spectacular: 1.0
-   RigidBody:
+   RigidBody: 
      enabled: yes
      type: ACTIVE
      collision_shape: CONVEX_HULL

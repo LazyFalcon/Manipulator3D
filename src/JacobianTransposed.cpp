@@ -438,14 +438,16 @@ bool JT3::performIK(Point start, Point target, Robot &robot, double precision){
     float lastJointError = 1;
 	u32 iterations = 0;
 	// for(; (positionError > positionPrecision || quatError > orientationPrecision || abs(lastJointError) > 0.001) && iterations<iterationLimit; iterations++){
-	for(; (positionError > positionPrecision || quatError > orientationPrecision || abs(lastJointError) < 0.99) && iterations<iterationLimit; iterations++){
+	for(; (positionError > positionPrecision || quatError > orientationPrecision || abs(lastJointError) < 0.999) && iterations<iterationLimit; iterations++){
 
 		auto jacobian = buildJacobian(robot,variables.getVector(), endEffector);
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 
 		auto positionDelta = (target.position - endEffector.position);
-		glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
-		glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
+		// glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
+		// glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
+		glm::vec3 t = glm::normalize(glm::vec3(target.quat * glm::vec4(0,0,1,0).xyz()));
+		glm::vec3 e = glm::normalize(glm::vec3(endEffector.quat * glm::vec4(0,0,1,0).xyz()));
 
 		auto axisDelta = glm::cross(e, t);
 
@@ -458,21 +460,16 @@ bool JT3::performIK(Point start, Point target, Robot &robot, double precision){
 		gradient = mul(gradient, enhancement);
 
 		variables = gradient + variables;
-		/// odległość w radianach w globalnej orientacji
-		// lastJointError = acos(target.quat.w)*2.0 - acos(endEffector.quat.w)*2.0;
-		// lastJointError = target.quat.w - endEffector.quat.w;
-		// lastJointError = -circleDistance(target.quat.w, endEffector.quat.w);
-		// lastJointError = circleDistance(target.quat.w, endEffector.quat.w);
-		lastJointError = circleDistance(acos(target.quat.w)*2.0, acos(endEffector.quat.w)*2.0);
+		// lastJointError = circleDistance(acos(target.quat.w)*2.0, acos(endEffector.quat.w)*2.0);
 
-		glm::vec3 t_x = (target.quat * glm::vec4(0,1,0,0)).xyz();
-		glm::vec3 e_x = (endEffector.quat * glm::vec4(0,1,0,0)).xyz();
+		glm::vec3 t_x = (target.quat * glm::vec4(1,0,0,0)).xyz();
+		glm::vec3 e_x = (endEffector.quat * glm::vec4(1,0,0,0)).xyz();
 
 		lastJointError = glm::dot(t_x, e_x);
 
 		// cout<<"( "<<lastJointError<<" )"<<endl;
-		variables.getVector().back() -= lastJointError * 0.1f;
-		variables.getVector().back() = period(variables.getVector().back());
+		// variables.getVector().back() -= lastJointError * 0.1f;
+		// variables.getVector().back() = period(variables.getVector().back());
 		robot.clamp(variables.getVector());
 		endEffector = robot.simulate(variables.getVector());
 		g_targetPosition = endEffector.position;

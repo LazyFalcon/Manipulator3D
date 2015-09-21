@@ -10,31 +10,34 @@ def nullFun( RC, scene, dt):
     return True
 
 def goOverTargetAndGrab(RC, position, offset, target, idx):
-    q = quatRev(getScene().get(target).quat)
+    # q = quatRev(getScene().get(target).quat)
+    q = quat(1, 0, 0, -1)
     RC.goTo(delAction).to(position + offset).insert(RC, idx)
-    # RC.goTo(delAction).to(position + offset).orientation(angleAxis(0, vec3(0,0,-1))).insert(RC, idx+1)
     RC.goTo(delAction).to(position + offset).orientation(q).insert(RC, idx+1)
-    # RC.goTo(delAction).to(position).orientation(angleAxis(0, vec3(0,0,-1))).insert(RC, idx+2)
+    # RC.goTo(delAction).to(position).orientation(q).insert(RC, idx+2)
     RC.goTo(delAction).to(position).orientation(q).insert(RC, idx+2)
     RC.grab(getScene().get(target), delAction).insert(RC, idx+3)
     RC.goTo(delAction).to(position + offset).name('1').insert(RC, idx+4)
     return idx+5
 
-def goOverTargetAndRelease(RC, position, offset, idx):
+def goOverTargetAndRelease(RC, position, offset, orientation, idx):
     RC.goTo(delAction).to(position + offset).insert(RC, idx)
-    RC.goTo(delAction).to(position + offset).orientation(angleAxis(3.1415, vec3(0,0,-1))).insert(RC, idx+1)
+    # RC.goTo(delAction).to(position + offset).orientation(angleAxis(1.0707, vec3(0,0,-1))).insert(RC, idx+1)
+    RC.goTo(delAction).to(position + offset).orientation(orientation).insert(RC, idx+1)
 
-    RC.goTo(delAction).to(position).orientation(angleAxis(3.1415, vec3(0,0,-1))).insert(RC, idx+2)
+    RC.goTo(delAction).to(position).orientation(orientation).insert(RC, idx+2)
 
     RC.release(delAction).insert(RC, idx+3)
     RC.goTo(delAction).to(position + offset).name('1').insert(RC, idx+4)
     return idx+5
 
 def moveFromTo(RC, pFrom, pTo, target):
-    print '[ Hahahaha ]'
     idx = goOverTargetAndGrab(RC, pFrom, vec4(0,0,1,0), target, 1)
-    idx = goOverTargetAndRelease(RC, pTo, vec4(0,0,1,0), idx)
-    RC.pyExec(CommandReturnAction.DelAndBack).name('3214').fun(nullFun).insert(RC, idx)
+
+    orientation = angleAxis(1.0707, vec3(0,0,-1))
+
+    idx = goOverTargetAndRelease(RC, pTo, vec4(0,0,1,0), orientation, idx)
+    RC.pyExec(CommandReturnAction.DelAndBack).fun(nullFun).insert(RC, idx)
 
 class Paletter:
     def __init__(self, scene,  target, targets):
@@ -46,10 +49,12 @@ class Paletter:
 
     def computeCenterPosition(self, scene, targets):
         out = vec4(0,0,0,0)
+        x = vec4(0,1,0,0)
         for target in targets:
             print target
             pos = scene.get(target).position
             out = out + pos
+            print scene.get(target).quat * x
         out = out/out.w
         return out
 

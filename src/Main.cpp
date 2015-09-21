@@ -329,10 +329,10 @@ void mainLoop(){
 			DEBUG_QUAT = RC->robot->endEffector.quat;
 			auto DEBUG_QUAT_2 = scene->get("Target")->quat;
 
-			glm::mat3 m = glm::toMat3(DEBUG_QUAT_2);
+			// glm::mat3 m = glm::toMat3(DEBUG_QUAT_2);
 
-			DEBUG_VEC3_1 = m * glm::vec3(0,0,1);
-			DEBUG_VEC3_2 = m * glm::vec3(1,0,0);
+			// DEBUG_VEC3_1 = m * glm::vec3(0,0,1);
+			// DEBUG_VEC3_2 = m * glm::vec3(1,0,0);
 
 			ui.rect().color(gradientCalc(0x00FF00FF, 0xFF0000FF, u8(frameTimeCounter.get()/25.0*255.0))).text(frameTimeCounter.getString()+"ms").font("ui_12"s)();
 			ui.rect().text("rot_z "+std::to_string(camera.rot_z)).font("ui_12"s)();
