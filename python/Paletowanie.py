@@ -34,7 +34,8 @@ def goOverTargetAndRelease(RC, position, offset, orientation, idx):
 def moveFromTo(RC, pFrom, pTo, target):
     idx = goOverTargetAndGrab(RC, pFrom, vec4(0,0,1,0), target, 1)
 
-    orientation = fromAxis(vec3(0,0,-1))
+    # orientation = fromAxis(vec3(0,0,-1))
+    orientation = fromAxes(vec3(0,0,-1), vec3(1,0,0))
 
     idx = goOverTargetAndRelease(RC, pTo, vec4(0,0,1,0), orientation, idx)
     RC.pyExec(CommandReturnAction.DelAndBack).fun(nullFun).insert(RC, idx)

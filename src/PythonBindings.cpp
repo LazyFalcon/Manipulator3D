@@ -36,6 +36,9 @@ glm::quat glm_quatreverse(glm::quat q){
 glm::quat glm_fromAxis(glm::vec3 v){
 	return glm::rotation(glm::vec3(0,0,1), glm::normalize(v));
 }
+glm::quat glm_fromAxes(glm::vec3 parallel, glm::vec3 prependicular){
+	return glm::rotation(glm::vec3(0,0,1), glm::normalize(parallel)) * glm::rotation(glm::vec3(1,0,0), glm::normalize(prependicular));
+}
 
 
 
@@ -75,6 +78,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("length", cpp_len3);
 	bpl::def("quatRev", glm_quatreverse);
 	bpl::def("fromAxis", glm_fromAxis);
+	bpl::def("fromAxes", glm_fromAxes);
 
 	bpl::def("eulerAngles", cpp_eulerAngles);
 	bpl::def("angleAxis", glm_angleAxis);

@@ -462,14 +462,14 @@ bool JT3::performIK(Point start, Point target, Robot &robot, double precision){
 		variables = gradient + variables;
 		// lastJointError = circleDistance(acos(target.quat.w)*2.0, acos(endEffector.quat.w)*2.0);
 
-		glm::vec3 t_x = (target.quat * glm::vec4(1,0,0,0)).xyz();
-		glm::vec3 e_x = (endEffector.quat * glm::vec4(1,0,0,0)).xyz();
+		glm::vec3 t_x =  glm::normalize((target.quat * glm::vec4(1,0,0,0)).xyz());
+		glm::vec3 e_x =  glm::normalize((endEffector.quat * glm::vec4(1,0,0,0)).xyz());
 
 		lastJointError = glm::dot(t_x, e_x);
 
 		// cout<<"( "<<lastJointError<<" )"<<endl;
-		// variables.getVector().back() -= lastJointError * 0.1f;
-		// variables.getVector().back() = period(variables.getVector().back());
+		variables.getVector().back() -= lastJointError * 0.1f;
+		variables.getVector().back() = period(variables.getVector().back());
 		robot.clamp(variables.getVector());
 		endEffector = robot.simulate(variables.getVector());
 		g_targetPosition = endEffector.position;
