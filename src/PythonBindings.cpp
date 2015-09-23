@@ -33,12 +33,18 @@ glm::quat glm_angleAxis(float angle, glm::vec3 axis){
 glm::quat glm_quatreverse(glm::quat q){
 	return -q;
 }
-glm::quat glm_fromAxis(glm::vec3 v){
-	return glm::rotation(glm::vec3(0,0,1), glm::normalize(v));
-}
-glm::quat glm_fromAxes(glm::vec3 parallel, glm::vec3 prependicular){
-	return glm::rotation(glm::vec3(0,0,1), glm::normalize(parallel)) * glm::rotation(glm::vec3(1,0,0), glm::normalize(prependicular));
-}
+// glm::quat glm_fromAxis(glm::vec3 v){
+	// return glm::rotation(glm::vec3(0,0,1), glm::normalize(v));
+// }
+// glm::quat glm_fromAxes(glm::vec3 parallel, glm::vec3 perpendicular){
+    // auto z = glm::normalize(parallel);
+    // auto x = glm::normalize(perpendicular);
+
+    // return glm::quat_cast(glm::mat3(x, glm::cross(z, x), z));
+// }
+// glm::quat glm_fromAxes4(glm::vec4 parallel, glm::vec4 perpendicular){
+    // return glm_fromAxes(parallel.xyz(), perpendicular.xyz());
+// }
 
 
 
@@ -79,6 +85,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 	bpl::def("quatRev", glm_quatreverse);
 	bpl::def("fromAxis", glm_fromAxis);
 	bpl::def("fromAxes", glm_fromAxes);
+	bpl::def("fromAxes", glm_fromAxes4);
 
 	bpl::def("eulerAngles", cpp_eulerAngles);
 	bpl::def("angleAxis", glm_angleAxis);
@@ -160,7 +167,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("finish", finish_ptr, bpl::return_internal_reference<>())
 		.def("insert", &MoveCommandBuilder::insert, bpl::return_internal_reference<>())
 		;
-
+/*
 	SingleJointMoveCommandBuilder& (SingleJointMoveCommandBuilder::*singlefinish_ptr)(shared_ptr<RobotController>) = &SingleJointMoveCommandBuilder::finish;
 	bpl::class_<SingleJointMoveCommandBuilder, std::shared_ptr<SingleJointMoveCommandBuilder>>("SingleJointMoveCommandBuilder", bpl::init<>())
 		.def("init", &SingleJointMoveCommandBuilder::init, bpl::return_internal_reference<>())
@@ -172,7 +179,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("insert", &SingleJointMoveCommandBuilder::insert, bpl::return_internal_reference<>())
 		.def("finish", singlefinish_ptr, bpl::return_internal_reference<>())
 		;
-
+ */
 	FollowObjectBuilder& (FollowObjectBuilder::*target_1)(glm::vec4 &t) = &FollowObjectBuilder::target;
 	FollowObjectBuilder& (FollowObjectBuilder::*target_2)(shared_ptr<Entity> &obj) = &FollowObjectBuilder::target;
 	FollowObjectBuilder& (FollowObjectBuilder::*followfinish_ptr)(shared_ptr<RobotController>) = &FollowObjectBuilder::finish;
@@ -226,7 +233,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.value("DelAndForward", CommandReturnAction::DelAndForward)
 		.value("DelAndBack", CommandReturnAction::DelAndBack)
 		;
-	bpl::enum_<Interpolator>("Interpolator")
+/* 	bpl::enum_<Interpolator>("Interpolator")
 		.value("Empty", Interpolator::Empty)
 		.value("Open", Interpolator::Open)
 		.value("Closed", Interpolator::Closed)
@@ -238,7 +245,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.value("HermiteCardinal", Interpolator::HermiteCardinal)
 		.value("HermiteFiniteDifference", Interpolator::HermiteFiniteDifference)
 		.value("HermiteFiniteDifferenceClosed", Interpolator::HermiteFiniteDifferenceClosed)
-		;
+		; */
 	bpl::class_<IInterpolatorContainer>("IInterpolatorContainer")
 		.def_readonly("name", &IInterpolatorContainer::name)
 		;
@@ -302,7 +309,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("module", &Robot::module, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def_readwrite("config", &Robot::config)
 		;
-	bpl::class_<Module, boost::noncopyable>("Module")
+/* 	bpl::class_<Module, boost::noncopyable>("Module")
 		.def_readwrite("value", &Module::value)
 		.def_readwrite("targetValue", &Module::targetValue)
 		.def_readwrite("maxVelocty", &Module::maxVelocty)
@@ -312,11 +319,11 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readwrite("axis", &Module::axis)
 		.def_readwrite("vecToA", &Module::vecToA)
 		.def_readwrite("vecToB", &Module::vecToB)
-		;
+		; */
 
 	using namespace Helper;
 
-	bpl::class_<FrameRecordedData>("FrameRecordedData")
+/* 	bpl::class_<FrameRecordedData>("FrameRecordedData")
 		.def_readonly("IKIterationTime", &FrameRecordedData::IKIterationTime)
 		.def_readonly("IKIterarationCount", &FrameRecordedData::IKIterarationCount)
 		.def_readonly("IKPositionError", &FrameRecordedData::IKPositionError)
@@ -330,7 +337,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readonly("RobotJoints", &FrameRecordedData::RobotJoints)
 		;
 	bpl::def("getRecord", &record, bpl::return_value_policy<bpl::reference_existing_object>());
-
+ */
 
 	bpl::def("getPositionUnderMouse", &Helper::getPositionUnderMouse);
 	bpl::def("getNormalUnderMouse", &Helper::getNormalUnderMouse);

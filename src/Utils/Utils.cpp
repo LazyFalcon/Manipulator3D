@@ -1,4 +1,5 @@
-﻿#include "Utils.h"
+﻿#include "Includes.h"
+#include "Utils.h"
 
 static const float pi = 3.141592f;
 static const float hpi = 0.5f * 3.141592f;
@@ -28,10 +29,10 @@ HexColor gradientCalc(HexColor left, HexColor right, u8 position){
 	return left;
 }
 int clamp(int val, int a, int b){
-	return max( min( val, b ), a );
+	return std::max( std::min( val, b ), a );
 }
-extern default_random_engine randEngine;
-extern normal_distribution<float> normalDistr;
+std::default_random_engine randEngine;
+std::normal_distribution<float> normalDistr;
 float RNG(){
 	return glm::clamp(normalDistr(randEngine),0.5f, 1.5f);
 }
@@ -146,7 +147,7 @@ std::string string_formatted(double f){
 	char buffer [10];
 	sprintf(buffer, "%.2f", f);
 
-	return string(buffer);
+	return std::string(buffer);
 }
 std::string string_formatted(float f){
 	// std::ostringstream out;
@@ -156,7 +157,7 @@ std::string string_formatted(float f){
 	char buffer [10];
 	sprintf(buffer, "%.2f", f);
 
-	return string(buffer);
+	return std::string(buffer);
 }
 std::string to_string(const glm::vec4 &v){
 	return string_formatted(v[0])+" "+string_formatted(v[1])+" "+string_formatted(v[2])+" "+string_formatted(v[3]);
@@ -233,7 +234,7 @@ double circleDistance(double target, double value){
 }
 
 double clamp(double x, double minVal, double maxVal){
-	return min(max(x, minVal), maxVal);
+	return std::min(std::max(x, minVal), maxVal);
 }
 
 /* template <typename T>
@@ -299,10 +300,21 @@ double PDreg::operator () (double toReach, double current, double dt){
 }
 
 
-extern list <Statement> statements;
+std::list <Statement> statements;
 void statement(std::string text, float lifeTime){
 	statements.emplace_back(Statement{text, lifeTime});
 }
 
-#include "Bezier.h"
+glm::quat glm_fromAxis(glm::vec3 v){
+	return glm::rotation(glm::vec3(0,0,1), glm::normalize(v));
+}
+glm::quat glm_fromAxes(glm::vec3 parallel, glm::vec3 perpendicular){
+    auto z = glm::normalize(parallel);
+    auto x = glm::normalize(perpendicular);
+
+    return glm::quat_cast(glm::mat3(x, glm::cross(z, x), z));
+}
+glm::quat glm_fromAxes4(glm::vec4 parallel, glm::vec4 perpendicular){
+    return glm_fromAxes(parallel.xyz(), perpendicular.xyz());
+}
 

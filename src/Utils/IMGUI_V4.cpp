@@ -1,5 +1,5 @@
 #include "IMGUI_V4.h"
-
+using namespace std;
 extern const float pi;
 
 namespace UI NAM_START
@@ -1415,7 +1415,7 @@ bool TextEditor::compare(T &value){
 	return &value == this->valuePointer;
 }
 
-float TextEditor::parseExpr(string &str){
+float TextEditor::parseExpr(std::string &str){
 	if(str == "pi"s)
 		return pi;
 	else if(str == "pi/2"s)

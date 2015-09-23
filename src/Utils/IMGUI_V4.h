@@ -146,7 +146,7 @@ public:
 	template<typename T>
 	void setValueToEdit(T &value);
 
-	float parseExpr(string &str);
+	float parseExpr(std::string &str);
 
 	template<typename T>
 	bool compare(T &value);

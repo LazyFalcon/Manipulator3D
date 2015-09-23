@@ -463,9 +463,12 @@ public:
 	std::vector<double> history;
 
 	glm::vec3 eulerAngles;
-	glm::vec3 axis;
+	glm::quat quat;
+	glm::vec3 parallelAxis;
+	glm::vec3 perpAxis;
 	glm::vec4 position;
 	bool automaticInsert = true;
+	bool onlyParallel = true;
 
 	void extendedEditButton(float &v, float incrVal = 0.01f){
 		ui.rect(70, 20).font("ui_12"s);
@@ -492,23 +495,28 @@ public:
 	void pushCanges(RobotController &RC){
 		if(solverTarget == OnlyPosition){
 			JT0 solver;
-			solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
+			solver.solve(Point{ position, quat }, *(RC.robot));
 			if(solver.succes) RC.robot->insertVariables(solver.result);
 			// else alert("Solver failed");
 		}
 		else if(solverTarget == OnlyOrientation){
 			JT2 solver;
-			solver.solve(Point{ RC.robot->endEffector.position, glm::quat(eulerAngles) }, *(RC.robot));
+			solver.solve(Point{ RC.robot->endEffector.position, quat }, *(RC.robot));
 			if(solver.succes) RC.robot->insertVariables(solver.result);
 			// else alert("Solver failed");
 		}
 		else {
-			JT2 solver;
-			// solver.solve(Point{ position, glm::quat(eulerAngles) }, *(RC.robot));
-			solver.solve(Point{ position, glm::quat(1.f, axis) }, *(RC.robot));
-			// if(solver.succes) RC.robot->insertVariables(solver.result);
-			RC.robot->insertVariables(solver.result);
-			// else alert("Solver failed");
+			if(onlyParallel){
+                JT2 solver;
+                solver.solve(Point{ position, glm_fromAxis(parallelAxis) }, *(RC.robot));
+                RC.robot->insertVariables(solver.result);
+            }
+            else {
+                JT3 solver;
+                solver.solve(Point{ position, glm_fromAxes(parallelAxis, perpAxis) }, *(RC.robot));
+                RC.robot->insertVariables(solver.result);
+
+            }
 		}
 
 		// auto q = RC.robot->endEffector.quat;
@@ -516,7 +524,101 @@ public:
 		// eulerAngles = glm::eulerAngles(q);
 
 	}
-	void run(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
+
+    void jointControl(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
+        for(i32 i=0; i<RC.robot->chain.size(); ++i){
+
+            auto &module = *RC.robot->chain[i];
+
+            horizontal(
+                ui.rect(25, 22).text("-", "ui_17", UI::CenterText)
+                    // .onlPressed([&module]{module.decr();}, 5u)
+                    .onlPressed([&module]{module.decr();})
+                    .onlClick([&module]{module.decr();}) (UI::Button);
+                // ui.rect(150,22).edit(module.value)(UI::Hoverable);
+
+                extendedEditButton(module.value);
+
+                ui.rect(25, 22).text("+", "ui_17", UI::CenterText)
+                    .onlPressed([&module]{module.incr();})
+                    .onlClick([&module]{module.incr();}) (UI::Button);
+            );
+            if(not ui.outOfTable()){
+                moduleUnderEdition = i;
+                UI::g_UILayer++;
+                ui.rect(glm::vec4(mousePos+glm::vec2(5, 15), 100, 20)).text(module.name)(UI::Label);
+                UI::g_UILayer--;
+            }
+        }
+    }
+    void cartesianControl(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
+        horizontal(
+            extendedEditButton(position.x);
+            extendedEditButton(position.y);
+            extendedEditButton(position.z);
+        );
+        if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
+					if(automaticInsert){
+						pushCanges(RC);
+						/// update rest of..
+						auto q = RC.robot->endEffector.quat;
+						parallelAxis = (q * glm::vec4(0,0,1,0)).xyz();
+						perpAxis = (q * glm::vec4(1,0,0,0)).xyz();
+						eulerAngles = glm::eulerAngles(q);
+					}
+        }
+        ui.rect(70, 15).font("ui_10"s).text("Position (X,Y,Z):")(UI::CaptureMouse);
+        /// axis
+        horizontal(
+            extendedEditButton(parallelAxis.x);
+            extendedEditButton(parallelAxis.y);
+            extendedEditButton(parallelAxis.z);
+        );
+        if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
+            parallelAxis = glm::normalize(parallelAxis);
+            if(automaticInsert) pushCanges(RC);
+            if(onlyParallel) eulerAngles = glm::eulerAngles(glm_fromAxis(parallelAxis));
+            else eulerAngles = glm::eulerAngles(glm_fromAxes(parallelAxis, perpAxis));
+        }
+        ui.rect(70, 15).font("ui_10"s).text("Axis (X,Y,Z):")(UI::CaptureMouse);
+        horizontal(
+            extendedEditButton(eulerAngles.x);
+            extendedEditButton(eulerAngles.y);
+            extendedEditButton(eulerAngles.z);
+        );
+        if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
+            if(automaticInsert) pushCanges(RC);
+						auto q = glm::quat(eulerAngles);
+						parallelAxis = (q * glm::vec4(0,0,1,0)).xyz();
+						perpAxis = (q * glm::vec4(1,0,0,0)).xyz();
+        }
+        ui.rect(70, 15).font("ui_10"s).text("Euler:")(UI::CaptureMouse);
+
+        horizontal(
+            ui.rect(70, 20).color(solverTarget == OnlyPosition?0xFFA000FF : 0xA0A0A0FF).text("Position").radio(solverTarget, OnlyPosition)(UI::Hoverable);
+            ui.rect(70, 20).color(solverTarget == OnlyOrientation?0xFFA000FF : 0xA0A0A0FF).text("Orientation").radio(solverTarget, OnlyOrientation)(UI::Hoverable);
+            ui.rect(70, 20).color(solverTarget == PositionAndOrientation?0xFFA000FF : 0xA0A0A0FF).text("Both").radio(solverTarget, PositionAndOrientation)(UI::Hoverable);
+        );
+        ui.rect(70, 15).font("ui_10"s).text("What to insert:")(UI::CaptureMouse);
+
+        horizontal(
+            ui.rect(70, 20).color(0xA0A0A0FF).text("Read")(UI::Hoverable)
+                .onlClick([&RC, this]{
+                    position = RC.robot->endEffector.position;
+                    auto q = RC.robot->endEffector.quat;
+										parallelAxis = (q * glm::vec4(0,0,1,0)).xyz();
+										perpAxis = (q * glm::vec4(1,0,0,0)).xyz();
+                    eulerAngles = glm::eulerAngles(q);
+                });
+            ui.rect(70, 20).color(0xA0A0A0FF).text("Insert")(UI::Hoverable)
+                .onlClick([&RC, this]{
+                    pushCanges(RC);
+                    });
+            ui.rect(70, 20).color(automaticInsert ? 0xFFA000FF : 0xA0A0A0FF).text("Automatic").button(automaticInsert)(UI::Hoverable);
+            );
+        }
+
+    void run(u32 x, u32 y, glm::vec2 mousePos, RobotController &RC){
 		ui.table(UI::LayoutVertical | UI::AlignLeft | UI::AlignBottom )
 			.overridePosition(x, y);
 
@@ -532,7 +634,8 @@ public:
 				ui.rect(100, 20).color(controlType == Cartesian?0xFFA000FF : 0xA0A0A0FF).text("Cartesian control").radio(controlType, Cartesian)(UI::CaptureMouse).onlClick([this, &RC]{
                     position = RC.robot->endEffector.position;
                     auto q = RC.robot->endEffector.quat;
-                    axis = glm::axis(q);
+										parallelAxis = (q * glm::vec4(0,0,1,0)).xyz();
+										perpAxis = (q * glm::vec4(1,0,0,0)).xyz();
                     eulerAngles = glm::eulerAngles(q);
 										history = RC.robot->getVariables();
 										moduleUnderEdition = -1;
@@ -540,91 +643,11 @@ public:
 			ui.endBox();
 
 			if(controlType == Joint){
-				for(i32 i=0; i<RC.robot->chain.size(); ++i){
-
-					auto &module = *RC.robot->chain[i];
-
-					horizontal(
-						ui.rect(25, 22).text("-", "ui_17", UI::CenterText)
-							// .onlPressed([&module]{module.decr();}, 5u)
-							.onlPressed([&module]{module.decr();})
-							.onlClick([&module]{module.decr();}) (UI::Button);
-						// ui.rect(150,22).edit(module.value)(UI::Hoverable);
-
-						extendedEditButton(module.value);
-
-						ui.rect(25, 22).text("+", "ui_17", UI::CenterText)
-							.onlPressed([&module]{module.incr();})
-							.onlClick([&module]{module.incr();}) (UI::Button);
-					);
-					if(not ui.outOfTable()){
-						moduleUnderEdition = i;
-						UI::g_UILayer++;
-						ui.rect(glm::vec4(mousePos+glm::vec2(5, 15), 100, 20)).text(module.name)(UI::Label);
-						UI::g_UILayer--;
-					}
-				}
+                jointControl(x,y,mousePos, RC);
 			}
 			else if(controlType == Cartesian){
-				horizontal(
-					extendedEditButton(position.x);
-					extendedEditButton(position.y);
-					extendedEditButton(position.z);
-				);
-				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
-					if(automaticInsert){
-						pushCanges(RC);
-						/// update rest of..
-						auto q = RC.robot->endEffector.quat;
-						axis = glm::axis(q);
-						eulerAngles = glm::eulerAngles(q);
-					}
-				}
-				ui.rect(70, 15).font("ui_10"s).text("Position (X,Y,Z):")(UI::CaptureMouse);
-				horizontal(
-					extendedEditButton(axis.x);
-					extendedEditButton(axis.y);
-					extendedEditButton(axis.z);
-				);
-				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
-					axis = glm::normalize(axis);
-					if(automaticInsert) pushCanges(RC);
-					eulerAngles = glm::eulerAngles(glm::quat(1, axis));
-				}
-				ui.rect(70, 15).font("ui_10"s).text("Axis (X,Y,Z):")(UI::CaptureMouse);
-				horizontal(
-					extendedEditButton(eulerAngles.x);
-					extendedEditButton(eulerAngles.y);
-					extendedEditButton(eulerAngles.z);
-				);
-				if(not ui.outOfTable() && (ui.mouseLPressed || ui.mouseRPressed)){
-					if(automaticInsert) pushCanges(RC);
-					axis = glm::axis(glm::quat(eulerAngles));
-				}
-				ui.rect(70, 15).font("ui_10"s).text("Euler:")(UI::CaptureMouse);
-
-				horizontal(
-					ui.rect(70, 20).color(solverTarget == OnlyPosition?0xFFA000FF : 0xA0A0A0FF).text("Position").radio(solverTarget, OnlyPosition)(UI::Hoverable);
-					ui.rect(70, 20).color(solverTarget == OnlyOrientation?0xFFA000FF : 0xA0A0A0FF).text("Orientation").radio(solverTarget, OnlyOrientation)(UI::Hoverable);
-					ui.rect(70, 20).color(solverTarget == PositionAndOrientation?0xFFA000FF : 0xA0A0A0FF).text("Both").radio(solverTarget, PositionAndOrientation)(UI::Hoverable);
-				);
-				ui.rect(70, 15).font("ui_10"s).text("What to insert:")(UI::CaptureMouse);
-
-				horizontal(
-					ui.rect(70, 20).color(0xA0A0A0FF).text("Read")(UI::Hoverable)
-						.onlClick([&RC, this]{
-							position = RC.robot->endEffector.position;
-							auto q = RC.robot->endEffector.quat;
-							axis = glm::axis(q);
-							eulerAngles = glm::eulerAngles(q);
-						});
-					ui.rect(70, 20).color(0xA0A0A0FF).text("Insert")(UI::Hoverable)
-						.onlClick([&RC, this]{
-							pushCanges(RC);
-							});
-					ui.rect(70, 20).color(automaticInsert ? 0xFFA000FF : 0xA0A0A0FF).text("Automatic").button(automaticInsert)(UI::Hoverable);
-					);
-			}
+                cartesianControl(x,y,mousePos, RC);
+            }
 
 			ui.box(UI::LayoutHorizontal);{
 			ui.rect(100, 20).color( 0xA0A0A0FF).text("Restore")(UI::Hoverable).onlClick([this, &RC]{

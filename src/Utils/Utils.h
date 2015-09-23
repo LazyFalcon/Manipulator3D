@@ -108,4 +108,10 @@ struct Statement {
 
 void statement(std::string text, float lifeTime = 5.f);
 
+glm::quat glm_fromAxis(glm::vec3 v);
+glm::quat glm_fromAxes(glm::vec3 parallel, glm::vec3 perpendicular);
+glm::quat glm_fromAxes4(glm::vec4 parallel, glm::vec4 perpendicular);
+
+
+
 #include "Bezier.h"

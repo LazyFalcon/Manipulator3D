@@ -46,16 +46,12 @@ void Robot::update(float dt){
 		position += transform*module->vecToB;
 	}
 	// transform = glm::rotation(glm::normalize(glm::rotate(transform, glm::vec4(0,0,1,0)).xyz()), axis);
-	transform = glm::rotation(glm::vec3(0,0,1), axis);
-	// transform = (transform * glm::quat(0,0,1,0));
-	auto positionShift = glm::distance(position, endEffector.position);
-
-	// endEffector = Point {position, glm::angleAxis(2.f * acos(transform.w), glm::normalize(axis.xyz()))};
-
-	// endEffector = Point {position, glm::quat(transform.w, glm::normalize(axis.xyz()))};
-
-	// endEffector = Point {position, glm::angleAxis(transform.w,glm::normalize(axis.xyz()))};
+    auto axis2 = transform*glm::vec4(1,0,0,0);
+	// transform = glm::rotation(glm::vec3(0,0,1), axis);
+	transform = glm::quat_cast(glm::mat3(axis2.xyz(), glm::normalize(glm::cross(axis, axis2.xyz())), axis));
 	endEffector = Point {position, transform};
+
+	auto positionShift = glm::distance(position, endEffector.position);
 	glm::mat3 m = glm::toMat3(transform);
 	DEBUG_VEC3_1 = m*glm::vec3(0,0,1);
 	DEBUG_VEC3_2 = m*glm::vec3(1,0,0);
@@ -87,14 +83,12 @@ Point Robot::simulate(std::vector<double> &variables){
 		}
 		axis = transform*module->axis.xyz();
 		position += transform*module->vecToB;
-		// transform =
 		DEBUG_VEC3_1 = axis;
 	}
 	// transform = glm::rotation(glm::normalize(glm::rotate(transform, glm::vec4(0,0,1,0)).xyz()), axis);
-	transform = glm::rotation(glm::vec3(0,0,1), axis);
-	// transform = glm::quat(0,0,1,0) * transform;
-	// return {position, glm::angleAxis(2.f * acos(transform.w),glm::normalize(axis.xyz()))};
-	// return {position, glm::quat(transform.w,glm::normalize(axis.xyz()))};
+    auto axis2 = transform*glm::vec4(1,0,0,0);
+	// transform = glm::rotation(glm::vec3(0,0,1), axis);
+	transform = glm::quat_cast(glm::mat3(axis2.xyz(), glm::normalize(glm::cross(axis, axis2.xyz())), axis));
 	return {position, transform};
 }
 
@@ -138,7 +132,7 @@ void Robot::clamp(std::vector<double> &vec){
 glm::vec4 Robot::insertVariables(std::vector<double> &vec){
 	for(int i=0; i<getSize() && i<vec.size(); i++){
 		auto &module = chain[i];
-		module->value = vec[i];
+		module->value = period(vec[i]);
 	}
 }
 
