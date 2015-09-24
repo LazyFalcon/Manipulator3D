@@ -33,20 +33,6 @@ glm::quat glm_angleAxis(float angle, glm::vec3 axis){
 glm::quat glm_quatreverse(glm::quat q){
 	return -q;
 }
-// glm::quat glm_fromAxis(glm::vec3 v){
-	// return glm::rotation(glm::vec3(0,0,1), glm::normalize(v));
-// }
-// glm::quat glm_fromAxes(glm::vec3 parallel, glm::vec3 perpendicular){
-    // auto z = glm::normalize(parallel);
-    // auto x = glm::normalize(perpendicular);
-
-    // return glm::quat_cast(glm::mat3(x, glm::cross(z, x), z));
-// }
-// glm::quat glm_fromAxes4(glm::vec4 parallel, glm::vec4 perpendicular){
-    // return glm_fromAxes(parallel.xyz(), perpendicular.xyz());
-// }
-
-
 
 BOOST_PYTHON_MODULE(Manipulator3D){
 
