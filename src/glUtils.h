@@ -13,17 +13,17 @@ void genBuffer2(uint32_t &buffer, std::vector<glm::vec2> &data){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void genBuffer4(uint32_t &buffer, std::vector<glm::vec4> &data){
-		glDeleteBuffers(1, &buffer);
-		glGenBuffers(1, &buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		glBufferData(GL_ARRAY_BUFFER, 4*4*data.size(), glm::value_ptr(data[0]), GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDeleteBuffers(1, &buffer);
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, 4*4*data.size(), glm::value_ptr(data[0]), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void genBuffer4(uint32_t &buffer, glm::vec4 *data, int size){
-		glDeleteBuffers(1, &buffer);
-		glGenBuffers(1, &buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		glBufferData(GL_ARRAY_BUFFER, 4*4*size, data, GL_STATIC_DRAW);
+	glDeleteBuffers(1, &buffer);
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, 4*4*size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 void updateBuffer1(uint32_t &buffer, float *data, int count){

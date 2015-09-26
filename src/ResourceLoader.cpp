@@ -113,9 +113,9 @@ bool ResourceLoader::loadObj(fstream &file){
 	vector<float> vertex;
 	vector<float> coord;
 	vector<float> normal;
-	vertex.reserve(600000);
+	vertex.reserve(800000);
 	coord.reserve(400000);
-	normal.reserve(600000);
+	normal.reserve(800000);
 	int u(0), k(0);
 	// file>>tmp;
 	float x,y,z;
@@ -171,11 +171,13 @@ bool ResourceLoader::loadObj(fstream &file){
 				model_vertices.push_back(vertex[a*3]);
 				model_vertices.push_back(vertex[a*3+1]);
 				model_vertices.push_back(vertex[a*3+2]);
+				model_vertices.push_back(1);
 				model_coords.push_back(coord[b*2]);
 				model_coords.push_back(coord[b*2+1]);
 				model_normals.push_back(normal[c*3]);
 				model_normals.push_back(normal[c*3+1]);
 				model_normals.push_back(normal[c*3+2]);
+				model_normals.push_back(0);
 				u+=3;k+=2;
 				model_indices.push_back(i++);
 			}
@@ -189,11 +191,13 @@ bool ResourceLoader::loadObj(fstream &file){
 				model_vertices.push_back(vertex[a*3]);
 				model_vertices.push_back(vertex[a*3+1]);
 				model_vertices.push_back(vertex[a*3+2]);
+				model_vertices.push_back(1);
 				model_coords.push_back(coord[b*2]);
 				model_coords.push_back(coord[b*2+1]);
 				model_normals.push_back(normal[c*3]);
 				model_normals.push_back(normal[c*3+1]);
 				model_normals.push_back(normal[c*3+2]);
+				model_normals.push_back(0);
 				u+=3;k+=2;
 						model_indices.push_back(i++);
 						file>>tmp;

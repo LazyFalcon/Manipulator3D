@@ -1,7 +1,7 @@
 from Manipulator3D import *
 from math import floor
 
-listOfTargets = ['Target', 'Target.001', 'Target.002', 'Target.003', 'Target.004', 'Target.005', 'Target.006']
+listOfTargets = ['Target.007', 'Target.001', 'Target.002', 'Target.003', 'Target.004', 'Target.005', 'Target.006', 'Target', 'Target.008']
 centerOfTargets = vec4(0,0,0,1)
 
 delAction = CommandReturnAction.DelAndForward

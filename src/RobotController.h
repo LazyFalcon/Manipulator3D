@@ -136,8 +136,8 @@ void RCTest(RobotController &rc);
 
 namespace RCUtils NAM_START
 
-void pinObjectToEffector(shared_ptr<Entity> obj, shared_ptr<Entity> &effector);
+void pinObjectToEffector(shared_ptr<Entity> obj, Robot &robot);
 shared_ptr<Entity>& releaseObjects();
-void update();
+void update(Robot &robot);
 
 NAM_END

@@ -114,49 +114,6 @@ bool RobotController::update(shared_ptr<RobotController> &rc, shared_ptr<Scene> 
 void RobotController::releaseObject(){}
 
 void RobotController::grabObject(shared_ptr<Entity> &obj){
-	MoveCommandBuilder moveBuilder;
-	ExecuteCommandBuilder executeBuilder;
-	auto interpolator = addInterpolator(Interpolator::Simple, {obj->position}, "Grab");
-	auto target = addInterpolator(Interpolator::Simple, {glm::rotate(2.f, glm::vec3(0,0,1)) * obj->position}, "Grab2");
-	std::cout<<"One wants grab object."<<std::endl;
-	moveBuilder
-		.init()
-		.name("Move to target")
-		.velocity(1.0)
-		.jointVelocity(0.5)
-		.acceleration(0.2)
-		.solver(nullptr)
-		.interpolator(interpolator)
-		.finish(*this);
-
-	executeBuilder
-        .init()
-        .name("Grab target")
-		.onEnter([&obj, this](shared_ptr<RobotController> &rc){
-			RCUtils::pinObjectToEffector(obj, rc->robot->chain.back()->entity);
-            return true;
-		})
-		.finish(RC);
-
-	moveBuilder
-		.init()
-        .name("Move target")
-		.velocity(1.0)
-		.jointVelocity(0.5)
-		.acceleration(0.2)
-		.solver(nullptr)
-		.interpolator(target)
-		.finish(*this);
-
-    executeBuilder
-        .init()
-        .name("Release target")
-		.onEnter([obj](shared_ptr<RobotController> &rc){
-			RCUtils::releaseObjects();
-            return true;
-		})
-		.finish(RC);
-
 }
 
 void RobotController::savePosition(){
@@ -184,7 +141,7 @@ void RobotController::popPosition(){
 
 ExecuteCommandBuilder&  RobotController::grab(shared_ptr<Entity> &obj, int commandExitAction){
 	return exec(commandExitAction).onEnter([obj, this](shared_ptr<RobotController> &rc){
-		RCUtils::pinObjectToEffector(obj, rc->robot->chain.back()->entity);
+		RCUtils::pinObjectToEffector(obj, *rc->robot);
 	});
 }
 ExecuteCommandBuilder&  RobotController::release(int commandExitAction){
@@ -200,35 +157,39 @@ namespace RCUtils NAM_START
 std::pair<shared_ptr<Entity>, shared_ptr<Entity>> pairedObjects;
 Point effectorToPairedRelation;
 
-void pinObjectToEffector(shared_ptr<Entity> obj, shared_ptr<Entity> &effector){
-    if(obj && effector){
-        pairedObjects = std::make_pair(obj, effector);
-        effectorToPairedRelation.position = obj->position - effector->position;
-        effectorToPairedRelation.quat = glm::inverse(effector->quat) * obj->quat;
-    }
+void pinObjectToEffector(shared_ptr<Entity> obj, Robot &robot){
+	if(obj){
+		auto p = robot.endEffector.position;
+		auto q = robot.endEffector.quat;
+
+		pairedObjects = std::make_pair(obj, robot.chain.back()->entity);
+		effectorToPairedRelation.position = obj->position - p;
+		effectorToPairedRelation.quat = glm::inverse(q) * obj->quat;
+	}
 }
 shared_ptr<Entity>& releaseObjects(){
     auto &out = pairedObjects.first;
     pairedObjects = make_pair<shared_ptr<Entity>, shared_ptr<Entity>>(nullptr, nullptr);
     return out;
 }
-void update(){
-    if(pairedObjects.first && pairedObjects.second){
-        auto obj = pairedObjects.first;
-        auto effector = pairedObjects.second;
-        obj->position = effector->position + effector->quat * effectorToPairedRelation.quat * effectorToPairedRelation.position;
-        obj->quat = effector->quat * effectorToPairedRelation.quat;
-        if(obj->rgBody){
+void update(Robot &robot){
+	if(pairedObjects.first && pairedObjects.second){
+		auto p = robot.endEffector.position;
+		auto q = robot.endEffector.quat;
+
+		auto obj = pairedObjects.first;
+		auto effector = pairedObjects.second;
+		// obj->position = effector->position + (effector->quat * effectorToPairedRelation.quat) * effectorToPairedRelation.position;
+		obj->position = p;
+		obj->quat = q * effectorToPairedRelation.quat;
+		if(obj->rgBody){
 			btTransform tr;
 			tr.setRotation(btQuaternion(obj->quat.x, obj->quat.y, obj->quat.z, obj->quat.w));
 			tr.setOrigin(btVector3(obj->position.x, obj->position.y, obj->position.z));
 
 			obj->rgBody->setWorldTransform(tr);
-        }
-
-
-    }
-
+		}
+	}
 }
 
 

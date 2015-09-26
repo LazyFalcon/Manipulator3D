@@ -142,10 +142,6 @@ void initQueries(){
 	timerMeasurements["GUI"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["Total"] = std::make_pair(queries[qyeryNum++], 0);
 	timerMeasurements["Draw outline"] = std::make_pair(queries[qyeryNum++], 0);
-	// timerMeasurements["Lights"] = std::make_pair(queries[qyeryNum++], 0);
-
-
-
 }
 void getDataAndStartQuery(const std::string name){
 	auto &query = timerMeasurements[name];
@@ -177,7 +173,7 @@ void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vecto
 	glBindBuffer(GL_ARRAY_BUFFER, modelVBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vertices.data(), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer((GLuint)0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glVertexAttribDivisor(0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, modelVBO[1]);
 	glBufferData(GL_ARRAY_BUFFER, uvs.size()*sizeof(float), uvs.data(), GL_STATIC_DRAW);
@@ -187,7 +183,7 @@ void genVao(vector<float>vertices, vector<float>uvs, vector<float>normals, vecto
 	glBindBuffer(GL_ARRAY_BUFFER, modelVBO[2]);
 	glBufferData(GL_ARRAY_BUFFER, normals.size()*sizeof(float), normals.data(), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer((GLuint)2, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glVertexAttribDivisor(0, 0);
 	glGenBuffers(1, &(res->IBO));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res->IBO);
@@ -1428,7 +1424,6 @@ void drawVector(glm::vec4 position, glm::vec4 axis, float lenght){
 }
 
 void renderGUI(UI::IMGUI &gui){
-
 	glDepthMask(0);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -1485,8 +1480,6 @@ void renderGUI(UI::IMGUI &gui){
 	glEnable(GL_CULL_FACE);
 
 	glDepthMask(1);
-
-
 }
 
 void renderShapes(){
