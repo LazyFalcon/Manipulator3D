@@ -8,6 +8,8 @@ public:
 	MoveCommandBuilder& init(int commandExitAction = 1){
 		moveCommand = make_shared<MoveCommand>();
 		moveCommand->solver = make_shared<JT0>();
+		moveCommand->distanceTreshold = 10000;
+		moveCommand->acceleration = 1000000;
 		moveCommand->exitAction = commandExitAction;
 		return *this;
 	}
@@ -34,6 +36,7 @@ public:
 		return *this;
 	}
 	MoveCommandBuilder& acceleration(double value){
+		moveCommand->distanceTreshold = 1;
 		moveCommand->acceleration = value;
 		return *this;
 	}

@@ -109,9 +109,8 @@ bool JT0::performIK(Point start, Point target, Robot &robot, double precision){
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6,
 
 		auto positionDelta = (target.position - endEffector.position);
-		auto axisDelta = -glm::cross(glm::axis(target.quat), glm::axis(endEffector.quat))*0.f;
 
-		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, axisDelta.x, axisDelta.y, axisDelta.z});
+		force.insertColumn(0, {positionDelta.x, positionDelta.y, positionDelta.z, 0.f, 0.f, 0.f});
 
 		auto a = dot(jjp*force, force);
 		a = a/dot(jjp*force, jjp*force);
@@ -319,8 +318,8 @@ bool JT2::performIK(Point start, Point target, Robot &robot, double precision){
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 
 		auto positionDelta = (target.position - endEffector.position);
-		glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
-		glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
+		auto t = glm::normalize(glm::vec3(target.quat * glm::vec4(0,0,1,0).xyz()));
+		auto e = glm::normalize(glm::vec3(endEffector.quat * glm::vec4(0,0,1,0).xyz()));
 
 		auto axisDelta = glm::cross(e, t);
 
@@ -438,8 +437,8 @@ bool JT3::performIK(Point start, Point target, Robot &robot, double precision){
     float lastJointError = 0;
 	u32 iterations = 0;
 
-    glm::vec3 t;
-    glm::vec3 e;
+	glm::vec3 t;
+	glm::vec3 e;
 	for(; (positionError > positionPrecision || quatError > orientationPrecision || abs(lastJointError) > 0.001) && iterations<iterationLimit; iterations++){
 	// for(; (positionError > positionPrecision || quatError > orientationPrecision || abs(lastJointError) < 0.999) && iterations<iterationLimit; iterations++){
 
@@ -447,13 +446,10 @@ bool JT3::performIK(Point start, Point target, Robot &robot, double precision){
 		auto jjp = jacobian.transposed() * jacobian; // 6xn * nx6 da 6x6
 
 		auto positionDelta = (target.position - endEffector.position);
-		// glm::vec3 t = glm::normalize((glm::vec3(target.quat.x, target.quat.y, target.quat.z)));
-		// glm::vec3 e = glm::normalize((glm::vec3(endEffector.quat.x, endEffector.quat.y, endEffector.quat.z)));
 		t = glm::normalize(glm::vec3(target.quat * glm::vec4(0,0,1,0).xyz()));
 		e = glm::normalize(glm::vec3(endEffector.quat * glm::vec4(0,0,1,0).xyz()));
 
 
-		// auto axisDelta = glm::cross(e, t) - glm::cross(e_x, t_x);
 		auto axisDelta = glm::cross(e, t);
 
 		float axisMod = 3.1;
@@ -465,21 +461,7 @@ bool JT3::performIK(Point start, Point target, Robot &robot, double precision){
 		gradient = mul(gradient, enhancement);
 
 		variables = gradient + variables;
-		// lastJointError = circleDistance(acos(target.quat.w)*2.0, acos(endEffector.quat.w)*2.0);
 
-
-		// lastJointError = 1.f - glm::dot(t_x, e_x);
-		// lastJointError = glm::length(glm::cross(e_x, t_x)) * glm::dot(glm::normalize(glm::cross(e_x, t_x)), e);
-		// lastJointError = glm::length(1.f - glm::dot(t_x, e_x)) * glm::dot(glm::normalize(glm::cross(e_x, t_x)), e);
-
-        // if(iterations%10 == 0){
-            // cout<<"------------"<<endl;
-            // cout<<to_string(t_x)<<endl;
-            // cout<<to_string(e_x)<<endl;
-            // cout<<"( "<<lastJointError<<" )"<<endl;
-        // }
-        // variables.getVector().back() += lastJointError * 0.1f;
-		// variables.getVector().back() = period(variables.getVector().back());
 		robot.clamp(variables.getVector());
 		endEffector = robot.simulate(variables.getVector());
 		g_targetPosition = endEffector.position;
@@ -487,25 +469,16 @@ bool JT3::performIK(Point start, Point target, Robot &robot, double precision){
 		quatError = glm::length(axisDelta);
 	}
 
-    glm::vec3 t_x = glm::normalize((target.quat * glm::vec4(1,0,0,0)).xyz());
-    glm::vec3 e_x = glm::normalize((endEffector.quat * glm::vec4(1,0,0,0)).xyz());
-    cout<<"a: "<<variables.getVector().back()<<endl;
-    variables.getVector().back() -= glm::orientedAngle(t_x, e_x, e);
-    cout<<"a: "<<variables.getVector().back()<<endl;
-    endEffector = robot.simulate(variables.getVector());
+	glm::vec3 t_x = glm::normalize((target.quat * glm::vec4(1,0,0,0)).xyz());
+	glm::vec3 e_x = glm::normalize((endEffector.quat * glm::vec4(1,0,0,0)).xyz());
+	variables.getVector().back() -= glm::orientedAngle(t_x, e_x, e);
+	endEffector = robot.simulate(variables.getVector());
 
-    t_x = glm::normalize((target.quat * glm::vec4(1,0,0,0)).xyz());
-    auto e_x2 = glm::normalize((endEffector.quat * glm::vec4(1,0,0,0)).xyz());
-    cout<<"------------"<<endl;
-    cout<<"t_x: "<<to_string(t_x)<<endl;
-    cout<<"e_x: "<<to_string(e_x)<<endl;
-    cout<<"e_x2: "<<to_string(e_x2)<<endl;
-    cout<<"q: "<<to_string(endEffector.quat)<<endl;
-    cout<<"a: "<<glm::orientedAngle(t_x, e_x, e)<<endl;
-    cout<<"------------"<<endl;
+	t_x = glm::normalize((target.quat * glm::vec4(1,0,0,0)).xyz());
+	auto e_x2 = glm::normalize((endEffector.quat * glm::vec4(1,0,0,0)).xyz());
 
 
-	// cout<<iterations<<" << "<<quatError<<endl;
+
 	endPosition = endEffector.position;
 	result = variables.getVector();
 	succes = positionError < positionPrecision && quatError < positionPrecision*10;

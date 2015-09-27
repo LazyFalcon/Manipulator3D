@@ -219,7 +219,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.value("DelAndForward", CommandReturnAction::DelAndForward)
 		.value("DelAndBack", CommandReturnAction::DelAndBack)
 		;
-/* 	bpl::enum_<Interpolator>("Interpolator")
+ 	bpl::enum_<Interpolator>("Interpolator")
 		.value("Empty", Interpolator::Empty)
 		.value("Open", Interpolator::Open)
 		.value("Closed", Interpolator::Closed)
@@ -231,7 +231,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.value("HermiteCardinal", Interpolator::HermiteCardinal)
 		.value("HermiteFiniteDifference", Interpolator::HermiteFiniteDifference)
 		.value("HermiteFiniteDifferenceClosed", Interpolator::HermiteFiniteDifferenceClosed)
-		; */
+		;
 	bpl::class_<IInterpolatorContainer>("IInterpolatorContainer")
 		.def_readonly("name", &IInterpolatorContainer::name)
 		;
@@ -309,7 +309,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 
 	using namespace Helper;
 
-/* 	bpl::class_<FrameRecordedData>("FrameRecordedData")
+ 	bpl::class_<FrameRecordedData>("FrameRecordedData")
 		.def_readonly("IKIterationTime", &FrameRecordedData::IKIterationTime)
 		.def_readonly("IKIterarationCount", &FrameRecordedData::IKIterarationCount)
 		.def_readonly("IKPositionError", &FrameRecordedData::IKPositionError)
@@ -323,7 +323,7 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def_readonly("RobotJoints", &FrameRecordedData::RobotJoints)
 		;
 	bpl::def("getRecord", &record, bpl::return_value_policy<bpl::reference_existing_object>());
- */
+
 
 	bpl::def("getPositionUnderMouse", &Helper::getPositionUnderMouse);
 	bpl::def("getNormalUnderMouse", &Helper::getNormalUnderMouse);

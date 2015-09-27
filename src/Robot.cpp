@@ -143,7 +143,6 @@ bool Robot::goTo(const std::vector<double> &jointPositions){
 		auto delta = circleDistance(jointPositions[i], chain[i]->value);
 		if(chain[i]->type == REVOLUTE_JOINT) delta = period(delta);
 		chain[i]->targetValue = delta;
-		cout<<"("<<delta<<")"<<endl;
 	}
 }
 
