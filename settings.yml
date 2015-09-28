@@ -6,9 +6,9 @@ Window:
     options:
       -  yes
       -  no
-  height: 720
+  height: 600
   posX: 100
   posY: 100
-  width: 1400
+  width: 800
 DefaultScript: Paletowanie
 DefaultScene: Stanowisko

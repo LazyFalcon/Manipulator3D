@@ -278,9 +278,10 @@ BOOST_PYTHON_MODULE(Manipulator3D){
 		.def("goTo", &RobotController::goTo, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("getRobot", &RobotController::getRobot, bpl::return_value_policy<bpl::reference_existing_object>())
 		.def("getRobotJ", &RobotController::getRobotJ)
-		.def_readonly("robot", &RobotController::robot)
+		.def_readwrite("robot", &RobotController::robot)
 		.def_readwrite("state ", &RobotController::state )
 		.def_readwrite("commands", &RobotController::commands)
+		.def("endPos", &RobotController::endPos)
 		;
 
 	bpl::class_<SystemSettings>("SystemSettings")

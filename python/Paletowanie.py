@@ -14,10 +14,10 @@ def goOverTargetAndGrab(RC, position, offset, target, idx):
 	eq = quatRev(getScene().get(target).quat)
 	q = fromAxes(eq*vec4(0,0,-1,0), eq*vec4(1,0,0,0))
 	RC.goTo(delAction).to(position + offset).insert(RC, idx)
-	RC.goTo(delAction).to(position + offset).orientation(q).insert(RC, idx+1)
-	RC.goTo(delAction).to(position).orientation(q).insert(RC, idx+2)
+	RC.goTo(delAction).to(position + offset).orientation(q).jointVelocity(0.5).insert(RC, idx+1)
+	RC.goTo(delAction).to(position).orientation(q).jointVelocity(0.6).insert(RC, idx+2)
 	RC.grab(getScene().get(target), delAction).insert(RC, idx+3)
-	RC.goTo(delAction).to(position + offset).name('1').insert(RC, idx+4)
+	RC.goTo(delAction).to(position + offset).jointVelocity(0.5).name('1').insert(RC, idx+4)
 	return idx+5
 
 def goOverTargetAndRelease(RC, position, offset, orientation, idx):
@@ -28,19 +28,23 @@ def goOverTargetAndRelease(RC, position, offset, orientation, idx):
 	RC.goTo(delAction).to(position).orientation(orientation).jointVelocity(0.1).insert(RC, idx+2)
 
 	RC.release(delAction).insert(RC, idx+3)
-	RC.goTo(delAction).to(position + offset).name('1').insert(RC, idx+4)
+	RC.goTo(delAction).to(position + offset).name('1').jointVelocity(0.5).insert(RC, idx+4)
 	return idx+5
 
 def goSafeFromTo(RC, pFrom, pTo, idx):
 	path = Vec4Vec()
-	path[:] = [pFrom, pFrom + vec4(0,-1,1,0), vec4(2,0,5,1), pTo+vec4(0,1,1,0), pTo]
+	path[:] = [pFrom, pFrom + vec4(0,0,1,0), vec4(2,0,5,1), pTo+vec4(0,0,1,0), pTo]
 
-	p = addInterpolator(Interpolator.HermiteFiniteDifference, path, "--")
+	# p = addInterpolator(Interpolator.HermiteFiniteDifference, path, "--")
+	p = addInterpolator(Interpolator.BSpline, path, "--")
 	RC.move(delAction).name('Safe path').interpolator(p).jointVelocity(10).velocity(1.9250).acceleration(10000).endO(fromAxis(vec3(0,0,-1))).solver('JT2').insert(RC, idx)
 	return idx+1
 
 def moveFromTo(RC, pFrom, pTo, target):
-	idx = goOverTargetAndGrab(RC, pFrom, vec4(0,0,1,0), target, 1)
+
+	idx = goSafeFromTo(RC, RC.endPos() + vec4(0,0,1,0), pFrom + vec4(0,0,1,0), 1)
+
+	idx = goOverTargetAndGrab(RC, pFrom, vec4(0,0,1,0), target, idx)
 
 	orientation = fromAxes(vec3(0,0,-1), vec3(1,0,0))
 

@@ -122,7 +122,9 @@ public:
 	SystemSettings& config(){
 		return defaultConfig;
 	}
-
+	glm::vec4 endPos(){
+		return robot->endEffector.position;
+	}
 private:
 	WaitCommandBuilder waitCommandBuilder;
 	MoveCommandBuilder moveCommandBuilder;
