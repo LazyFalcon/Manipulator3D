@@ -5,7 +5,7 @@ Quicks summary after four years:
 
 Inverse kinematics was based on 'transposed jacobian' method which allows to handle efectively manipulators with redundant joints.
 
-Path plannig is simple A* implementation in 3D space, to detect and avoid obstacles I used Bullet physics engine. Bullet is feed from 3D scene.
+Path plannig is ~~simple A* implementation in 3D space~~(I don't remember what), to detect and avoid obstacles I used Bullet physics engine. Bullet is feed from 3D scene.
 
 Application has bindings to python and can run python scripts.
 
